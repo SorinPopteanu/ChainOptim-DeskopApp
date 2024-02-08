@@ -1,4 +1,4 @@
-package com.example.chainoptimdesktopapp;
+package org.chainoptim.desktop;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

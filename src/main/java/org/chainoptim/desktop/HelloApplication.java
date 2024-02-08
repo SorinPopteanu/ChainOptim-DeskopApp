@@ -1,4 +1,4 @@
-package com.example.chainoptimdesktopapp;
+package org.chainoptim.desktop;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

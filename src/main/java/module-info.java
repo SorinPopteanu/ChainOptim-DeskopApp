@@ -1,4 +1,4 @@
-module com.example.chainoptimdesktopapp {
+module org.chainoptim.desktop {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -10,7 +10,8 @@ module com.example.chainoptimdesktopapp {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires static lombok;
 
-    opens com.example.chainoptimdesktopapp to javafx.fxml;
-    exports com.example.chainoptimdesktopapp;
+    opens org.chainoptim.desktop to javafx.fxml;
+    exports org.chainoptim.desktop;
 }

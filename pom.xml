@@ -111,6 +111,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -134,7 +140,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.example.chainoptimdesktopapp/com.example.chainoptimdesktopapp.HelloApplication
+                                com.example.chainoptimdesktopapp/org.chainoptim.desktop.HelloApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
