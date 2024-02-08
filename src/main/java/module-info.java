@@ -13,5 +13,7 @@ module org.chainoptim.desktop {
     requires static lombok;
 
     opens org.chainoptim.desktop to javafx.fxml;
+    opens org.chainoptim.desktop.core.user.controller to javafx.fxml;
     exports org.chainoptim.desktop;
+
 }
