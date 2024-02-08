@@ -11,10 +11,8 @@ import java.net.URL;
 public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        URL url = MainApplication.class.getResource("Login.fxml");
-        System.out.println(url);
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("Login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/org/chainoptim/desktop/core/user/view/Login.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 400, 400);
         stage.setTitle("Login!");
         stage.setScene(scene);
         stage.show();
