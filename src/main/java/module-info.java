@@ -1,8 +1,17 @@
 module org.chainoptim.desktop {
+    // JavaFX
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
 
+    // Java utils
+    requires java.prefs;
+    requires org.json;
+
+    // Http
+    requires java.net.http;
+
+    // Other libraries
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires net.synedra.validatorfx;

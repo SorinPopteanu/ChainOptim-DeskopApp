@@ -1,24 +1,30 @@
 package org.chainoptim.desktop;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import org.chainoptim.desktop.core.SceneManager;
+import org.chainoptim.desktop.core.user.service.AuthenticationService;
+import org.chainoptim.desktop.core.user.util.TokenManager;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
 import java.io.IOException;
-import java.net.URL;
 
 public class MainApplication extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/org/chainoptim/desktop/core/user/view/Login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 400, 400);
-        stage.setTitle("Login!");
-        stage.setScene(scene);
-        stage.show();
+    public void start(Stage primaryStage) throws IOException {
+        SceneManager.setPrimaryStage(primaryStage);
+
+        String jwtToken = TokenManager.getToken();
+        boolean isTokenValid = jwtToken != null && AuthenticationService.validateJWTToken(jwtToken);
+
+        // Show Login Scene or Main Scene depending on whether a valid JWT token exists
+        if (isTokenValid) {
+            SceneManager.loadMainScene();
+        } else {
+            SceneManager.loadLoginScene();
+        }
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }
