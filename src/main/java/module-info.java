@@ -20,9 +20,11 @@ module org.chainoptim.desktop {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires static lombok;
+    requires com.fasterxml.jackson.databind;
 
     opens org.chainoptim.desktop to javafx.fxml;
     opens org.chainoptim.desktop.core.user.controller to javafx.fxml;
+    opens org.chainoptim.desktop.core.user.view to javafx.fxml;
     exports org.chainoptim.desktop;
 
 }

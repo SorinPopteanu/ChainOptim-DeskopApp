@@ -1,6 +1,9 @@
 package org.chainoptim.desktop.core.user.controller;
 
 import org.chainoptim.desktop.core.SceneManager;
+import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 
 import javafx.fxml.FXML;
@@ -9,7 +12,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import java.util.Optional;
+
 public class AuthController {
+
+//    private final UserRepository userRepository;
 
     @FXML
     private TextField usernameField;
@@ -20,6 +27,10 @@ public class AuthController {
     @FXML
     private Button logoutButton;
 
+//    public AuthController(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
+
     @FXML
     private void handleLogin() {
         boolean isAuthenticated = AuthenticationService.login(usernameField.getText(), passwordField.getText());
@@ -27,6 +38,13 @@ public class AuthController {
         if (isAuthenticated) {
             try {
                 SceneManager.loadMainScene(); // Navigate to main app
+
+                // Load user and organization into TenantContext
+//                Optional<User> user = userRepository.getUserByUsername(usernameField.getText());
+//                user.ifPresent(validUser -> {
+//                    System.out.println("User email: " + validUser.getEmail());
+//                    TenantContext.setCurrentUser(validUser);
+//                });
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

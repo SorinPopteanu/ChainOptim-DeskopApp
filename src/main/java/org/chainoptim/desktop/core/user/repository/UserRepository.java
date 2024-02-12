@@ -1,4 +1,9 @@
 package org.chainoptim.desktop.core.user.repository;
 
-public class UserRepository {
+import org.chainoptim.desktop.core.user.model.User;
+
+import java.util.Optional;
+
+public interface UserRepository {
+    public Optional<User> getUserByUsername(String username);
 }
