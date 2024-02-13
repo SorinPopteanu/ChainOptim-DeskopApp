@@ -10,19 +10,18 @@
     <padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
 
     <!-- Title Text -->
-    <Text text="Login" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"
-          style="-fx-font-size: 20px;"/>
+    <Label fx:id="formTitle" text="Login" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
 
     <!-- Username Label and TextField -->
-    <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-    <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    <Label fx:id="usernameLabel" text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <TextField fx:id="usernameField" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
     <!-- Password Label and PasswordField -->
-    <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    <Label fx:id="passwordLabel" text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <PasswordField fx:id="passwordField" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
     <!-- Button and Hyperlink Container -->
-    <HBox spacing="10" alignment="center" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+    <HBox spacing="10" alignment="center" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
         <Button text="Login" onAction="#handleLogin" HBox.hgrow="ALWAYS" style="-fx-background-color: #7892B2; -fx-text-fill: white;"/>
         <Hyperlink text="Sign up" onAction="#handleShowSignUp"/>
     </HBox>

@@ -1,3 +1,12 @@
-.grid-pane {
-  -fx-background-color: #F0F0F0;
+.form-label {
+  -fx-font-size: 20px;
+  -fx-font-weight: 600;
+}
+
+.form-title {
+  -fx-text-align: center;
+  -fx-font-size: 40px;
+  -fx-padding-top: 10px;
+  -fx-padding-bottom: 10px;
+  -fx-color: blue;
 }
