@@ -4,27 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5855e861-8b6a-4414-a57e-1c028ed1243d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/chainoptim/desktop/core/user/controller/AppController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/org/chainoptim/desktop/core/AppView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/3/5/358fdcc7ac009cdd9921510111eec45660515e1e" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/application.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/3/a/3ab808c0260568fcccf40bbb0348939643b41555" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/4/4/442292b8a7efeabbe4cc176709b833b1792140ec" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/a/5/a5cc2925ca8258af241be7e5b0381edf30266302" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/b/4/b43cf2b34f01a31ac616e66f139cdc59258a554a" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/3/5/358fdcc7ac009cdd9921510111eec45660515e1e" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/3/a/3ab808c0260568fcccf40bbb0348939643b41555" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/4/4/442292b8a7efeabbe4cc176709b833b1792140ec" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/a/5/a5cc2925ca8258af241be7e5b0381edf30266302" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/b/4/b43cf2b34f01a31ac616e66f139cdc59258a554a" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/index.pb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/chainoptim/desktop/core/SceneManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chainoptim/desktop/core/SceneManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/chainoptim/desktop/core/MainApplication.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/chainoptim/desktop/core/user/view/AuthView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/chainoptim/desktop/core/user/view/AuthView.fxml" afterDir="false" />
-    </list>
+    <list default="true" id="5855e861-8b6a-4414-a57e-1c028ed1243d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -63,7 +43,7 @@
     "Application.desktop_app.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "mainview",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/sorinpopteanu/Desktop/ChainOptim-DesktopApp",
     "list.type.of.created.stylesheet": "CSS",
@@ -132,7 +112,7 @@
       <workItem from="1707738195102" duration="8780000" />
       <workItem from="1707768313291" duration="165000" />
       <workItem from="1707768626985" duration="3933000" />
-      <workItem from="1707972650048" duration="3559000" />
+      <workItem from="1707972650048" duration="4038000" />
     </task>
     <servers />
   </component>
