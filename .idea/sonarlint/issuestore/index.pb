@@ -10,3 +10,7 @@ Csrc/main/resources/com/example/chainoptimdesktopapp/hello-view.fxml,3/5/358fdc
 :
 
 .gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+}
+Msrc/main/java/org/chainoptim/desktop/core/user/controller/AuthController.java,5/4/54aaf32950a49e60a323f73054bead6db29ebca9
+k
+;src/main/java/org/chainoptim/desktop/core/SceneManager.java,0/1/0121eacd3a740a5bf75de1378ab254c9651f8090

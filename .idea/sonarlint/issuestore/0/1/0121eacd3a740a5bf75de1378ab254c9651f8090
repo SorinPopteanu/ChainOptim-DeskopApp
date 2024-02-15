@@ -1,0 +1,7 @@
+
+\
+java:S1118":Add a private constructor to hide the implicit public one.(£ºïúÿÿÿÿ8¯Ò‰ìÚ1
+L	java:S106 "+Replace this use of System.out by a logger.(—”ĞÉüÿÿÿÿ8¹Ò‰ìÚ1
+L	java:S106&"+Replace this use of System.out by a logger.(•ŞÚûÿÿÿÿ8ºÒ‰ìÚ1
+L
+java:S1128"/Remove this unused import 'javafx.scene.Group'.(Ÿ°ô–8»Ò‰ìÚ1
