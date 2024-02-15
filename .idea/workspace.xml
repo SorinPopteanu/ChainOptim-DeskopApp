@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5855e861-8b6a-4414-a57e-1c028ed1243d" name="Changes" comment="" />
+    <list default="true" id="5855e861-8b6a-4414-a57e-1c028ed1243d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/0/1/0121eacd3a740a5bf75de1378ab254c9651f8090" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/0/1/0121eacd3a740a5bf75de1378ab254c9651f8090" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/5/4/54aaf32950a49e60a323f73054bead6db29ebca9" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/5/4/54aaf32950a49e60a323f73054bead6db29ebca9" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
