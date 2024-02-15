@@ -1,34 +1,41 @@
-
-.login-title{
-    -fx-font-size: 40px;
-    -fx-font-family: Impact, fantasy;
-    -fx-font-weight: bold;
-    -fx-text-fill: #36454F;
+.form-container {
+    -fx-background-color: white;
+    -fx-padding: 40px 60px;
 }
 
-.login-label{
-    -fx-font-size: 20px;
-    -fx-font-family: Copperplate, fantasy;
-    -fx-font-weight: bold;
-    -fx-text-fill: #36454F;
-}
-
-.login-button-container{
-    -fx-pref-width: 100px;
-    -fx-pref-height: 100px;
+.title-container {
+    -fx-padding: 0px 0px 20px 0px;
+    -fx-alignment: CENTER;
 }
 
 .form-label {
-  -fx-font-size: 20px;
-  -fx-font-weight: 600;
+    -fx-width: 100%;
+    -fx-margin-top: 8px;
+    -fx-margin-bottom: 4px;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
 }
 
 .form-title {
-  -fx-text-align: center;
-  -fx-font-size: 40px;
-  -fx-padding-top: 10px;
-  -fx-padding-bottom: 10px;
-  -fx-color: blue;
-    -fx-font-weight: 600;
+    -fx-text-align: center;
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
 }
 
+.auth-button {
+    -fx-background-color: #3A3FD6;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-padding: 10px 40px;
+    -fx-border-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.auth-button:hover {
+    -fx-background-color: #2C2FAC;
+}
+
+.auth-link {
+    -fx-text-fill: #3A3FD6;
+    -fx-font-size: 15px;
+}

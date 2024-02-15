@@ -16,29 +16,10 @@ public class AuthController {
 //    private final UserRepository userRepository;
 
     @FXML
-    private Label formTitle;
-
-    @FXML
     private TextField usernameField;
 
     @FXML
     private PasswordField passwordField;
-
-    @FXML
-    private Label usernameLabel;
-
-    @FXML
-    private Label passwordLabel;
-
-    @FXML
-    private void initialize() {
-        formTitle.getStyleClass().add("form-title");
-        usernameLabel.getStyleClass().add("form-label");
-        passwordLabel.getStyleClass().add("form-label");
-    }
-
-    @FXML
-    private Button logoutButton;
 
 //    public AuthController(UserRepository userRepository) {
 //        this.userRepository = userRepository;
