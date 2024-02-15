@@ -1,33 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.text.Text?>
 
-<?import java.net.URL?>
-<GridPane fx:controller="org.chainoptim.desktop.core.user.controller.AuthController"
-          xmlns:fx="http://javafx.com/fxml"
-          alignment="center" hgap="10" vgap="10">
-    <padding><Insets top="15" right="25" bottom="25" left="25"/></padding>
+<VBox fx:controller="org.chainoptim.desktop.core.user.controller.AuthController"
+      xmlns:fx="http://javafx.com/fxml" styleClass="form-container" spacing="8">
 
     <!-- Title Text -->
-    <Text text="Welcome back" styleClass="login-title" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="1"/>
-
-    <!-- Empty row to create space -->
-    <Region GridPane.columnIndex="0" GridPane.rowIndex="1" prefHeight="50"/>
-
-    <!-- Username Label and TextField -->
-    <Label text="Username:" styleClass="login-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <TextField fx:id="usernameField" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-
-    <!-- Password Label and PasswordField -->
-    <Label text="Password:" styleClass="login-label" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-    <PasswordField fx:id="passwordField" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-
-    <!-- Button and Hyperlink Container -->
-    <HBox styleClass="login-button-container" spacing="15" alignment="center" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2">
-        <Button text="Login" onAction="#handleLogin" HBox.hgrow="ALWAYS" style="-fx-background-color: #7892B2; -fx-text-fill: white;"/>
-        <Hyperlink text="Sign up" onAction="#handleShowSignUp"/>
+    <HBox styleClass="title-container">
+        <Text text="Login" styleClass="form-title"/>
     </HBox>
 
-</GridPane>
+    <!-- Username Label and TextField -->
+    <Label text="Username:" styleClass="form-label"/>
+    <TextField fx:id="usernameField"/>
+
+    <!-- Password Label and PasswordField -->
+    <Label text="Password:" styleClass="form-label"/>
+    <PasswordField fx:id="passwordField"/>
+
+    <!-- Button and Hyperlink Container -->
+    <HBox spacing="32" alignment="CENTER" style="-fx-padding: 20px;">
+        <Button text="Login" onAction="#handleLogin" HBox.hgrow="ALWAYS" styleClass="auth-button"/>
+        <Hyperlink text="Sign up" onAction="#handleShowSignUp" HBox.hgrow="ALWAYS" styleClass="auth-link"/>
+    </HBox>
+</VBox>
+
