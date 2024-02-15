@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.user.controller;
 
+import javafx.scene.control.*;
 import org.chainoptim.desktop.core.SceneManager;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
@@ -7,10 +8,6 @@ import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 
 import java.util.Optional;
 
@@ -19,10 +16,26 @@ public class AuthController {
 //    private final UserRepository userRepository;
 
     @FXML
+    private Label formTitle;
+
+    @FXML
     private TextField usernameField;
 
     @FXML
     private PasswordField passwordField;
+
+    @FXML
+    private Label usernameLabel;
+
+    @FXML
+    private Label passwordLabel;
+
+    @FXML
+    private void initialize() {
+        formTitle.getStyleClass().add("form-title");
+        usernameLabel.getStyleClass().add("form-label");
+        passwordLabel.getStyleClass().add("form-label");
+    }
 
     @FXML
     private Button logoutButton;

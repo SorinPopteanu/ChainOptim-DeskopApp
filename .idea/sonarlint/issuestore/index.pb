@@ -1,13 +1,10 @@
 
-7
-pom.xml,4/4/442292b8a7efeabbe4cc176709b833b1792140ec
-‘
-asrc/main/java/org/chainoptim/desktop/core/organization/repository/OrganizationRepositoryImpl.java,7/8/78f17b0a99cb882368d7fb2854dc5fefd75ad7d6
-I
-ChainOptim-DesktopApp.iml,4/4/443343194e9c2baca1ff65518793cd8444c6d20d
+}
+Msrc/main/java/org/chainoptim/desktop/core/user/controller/AuthController.java,5/4/54aaf32950a49e60a323f73054bead6db29ebca9
 k
 ;src/main/java/org/chainoptim/desktop/core/SceneManager.java,0/1/0121eacd3a740a5bf75de1378ab254c9651f8090
 i
+<<<<<<< HEAD
 9src/main/java/org/chainoptim/desktop/MainApplication.java,1/7/173e6fce74da48f7689218814446e2f056e7c9f2
 ~
 Nsrc/main/java/org/chainoptim/desktop/core/organization/model/Organization.java,e/6/e602362b24c23d0d83ffcd08c15bdd3eb092a6ba
@@ -24,3 +21,6 @@ Lsrc/main/java/org/chainoptim/desktop/core/user/controller/AppController.java,f
 :
 
 .gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+=======
+9src/main/java/org/chainoptim/desktop/MainApplication.java,1/7/173e6fce74da48f7689218814446e2f056e7c9f2
+>>>>>>> main
