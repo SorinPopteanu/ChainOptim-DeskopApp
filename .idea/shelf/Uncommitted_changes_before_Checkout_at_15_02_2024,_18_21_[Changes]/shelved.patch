@@ -1,0 +1,76 @@
+Index: .idea/sonarlint/securityhotspotstore/index.pb
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\n7\n\u0007pom.xml\u0012,4/4/442292b8a7efeabbe4cc176709b833b1792140ec\n�\u0001\nasrc/main/java/org/chainoptim/desktop/core/organization/repository/OrganizationRepositoryImpl.java\u0012,7/8/78f17b0a99cb882368d7fb2854dc5fefd75ad7d6\nI\n\u0019ChainOptim-DesktopApp.iml\u0012,4/4/443343194e9c2baca1ff65518793cd8444c6d20d\nk\n;src/main/java/org/chainoptim/desktop/core/SceneManager.java\u0012,0/1/0121eacd3a740a5bf75de1378ab254c9651f8090\ni\n9src/main/java/org/chainoptim/desktop/MainApplication.java\u0012,1/7/173e6fce74da48f7689218814446e2f056e7c9f2\n~\nNsrc/main/java/org/chainoptim/desktop/core/organization/model/Organization.java\u0012,e/6/e602362b24c23d0d83ffcd08c15bdd3eb092a6ba\nt\nDsrc/main/java/org/chainoptim/desktop/core/context/TenantContext.java\u0012,a/4/a4f368e08dc47615ce29c4c0aee656bb23f661d1\nn\n>src/main/java/org/chainoptim/desktop/shared/util/JsonUtil.java\u0012,a/4/a4da3c9f17f6739c5cfa39f976f86fcda4ba6d14\n}\nMsrc/main/java/org/chainoptim/desktop/core/user/controller/AuthController.java\u0012,5/4/54aaf32950a49e60a323f73054bead6db29ebca9\nn\n>src/main/java/org/chainoptim/desktop/core/user/model/User.java\u0012,3/a/3a9b0b7c9fc822c7a9ca870c7e307686e88317d5\n|\nLsrc/main/java/org/chainoptim/desktop/core/user/controller/AppController.java\u0012,f/1/f19dab82f19553eb4d925c1da18fd72fc5c0aa31
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/sonarlint/securityhotspotstore/index.pb b/.idea/sonarlint/securityhotspotstore/index.pb
+--- a/.idea/sonarlint/securityhotspotstore/index.pb	(revision bc9bb3977e0b1f661eb76fc199b3fb7cb25de5f4)
++++ b/.idea/sonarlint/securityhotspotstore/index.pb	(date 1708014005641)
+@@ -1,23 +1,5 @@
+ 
+-7
+-pom.xml,4/4/442292b8a7efeabbe4cc176709b833b1792140ec
+-�
+-asrc/main/java/org/chainoptim/desktop/core/organization/repository/OrganizationRepositoryImpl.java,7/8/78f17b0a99cb882368d7fb2854dc5fefd75ad7d6
+-I
+-ChainOptim-DesktopApp.iml,4/4/443343194e9c2baca1ff65518793cd8444c6d20d
+-k
+-;src/main/java/org/chainoptim/desktop/core/SceneManager.java,0/1/0121eacd3a740a5bf75de1378ab254c9651f8090
+-i
+-9src/main/java/org/chainoptim/desktop/MainApplication.java,1/7/173e6fce74da48f7689218814446e2f056e7c9f2
+-~
+-Nsrc/main/java/org/chainoptim/desktop/core/organization/model/Organization.java,e/6/e602362b24c23d0d83ffcd08c15bdd3eb092a6ba
+-t
+-Dsrc/main/java/org/chainoptim/desktop/core/context/TenantContext.java,a/4/a4f368e08dc47615ce29c4c0aee656bb23f661d1
+-n
+->src/main/java/org/chainoptim/desktop/shared/util/JsonUtil.java,a/4/a4da3c9f17f6739c5cfa39f976f86fcda4ba6d14
+ }
+ Msrc/main/java/org/chainoptim/desktop/core/user/controller/AuthController.java,5/4/54aaf32950a49e60a323f73054bead6db29ebca9
+-n
+->src/main/java/org/chainoptim/desktop/core/user/model/User.java,3/a/3a9b0b7c9fc822c7a9ca870c7e307686e88317d5
+-|
+-Lsrc/main/java/org/chainoptim/desktop/core/user/controller/AppController.java,f/1/f19dab82f19553eb4d925c1da18fd72fc5c0aa31
+\ No newline at end of file
++k
++;src/main/java/org/chainoptim/desktop/core/SceneManager.java,0/1/0121eacd3a740a5bf75de1378ab254c9651f8090
+\ No newline at end of file
+Index: .idea/sonarlint/issuestore/index.pb
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\n7\n\u0007pom.xml\u0012,4/4/442292b8a7efeabbe4cc176709b833b1792140ec\n�\u0001\nasrc/main/java/org/chainoptim/desktop/core/organization/repository/OrganizationRepositoryImpl.java\u0012,7/8/78f17b0a99cb882368d7fb2854dc5fefd75ad7d6\nI\n\u0019ChainOptim-DesktopApp.iml\u0012,4/4/443343194e9c2baca1ff65518793cd8444c6d20d\nk\n;src/main/java/org/chainoptim/desktop/core/SceneManager.java\u0012,0/1/0121eacd3a740a5bf75de1378ab254c9651f8090\ni\n9src/main/java/org/chainoptim/desktop/MainApplication.java\u0012,1/7/173e6fce74da48f7689218814446e2f056e7c9f2\n~\nNsrc/main/java/org/chainoptim/desktop/core/organization/model/Organization.java\u0012,e/6/e602362b24c23d0d83ffcd08c15bdd3eb092a6ba\nt\nDsrc/main/java/org/chainoptim/desktop/core/context/TenantContext.java\u0012,a/4/a4f368e08dc47615ce29c4c0aee656bb23f661d1\nn\n>src/main/java/org/chainoptim/desktop/shared/util/JsonUtil.java\u0012,a/4/a4da3c9f17f6739c5cfa39f976f86fcda4ba6d14\n}\nMsrc/main/java/org/chainoptim/desktop/core/user/controller/AuthController.java\u0012,5/4/54aaf32950a49e60a323f73054bead6db29ebca9\nn\n>src/main/java/org/chainoptim/desktop/core/user/model/User.java\u0012,3/a/3a9b0b7c9fc822c7a9ca870c7e307686e88317d5\n|\nLsrc/main/java/org/chainoptim/desktop/core/user/controller/AppController.java\u0012,f/1/f19dab82f19553eb4d925c1da18fd72fc5c0aa31
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/sonarlint/issuestore/index.pb b/.idea/sonarlint/issuestore/index.pb
+--- a/.idea/sonarlint/issuestore/index.pb	(revision bc9bb3977e0b1f661eb76fc199b3fb7cb25de5f4)
++++ b/.idea/sonarlint/issuestore/index.pb	(date 1708014005640)
+@@ -1,23 +1,5 @@
+ 
+-7
+-pom.xml,4/4/442292b8a7efeabbe4cc176709b833b1792140ec
+-�
+-asrc/main/java/org/chainoptim/desktop/core/organization/repository/OrganizationRepositoryImpl.java,7/8/78f17b0a99cb882368d7fb2854dc5fefd75ad7d6
+-I
+-ChainOptim-DesktopApp.iml,4/4/443343194e9c2baca1ff65518793cd8444c6d20d
+-k
+-;src/main/java/org/chainoptim/desktop/core/SceneManager.java,0/1/0121eacd3a740a5bf75de1378ab254c9651f8090
+-i
+-9src/main/java/org/chainoptim/desktop/MainApplication.java,1/7/173e6fce74da48f7689218814446e2f056e7c9f2
+-~
+-Nsrc/main/java/org/chainoptim/desktop/core/organization/model/Organization.java,e/6/e602362b24c23d0d83ffcd08c15bdd3eb092a6ba
+-t
+-Dsrc/main/java/org/chainoptim/desktop/core/context/TenantContext.java,a/4/a4f368e08dc47615ce29c4c0aee656bb23f661d1
+-n
+->src/main/java/org/chainoptim/desktop/shared/util/JsonUtil.java,a/4/a4da3c9f17f6739c5cfa39f976f86fcda4ba6d14
+ }
+ Msrc/main/java/org/chainoptim/desktop/core/user/controller/AuthController.java,5/4/54aaf32950a49e60a323f73054bead6db29ebca9
+-n
+->src/main/java/org/chainoptim/desktop/core/user/model/User.java,3/a/3a9b0b7c9fc822c7a9ca870c7e307686e88317d5
+-|
+-Lsrc/main/java/org/chainoptim/desktop/core/user/controller/AppController.java,f/1/f19dab82f19553eb4d925c1da18fd72fc5c0aa31
+\ No newline at end of file
++k
++;src/main/java/org/chainoptim/desktop/core/SceneManager.java,0/1/0121eacd3a740a5bf75de1378ab254c9651f8090
+\ No newline at end of file
