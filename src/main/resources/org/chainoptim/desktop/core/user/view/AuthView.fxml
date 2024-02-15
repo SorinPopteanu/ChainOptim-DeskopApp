@@ -14,7 +14,7 @@
     <Text text="Welcome back" styleClass="login-title" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="1"/>
 
     <!-- Empty row to create space -->
-    <Region GridPane.columnIndex="0" GridPane.rowIndex="1" prefHeight="50"></Region>
+    <Region GridPane.columnIndex="0" GridPane.rowIndex="1" prefHeight="50"/>
 
     <!-- Username Label and TextField -->
     <Label text="Username:" styleClass="login-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>

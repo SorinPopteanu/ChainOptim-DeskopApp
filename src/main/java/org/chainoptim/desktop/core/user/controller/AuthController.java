@@ -64,16 +64,4 @@ public class AuthController {
         System.out.println("Navigate to Signup window");
     }
 
-    @FXML
-    private void handleLogout() {
-        AuthenticationService.logout(); // Clear JWT token from storage
-
-        // Switch back to login scene
-        try {
-            SceneManager.loadLoginScene();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
 }
