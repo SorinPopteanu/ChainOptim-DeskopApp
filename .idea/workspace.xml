@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5855e861-8b6a-4414-a57e-1c028ed1243d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/f/1/f19dab82f19553eb4d925c1da18fd72fc5c0aa31" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/f/1/f19dab82f19553eb4d925c1da18fd72fc5c0aa31" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/chainoptim/desktop/core/user/controller/AppController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chainoptim/desktop/core/user/controller/AppController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/chainoptim/desktop/core/user/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chainoptim/desktop/core/user/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/login.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/org/chainoptim/desktop/core/user/view/AuthView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/chainoptim/desktop/core/user/view/AuthView.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -118,7 +116,7 @@
       <workItem from="1707738195102" duration="8780000" />
       <workItem from="1707768313291" duration="165000" />
       <workItem from="1707768626985" duration="3933000" />
-      <workItem from="1707972650048" duration="4955000" />
+      <workItem from="1707972650048" duration="5407000" />
     </task>
     <servers />
   </component>

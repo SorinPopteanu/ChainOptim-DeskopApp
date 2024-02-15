@@ -1,19 +1,12 @@
-.login-title{
-    -fx-font-size: 40px;
-    -fx-font-family: Impact, fantasy;
-    -fx-font-weight: bold;
-    -fx-text-fill: #36454F;
-}
-
-.login-label{
+.form-label {
     -fx-font-size: 20px;
-    -fx-font-family: Copperplate, fantasy;
-    -fx-font-weight: bold;
-    -fx-text-fill: #36454F;
+    -fx-font-weight: 600;
 }
 
-.login-button-container{
-    -fx-pref-width: 100px;
-    -fx-pref-height: 100px;
+.form-title {
+    -fx-text-align: center;
+    -fx-font-size: 40px;
+    -fx-padding-top: 10px;
+    -fx-padding-bottom: 10px;
+    -fx-color: blue;
 }
-

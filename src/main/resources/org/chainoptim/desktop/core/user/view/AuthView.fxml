@@ -10,22 +10,18 @@
           alignment="center" hgap="10" vgap="10">
     <padding><Insets top="15" right="25" bottom="25" left="25"/></padding>
 
-    <!-- Title Text -->
-    <Text text="Welcome back" styleClass="login-title" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="1"/>
-
-    <!-- Empty row to create space -->
-    <Region GridPane.columnIndex="0" GridPane.rowIndex="1" prefHeight="50"/>
+    <Label fx:id="formTitle" text="Login" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
 
     <!-- Username Label and TextField -->
-    <Label text="Username:" styleClass="login-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <TextField fx:id="usernameField" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <Label fx:id="usernameLabel" text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <TextField fx:id="usernameField" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
     <!-- Password Label and PasswordField -->
-    <Label text="Password:" styleClass="login-label" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-    <PasswordField fx:id="passwordField" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+    <Label fx:id="passwordLabel" text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <PasswordField fx:id="passwordField" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
     <!-- Button and Hyperlink Container -->
-    <HBox styleClass="login-button-container" spacing="15" alignment="center" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2">
+    <HBox spacing="10" alignment="center" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
         <Button text="Login" onAction="#handleLogin" HBox.hgrow="ALWAYS" style="-fx-background-color: #7892B2; -fx-text-fill: white;"/>
         <Hyperlink text="Sign up" onAction="#handleShowSignUp"/>
     </HBox>
