@@ -1,7 +1,14 @@
 
 \
+<<<<<<< HEAD
 java:S1118":Add a private constructor to hide the implicit public one.(£ºïúÿÿÿÿ8¯Ò‰ìÚ1
 L	java:S106 "+Replace this use of System.out by a logger.(—”ÐÉüÿÿÿÿ8¹Ò‰ìÚ1
 L	java:S106&"+Replace this use of System.out by a logger.(•ÞÚžûÿÿÿÿ8ºÒ‰ìÚ1
 L
 java:S1128"/Remove this unused import 'javafx.scene.Group'.(Ÿ°ô–8»Ò‰ìÚ1
+=======
+java:S1118":Add a private constructor to hide the implicit public one.(£ºïúÿÿÿÿ8ñ‡”ÙÚ1
+L	java:S106"+Replace this use of System.out by a logger.(—”ÐÉüÿÿÿÿ8„ˆ”ÙÚ1
+L	java:S106%"+Replace this use of System.out by a logger.(•ÞÚžûÿÿÿÿ8…ˆ”ÙÚ1
+L	java:S1066"+Replace this use of System.out by a logger.(•ÞÚžûÿÿÿÿ8Ðé˜ÙÚ1
+>>>>>>> bc9bb3977e0b1f661eb76fc199b3fb7cb25de5f4

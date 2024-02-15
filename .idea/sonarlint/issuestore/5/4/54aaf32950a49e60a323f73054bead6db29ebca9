@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 X	java:S125"<This block of commented-out lines of code should be removed.(Ð¢¸Ó8‘Ò‰ìÚ1
 ]	java:S125+"<This block of commented-out lines of code should be removed.(±ÚÍûþÿÿÿÿ8“Ò‰ìÚ1
 X	java:S1258"<This block of commented-out lines of code should be removed.(Õßî®8”Ò‰ìÚ1
@@ -13,3 +14,19 @@ t
 java:S1128"WRemove this unused import 'org.chainoptim.desktop.core.user.repository.UserRepository'.(¼®ëÛ8–Ò‰ìÚ1
 Q
 java:S1128"/Remove this unused import 'java.util.Optional'.(¨˜ëÝüÿÿÿÿ8–Ò‰ìÚ1
+=======
+Q	java:S125"<This block of commented-out lines of code should be removed.(Ð¢¸Ó
+V	java:S125"<This block of commented-out lines of code should be removed.(±ÚÍûþÿÿÿÿ
+Q	java:S125+"<This block of commented-out lines of code should be removed.(Õßî®
+M
+java:S11354"2Complete the task associated to this TODO comment.(ÕâÌäýÿÿÿÿ
+E	java:S106@"+Replace this use of System.out by a logger.(Ò°­›ÿÿÿÿÿ
+i
+java:S1128"NRemove this unused import 'org.chainoptim.desktop.core.context.TenantContext'.(Á‡§Êÿÿÿÿÿ
+c
+java:S1128"HRemove this unused import 'org.chainoptim.desktop.core.user.model.User'.(é™ÜÌùÿÿÿÿ
+m
+java:S1128"WRemove this unused import 'org.chainoptim.desktop.core.user.repository.UserRepository'.(¼®ëÛ
+J
+java:S1128"/Remove this unused import 'java.util.Optional'.(¨˜ëÝüÿÿÿÿ
+>>>>>>> bc9bb3977e0b1f661eb76fc199b3fb7cb25de5f4
