@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 .login-title{
     -fx-font-size: 40px;
     -fx-font-family: Impact, fantasy;
@@ -18,9 +18,7 @@
     -fx-pref-height: 100px;
 }
 
-=======
 .form-label {
-<<<<<<< HEAD
   -fx-font-size: 20px;
   -fx-font-weight: 600;
 }
@@ -31,8 +29,6 @@
   -fx-padding-top: 10px;
   -fx-padding-bottom: 10px;
   -fx-color: blue;
-=======
-    -fx-font-size: 20px;
     -fx-font-weight: 600;
 }
 
@@ -42,6 +38,5 @@
     -fx-padding-top: 10px;
     -fx-padding-bottom: 10px;
     -fx-color: blue;
->>>>>>> bc9bb3977e0b1f661eb76fc199b3fb7cb25de5f4
 }
->>>>>>> main
+
