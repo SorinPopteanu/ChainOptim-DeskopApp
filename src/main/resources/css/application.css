@@ -1,0 +1,11 @@
+
+.left-panel {
+    -fx-background-color: #385e78;
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+}
+
+.right-panel {
+    -fx-background-color: #d5dfe5;
+    -fx-padding: 10px;
+}

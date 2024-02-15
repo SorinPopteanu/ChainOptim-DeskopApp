@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.core;
 
-import javafx.scene.Group;
 import org.chainoptim.desktop.MainApplication;
 
 import javafx.fxml.FXMLLoader;
@@ -44,8 +43,18 @@ public class SceneManager {
     }
 
     public static void loadMainScene() throws IOException {
-        Parent root = FXMLLoader.load(MainApplication.class.getResource("/org/chainoptim/desktop/core/MainApplication.fxml"));
-        primaryStage.setScene(new Scene(root));
+        Parent root = FXMLLoader.load(MainApplication.class.getResource("/org/chainoptim/desktop/core/AppView.fxml"));
+        Scene mainScene = new Scene(root, 800, 600);
+
+        URL cssURL = MainApplication.class.getResource("/css/application.css");
+        if (cssURL != null) {
+            String css = cssURL.toExternalForm();
+            mainScene.getStylesheets().add(css);
+        } else {
+            System.out.println("CSS file not found");
+        }
+
+        primaryStage.setScene(mainScene);
         primaryStage.setTitle("ChainOptim");
         primaryStage.show();
     }

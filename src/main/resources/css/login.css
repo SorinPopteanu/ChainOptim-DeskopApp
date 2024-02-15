@@ -1,3 +1,19 @@
-.grid-pane {
-  -fx-background-color: #F0F0F0;
+.login-title{
+    -fx-font-size: 40px;
+    -fx-font-family: Impact, fantasy;
+    -fx-font-weight: bold;
+    -fx-text-fill: #36454F;
 }
+
+.login-label{
+    -fx-font-size: 20px;
+    -fx-font-family: Copperplate, fantasy;
+    -fx-font-weight: bold;
+    -fx-text-fill: #36454F;
+}
+
+.login-button-container{
+    -fx-pref-width: 100px;
+    -fx-pref-height: 100px;
+}
+
