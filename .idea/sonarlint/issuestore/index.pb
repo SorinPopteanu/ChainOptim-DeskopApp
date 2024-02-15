@@ -21,3 +21,6 @@ n
 >src/main/java/org/chainoptim/desktop/core/user/model/User.java,3/a/3a9b0b7c9fc822c7a9ca870c7e307686e88317d5
 |
 Lsrc/main/java/org/chainoptim/desktop/core/user/controller/AppController.java,f/1/f19dab82f19553eb4d925c1da18fd72fc5c0aa31
+:
+
+.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
