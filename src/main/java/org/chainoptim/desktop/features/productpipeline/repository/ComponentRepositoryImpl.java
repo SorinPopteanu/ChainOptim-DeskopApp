@@ -1,6 +1,7 @@
-package org.chainoptim.desktop.core.organization.repository;
+package org.chainoptim.desktop.features.productpipeline.repository;
 
-import org.chainoptim.desktop.core.organization.model.Organization;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.chainoptim.desktop.features.productpipeline.model.Component;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -8,14 +9,15 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Optional;
 
-public class OrganizationRepositoryImpl implements OrganizationRepository {
+public class ComponentRepositoryImpl implements ComponentRepository {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
-    public Optional<Organization> getOrganizationById(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/organizations/" + organizationId.toString();
+    public Optional<List<Component>> getComponentsByOrganizationId(Integer organizationId) {
+        String routeAddress = "http://localhost:8080/api/components/organizations/" + organizationId.toString();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
@@ -27,8 +29,8 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
 
             if (response.statusCode() == HttpURLConnection.HTTP_OK) {
                 String responseBody = response.body();
-                Organization organization = JsonUtil.getObjectMapper().readValue(responseBody, Organization.class);
-                return Optional.of(organization);
+                List<Component> components = JsonUtil.getObjectMapper().readValue(responseBody, new TypeReference<List<Component>>() {});
+                return Optional.of(components);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
