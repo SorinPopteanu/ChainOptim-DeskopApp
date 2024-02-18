@@ -11,14 +11,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 /*
- * Manager of Authentication. Uses API endpoints to validate credentials on logic
+ * Manager of Authentication. Uses API endpoints to validate credentials on login
  * or validate JWT token on demand
  *
  */
 public class AuthenticationService {
 
+    private static final HttpClient client = HttpClient.newHttpClient();
+
     public static boolean login(String username, String password) {
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/api/login"))
                 .header("Content-Type", "application/json")
@@ -46,7 +47,6 @@ public class AuthenticationService {
 
     // Call API endpoint to validate JWT token
     public static boolean validateJWTToken(String jwtToken) {
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/api/validate-token"))
                 .POST(HttpRequest.BodyPublishers.ofString(jwtToken))

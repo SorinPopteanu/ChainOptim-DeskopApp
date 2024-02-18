@@ -12,12 +12,11 @@ import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
 
-    public UserRepositoryImpl() { }
+    private final HttpClient client = HttpClient.newHttpClient();
 
     public Optional<User> getUserByUsername(String username) {
         String routeAddress = "http://localhost:8080/api/users/username/" + username;
 
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
