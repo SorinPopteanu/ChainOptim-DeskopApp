@@ -7,25 +7,19 @@
 <?import javafx.scene.layout.*?>
 
 
-<HBox xmlns = "http://javafx.com/javafx"
+<BorderPane xmlns = "http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       prefHeight="500" prefWidth="600" fx:controller="org.chainoptim.desktop.core.user.controller.AppController">
 
-    <!-- Left panel -->
-    <VBox styleClass="left-panel" prefWidth="150" >
-            <Button text="Overview"/>
-            <Button text="Organization"/>
-            <Button text="Products"/>
-            <Button text="Orders"/>
-            <Button text="Factories"/>
-            <Button text="Warehouses"/>
-            <Button text="Supplier"/>
+    <!-- SideBar -->
+    <left>
+        <fx:include source="SidebarView.fxml"/>
+    </left>
 
-    </VBox>
+    <!-- MainView -->
+    <right>
+        <fx:include source="MainPanelView.fxml"/>
+    </right>
 
-    <!-- Right panel -->
-    <VBox styleClass="right-panel" HBox.hgrow="ALWAYS">
-        <Button text="Logout" onAction="#handleLogout"/>
-    </VBox>
 
-</HBox>
+</BorderPane>

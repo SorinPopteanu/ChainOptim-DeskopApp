@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.core.user.controller.SidebarController"
+            prefWidth="150.0"
+            styleClass="left-panel">
+
+    <VBox alignment="TOP_LEFT" fillWidth="false" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <Button fx:id="overviewButton" text="Overview" minWidth="150" minHeight="40" maxHeight="40"/>
+        <Button fx:id="organizationButton" text="Organization" minWidth="150" minHeight="40" maxHeight="40"/>
+        <Button fx:id="productsButton" text="Products" minWidth="150" minHeight="40" maxHeight="40"/>
+        <Button fx:id="ordersButton" text="Orders" minWidth="150" minHeight="40" maxHeight="40"/>
+        <Button fx:id="factoriesButton" text="Factories" minWidth="150" minHeight="40" maxHeight="40"/>
+        <Button fx:id="warehousesButton" text="Warehouses" minWidth="150" minHeight="40" maxHeight="40"/>
+        <Button fx:id="supplierButton" text="Suppliers" minWidth="150" minHeight="40" maxHeight="40"/>
+    </VBox>
+
+    <HBox AnchorPane.bottomAnchor="0.0">
+        <Button text="Logout" onAction="#handleLogout"/>
+    </HBox>
+
+</AnchorPane>

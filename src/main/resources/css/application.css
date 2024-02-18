@@ -9,3 +9,16 @@
     -fx-background-color: #d5dfe5;
     -fx-padding: 10px;
 }
+
+.button {
+    -fx-background-color: #385e78;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+}
+
+.button:hover {
+    -fx-background-color: #2e5169;
+}
