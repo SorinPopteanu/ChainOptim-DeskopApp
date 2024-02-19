@@ -8,24 +8,25 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<AnchorPane xmlns="http://javafx.com/javafx"
+<AnchorPane fx:id="sidebar" xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.core.user.controller.SidebarController"
-            prefWidth="150.0"
             styleClass="left-panel">
 
-    <VBox alignment="TOP_LEFT" fillWidth="false" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0">
-        <Button fx:id="overviewButton" text="Overview" minWidth="150" minHeight="40" maxHeight="40"/>
-        <Button fx:id="organizationButton" text="Organization" minWidth="150" minHeight="40" maxHeight="40"/>
-        <Button fx:id="productsButton" text="Products" minWidth="150" minHeight="40" maxHeight="40"/>
-        <Button fx:id="ordersButton" text="Orders" minWidth="150" minHeight="40" maxHeight="40"/>
-        <Button fx:id="factoriesButton" text="Factories" minWidth="150" minHeight="40" maxHeight="40"/>
-        <Button fx:id="warehousesButton" text="Warehouses" minWidth="150" minHeight="40" maxHeight="40"/>
-        <Button fx:id="supplierButton" text="Suppliers" minWidth="150" minHeight="40" maxHeight="40"/>
+    <VBox AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <Button fx:id="dashboardButton" text="Dashboard" styleClass="sidebar-button"/>
+        <Button fx:id="overviewButton" text="Overview" styleClass="sidebar-button"/>
+        <Button fx:id="organizationButton" text="Organization" styleClass="sidebar-button"/>
+        <Button fx:id="productsButton" text="Products" styleClass="sidebar-button"/>
+        <Button fx:id="ordersButton" text="Orders" styleClass="sidebar-button"/>
+        <Button fx:id="factoriesButton" text="Factories" styleClass="sidebar-button"/>
+        <Button fx:id="warehousesButton" text="Warehouses" styleClass="sidebar-button"/>
+        <Button fx:id="supplierButton" text="Suppliers" styleClass="sidebar-button"/>
     </VBox>
 
-    <HBox AnchorPane.bottomAnchor="0.0">
-        <Button text="Logout" onAction="#handleLogout"/>
-    </HBox>
+    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <Button fx:id="accountButton" text="Account" styleClass="sidebar-button"/>
+        <Button fx:id="logoutButton" text="Logout" styleClass="sidebar-button"/>
+    </VBox>
 
 </AnchorPane>
