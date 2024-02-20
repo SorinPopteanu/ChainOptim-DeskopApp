@@ -1,6 +1,6 @@
 
 .left-panel {
-    -fx-background-color: #385e78;
+    -fx-background-color: #000000;
     -fx-padding: 10px;
     -fx-spacing: 10px;
 }
@@ -8,4 +8,21 @@
 .right-panel {
     -fx-background-color: #d5dfe5;
     -fx-padding: 10px;
+}
+
+.sidebar-button {
+    -fx-background-color: #000000;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-min-height: 40;
+    -fx-max-height: 40;
+    -fx-alignment: baseline-left;
+
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #39393b;
 }

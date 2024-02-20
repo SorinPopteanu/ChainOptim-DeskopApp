@@ -17,16 +17,5 @@ import java.util.Optional;
 public class AppController {
     
 
-    @FXML
-    private void handleLogout() {
-        AuthenticationService.logout(); // Clear JWT token from storage
-
-        // Switch back to login scene
-        try {
-            SceneManager.loadLoginScene();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
 
 }
