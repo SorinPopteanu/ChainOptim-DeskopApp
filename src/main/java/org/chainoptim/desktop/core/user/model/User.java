@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.user.model;
 import lombok.*;
+import org.chainoptim.desktop.core.organization.model.Organization;
 
 @Data
 public class User {
@@ -10,7 +11,7 @@ public class User {
     private String email;
     private java.time.LocalDateTime createdAt;
     private java.time.LocalDateTime updatedAt;
-    private Integer organizationId;
+    private Organization organization;
     private Role role;
 
 

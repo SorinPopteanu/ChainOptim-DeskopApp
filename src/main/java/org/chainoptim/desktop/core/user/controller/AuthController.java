@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.user.controller;
 
+import com.google.inject.Inject;
 import javafx.scene.control.*;
 import org.chainoptim.desktop.core.SceneManager;
 import org.chainoptim.desktop.core.context.TenantContext;
@@ -13,7 +14,8 @@ import java.util.Optional;
 
 public class AuthController {
 
-//    private final UserRepository userRepository;
+    @Inject
+    private UserRepository userRepository;
 
     @FXML
     private TextField usernameField;
@@ -34,11 +36,12 @@ public class AuthController {
                 SceneManager.loadMainScene(); // Navigate to main app
 
                 // Load user and organization into TenantContext
-//                Optional<User> user = userRepository.getUserByUsername(usernameField.getText());
-//                user.ifPresent(validUser -> {
-//                    System.out.println("User email: " + validUser.getEmail());
-//                    TenantContext.setCurrentUser(validUser);
-//                });
+                Optional<User> user = userRepository.getUserByUsername(usernameField.getText());
+                user.ifPresent(validUser -> {
+                    System.out.println("User email: " + validUser.getEmail());
+                    // Update tenant context
+                    TenantContext.setCurrentUser(validUser);
+                });
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

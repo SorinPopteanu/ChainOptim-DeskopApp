@@ -1,26 +1,27 @@
 package org.chainoptim.desktop.core.context;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.user.model.User;
 
+/*
+ * Context for holding tenant's data across the app
+ *
+ */
 public class TenantContext {
 
-    private static User currentUser;
-    private static Organization currentOrganization;
+    private static final ObjectProperty<User> currentUser = new SimpleObjectProperty<>();
 
-    public static User getCurrentUser() {
+    public static ObjectProperty<User> currentUserProperty() {
         return currentUser;
     }
 
-    public static void setCurrentUser(User currentUser) {
-        TenantContext.currentUser = currentUser;
+    public static User getCurrentUser() {
+        return currentUser.get();
     }
 
-    public static Organization getCurrentOrganization() {
-        return currentOrganization;
-    }
-
-    public static void setCurrentOrganization(Organization currentOrganization) {
-        TenantContext.currentOrganization = currentOrganization;
+    public static void setCurrentUser(User user) {
+        currentUser.set(user);
     }
 }

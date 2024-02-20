@@ -10,4 +10,5 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.core.user.controller.MainPanelController">
 
+    <Label fx:id="usernameLabel"/>
 </AnchorPane>
