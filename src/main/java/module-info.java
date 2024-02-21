@@ -25,11 +25,41 @@ module org.chainoptim.desktop {
     requires com.google.guice;
 
     opens org.chainoptim.desktop to javafx.fxml;
+
+    // Core
+    // - User
     opens org.chainoptim.desktop.core.user.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.core.user.view to javafx.fxml;
     opens org.chainoptim.desktop.core.user.repository to com.google.guice;
     opens org.chainoptim.desktop.core.user.model to com.fasterxml.jackson.databind;
+
+    // - Organization
     opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind;
+
+    // Features
+    // - Product
+    opens org.chainoptim.desktop.features.product.controller to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.features.product.repository to com.google.guice;
+    opens org.chainoptim.desktop.features.product.model to com.fasterxml.jackson.databind;
+
+    // - Factory
+    opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.features.factory.repository to com.google.guice;
+    opens org.chainoptim.desktop.features.factory.model to com.fasterxml.jackson.databind;
+
+    // - Warehouse
+    opens org.chainoptim.desktop.features.warehouse.controller to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.features.warehouse.repository to com.google.guice;
+    opens org.chainoptim.desktop.features.warehouse.model to com.fasterxml.jackson.databind;
+
+    // - Supplier
+    opens org.chainoptim.desktop.features.supplier.controller to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.features.supplier.repository to com.google.guice;
+    opens org.chainoptim.desktop.features.supplier.model to com.fasterxml.jackson.databind;
+
+    // Shared
+    opens org.chainoptim.desktop.shared.features.location.model to com.fasterxml.jackson.databind;
+
     exports org.chainoptim.desktop;
 
 }
