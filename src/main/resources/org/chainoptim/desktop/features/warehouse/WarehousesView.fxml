@@ -8,7 +8,8 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.user.controller.MainPanelController">
+            fx:controller="org.chainoptim.desktop.features.warehouse.controller.WarehousesController"
+            prefHeight="400.0" prefWidth="600.0">
 
-    <Label fx:id="usernameLabel"/>
+    <TextField text="Warehouses"/>
 </AnchorPane>

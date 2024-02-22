@@ -1,6 +1,7 @@
 package org.chainoptim.desktop;
 
 import com.google.inject.AbstractModule;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.repository.UserRepositoryImpl;
 import org.chainoptim.desktop.features.factory.repository.FactoryRepository;
@@ -19,6 +20,8 @@ import org.chainoptim.desktop.features.warehouse.repository.WarehouseRepositoryI
 public class AppModule extends AbstractModule {
     @Override
     protected void configure() {
+        bind(NavigationService.class).asEagerSingleton();
+
         bind(UserRepository.class).to(UserRepositoryImpl.class);
         bind(ProductRepository.class).to(ProductRepositoryImpl.class);
         bind(FactoryRepository.class).to(FactoryRepositoryImpl.class);
