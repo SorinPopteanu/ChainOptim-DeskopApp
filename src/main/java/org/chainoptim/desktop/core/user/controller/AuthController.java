@@ -14,18 +14,11 @@ import java.util.Optional;
 
 public class AuthController {
 
-    @Inject
-    private UserRepository userRepository;
-
     @FXML
     private TextField usernameField;
 
     @FXML
     private PasswordField passwordField;
-
-//    public AuthController(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
 
     @FXML
     private void handleLogin() {
@@ -34,14 +27,6 @@ public class AuthController {
         if (isAuthenticated) {
             try {
                 SceneManager.loadMainScene(); // Navigate to main app
-
-                // Load user and organization into TenantContext
-                Optional<User> user = userRepository.getUserByUsername(usernameField.getText());
-                user.ifPresent(validUser -> {
-                    System.out.println("User email: " + validUser.getEmail());
-                    // Update tenant context
-                    TenantContext.setCurrentUser(validUser);
-                });
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

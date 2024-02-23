@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import lombok.Setter;
+import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.model.SidebarButton;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
@@ -51,8 +52,8 @@ public class SidebarController {
     public Button toggleButton;
 //    @FXML
 //    public Button accountButton;
-//    @FXML
-//    public Button logoutButton;
+    @FXML
+    public Button logoutButton;
 
     // Configuration
     private final List<String> orderedKeys = List.of("Overview", "Organization", "Products", "Factories", "Warehouses", "Suppliers");
@@ -75,6 +76,9 @@ public class SidebarController {
     public void initialize() {
         initializeNavigationButtons();
         createSidebarButtons();
+
+        // Navigate to Overview
+        navigationService.switchView("Overview");
 
         // Toggle button
         setButtonGraphic(toggleButton, "/img/" + buttonIconMap.get("Toggle"));
@@ -147,8 +151,10 @@ public class SidebarController {
     }
 
     // Handle logout
+    @FXML
     private void handleLogout() {
         AuthenticationService.logout(); // Clear JWT token from storage
+        TenantContext.setLoggedIn(false);
 
         // Switch back to login scene
         try {

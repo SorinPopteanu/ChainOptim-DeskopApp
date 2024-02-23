@@ -47,6 +47,9 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.product.repository to com.google.guice;
     opens org.chainoptim.desktop.features.product.model to com.fasterxml.jackson.databind;
 
+    // - Product pipeline
+    opens org.chainoptim.desktop.features.productpipeline.model to com.fasterxml.jackson.databind;
+
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.factory.repository to com.google.guice;
@@ -61,6 +64,10 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.supplier.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.supplier.repository to com.google.guice;
     opens org.chainoptim.desktop.features.supplier.model to com.fasterxml.jackson.databind;
+
+    // - Test
+    opens org.chainoptim.desktop.features.test.tudor to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.features.test.sorin to javafx.fxml, com.google.guice;
 
     // Shared
     opens org.chainoptim.desktop.shared.features.location.model to com.fasterxml.jackson.databind;

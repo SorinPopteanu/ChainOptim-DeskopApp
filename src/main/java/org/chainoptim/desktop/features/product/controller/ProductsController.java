@@ -22,7 +22,7 @@ public class ProductsController implements Initializable {
             if (newUser != null) {
                 Integer organizationId = newUser.getOrganization().getId();
                 Optional<List<Product>> products = productRepository.getProductsByOrganizationId(organizationId);
-
+                System.out.println(products);
             }
         });
 
