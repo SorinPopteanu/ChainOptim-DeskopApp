@@ -9,16 +9,16 @@
 
 <BorderPane xmlns = "http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      prefHeight="500" prefWidth="600" fx:controller="org.chainoptim.desktop.core.user.controller.AppController">
+      prefHeight="500" prefWidth="600" fx:controller="org.chainoptim.desktop.core.main.controller.AppController">
 
-    <!-- SideBar -->
+    <!-- Sidebar -->
     <left>
         <fx:include source="SidebarView.fxml"/>
     </left>
 
-    <!-- MainView -->
+    <!-- Main Content -->
     <right>
-        <fx:include source="MainPanelView.fxml"/>
+        <StackPane fx:id="contentArea"></StackPane>
     </right>
 
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.core.main.controller.SidebarController"
+            fx:id="sidebar"
+            styleClass="sidebar">
+
+    <VBox fx:id="buttonContainer" styleClass="sidebar-inner-container" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" spacing="8">
+        <HBox fx:id="dashboardHBox" alignment="CENTER_LEFT" spacing="10">
+            <Pane HBox.hgrow="ALWAYS" minWidth="52"/>
+            <Label text="Dashboard" styleClass="sidebar-title" HBox.hgrow="ALWAYS"/>
+            <Pane HBox.hgrow="ALWAYS" minWidth="20"/>
+            <Button fx:id="toggleButton" styleClass="sidebar-button" />
+        </HBox>
+        <!-- Navigation buttons -->
+    </VBox>
+
+
+<!--    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">-->
+<!--        <Button fx:id="accountButton" text="Account" styleClass="sidebar-button"/>-->
+<!--        <Button fx:id="logoutButton" text="Logout" styleClass="sidebar-button"/>-->
+<!--    </VBox>-->
+
+</AnchorPane>

@@ -1,4 +1,4 @@
 package org.chainoptim.desktop.features.supplier.controller;
 
-public class SupplierController {
+public class SuppliersController {
 }

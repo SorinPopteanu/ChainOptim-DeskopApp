@@ -2,7 +2,7 @@ package org.chainoptim.desktop.core.user.controller;
 
 import com.google.inject.Inject;
 import javafx.scene.control.*;
-import org.chainoptim.desktop.core.SceneManager;
+import org.chainoptim.desktop.core.main.service.SceneManager;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.repository.UserRepository;

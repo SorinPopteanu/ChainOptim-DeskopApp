@@ -1,6 +1,7 @@
-package org.chainoptim.desktop.core;
+package org.chainoptim.desktop.core.main.service;
 
 import com.google.inject.Injector;
+import lombok.Setter;
 import org.chainoptim.desktop.MainApplication;
 
 import javafx.fxml.FXMLLoader;
@@ -16,20 +17,17 @@ import java.net.URL;
  * Currently switches between MainApplicationScene and LoginScene
  */
 public class SceneManager {
+    @Setter
     private static Stage primaryStage;
 
     private static Injector injector;
-
-    public static void setPrimaryStage(Stage stage) {
-        primaryStage = stage;
-    }
 
     public static void setInjector(Injector injector) {
         SceneManager.injector = injector;
     }
 
     public static void loadLoginScene() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/org/chainoptim/desktop/core/user/view/AuthView.fxml"));
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/org/chainoptim/desktop/core/user/AuthView.fxml"));
         // Set the controller factory to use Guice for DI
         loader.setControllerFactory(injector::getInstance);
         Parent root = loader.load();
@@ -41,12 +39,12 @@ public class SceneManager {
     }
 
     public static void loadMainScene() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/org/chainoptim/desktop/core/AppView.fxml"));
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/org/chainoptim/desktop/core/main/AppView.fxml"));
         // Set the controller factory to use Guice for DI
         loader.setControllerFactory(injector::getInstance);
         Parent root = loader.load();
         Scene mainScene = new Scene(root, 800, 600);
-        applyCss(mainScene, "/css/application.css");
+        applyCss(mainScene, "/css/sidebar.css");
         primaryStage.setScene(mainScene);
         primaryStage.setTitle("ChainOptim");
         primaryStage.show();
