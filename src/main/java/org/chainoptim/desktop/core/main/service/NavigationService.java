@@ -1,29 +1,31 @@
 package org.chainoptim.desktop.core.main.service;
 
-import com.google.inject.Injector;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
+import org.chainoptim.desktop.MainApplication;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /*
  * Service responsible for handling app navigation in SidebarController
+ * Loads views on demand and caches them
+ *
  */
 public class NavigationService {
-
-    private static Injector injector;
 
     @Setter
     private StackPane mainContentArea;
 
-    public static void setInjector(Injector injector) {
-        NavigationService.injector = injector;
-    }
+    private String currentViewKey;
+
+    private final Map<String, Node> viewCache = new HashMap<>();
 
     @Getter
     private final Map<String, String> viewMap = Map.of(
@@ -36,22 +38,48 @@ public class NavigationService {
     );
 
     public void switchView(String viewKey) {
-        String viewPath = viewMap.get(viewKey);
-        if (viewPath != null) {
-            try {
-                System.out.println(viewPath);
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
-                loader.setControllerFactory(injector::getInstance);
-                Node view = loader.load();
-
-                Platform.runLater(() -> {
-                    mainContentArea.getChildren().setAll(view);
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("View path for " + viewKey + " not found.");
+        // Skip if already there
+        if (viewAlreadyDisplayed(viewKey)) {
+            return;
         }
+
+        // Get view from cache or load it
+        Node view = viewCache.computeIfAbsent(viewKey, this::loadView);
+
+        // Display view
+        if (view != null) {
+            displayView(view);
+            currentViewKey = viewKey;
+        }
+    }
+
+    private boolean viewAlreadyDisplayed(String viewKey) {
+        if (Objects.equals(currentViewKey, viewKey)) {
+            System.out.println("Alreaady on " + viewKey);
+            return true;
+        }
+        return false;
+    }
+
+    private Node loadView(String viewKey) {
+        String viewPath = viewMap.get(viewKey);
+        if (viewPath == null) {
+            System.out.println("View path for " + viewKey + " not found.");
+            return null;
+        }
+
+        try {
+            System.out.println("Loading view: " + viewPath);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
+            loader.setControllerFactory(MainApplication.injector::getInstance);
+            return loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void displayView(Node view) {
+        Platform.runLater(() -> mainContentArea.getChildren().setAll(view));
     }
 }

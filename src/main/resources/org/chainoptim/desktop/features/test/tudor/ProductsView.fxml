@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -10,5 +6,6 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.test.tudor.ProductsTestController"
             prefHeight="400.0" prefWidth="600.0">
-<TextField text="TestProducts"/>
+    <StackPane fx:id="fallbackContainer"/>
+    <TextField text="TestProducts" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"/>
 </AnchorPane>

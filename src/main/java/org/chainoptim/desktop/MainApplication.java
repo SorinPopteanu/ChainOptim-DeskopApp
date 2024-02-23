@@ -27,7 +27,6 @@ public class MainApplication extends Application {
 
         // Statically set injector to needed services
         SceneManager.setInjector(injector);
-        NavigationService.setInjector(injector);
 
         // Show Login Scene or Main Scene depending on whether a valid JWT token exists
         String jwtToken = TokenManager.getToken();

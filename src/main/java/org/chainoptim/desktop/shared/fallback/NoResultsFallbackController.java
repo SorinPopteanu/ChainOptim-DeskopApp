@@ -1,4 +1,4 @@
 package org.chainoptim.desktop.shared.fallback;
 
-public class LoadingFallback {
+public class NoResultsFallbackController {
 }
