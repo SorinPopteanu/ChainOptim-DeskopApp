@@ -28,19 +28,18 @@ public class ProductRepositoryTestImpl implements ProductRepositoryTest {
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-                        try {
-                            List<Product> products = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Product>>() {});
-                            return Optional.of(products);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Product>>empty();
+                    try {
+                        List<Product> products = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Product>>() {});
+                        return Optional.of(products);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<List<Product>>empty();
                     }
-                    return Optional.<List<Product>>empty();
                 });
     }
 
-    public Optional<Product> getProductWithStages(Integer productId) {
+    public CompletableFuture<Optional<Product>> getProductWithStages(Integer productId) {
         String routeAddress = "http://localhost:8080/api/products/" + productId.toString();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -48,17 +47,16 @@ public class ProductRepositoryTestImpl implements ProductRepositoryTest {
                 .GET()
                 .build();
 
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-                String responseBody = response.body();
-                Product product = JsonUtil.getObjectMapper().readValue(responseBody, Product.class);
-                return Optional.of(product);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return Optional.empty();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
+                    try {
+                        Product product = JsonUtil.getObjectMapper().readValue(response.body(), Product.class);
+                        return Optional.of(product);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return Optional.empty();
+                    }
+                });
     }
 }

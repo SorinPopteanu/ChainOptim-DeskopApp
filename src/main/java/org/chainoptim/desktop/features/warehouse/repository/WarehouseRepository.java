@@ -4,9 +4,10 @@ import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface WarehouseRepository {
 
-    public Optional<List<Warehouse>> getWarehousesByOrganizationId(Integer organizationId);
-    public Optional<Warehouse> getWarehouseById(Integer warehouseId);
+    public CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationId(Integer organizationId);
+    public CompletableFuture<Optional<Warehouse>> getWarehouseById(Integer warehouseId);
 }

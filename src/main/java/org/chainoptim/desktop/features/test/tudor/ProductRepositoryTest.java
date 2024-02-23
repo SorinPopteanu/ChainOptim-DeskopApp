@@ -9,5 +9,5 @@ import java.util.concurrent.CompletableFuture;
 public interface ProductRepositoryTest {
 
     public CompletableFuture<Optional<List<Product>>> getProductsByOrganizationId(Integer organizationId);
-    public Optional<Product> getProductWithStages(Integer productId);
+    public CompletableFuture<Optional<Product>> getProductWithStages(Integer productId);
 }
