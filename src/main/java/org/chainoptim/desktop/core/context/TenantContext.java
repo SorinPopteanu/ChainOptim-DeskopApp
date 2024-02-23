@@ -13,9 +13,6 @@ import org.chainoptim.desktop.core.user.model.User;
  */
 public class TenantContext {
 
-    @Getter @Setter
-    private static boolean isLoggedIn = false;
-
     private static final ObjectProperty<User> currentUser = new SimpleObjectProperty<>();
     public static ObjectProperty<User> currentUserProperty() {
         return currentUser;

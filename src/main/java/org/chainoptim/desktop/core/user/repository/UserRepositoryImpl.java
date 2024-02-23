@@ -13,12 +13,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class UserRepositoryImpl implements UserRepository {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
-    public Optional<User> getUserByUsername(String username) throws UnsupportedEncodingException {
+    public CompletableFuture<Optional<User>> getUserByUsername(String username) throws UnsupportedEncodingException {
         String encodedUsername = URLEncoder.encode(username, StandardCharsets.UTF_8);
         String routeAddress = "http://localhost:8080/api/users/username/" + encodedUsername;
 
@@ -32,17 +33,18 @@ public class UserRepositoryImpl implements UserRepository {
                 .GET()
                 .build();
 
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-                String responseBody = response.body();
-                System.out.println(responseBody);
-                User user = JsonUtil.getObjectMapper().readValue(responseBody, User.class);
-                return Optional.of(user);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return Optional.empty();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+                        try {
+                            User user = JsonUtil.getObjectMapper().readValue(response.body(), User.class);
+                            return Optional.of(user);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return Optional.empty();
+                });
     }
 }
+

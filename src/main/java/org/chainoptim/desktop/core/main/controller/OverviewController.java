@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.core.main.controller;
 
 import com.google.inject.Inject;
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
@@ -25,30 +26,32 @@ public class OverviewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         User currentUser = TenantContext.getCurrentUser();
-        if (currentUser == null) {
-            String jwtToken = TokenManager.getToken();
-            if (jwtToken != null) {
-                Optional<String> username = AuthenticationService.getUsernameFromJWTToken(jwtToken);
-                username.ifPresent(validUsername -> {
-                    System.out.println("Username: " + validUsername);
-                    try {
-                        Optional<User> newCurrentUser = userRepository.getUserByUsername(validUsername);
-                        System.out.println("Current user: " + newCurrentUser);
-                        newCurrentUser.ifPresent(validUser -> {
-                            System.out.println("Valid user: " + validUser.getEmail());
-                            TenantContext.setCurrentUser(validUser);
-                        });
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+        if (currentUser != null) return;
 
-            }
-        } else {
-            System.out.println("New user exists: " + currentUser);
-            Integer organizationId = currentUser.getOrganization().getId();
-            System.out.println(organizationId);
-                // ...
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return; // Future: Switch to Login Scene
+
+        AuthenticationService.getUsernameFromJWTToken(jwtToken).ifPresent(this::fetchAndSetUser);
+    }
+
+    private void fetchAndSetUser(String username) {
+        try {
+            userRepository.getUserByUsername(username)
+                    .thenAcceptAsync(userOptional -> userOptional.ifPresentOrElse(this::updateCurrentUser,
+                            () -> Platform.runLater(() -> System.err.println("User not found."))))
+                    .exceptionally(ex -> {
+                        Platform.runLater(() -> System.err.println("Failed to load user: " + ex.getMessage()));
+                        return null;
+                    });
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Error encoding username: " + e.getMessage());
         }
+    }
+
+    private void updateCurrentUser(User user) {
+        Platform.runLater(() -> {
+            System.out.println("User found: " + user.getEmail());
+            TenantContext.setCurrentUser(user);
+        });
     }
 }

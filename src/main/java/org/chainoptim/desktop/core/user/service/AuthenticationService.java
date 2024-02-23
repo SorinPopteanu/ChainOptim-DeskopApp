@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.core.user.service;
 
 import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 
 import org.json.JSONObject;
@@ -85,8 +86,9 @@ public class AuthenticationService {
     }
 
     public static void logout() {
-        // Clear JWT Token from storage and TenantContext from memory
+        // Clear JWT Token from storage, TenantContext and ViewCache from memory
         TokenManager.removeToken();
         TenantContext.setCurrentUser(null);
+        NavigationService.invalidateViewCache();
     }
 }

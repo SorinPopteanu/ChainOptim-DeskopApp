@@ -25,7 +25,7 @@ public class NavigationService {
 
     private String currentViewKey;
 
-    private final Map<String, Node> viewCache = new HashMap<>();
+    private static final Map<String, Node> viewCache = new HashMap<>();
 
     @Getter
     private final Map<String, String> viewMap = Map.of(
@@ -39,7 +39,7 @@ public class NavigationService {
 
     public void switchView(String viewKey) {
         // Skip if already there
-        if (viewAlreadyDisplayed(viewKey)) {
+        if (Objects.equals(currentViewKey, viewKey)) {
             return;
         }
 
@@ -48,17 +48,9 @@ public class NavigationService {
 
         // Display view
         if (view != null) {
-            displayView(view);
+            Platform.runLater(() -> mainContentArea.getChildren().setAll(view));
             currentViewKey = viewKey;
         }
-    }
-
-    private boolean viewAlreadyDisplayed(String viewKey) {
-        if (Objects.equals(currentViewKey, viewKey)) {
-            System.out.println("Alreaady on " + viewKey);
-            return true;
-        }
-        return false;
     }
 
     private Node loadView(String viewKey) {
@@ -79,7 +71,7 @@ public class NavigationService {
         }
     }
 
-    private void displayView(Node view) {
-        Platform.runLater(() -> mainContentArea.getChildren().setAll(view));
+    public static void invalidateViewCache() {
+        viewCache.clear();
     }
 }
