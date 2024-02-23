@@ -29,7 +29,7 @@ public class NavigationService {
     private final Map<String, String> viewMap = Map.of(
             "Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml",
             "Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml",
-            "Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml",
+            "Products", "/org/chainoptim/desktop/features/test/tudor/ProductsView.fxml",
             "Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml",
             "Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml",
             "Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"
