@@ -3,12 +3,14 @@ package org.chainoptim.desktop.core.main.service;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 import org.chainoptim.desktop.MainApplication;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -31,10 +33,19 @@ public class NavigationService {
     private final Map<String, String> viewMap = Map.of(
             "Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml",
             "Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml",
-            "Products", "/org/chainoptim/desktop/features/test/tudor/ProductsView.fxml",
+            "Products", "/org/chainoptim/desktop/features/test/sorin/ProductsView.fxml",
             "Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml",
             "Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml",
             "Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"
+    );
+
+    private final Map<String, String> cssMap = Map.of(
+            "Overview", "/css/overview.css",
+            "Organization", "/css/organization.css",
+            "Products", "/css/products.css",
+            "Factories", "/css/factories.css",
+            "Warehouses", "/css/warehouses.css",
+            "Suppliers", "/css/suppliers.css"
     );
 
     public void switchView(String viewKey) {
@@ -45,6 +56,25 @@ public class NavigationService {
 
         // Get view from cache or load it
         Node view = viewCache.computeIfAbsent(viewKey, this::loadView);
+
+        //Apply CSS
+        String cssPath = cssMap.get(viewKey);
+        if (cssPath != null) {
+            URL cssURL = getClass().getResource(cssPath);
+            if (cssURL != null) {
+                String css = cssURL.toExternalForm();
+                if (view instanceof Parent) {
+                    ((Parent) view).getStylesheets().add(css);
+                } else if (view.getScene() != null) {
+                    view.getScene().getStylesheets().add(css);
+                } else {
+                    System.out.println("Cannot add stylesheet to the node");
+                }
+            } else {
+                System.out.println("CSS file not found");
+            }
+        }
+
 
         // Display view
         if (view != null) {

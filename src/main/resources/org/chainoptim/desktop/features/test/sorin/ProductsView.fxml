@@ -8,7 +8,8 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.test.tudor.ProductsTestController"
+            fx:controller="org.chainoptim.desktop.features.test.sorin.ProductsTestController2"
+            styleClass="main-container"
             prefHeight="400.0" prefWidth="600.0">
-<TextField text="TestProducts"/>
+<TextField styleClass="text" text="TestProducts"/>
 </AnchorPane>

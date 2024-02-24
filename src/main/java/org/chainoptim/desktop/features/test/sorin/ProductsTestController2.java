@@ -1,7 +1,9 @@
 package org.chainoptim.desktop.features.test.sorin;
 
 import com.google.inject.Inject;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.AnchorPane;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.repository.ProductRepository;
