@@ -154,7 +154,6 @@ public class SidebarController {
     @FXML
     private void handleLogout() {
         AuthenticationService.logout(); // Clear JWT token from storage
-        TenantContext.setLoggedIn(false);
 
         // Switch back to login scene
         try {

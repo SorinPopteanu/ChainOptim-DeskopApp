@@ -2,7 +2,7 @@ package org.chainoptim.desktop.features.factory.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.product.model.Product;
+import org.chainoptim.desktop.features.factory.repository.FactoryRepository;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -12,12 +12,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class FactoryRepositoryImpl implements FactoryRepository {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
-    public Optional<List<Factory>> getFactoriesByOrganizationId(Integer organizationId) {
+    public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/factories/organizations/" + organizationId.toString();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -25,21 +26,20 @@ public class FactoryRepositoryImpl implements FactoryRepository {
                 .GET()
                 .build();
 
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-                String responseBody = response.body();
-                List<Factory> factories = JsonUtil.getObjectMapper().readValue(responseBody, new TypeReference<List<Factory>>() {});
-                return Optional.of(factories);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return Optional.empty();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Factory>>empty();
+                    try {
+                        List<Factory> factories = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Factory>>() {});
+                        return Optional.of(factories);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<List<Factory>>empty();
+                    }
+                });
     }
 
-    public Optional<Factory> getFactoryById(Integer factoryId) {
+    public CompletableFuture<Optional<Factory>> getFactoryById(Integer factoryId) {
         String routeAddress = "http://localhost:8080/api/factories/" + factoryId.toString();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -47,17 +47,16 @@ public class FactoryRepositoryImpl implements FactoryRepository {
                 .GET()
                 .build();
 
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-                String responseBody = response.body();
-                Factory factory = JsonUtil.getObjectMapper().readValue(responseBody, Factory.class);
-                return Optional.of(factory);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return Optional.empty();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
+                    try {
+                        Factory factory = JsonUtil.getObjectMapper().readValue(response.body(), Factory.class);
+                        return Optional.of(factory);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return Optional.empty();
+                    }
+                });
     }
 }

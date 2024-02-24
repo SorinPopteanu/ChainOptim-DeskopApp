@@ -70,8 +70,11 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.test.sorin to javafx.fxml, com.google.guice;
 
     // Shared
+    // - Location
     opens org.chainoptim.desktop.shared.features.location.model to com.fasterxml.jackson.databind;
 
+    // -  Fallback Manager
+    opens org.chainoptim.desktop.shared.fallback to javafx.fxml, com.google.guice;
 
     exports org.chainoptim.desktop;
 }

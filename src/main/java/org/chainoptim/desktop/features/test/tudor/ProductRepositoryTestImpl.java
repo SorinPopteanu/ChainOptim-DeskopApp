@@ -1,7 +1,7 @@
-package org.chainoptim.desktop.features.supplier.repository;
+package org.chainoptim.desktop.features.test.tudor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -12,13 +12,14 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
-public class SupplierRepositoryImpl implements SupplierRepository {
+public class ProductRepositoryTestImpl implements ProductRepositoryTest {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
-    public CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/suppliers/organizations/" + organizationId.toString();
+    public CompletableFuture<Optional<List<Product>>> getProductsByOrganizationId(Integer organizationId) {
+        String routeAddress = "http://localhost:8080/api/products/organizations/" + organizationId;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
@@ -27,19 +28,19 @@ public class SupplierRepositoryImpl implements SupplierRepository {
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Supplier>>empty();
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Product>>empty();
                     try {
-                        List<Supplier> suppliers = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Supplier>>() {});
-                        return Optional.of(suppliers);
+                        List<Product> products = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Product>>() {});
+                        return Optional.of(products);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<List<Supplier>>empty();
+                        return Optional.<List<Product>>empty();
                     }
                 });
     }
 
-    public CompletableFuture<Optional<Supplier>> getSupplierById(Integer supplierId) {
-        String routeAddress = "http://localhost:8080/api/suppliers/" + supplierId.toString();
+    public CompletableFuture<Optional<Product>> getProductWithStages(Integer productId) {
+        String routeAddress = "http://localhost:8080/api/products/" + productId.toString();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
@@ -50,8 +51,8 @@ public class SupplierRepositoryImpl implements SupplierRepository {
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
-                        Supplier supplier = JsonUtil.getObjectMapper().readValue(response.body(), Supplier.class);
-                        return Optional.of(supplier);
+                        Product product = JsonUtil.getObjectMapper().readValue(response.body(), Product.class);
+                        return Optional.of(product);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         return Optional.empty();

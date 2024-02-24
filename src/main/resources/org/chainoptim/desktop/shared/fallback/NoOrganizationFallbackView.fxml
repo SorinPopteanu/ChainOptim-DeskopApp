@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.shared.fallback.NoOrganizationFallbackController"
+            prefHeight="400.0" prefWidth="600.0">
+    <StackPane style="-fx-background-color: yellow;" minWidth="200" maxWidth="200" minHeight="200" maxHeight="200">
+        <Text text="No Organization"/>
+    </StackPane>
+</AnchorPane>
