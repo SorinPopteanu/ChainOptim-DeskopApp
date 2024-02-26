@@ -1,11 +1,15 @@
 package org.chainoptim.desktop.features.test.sorin;
 
 import com.google.inject.Inject;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
@@ -28,7 +32,13 @@ public class ProductsTestController2 implements Initializable {
     }
 
     @FXML
-    private TilePane productsTilePane;
+    private VBox productsVBox;
+
+    @FXML
+    private Label productsLabel;
+
+    @FXML
+    private ScrollPane productsScrollPane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -36,6 +46,10 @@ public class ProductsTestController2 implements Initializable {
 
             Integer organizationId = TenantContext.getCurrentUser().getOrganization().getId();
             Optional<List<Product>> products = productRepository.getProductsByOrganizationId(organizationId);
+
+//            Image image = new Image("@/img/box-solid.png");
+//            ImageView imageView = new ImageView(image);
+//            productsLabel.setGraphic(imageView);
 
             if (products.isPresent()) {
                 for (Product product : products.get()) {
@@ -45,12 +59,17 @@ public class ProductsTestController2 implements Initializable {
                     productDescription.getStyleClass().add("description-label");
                     VBox productBox = new VBox(productName, productDescription);
                     Button productButton = new Button();
+                    productButton.getStyleClass().add("product-button");
                     productButton.setGraphic(productBox);
+                    productButton.setMaxWidth(Double.MAX_VALUE);
+                    productButton.prefWidthProperty().bind(productsVBox.widthProperty());
 
-                    productsTilePane.getChildren().add(productButton);
+                    productsScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+                    productsVBox.getChildren().add(productButton);
                 }
             }
         }
+
 
     }
 
