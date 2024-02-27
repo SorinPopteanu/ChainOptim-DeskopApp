@@ -6,9 +6,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<?import javafx.scene.control.skin.TitledPaneSkin.TitleRegion?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.test.tudor.ProductsTestController"
-            prefHeight="400.0" prefWidth="600.0">
-<TextField text="TestProducts"/>
-</AnchorPane>
+            prefHeight="500.0" prefWidth="555.0">
+
+
+    <Label fx:id="productsLabel" text="Products" styleClass="title"/>
+
+    <ScrollPane fx:id="productsScrollPane" styleClass="scroll-pane" fitToWidth="true">
+        <VBox fx:id="productsVBox" styleClass="products-list"/>
+    </ScrollPane>
+
+</VBox>
