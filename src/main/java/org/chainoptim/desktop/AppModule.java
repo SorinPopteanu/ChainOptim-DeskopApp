@@ -12,8 +12,6 @@ import org.chainoptim.desktop.features.product.repository.ProductRepository;
 import org.chainoptim.desktop.features.product.repository.ProductRepositoryImpl;
 import org.chainoptim.desktop.features.supplier.repository.SupplierRepository;
 import org.chainoptim.desktop.features.supplier.repository.SupplierRepositoryImpl;
-import org.chainoptim.desktop.features.test.tudor.ProductRepositoryTest;
-import org.chainoptim.desktop.features.test.tudor.ProductRepositoryTestImpl;
 import org.chainoptim.desktop.features.warehouse.repository.WarehouseRepository;
 import org.chainoptim.desktop.features.warehouse.repository.WarehouseRepositoryImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -37,8 +35,5 @@ public class AppModule extends AbstractModule {
         bind(FactoryRepository.class).to(FactoryRepositoryImpl.class);
         bind(WarehouseRepository.class).to(WarehouseRepositoryImpl.class);
         bind(SupplierRepository.class).to(SupplierRepositoryImpl.class);
-
-        // Test
-        bind(ProductRepositoryTest.class).to(ProductRepositoryTestImpl.class);
     }
 }

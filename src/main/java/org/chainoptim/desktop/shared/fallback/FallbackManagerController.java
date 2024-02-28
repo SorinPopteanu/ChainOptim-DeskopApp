@@ -59,6 +59,7 @@ public class FallbackManagerController {
         } else {
             // No fallback
             fallbackContentHolder.getChildren().clear();
+            fallbackContentHolder.setPrefSize(0, 0);
             System.out.println("Clearing fallback view");
         }
     }

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.product.controller.ProductsController"
             prefHeight="400.0" prefWidth="600.0">
-<TextField text="Products"/>
-</AnchorPane>
+
+    <Label fx:id="productsTitle" text="Products" styleClass="title"/>
+
+    <ScrollPane fx:id="productsScrollPane" styleClass="scroll-pane" fitToWidth="true">
+        <VBox fx:id="productsVBox" styleClass="products-list"/>
+    </ScrollPane>
+    <StackPane fx:id="fallbackContainer"/>
+
+</VBox>

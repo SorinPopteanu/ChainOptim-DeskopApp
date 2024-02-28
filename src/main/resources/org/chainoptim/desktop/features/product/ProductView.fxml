@@ -3,7 +3,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.test.tudor.ProductTestController"
+            fx:controller="org.chainoptim.desktop.features.product.controller.ProductController"
             prefHeight="400.0" prefWidth="600.0">
 
     <StackPane fx:id="fallbackContainer"/>

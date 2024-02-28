@@ -65,10 +65,6 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.supplier.repository to com.google.guice;
     opens org.chainoptim.desktop.features.supplier.model to com.fasterxml.jackson.databind;
 
-    // - Test
-    opens org.chainoptim.desktop.features.test.tudor to javafx.fxml, com.google.guice;
-    opens org.chainoptim.desktop.features.test.sorin to javafx.fxml, com.google.guice;
-
     // Shared
     // - Location
     opens org.chainoptim.desktop.shared.features.location.model to com.fasterxml.jackson.databind;

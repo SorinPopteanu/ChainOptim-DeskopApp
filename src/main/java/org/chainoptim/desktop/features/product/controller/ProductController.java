@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.test.tudor;
+package org.chainoptim.desktop.features.product.controller;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -9,15 +9,16 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.model.Product;
+import org.chainoptim.desktop.features.product.repository.ProductRepository;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class ProductTestController implements Initializable {
+public class ProductController implements Initializable {
 
-    private final ProductRepositoryTest productRepository;
+    private final ProductRepository productRepository;
     private final CurrentSelectionService currentSelectionService;
     private final FallbackManager fallbackManager;
 
@@ -27,9 +28,9 @@ public class ProductTestController implements Initializable {
     private StackPane fallbackContainer;
 
     @Inject
-    public ProductTestController(ProductRepositoryTest productRepository,
-                                 FallbackManager fallbackManager,
-                                 CurrentSelectionService currentSelectionService) {
+    public ProductController(ProductRepository productRepository,
+                             FallbackManager fallbackManager,
+                             CurrentSelectionService currentSelectionService) {
         this.productRepository = productRepository;
         this.fallbackManager = fallbackManager;
         this.currentSelectionService = currentSelectionService;
