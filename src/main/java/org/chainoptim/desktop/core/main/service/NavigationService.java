@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.main.service;
 
+import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -14,10 +15,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * Service responsible for handling app navigation in SidebarController
- * Loads views on demand and caches them
+ * Loads views on demand and caches them, including dynamic routes
  *
  */
 public class NavigationService {
@@ -53,31 +56,13 @@ public class NavigationService {
 
     public void switchView(String viewKey) {
         // Skip if already there
+        // viewKey = Product?id=1
         if (Objects.equals(currentViewKey, viewKey)) {
             return;
         }
 
         // Get view from cache or load it
         Node view = viewCache.computeIfAbsent(viewKey, this::loadView);
-
-        //Apply CSS
-        String cssPath = cssMap.get(viewKey);
-        if (cssPath != null) {
-            URL cssURL = getClass().getResource(cssPath);
-            if (cssURL != null) {
-                String css = cssURL.toExternalForm();
-                if (view instanceof Parent) {
-                    ((Parent) view).getStylesheets().add(css);
-                } else if (view.getScene() != null) {
-                    view.getScene().getStylesheets().add(css);
-                } else {
-                    System.out.println("Cannot add stylesheet to the node");
-                }
-            } else {
-                System.out.println("CSS file not found");
-            }
-        }
-
 
         // Display view
         if (view != null) {
@@ -87,9 +72,13 @@ public class NavigationService {
     }
 
     private Node loadView(String viewKey) {
-        String viewPath = viewMap.get(viewKey);
+        // viewKey = Product
+        // Extract key without dynamic parameter
+        String baseViewKey = findBaseKey(viewKey);
+
+        String viewPath = viewMap.get(baseViewKey);
         if (viewPath == null) {
-            System.out.println("View path for " + viewKey + " not found.");
+            System.out.println("View path for " + baseViewKey + " not found.");
             return null;
         }
 
@@ -102,6 +91,26 @@ public class NavigationService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private String findBaseKey(String viewKey) {
+
+        // viewKey = Product?id=1
+        Pattern pattern = Pattern.compile("([^?]+)\\?id=(\\d+)");
+        Matcher matcher = pattern.matcher(viewKey);
+
+        String baseViewKey;
+        Integer id = null;
+
+        if (matcher.find()) {
+            baseViewKey = matcher.group(1);
+            id = Integer.valueOf(matcher.group(2));
+        } else {
+            baseViewKey = viewKey;
+        }
+        System.out.println("Requested id: " + id);
+
+        return baseViewKey;
     }
 
     public static void invalidateViewCache() {

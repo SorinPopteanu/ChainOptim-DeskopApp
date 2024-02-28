@@ -17,9 +17,9 @@
     </left>
 
     <!-- Main Content -->
-    <right>
+    <center>
         <StackPane fx:id="contentArea"></StackPane>
-    </right>
+    </center>
 
 
 </BorderPane>

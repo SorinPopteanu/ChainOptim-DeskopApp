@@ -119,9 +119,11 @@ public class ProductsTestController implements Initializable {
 
     private void openProductDetails(Integer productId) {
         // Use currentSelectionService to remember the productId
+        // And also encode it in the viewKey for caching purposes
         currentSelectionService.setSelectedId(productId);
         currentSelectionService.setSelectedPage("Product");
-        navigationService.switchView("Product");
+
+        navigationService.switchView("Product?id=" + productId);
     }
 
 

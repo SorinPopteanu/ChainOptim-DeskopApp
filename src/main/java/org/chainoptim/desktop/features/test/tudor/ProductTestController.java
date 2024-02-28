@@ -43,10 +43,10 @@ public class ProductTestController implements Initializable {
             fallbackManager.setErrorMessage("Failed to load product.");
         }
 
-        loadProduct();
+        loadProduct(productId);
     }
 
-    private void loadProduct() {
+    private void loadProduct(Integer productId) {
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
@@ -56,7 +56,7 @@ public class ProductTestController implements Initializable {
         Integer organizationId = currentUser.getOrganization().getId();
         fallbackManager.setLoading(true);
 
-        productRepository.getProductWithStages(organizationId)
+        productRepository.getProductWithStages(productId)
                 .thenApply(this::handleProductResponse)
                 .exceptionally(this::handleProductException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
