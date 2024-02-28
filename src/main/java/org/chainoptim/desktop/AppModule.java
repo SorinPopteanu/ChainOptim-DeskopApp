@@ -2,6 +2,7 @@ package org.chainoptim.desktop;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.repository.UserRepositoryImpl;
@@ -27,6 +28,8 @@ public class AppModule extends AbstractModule {
         // Singletons
         bind(NavigationService.class).asEagerSingleton();
         bind(FallbackManager.class).in(Singleton.class);
+        bind(CurrentSelectionService.class).in(Singleton.class);
+
 
         // Bind interfaces to implementations
         bind(UserRepository.class).to(UserRepositoryImpl.class);

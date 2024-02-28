@@ -11,7 +11,7 @@
 <?import javafx.scene.image.Image?>
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.test.tudor.ProductsTestController"
+            fx:controller="org.chainoptim.desktop.features.test.sorin.ProductsTestController2"
             prefHeight="500.0" prefWidth="555.0">
 
 

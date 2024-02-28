@@ -31,12 +31,15 @@ public class NavigationService {
 
     @Getter
     private final Map<String, String> viewMap = Map.of(
+            // Main pages
             "Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml",
             "Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml",
             "Products", "/org/chainoptim/desktop/features/test/tudor/ProductsView.fxml",
             "Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml",
             "Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml",
-            "Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"
+            "Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml",
+            // Dynamic route pages
+            "Product", "/org/chainoptim/desktop/features/test/tudor/ProductView.fxml"
     );
 
     private final Map<String, String> cssMap = Map.of(

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.Data;
 
