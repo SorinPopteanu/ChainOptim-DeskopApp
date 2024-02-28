@@ -44,7 +44,7 @@ public class SceneManager {
         loader.setControllerFactory(injector::getInstance);
         Parent root = loader.load();
         Scene mainScene = new Scene(root, 800, 600);
-        applyCss(mainScene, "/css/sidebar.css");
+        applyCss(mainScene, "/css/globals.css");
         primaryStage.setScene(mainScene);
         primaryStage.setTitle("ChainOptim");
         primaryStage.show();

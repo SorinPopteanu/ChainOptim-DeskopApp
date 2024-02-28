@@ -6,6 +6,6 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.test.tudor.ProductsTestController"
             prefHeight="400.0" prefWidth="600.0">
-    <ListView fx:id="productsListView" AnchorPane.topAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"/>
     <StackPane fx:id="fallbackContainer"/>
+    <VBox fx:id="productsListContainer" AnchorPane.topAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"/>
 </StackPane>

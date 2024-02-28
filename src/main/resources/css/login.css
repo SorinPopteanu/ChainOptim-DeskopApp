@@ -22,6 +22,12 @@
     -fx-font-weight: bold;
 }
 
+.auth-link {
+    -fx-text-fill: #3A3FD6;
+    -fx-font-size: 15px;
+}
+
+
 .auth-button {
     -fx-background-color: #3A3FD6;
     -fx-text-fill: white;
@@ -33,9 +39,4 @@
 
 .auth-button:hover {
     -fx-background-color: #2C2FAC;
-}
-
-.auth-link {
-    -fx-text-fill: #3A3FD6;
-    -fx-font-size: 15px;
 }
