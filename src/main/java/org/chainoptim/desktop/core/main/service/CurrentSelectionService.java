@@ -5,5 +5,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class CurrentSelectionService {
-    private Integer selectedProductId;
+    private Integer selectedId;
+    private String selectedPage;
 }
