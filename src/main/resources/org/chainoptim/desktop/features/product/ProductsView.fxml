@@ -3,9 +3,9 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.product.controller.ProductsController"
-            prefHeight="400.0" prefWidth="600.0">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.product.controller.ProductsController"
+      prefHeight="-1.0" prefWidth="-1.0">
 
     <Label fx:id="productsTitle" text="Products" styleClass="title"/>
 

@@ -34,3 +34,7 @@
     -fx-padding: 5;
     -fx-font-weight: normal;
 }
+
+.test {
+    -fx-background-color: RED;
+}
