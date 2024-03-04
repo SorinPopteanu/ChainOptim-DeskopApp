@@ -38,8 +38,8 @@ public class ProductsController implements Initializable {
     private StackPane fallbackContainer;
     @FXML
     private VBox productsVBox;
-    @FXML
-    private ScrollPane productsScrollPane;
+//    @FXML
+//    private ScrollPane productsScrollPane;
     @FXML
     private Label productsTitle;
 
@@ -69,6 +69,7 @@ public class ProductsController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         loadProducts();
     }
@@ -122,7 +123,7 @@ public class ProductsController implements Initializable {
         productButton.prefWidthProperty().bind(productsVBox.widthProperty());
         productButton.setOnAction(event -> openProductDetails(product.getId()));
 
-        productsScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+//        productsScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         productsVBox.getChildren().add(productButton);
     }
 

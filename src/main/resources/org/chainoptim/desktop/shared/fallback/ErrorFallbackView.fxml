@@ -2,11 +2,16 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.text.Text?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.shared.fallback.ErrorFallbackController"
-            prefHeight="400.0" prefWidth="600.0">
-    <StackPane style="-fx-background-color: red;" minWidth="200" maxWidth="200" minHeight="200" maxHeight="200">
-        <Text text="Error"/>
-    </StackPane>
-</AnchorPane>
+<?import javafx.scene.image.ImageView?>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.chainoptim.desktop.shared.fallback.ErrorFallbackController">
+
+    <VBox alignment="TOP_CENTER" styleClass="fallback-container">
+        <Text text="Something Went Wrong" styleClass="fallback-title"/>
+        <ImageView fx:id="errorImage"/>
+        <Text text="Oops! It seems like an unexpected error occurred while processing your request."
+              styleClass="fallback-text"/>
+    </VBox>
+
+</StackPane>
