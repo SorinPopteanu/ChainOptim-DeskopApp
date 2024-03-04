@@ -7,5 +7,5 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface UserRepository {
-    public CompletableFuture<Optional<User>> getUserByUsername(String username) throws UnsupportedEncodingException;
+    CompletableFuture<Optional<User>> getUserByUsername(String username) throws UnsupportedEncodingException;
 }

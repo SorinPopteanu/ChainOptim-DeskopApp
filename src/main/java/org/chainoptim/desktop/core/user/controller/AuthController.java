@@ -3,16 +3,13 @@ package org.chainoptim.desktop.core.user.controller;
 import com.google.inject.Inject;
 import javafx.scene.control.*;
 import org.chainoptim.desktop.core.main.service.SceneManager;
-import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 
 import javafx.fxml.FXML;
 
-import java.util.Optional;
-
 public class AuthController {
+
+    private final AuthenticationService authenticationService;
 
     @FXML
     private TextField usernameField;
@@ -20,9 +17,14 @@ public class AuthController {
     @FXML
     private PasswordField passwordField;
 
+    @Inject
+    public AuthController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
     @FXML
     private void handleLogin() {
-        boolean isAuthenticated = AuthenticationService.login(usernameField.getText(), passwordField.getText());
+        boolean isAuthenticated = authenticationService.login(usernameField.getText(), passwordField.getText());
 
         if (isAuthenticated) {
             try {

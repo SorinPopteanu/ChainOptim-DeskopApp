@@ -7,19 +7,21 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
+import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class OverviewController implements Initializable {
 
+    private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
 
     @Inject
-    public OverviewController(UserRepository userRepository) {
+    public OverviewController(AuthenticationService authenticationService, UserRepository userRepository) {
+        this.authenticationService = authenticationService;
         this.userRepository = userRepository;
     }
 
@@ -31,7 +33,7 @@ public class OverviewController implements Initializable {
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return; // Future: Switch to Login Scene
 
-        AuthenticationService.getUsernameFromJWTToken(jwtToken).ifPresent(this::fetchAndSetUser);
+        authenticationService.getUsernameFromJWTToken(jwtToken).ifPresent(this::fetchAndSetUser);
     }
 
     private void fetchAndSetUser(String username) {

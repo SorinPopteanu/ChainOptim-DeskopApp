@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
-import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.repository.ProductRepository;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ProductsController implements Initializable {
 
@@ -33,7 +32,7 @@ public class ProductsController implements Initializable {
     private final FallbackManager fallbackManager;
 
     private final CurrentSelectionService currentSelectionService;
-    private final NavigationService navigationService;
+    private final NavigationServiceImpl navigationService;
 
     @FXML
     private StackPane fallbackContainer;
@@ -50,7 +49,7 @@ public class ProductsController implements Initializable {
     public ProductsController(ProductRepository productRepository,
                               FallbackManager fallbackManager,
                               CurrentSelectionService currentSelectionService,
-                              NavigationService navigationService
+                              NavigationServiceImpl navigationService
     ) {
         this.productRepository = productRepository;
         this.fallbackManager = fallbackManager;
