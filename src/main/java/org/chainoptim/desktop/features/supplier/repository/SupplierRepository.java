@@ -8,6 +8,12 @@ import java.util.concurrent.CompletableFuture;
 
 public interface SupplierRepository {
 
-    public CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationId(Integer organizationId);
-    public CompletableFuture<Optional<Supplier>> getSupplierById(Integer supplierId);
+    CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationId(Integer organizationId);
+    CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationIdAdvanced(
+            Integer organizationId,
+            String searchQuery,
+            String sortOption,
+            boolean ascending
+    );
+    CompletableFuture<Optional<Supplier>> getSupplierById(Integer supplierId);
 }

@@ -39,6 +39,35 @@ public class FactoryRepositoryImpl implements FactoryRepository {
                 });
     }
 
+    public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationIdAdvanced(
+            Integer organizationId,
+            String searchQuery,
+            String sortOption,
+            boolean ascending
+    ) {
+        String routeAddress = "http://localhost:8080/api/factories/organizations/advanced" + organizationId.toString()
+                + "?searchQuery=" + searchQuery
+                + "&sortOption=" + sortOption
+                + "&ascending=" + ascending;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .GET()
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Factory>>empty();
+                    try {
+                        List<Factory> factories = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Factory>>() {});
+                        return Optional.of(factories);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<List<Factory>>empty();
+                    }
+                });
+    }
+
     public CompletableFuture<Optional<Factory>> getFactoryById(Integer factoryId) {
         String routeAddress = "http://localhost:8080/api/factories/" + factoryId.toString();
 

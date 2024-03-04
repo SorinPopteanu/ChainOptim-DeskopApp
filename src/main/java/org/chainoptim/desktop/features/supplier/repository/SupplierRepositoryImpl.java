@@ -38,6 +38,35 @@ public class SupplierRepositoryImpl implements SupplierRepository {
                 });
     }
 
+    public CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationIdAdvanced(
+            Integer organizationId,
+            String searchQuery,
+            String sortOption,
+            boolean ascending
+    ) {
+        String routeAddress = "http://localhost:8080/api/suppliers/organizations/advanced" + organizationId.toString()
+                + "?searchQuery=" + searchQuery
+                + "&sortOption=" + sortOption
+                + "&ascending=" + ascending;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .GET()
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Supplier>>empty();
+                    try {
+                        List<Supplier> suppliers = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Supplier>>() {});
+                        return Optional.of(suppliers);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<List<Supplier>>empty();
+                    }
+                });
+    }
+
     public CompletableFuture<Optional<Supplier>> getSupplierById(Integer supplierId) {
         String routeAddress = "http://localhost:8080/api/suppliers/" + supplierId.toString();
 

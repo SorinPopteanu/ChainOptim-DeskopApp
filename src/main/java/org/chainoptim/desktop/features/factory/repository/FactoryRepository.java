@@ -8,6 +8,12 @@ import java.util.concurrent.CompletableFuture;
 
 public interface FactoryRepository {
 
-    public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId);
-    public CompletableFuture<Optional<Factory>> getFactoryById(Integer factoryId);
+    CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId);
+    CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationIdAdvanced(
+            Integer organizationId,
+            String searchQuery,
+            String sortOption,
+            boolean ascending
+    );
+    CompletableFuture<Optional<Factory>> getFactoryById(Integer factoryId);
 }
