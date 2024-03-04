@@ -3,7 +3,6 @@ package org.chainoptim.desktop.features.warehouse.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.shared.util.JsonUtil;
-import org.chainoptim.desktop.features.warehouse.repository.WarehouseRepository;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -20,6 +19,35 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
 
     public CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/warehouses/organizations/" + organizationId.toString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .GET()
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Warehouse>>empty();
+                    try {
+                        List<Warehouse> warehouses = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Warehouse>>() {});
+                        return Optional.of(warehouses);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<List<Warehouse>>empty();
+                    }
+                });
+    }
+
+    public CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationIdAdvanced(
+            Integer organizationId,
+            String searchQuery,
+            String sortOption,
+            boolean ascending
+    ) {
+        String routeAddress = "http://localhost:8080/api/warehouses/organizations/advanced" + organizationId.toString()
+                + "?searchQuery=" + searchQuery
+                + "&sortOption=" + sortOption
+                + "&ascending=" + ascending;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))

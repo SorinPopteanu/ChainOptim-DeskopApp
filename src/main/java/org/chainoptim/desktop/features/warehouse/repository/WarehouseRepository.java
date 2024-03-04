@@ -8,6 +8,12 @@ import java.util.concurrent.CompletableFuture;
 
 public interface WarehouseRepository {
 
-    public CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationId(Integer organizationId);
-    public CompletableFuture<Optional<Warehouse>> getWarehouseById(Integer warehouseId);
+    CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationId(Integer organizationId);
+    CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationIdAdvanced(
+            Integer organizationId,
+            String searchQuery,
+            String sortOption,
+            boolean ascending
+    );
+    CompletableFuture<Optional<Warehouse>> getWarehouseById(Integer warehouseId);
 }
