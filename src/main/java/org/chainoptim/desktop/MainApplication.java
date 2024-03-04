@@ -2,9 +2,8 @@ package org.chainoptim.desktop;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.SceneManager;
-import org.chainoptim.desktop.core.user.service.AuthenticationService;
+import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 
 import javafx.application.Application;
@@ -14,6 +13,8 @@ import java.io.IOException;
 public class MainApplication extends Application {
 
     public static Injector injector;
+
+    private final AuthenticationServiceImpl authenticationService = new AuthenticationServiceImpl();
 
     // Create Guice injector with AppModule
     @Override
@@ -30,7 +31,7 @@ public class MainApplication extends Application {
 
         // Show Login Scene or Main Scene depending on whether a valid JWT token exists
         String jwtToken = TokenManager.getToken();
-        boolean isTokenValid = jwtToken != null && AuthenticationService.validateJWTToken(jwtToken);
+        boolean isTokenValid = jwtToken != null && authenticationService.validateJWTToken(jwtToken);
 
         if (isTokenValid) {
             SceneManager.loadMainScene();

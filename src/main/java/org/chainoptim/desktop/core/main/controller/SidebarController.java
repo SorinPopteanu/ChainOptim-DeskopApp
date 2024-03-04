@@ -1,22 +1,19 @@
 package org.chainoptim.desktop.core.main.controller;
 
 import com.google.inject.Inject;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import lombok.Setter;
-import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.model.SidebarButton;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
+import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.main.service.SceneManager;
 
 import java.util.ArrayList;
@@ -33,10 +30,12 @@ public class SidebarController {
 
     @Setter
     private NavigationService navigationService;
+    private final AuthenticationService authenticationService;
 
     @Inject
-    public SidebarController(NavigationService navigationService) {
+    public SidebarController(NavigationService navigationService, AuthenticationService authenticationService) {
         this.navigationService = navigationService;
+        this.authenticationService = authenticationService;
     }
 
     // UI elements
@@ -153,7 +152,7 @@ public class SidebarController {
     // Handle logout
     @FXML
     private void handleLogout() {
-        AuthenticationService.logout(); // Clear JWT token from storage
+        authenticationService.logout(); // Clear JWT token from storage
 
         // Switch back to login scene
         try {

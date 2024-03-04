@@ -34,6 +34,7 @@ module org.chainoptim.desktop {
     // - User
     opens org.chainoptim.desktop.core.user.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.core.user.repository to com.google.guice;
+    opens org.chainoptim.desktop.core.user.service to com.google.guice;
     opens org.chainoptim.desktop.core.user.model to com.fasterxml.jackson.databind;
 
     // - Organization

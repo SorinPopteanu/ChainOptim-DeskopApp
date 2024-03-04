@@ -6,6 +6,8 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.repository.UserRepositoryImpl;
+import org.chainoptim.desktop.core.user.service.AuthenticationService;
+import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.features.factory.repository.FactoryRepository;
 import org.chainoptim.desktop.features.factory.repository.FactoryRepositoryImpl;
 import org.chainoptim.desktop.features.product.repository.ProductRepository;
@@ -30,6 +32,7 @@ public class AppModule extends AbstractModule {
 
 
         // Bind interfaces to implementations
+        bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(UserRepository.class).to(UserRepositoryImpl.class);
         bind(ProductRepository.class).to(ProductRepositoryImpl.class);
         bind(FactoryRepository.class).to(FactoryRepositoryImpl.class);
