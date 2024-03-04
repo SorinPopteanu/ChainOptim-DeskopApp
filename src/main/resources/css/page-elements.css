@@ -35,6 +35,20 @@
     -fx-font-weight: normal;
 }
 
+.fallback-container {
+    -fx-spacing: 10px;
+}
+
+.fallback-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.fallback-text {
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+}
+
 .test {
-    -fx-background-color: RED;
+    -fx-background-color: #efb3b3;
 }

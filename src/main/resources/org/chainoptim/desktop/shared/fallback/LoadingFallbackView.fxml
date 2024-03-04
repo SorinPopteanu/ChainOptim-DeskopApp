@@ -2,12 +2,13 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.ProgressIndicator?>
-<AnchorPane fx:id="anchorPane"
-            xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.shared.fallback.LoadingFallbackController"
-            prefHeight="-1.0" prefWidth="-1.0">
+<?import javafx.scene.text.Text?>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.chainoptim.desktop.shared.fallback.LoadingFallbackController">
+    <VBox alignment="TOP_CENTER" styleClass="fallback-container">
+        <ProgressIndicator fx:id="loadingSpinner"/>
+        <Text text="Loading ... " styleClass="fallback-text"/>
+    </VBox>
 
-    <ProgressIndicator fx:id="loadingSpinner"/>
-
-</AnchorPane>
+</StackPane>

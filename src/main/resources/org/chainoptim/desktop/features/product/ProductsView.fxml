@@ -9,9 +9,9 @@
 
     <Label fx:id="productsTitle" text="Products" styleClass="title"/>
 
-    <ScrollPane fx:id="productsScrollPane" styleClass="scroll-pane" fitToWidth="true">
+<!--    <ScrollPane fx:id="productsScrollPane" styleClass="scroll-pane" fitToWidth="true">-->
         <VBox fx:id="productsVBox" styleClass="products-list"/>
-    </ScrollPane>
-    <StackPane fx:id="fallbackContainer"/>
+<!--    </ScrollPane>-->
+    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
 
 </VBox>
