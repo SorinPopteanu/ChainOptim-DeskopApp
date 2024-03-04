@@ -1,10 +1,10 @@
 package org.chainoptim.desktop.core.main.service;
 
-import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.abstraction.ThreadRunner;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
@@ -24,10 +24,14 @@ import java.util.regex.Pattern;
 public class NavigationServiceImpl implements NavigationService {
 
     private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
+    private final ThreadRunner threadRunner;
 
     @Inject
-    public NavigationServiceImpl(FXMLLoaderService fxmlLoaderService) {
+    public NavigationServiceImpl(FXMLLoaderService fxmlLoaderService, ControllerFactory controllerFactory, ThreadRunner threadRunner) {
         this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
+        this.threadRunner = threadRunner;
     }
 
     @Setter
@@ -62,7 +66,7 @@ public class NavigationServiceImpl implements NavigationService {
 
         // Display view
         if (view != null) {
-            Platform.runLater(() -> mainContentArea.getChildren().setAll(view));
+            threadRunner.runLater(() -> mainContentArea.getChildren().setAll(view));
             currentViewKey = viewKey;
         }
     }
@@ -79,7 +83,7 @@ public class NavigationServiceImpl implements NavigationService {
         }
 
         // Load view
-        return fxmlLoaderService.loadView(viewPath, MainApplication.injector::getInstance);
+        return fxmlLoaderService.loadView(viewPath, controllerFactory::createController);
     }
 
     private String findBaseKey(String viewKey) {

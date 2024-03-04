@@ -31,6 +31,9 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.main.controller to com.google.guice, javafx.fxml;
     opens org.chainoptim.desktop.core.main.service to com.google.guice, javafx.fxml;
 
+    // - Abstraction
+    opens org.chainoptim.desktop.core.abstraction to com.google.guice, javafx.fxml;
+
     // - User
     opens org.chainoptim.desktop.core.user.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.core.user.repository to com.google.guice;

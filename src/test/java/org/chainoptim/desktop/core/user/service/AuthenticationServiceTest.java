@@ -1,4 +1,4 @@
-package org.chainoptim.core.user.service;
+package org.chainoptim.desktop.core.user.service;
 
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.junit.jupiter.api.Assertions;

@@ -2,6 +2,10 @@ package org.chainoptim.desktop;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.abstraction.GuiceControllerFactory;
+import org.chainoptim.desktop.core.abstraction.JavaFXThreadRunner;
+import org.chainoptim.desktop.core.abstraction.ThreadRunner;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
@@ -40,6 +44,8 @@ public class AppModule extends AbstractModule {
 
         // Bind interfaces to implementations
         // Services
+        bind(ControllerFactory.class).to(GuiceControllerFactory.class);
+        bind(ThreadRunner.class).to(JavaFXThreadRunner.class);
         bind(NavigationService.class).to(NavigationServiceImpl.class);
         bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class);
 
