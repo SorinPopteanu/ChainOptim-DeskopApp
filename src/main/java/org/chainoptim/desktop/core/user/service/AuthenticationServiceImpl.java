@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.user.service;
 
+import com.google.inject.Inject;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.util.TokenManager;
@@ -20,7 +21,12 @@ import java.util.Optional;
  */
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final HttpClient client;
+
+    @Inject
+    public AuthenticationServiceImpl(HttpClient client) {
+        this.client = client;
+    }
 
     public boolean login(String username, String password) {
         HttpRequest request = HttpRequest.newBuilder()

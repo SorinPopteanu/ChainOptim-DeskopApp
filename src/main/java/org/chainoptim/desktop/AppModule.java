@@ -18,6 +18,8 @@ import org.chainoptim.desktop.features.warehouse.repository.WarehouseRepository;
 import org.chainoptim.desktop.features.warehouse.repository.WarehouseRepositoryImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
+import java.net.http.HttpClient;
+
 /*
  * Module configuring Dependency Injections
  *
@@ -30,6 +32,8 @@ public class AppModule extends AbstractModule {
         bind(FallbackManager.class).in(Singleton.class);
         bind(CurrentSelectionService.class).in(Singleton.class);
 
+
+        bind(HttpClient.class).toInstance(HttpClient.newHttpClient());
 
         // Bind interfaces to implementations
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);

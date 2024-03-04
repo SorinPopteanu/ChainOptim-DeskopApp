@@ -14,12 +14,13 @@ public class MainApplication extends Application {
 
     public static Injector injector;
 
-    private final AuthenticationServiceImpl authenticationService = new AuthenticationServiceImpl();
+    private AuthenticationServiceImpl authenticationService;
 
     // Create Guice injector with AppModule
     @Override
     public void init() throws Exception {
         injector = Guice.createInjector(new AppModule());
+        authenticationService = injector.getInstance(AuthenticationServiceImpl.class);
     }
 
     @Override
