@@ -13,7 +13,6 @@ import lombok.Setter;
 import org.chainoptim.desktop.core.main.model.SidebarButton;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.main.service.SceneManager;
 
 import java.util.ArrayList;

@@ -27,9 +27,6 @@ public class MainApplication extends Application {
     public void start(Stage primaryStage) throws IOException {
         SceneManager.setPrimaryStage(primaryStage);
 
-        // Statically set injector to needed services
-        SceneManager.setInjector(injector);
-
         // Show Login Scene or Main Scene depending on whether a valid JWT token exists
         String jwtToken = TokenManager.getToken();
         boolean isTokenValid = jwtToken != null && authenticationService.validateJWTToken(jwtToken);

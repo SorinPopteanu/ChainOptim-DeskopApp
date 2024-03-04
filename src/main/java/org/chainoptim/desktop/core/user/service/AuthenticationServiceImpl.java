@@ -2,7 +2,7 @@ package org.chainoptim.desktop.core.user.service;
 
 import com.google.inject.Inject;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 
 import org.json.JSONObject;
@@ -95,6 +95,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Clear JWT Token from storage, TenantContext and ViewCache from memory
         TokenManager.removeToken();
         TenantContext.setCurrentUser(null);
-        NavigationService.invalidateViewCache();
+        NavigationServiceImpl.invalidateViewCache();
     }
 }

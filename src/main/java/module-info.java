@@ -73,5 +73,8 @@ module org.chainoptim.desktop {
     // -  Fallback Manager
     opens org.chainoptim.desktop.shared.fallback to javafx.fxml, com.google.guice;
 
+    // - Utils
+    opens org.chainoptim.desktop.shared.util.resourceloader to com.google.guice;
+
     exports org.chainoptim.desktop;
 }

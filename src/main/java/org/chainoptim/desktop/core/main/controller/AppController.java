@@ -1,15 +1,11 @@
 package org.chainoptim.desktop.core.main.controller;
 
 import com.google.inject.Inject;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 
 import javafx.fxml.FXML;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-
-import java.io.IOException;
-import java.util.Map;
+import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 
 /*
  * Root controller managing the currently displayed main content
@@ -17,17 +13,16 @@ import java.util.Map;
  */
 public class AppController {
 
-    @Inject
-    private NavigationService navigationService;
+    private final NavigationService navigationService;
+    @FXML
+    private final SidebarController sidebarController;
 
     @FXML
     private StackPane contentArea;
 
-    @FXML
-    private final SidebarController sidebarController;
-
     @Inject
-    public AppController(SidebarController sidebarController) {
+    public AppController(NavigationService navigationService, SidebarController sidebarController) {
+        this.navigationService = navigationService;
         this.sidebarController = sidebarController;
     }
 
