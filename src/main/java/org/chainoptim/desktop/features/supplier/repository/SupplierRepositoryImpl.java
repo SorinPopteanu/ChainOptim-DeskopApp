@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.supplier.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -38,16 +39,20 @@ public class SupplierRepositoryImpl implements SupplierRepository {
                 });
     }
 
-    public CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationIdAdvanced(
+    public CompletableFuture<Optional<PaginatedResults<Supplier>>> getSuppliersByOrganizationIdAdvanced(
             Integer organizationId,
             String searchQuery,
             String sortOption,
-            boolean ascending
+            boolean ascending,
+            int page,
+            int itemsPerPage
     ) {
         String routeAddress = "http://localhost:8080/api/suppliers/organizations/advanced" + organizationId.toString()
                 + "?searchQuery=" + searchQuery
                 + "&sortOption=" + sortOption
-                + "&ascending=" + ascending;
+                + "&ascending=" + ascending
+                + "&page=" + page
+                + "&itemsPerPage=" + itemsPerPage;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
@@ -56,13 +61,13 @@ public class SupplierRepositoryImpl implements SupplierRepository {
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Supplier>>empty();
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<PaginatedResults<Supplier>>empty();
                     try {
-                        List<Supplier> suppliers = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Supplier>>() {});
+                        PaginatedResults<Supplier> suppliers = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<Supplier>>() {});
                         return Optional.of(suppliers);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<List<Supplier>>empty();
+                        return Optional.<PaginatedResults<Supplier>>empty();
                     }
                 });
     }

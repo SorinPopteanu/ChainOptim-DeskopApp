@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.warehouse.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
+import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -38,16 +39,20 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
                 });
     }
 
-    public CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationIdAdvanced(
+    public CompletableFuture<Optional<PaginatedResults<Warehouse>>> getWarehousesByOrganizationIdAdvanced(
             Integer organizationId,
             String searchQuery,
             String sortOption,
-            boolean ascending
+            boolean ascending,
+            int page,
+            int itemsPerPage
     ) {
         String routeAddress = "http://localhost:8080/api/warehouses/organizations/advanced" + organizationId.toString()
                 + "?searchQuery=" + searchQuery
                 + "&sortOption=" + sortOption
-                + "&ascending=" + ascending;
+                + "&ascending=" + ascending
+                + "&page=" + page
+                + "&itemsPerPage=" + itemsPerPage;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
@@ -56,13 +61,13 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Warehouse>>empty();
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<PaginatedResults<Warehouse>>empty();
                     try {
-                        List<Warehouse> warehouses = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Warehouse>>() {});
+                        PaginatedResults<Warehouse> warehouses = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<Warehouse>>() {});
                         return Optional.of(warehouses);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<List<Warehouse>>empty();
+                        return Optional.<PaginatedResults<Warehouse>>empty();
                     }
                 });
     }

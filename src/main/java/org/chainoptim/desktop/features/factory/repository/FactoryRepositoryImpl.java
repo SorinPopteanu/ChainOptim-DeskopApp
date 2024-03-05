@@ -3,6 +3,7 @@ package org.chainoptim.desktop.features.factory.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.repository.FactoryRepository;
+import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -39,16 +40,20 @@ public class FactoryRepositoryImpl implements FactoryRepository {
                 });
     }
 
-    public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationIdAdvanced(
+    public CompletableFuture<Optional<PaginatedResults<Factory>>> getFactoriesByOrganizationIdAdvanced(
             Integer organizationId,
             String searchQuery,
             String sortOption,
-            boolean ascending
+            boolean ascending,
+            int page,
+            int itemsPerPage
     ) {
         String routeAddress = "http://localhost:8080/api/factories/organizations/advanced" + organizationId.toString()
                 + "?searchQuery=" + searchQuery
                 + "&sortOption=" + sortOption
-                + "&ascending=" + ascending;
+                + "&ascending=" + ascending
+                + "&page=" + page
+                + "&itemsPerPage=" + itemsPerPage;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
@@ -57,13 +62,13 @@ public class FactoryRepositoryImpl implements FactoryRepository {
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Factory>>empty();
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<PaginatedResults<Factory>>empty();
                     try {
-                        List<Factory> factories = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Factory>>() {});
+                        PaginatedResults<Factory> factories = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<Factory>>() {});
                         return Optional.of(factories);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<List<Factory>>empty();
+                        return Optional.<PaginatedResults<Factory>>empty();
                     }
                 });
     }
