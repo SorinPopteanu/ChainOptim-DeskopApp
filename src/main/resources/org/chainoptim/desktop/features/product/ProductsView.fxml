@@ -7,11 +7,10 @@
       fx:controller="org.chainoptim.desktop.features.product.controller.ProductsController"
       prefHeight="-1.0" prefWidth="-1.0">
 
-    <Label fx:id="productsTitle" text="Products" styleClass="title"/>
+    <StackPane fx:id="headerContainer"></StackPane>
 
-<!--    <ScrollPane fx:id="productsScrollPane" styleClass="scroll-pane" fitToWidth="true">-->
-        <VBox fx:id="productsVBox" styleClass="products-list"/>
-<!--    </ScrollPane>-->
+    <VBox fx:id="productsVBox" styleClass="products-list"/>
+
     <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
 
 </VBox>
