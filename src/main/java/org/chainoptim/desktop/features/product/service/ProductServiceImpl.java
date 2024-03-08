@@ -1,6 +1,7 @@
-package org.chainoptim.desktop.features.product.repository;
+package org.chainoptim.desktop.features.product.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -17,16 +18,24 @@ import java.util.concurrent.CompletableFuture;
 
 import static java.util.Optional.empty;
 
-public class ProductRepositoryImpl implements ProductRepository {
+public class ProductServiceImpl implements ProductService {
 
     private final HttpClient client = HttpClient.newHttpClient();
+
+    private static final String HEADER_KEY = "Authorization";
+    private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<List<Product>>> getProductsByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/products/organizations/" + organizationId;
 
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -53,9 +62,14 @@ public class ProductRepositoryImpl implements ProductRepository {
                 + "&page=" + searchParams.getPage()
                 + "&itemsPerPage=" + searchParams.getItemsPerPage();
 
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -74,9 +88,14 @@ public class ProductRepositoryImpl implements ProductRepository {
     public CompletableFuture<Optional<Product>> getProductWithStages(Integer productId) {
         String routeAddress = "http://localhost:8080/api/products/" + productId.toString();
 
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())

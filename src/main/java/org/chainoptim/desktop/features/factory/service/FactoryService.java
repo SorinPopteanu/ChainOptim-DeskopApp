@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.factory.repository;
+package org.chainoptim.desktop.features.factory.service;
 
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface FactoryRepository {
+public interface FactoryService {
 
     CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId);
     CompletableFuture<Optional<PaginatedResults<Factory>>> getFactoriesByOrganizationIdAdvanced(

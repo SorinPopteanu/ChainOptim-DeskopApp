@@ -1,9 +1,10 @@
-package org.chainoptim.desktop.features.factory.repository;
+package org.chainoptim.desktop.features.warehouse.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.chainoptim.desktop.features.factory.dto.CreateFactoryDTO;
-import org.chainoptim.desktop.features.factory.dto.UpdateFactoryDTO;
-import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.features.warehouse.dto.CreateWarehouseDTO;
+import org.chainoptim.desktop.features.warehouse.dto.UpdateWarehouseDTO;
+import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -15,17 +16,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class FactoryWriteRepositoryImpl implements FactoryWriteRepository {
+public class WarehouseWriteServiceImpl implements WarehouseWriteService {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
-    public CompletableFuture<Optional<Factory>> createFactory(CreateFactoryDTO factoryDTO) {
-        String routeAddress = "http://localhost:8080/api/factories/create";
+    private static final String HEADER_KEY = "Authorization";
+    private static final String HEADER_VALUE_PREFIX = "Bearer ";
+
+    public CompletableFuture<Optional<Warehouse>> createWarehouse(CreateWarehouseDTO warehouseDTO) {
+        String routeAddress = "http://localhost:8080/api/warehouses/create";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
         // Serialize DTO
         String requestBody = null;
         try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(factoryDTO);
+            requestBody = JsonUtil.getObjectMapper().writeValueAsString(warehouseDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,28 +42,33 @@ public class FactoryWriteRepositoryImpl implements FactoryWriteRepository {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
-                        Factory factory = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Factory>() {});
-                        return Optional.of(factory);
+                        Warehouse warehouse = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Warehouse>() {});
+                        return Optional.of(warehouse);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<Factory>empty();
+                        return Optional.<Warehouse>empty();
                     }
                 });
     }
 
-    public CompletableFuture<Optional<Factory>> updateFactory(UpdateFactoryDTO factoryDTO) {
-        String routeAddress = "http://localhost:8080/api/factories/update";
+    public CompletableFuture<Optional<Warehouse>> updateWarehouse(UpdateWarehouseDTO warehouseDTO) {
+        String routeAddress = "http://localhost:8080/api/warehouses/update";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
         // Serialize DTO
         String requestBody = null;
         try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(factoryDTO);
+            requestBody = JsonUtil.getObjectMapper().writeValueAsString(warehouseDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,33 +77,39 @@ public class FactoryWriteRepositoryImpl implements FactoryWriteRepository {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
-                        Factory factory = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Factory>() {});
-                        return Optional.of(factory);
+                        Warehouse warehouse = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Warehouse>() {});
+                        return Optional.of(warehouse);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<Factory>empty();
+                        return Optional.<Warehouse>empty();
                     }
                 });
     }
 
-    public CompletableFuture<Optional<Integer>> deleteFactory(Integer factoryId) {
-        String routeAddress = "http://localhost:8080/api/factories/delete/" + factoryId;
+    public CompletableFuture<Optional<Integer>> deleteWarehouse(Integer warehouseId) {
+        String routeAddress = "http://localhost:8080/api/warehouses/delete/" + warehouseId;
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString("", StandardCharsets.UTF_8))
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    return Optional.of(factoryId);
+                    return Optional.of(warehouseId);
                 });
     }
 }

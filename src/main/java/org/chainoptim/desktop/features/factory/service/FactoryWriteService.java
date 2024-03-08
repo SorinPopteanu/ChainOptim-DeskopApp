@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.factory.repository;
+package org.chainoptim.desktop.features.factory.service;
 
 import org.chainoptim.desktop.features.factory.dto.CreateFactoryDTO;
 import org.chainoptim.desktop.features.factory.dto.UpdateFactoryDTO;
@@ -7,7 +7,7 @@ import org.chainoptim.desktop.features.factory.model.Factory;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface FactoryWriteRepository {
+public interface FactoryWriteService {
 
     CompletableFuture<Optional<Factory>> createFactory(CreateFactoryDTO factoryDTO);
 

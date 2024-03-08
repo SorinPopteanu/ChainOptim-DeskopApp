@@ -1,7 +1,9 @@
-package org.chainoptim.desktop.features.warehouse.repository;
+package org.chainoptim.desktop.features.warehouse.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
+import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
@@ -14,16 +16,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class WarehouseRepositoryImpl implements WarehouseRepository {
+public class WarehouseServiceImpl implements WarehouseService {
 
     private final HttpClient client = HttpClient.newHttpClient();
+
+    private static final String HEADER_KEY = "Authorization";
+    private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/warehouses/organizations/" + organizationId.toString();
 
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -47,16 +57,21 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
             int page,
             int itemsPerPage
     ) {
-        String routeAddress = "http://localhost:8080/api/warehouses/organizations/advanced" + organizationId.toString()
+        String routeAddress = "http://localhost:8080/api/warehouses/organizations/advanced/" + organizationId.toString()
                 + "?searchQuery=" + searchQuery
                 + "&sortOption=" + sortOption
                 + "&ascending=" + ascending
                 + "&page=" + page
                 + "&itemsPerPage=" + itemsPerPage;
 
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -75,9 +90,14 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
     public CompletableFuture<Optional<Warehouse>> getWarehouseById(Integer warehouseId) {
         String routeAddress = "http://localhost:8080/api/warehouses/" + warehouseId.toString();
 
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
