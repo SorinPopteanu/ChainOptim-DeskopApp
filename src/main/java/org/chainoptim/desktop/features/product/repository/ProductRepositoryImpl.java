@@ -3,6 +3,7 @@ package org.chainoptim.desktop.features.product.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -43,18 +44,14 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     public CompletableFuture<Optional<PaginatedResults<Product>>> getProductsByOrganizationIdAdvanced(
             Integer organizationId,
-            String searchQuery,
-            String sortOption,
-            boolean ascending,
-            int page,
-            int itemsPerPage
+            SearchParams searchParams
     ) {
         String routeAddress = "http://localhost:8080/api/products/organizations/advanced/" + organizationId.toString()
-                + "?searchQuery=" + searchQuery
-                + "&sortOption=" + sortOption
-                + "&ascending=" + ascending
-                + "&page=" + page
-                + "&itemsPerPage=" + itemsPerPage;
+                + "?searchQuery=" + searchParams.getSearchQuery()
+                + "&sortBy=" + searchParams.getSortOption()
+                + "&ascending=" + searchParams.getAscending()
+                + "&page=" + searchParams.getPage()
+                + "&itemsPerPage=" + searchParams.getItemsPerPage();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))

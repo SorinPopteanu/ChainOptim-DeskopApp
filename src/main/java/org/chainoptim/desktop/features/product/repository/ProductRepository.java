@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.product.repository;
 
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +14,7 @@ public interface ProductRepository {
 
     public CompletableFuture<Optional<PaginatedResults<Product>>> getProductsByOrganizationIdAdvanced(
             Integer organizationId,
-            String searchQuery,
-            String sortOption,
-            boolean ascending,
-            int page,
-            int itemsPerPage
+            SearchParams searchParams
     );
     public CompletableFuture<Optional<Product>> getProductWithStages(Integer productId);
 }

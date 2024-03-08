@@ -22,6 +22,7 @@ import org.chainoptim.desktop.features.supplier.repository.SupplierRepositoryImp
 import org.chainoptim.desktop.features.warehouse.repository.WarehouseRepository;
 import org.chainoptim.desktop.features.warehouse.repository.WarehouseRepositoryImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderServiceImpl;
 
@@ -38,7 +39,7 @@ public class AppModule extends AbstractModule {
         bind(NavigationServiceImpl.class).asEagerSingleton();
         bind(FallbackManager.class).in(Singleton.class);
         bind(CurrentSelectionService.class).in(Singleton.class);
-
+        bind(SearchParams.class).in(Singleton.class);
 
         bind(HttpClient.class).toInstance(HttpClient.newHttpClient());
 

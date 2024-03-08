@@ -1,17 +1,31 @@
-.tool-bar {
-
+.header {
+    -fx-background-color: #ffffff;
 }
 
-.products-list {
-    -fx-backgroud-color: #ffffff;
-    -fx-padding: 20px;
-    -fx-spacing: 20px;
+.tool-bar {
+    -fx-background-color: #ffffff;
+}
+
+.create-new-item {
+    -fx-background-color: #007fff;
+    -fx-text-fill: #ffffff;
+}
+
+.search-button {
+    -fx-background-color: #000000;
+    -fx-border-color: transparent;
 }
 
 .title {
     -fx-font-size: 30px;
     -fx-font-weight: bold;
     -fx-padding: 10px;
+    -fx-spacing: 20px;
+}
+
+.products-list {
+    -fx-backgroud-color: #ffffff;
+    -fx-padding: 20px;
     -fx-spacing: 20px;
 }
 

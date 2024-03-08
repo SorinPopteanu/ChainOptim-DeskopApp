@@ -20,21 +20,22 @@ import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.repository.ProductRepository;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class ProductsController implements Initializable {
 
     private final ProductRepository productRepository;
     private final FallbackManager fallbackManager;
-    private final List<String> filtersList = List.of("Created At", "Updated At");
-
+    private final Map<String, String> filtersMap = Map.of(
+                    "createdAt", "Created At",
+                    "updatedAt", "Updated At"
+    );
+    private final SearchParams searchParams;
     private final CurrentSelectionService currentSelectionService;
     private final NavigationServiceImpl navigationService;
 
@@ -46,29 +47,32 @@ public class ProductsController implements Initializable {
     private StackPane headerContainer;
     private List<Product> products = new ArrayList<>();
     private HeaderController headerController;
-    private Integer organizationId = 0;
-    private String searchQuery = "";
-    private String sortOption = "createdAt";
-    private boolean ascending = true;
-    private int page = 1;
-    private int itemsPerPage = 3;
 
     @Inject
     public ProductsController(ProductRepository productRepository,
                               FallbackManager fallbackManager,
                               CurrentSelectionService currentSelectionService,
                               NavigationServiceImpl navigationService,
-                              HeaderController headerController
+                              HeaderController headerController,
+                              SearchParams searchParams
     ) {
         this.productRepository = productRepository;
         this.fallbackManager = fallbackManager;
         this.currentSelectionService = currentSelectionService;
         this.navigationService = navigationService;
         this.headerController = headerController;
+        this.searchParams = searchParams;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        loadFallbackManager();
+        initializeHeader();
+        loadProducts();
+        setUpListeners();
+    }
+
+    private void loadFallbackManager() {
         // Load view into fallbackContainer
         try {
             URL url = getClass().getResource("/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml");
@@ -79,7 +83,9 @@ public class ProductsController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    private void initializeHeader() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/chainoptim/desktop/core/main/HeaderView.fxml"));
             loader.setControllerFactory(MainApplication.injector::getInstance);
@@ -90,9 +96,29 @@ public class ProductsController implements Initializable {
             e.printStackTrace();
             // Handle exception...
         }
+        headerController.initializeHeader("Products", "/img/box-solid.png", filtersMap, "Product");
 
-        headerController.initializeHeader("Products", "/img/box-solid.png", filtersList, "Product");
-        loadProducts();
+    }
+
+    private void setUpListeners() {
+        searchParams.getSearchQueryProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    loadProducts();
+                }
+        );
+
+        searchParams.getAscendingProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    loadProducts();
+                }
+        );
+
+        searchParams.getSortOptionProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    loadProducts();
+                }
+        );
+
     }
 
     private void loadProducts() {
@@ -104,8 +130,8 @@ public class ProductsController implements Initializable {
 
         fallbackManager.setLoading(true);
 
-
-        productRepository.getProductsByOrganizationIdAdvanced(organizationId, searchQuery, sortOption, ascending, page, itemsPerPage)
+        Integer organizationId = currentUser.getOrganization().getId();
+        productRepository.getProductsByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleProductResponse)
                 .exceptionally(this::handleProductException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
@@ -118,6 +144,7 @@ public class ProductsController implements Initializable {
                 fallbackManager.setErrorMessage("Failed to load products.");
                 return;
             }
+            productsVBox.getChildren().clear();
             PaginatedResults<Product> paginatedResults = productsOptional.get();
 
             if (!paginatedResults.results.isEmpty()) {
@@ -145,7 +172,6 @@ public class ProductsController implements Initializable {
         productButton.prefWidthProperty().bind(productsVBox.widthProperty());
         productButton.setOnAction(event -> openProductDetails(product.getId()));
 
-//        productsScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         productsVBox.getChildren().add(productButton);
     }
 
@@ -162,6 +188,7 @@ public class ProductsController implements Initializable {
 
         navigationService.switchView("Product?id=" + productId);
     }
+
 
 
 }
