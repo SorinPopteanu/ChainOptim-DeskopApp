@@ -79,5 +79,8 @@ module org.chainoptim.desktop {
     // - Utils
     opens org.chainoptim.desktop.shared.util.resourceloader to com.google.guice;
 
+    // - Search
+    opens org.chainoptim.desktop.shared.search.model to com.fasterxml.jackson.databind, com.google.guice;
+
     exports org.chainoptim.desktop;
 }
