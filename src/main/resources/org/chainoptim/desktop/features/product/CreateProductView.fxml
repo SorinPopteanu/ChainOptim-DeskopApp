@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.product.controller.CreateProductController"
+            prefHeight="400.0" prefWidth="600.0" style="-fx-padding: 10;">
+
+    <Label fx:id="nameLabel"
+           style="-fx-padding: 10;"/>
+    <TextField fx:id="nameField"/>
+    <Label fx:id="descriptionLabel"
+           style="-fx-padding: 10;"/>
+    <TextField fx:id="descriptionField"/>
+    <Button text="Submit" onAction="#handleSubmit"/>
+
+    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+</AnchorPane>

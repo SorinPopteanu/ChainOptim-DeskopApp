@@ -21,7 +21,7 @@
             <ComboBox fx:id="filters" promptText="Sort By..." onAction="#handleSortOption"/>
             <Button fx:id="orderingButton" onAction="#handleOrdering"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="createNewItemButton" styleClass="create-new-item"/>
+            <Button fx:id="createNewItemButton" onAction="#handleCreateNewItem" styleClass="create-new-item"/>
         </HBox>
     </ToolBar>
 

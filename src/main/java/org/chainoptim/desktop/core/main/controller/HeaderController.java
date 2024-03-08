@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import java.util.stream.*;
 public class HeaderController {
 
     private final SearchParams searchParams;
+
+    private final NavigationService navigationService;
 
     @FXML
     private Label title;
@@ -39,8 +42,12 @@ public class HeaderController {
     private final ImageView sortDownImageView = new ImageView(sortDownIcon);
 
     @Inject
-    public HeaderController(SearchParams searchParams) {
+    public HeaderController(
+            SearchParams searchParams,
+            NavigationService navigationService
+    ) {
         this.searchParams = searchParams;
+        this.navigationService = navigationService;
     }
 
     public void initializeHeader(String titleText, String titleIconPath, Map<String, String> filtersMap, String createNewItemButtonText) {
@@ -128,6 +135,11 @@ public class HeaderController {
             .orElse(selectedFilter);
         searchParams.setSortOption(backendFilter);
         System.out.println(searchParams.getSortOption());
+    }
+
+    @FXML
+    private void handleCreateNewItem() {
+        navigationService.switchView("Create-Product");
     }
 
 }
