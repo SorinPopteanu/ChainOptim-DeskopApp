@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.dto.CreateProductDTO;
@@ -19,42 +20,36 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CreateProductController implements Initializable {
 
     private final ProductWriteService productWriteService;
     private final NavigationService navigationService;
+    private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
     @FXML
-    private Label nameLabel;
-
+    private StackPane fallbackContainer;
     @FXML
     private TextField nameField;
-
-    @FXML
-    private Label descriptionLabel;
-
     @FXML
     private TextField descriptionField;
-
-    @FXML
-    private StackPane fallbackContainer;
 
     @Inject
     public CreateProductController(
             ProductWriteService productWriteService,
             NavigationService navigationService,
+            CurrentSelectionService currentSelectionService,
             FallbackManager fallbackManager,
             FXMLLoaderService fxmlLoaderService,
             ControllerFactory controllerFactory
     ) {
         this.productWriteService = productWriteService;
         this.navigationService = navigationService;
+        this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
@@ -79,7 +74,6 @@ public class CreateProductController implements Initializable {
         // Get current organization
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
-            Platform.runLater(() -> fallbackManager.setLoading(false));
             return;
         }
 
@@ -87,23 +81,27 @@ public class CreateProductController implements Initializable {
 
         Integer organizationId = currentUser.getOrganization().getId();
 
+        // Gather product DTO
         CreateProductDTO productDTO = new CreateProductDTO();
-        productDTO.setName("test name");
-        productDTO.setDescription("test");
+        productDTO.setName(nameField.getText());
+        productDTO.setDescription(descriptionField.getText());
         productDTO.setUnitId(1);
         productDTO.setOrganizationId(organizationId);
 
         System.out.println(productDTO);
+        // Hit create endpoint
         productWriteService.createProduct(productDTO)
                 .thenAccept(productOptional -> {
                     // Navigate to product page
                     Platform.runLater(() -> {
                         if (productOptional.isEmpty()) {
                             fallbackManager.setErrorMessage("Failed to create product.");
-                            fallbackManager.setLoading(false);
                             return;
                         }
-                        navigationService.switchView("Product?=" + productOptional.get().getId());
+                        Product product = productOptional.get();
+                        fallbackManager.setLoading(false);
+                        currentSelectionService.setSelectedId(product.getId());
+                        navigationService.switchView("Product?id=" + product.getId());
                     });
                 })
                 .exceptionally(ex -> {

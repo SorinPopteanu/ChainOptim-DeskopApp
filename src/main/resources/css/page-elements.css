@@ -6,11 +6,6 @@
     -fx-background-color: #ffffff;
 }
 
-.create-new-item {
-    -fx-background-color: #007fff;
-    -fx-text-fill: #ffffff;
-}
-
 .search-button {
     -fx-background-color: #000000;
     -fx-border-color: transparent;

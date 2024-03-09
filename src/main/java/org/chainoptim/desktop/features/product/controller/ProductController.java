@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.features.product.model.Product;
@@ -25,6 +26,9 @@ public class ProductController implements Initializable {
     @FXML
     private StackPane fallbackContainer;
 
+    @FXML
+    private Label productName;
+
     @Inject
     public ProductController(ProductService productService,
                              FallbackManager fallbackManager,
@@ -38,7 +42,7 @@ public class ProductController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         Integer productId = currentSelectionService.getSelectedId();
         if (productId == null) {
-            System.out.println("Failed to load product");
+            System.out.println("Missing product id.");
             fallbackManager.setErrorMessage("Failed to load product.");
         }
 
@@ -61,6 +65,7 @@ public class ProductController implements Initializable {
                 return;
             }
             this.product = productOptional.get();
+            productName.setText(product.getName());
             System.out.println("Product: " + product);
         });
 

@@ -71,19 +71,10 @@ public class ProductsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
         initializeHeader();
+        loadFallbackManager();
         loadProducts();
         setUpListeners();
-    }
-
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void initializeHeader() {
@@ -100,6 +91,15 @@ public class ProductsController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void setUpListeners() {
@@ -124,7 +124,6 @@ public class ProductsController implements Initializable {
                 .exceptionally(this::handleProductException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
-
 
     private Optional<PaginatedResults<Product>> handleProductResponse(Optional<PaginatedResults<Product>> productsOptional) {
         Platform.runLater(() -> {

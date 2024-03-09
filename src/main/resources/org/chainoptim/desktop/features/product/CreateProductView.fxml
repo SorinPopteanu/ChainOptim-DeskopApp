@@ -4,18 +4,29 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
-<AnchorPane xmlns="http://javafx.com/javafx"
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.PasswordField?>
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.product.controller.CreateProductController"
-            prefHeight="400.0" prefWidth="600.0" style="-fx-padding: 10;">
+            prefHeight="400.0" prefWidth="600.0" styleClass="form-container">
 
-    <Label fx:id="nameLabel"
-           style="-fx-padding: 10;"/>
+    <!-- Title Text -->
+    <HBox styleClass="title-container">
+        <Text text="Create Product" styleClass="form-title"/>
+    </HBox>
+
+    <!-- Username Label and TextField -->
+    <Label text="Name:" styleClass="form-label"/>
     <TextField fx:id="nameField"/>
-    <Label fx:id="descriptionLabel"
-           style="-fx-padding: 10;"/>
+
+    <!-- Password Label and PasswordField -->
+    <Label text="Description:" styleClass="form-label"/>
     <TextField fx:id="descriptionField"/>
-    <Button text="Submit" onAction="#handleSubmit"/>
+
+    <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px;">
+        <Button text="Create" onAction="#handleSubmit" styleClass="standard-write-button"/>
+    </HBox>
 
     <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
-</AnchorPane>
+</VBox>
