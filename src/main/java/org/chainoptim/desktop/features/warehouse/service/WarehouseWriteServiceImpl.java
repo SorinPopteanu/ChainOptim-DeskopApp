@@ -24,7 +24,7 @@ public class WarehouseWriteServiceImpl implements WarehouseWriteService {
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<Warehouse>> createWarehouse(CreateWarehouseDTO warehouseDTO) {
-        String routeAddress = "http://localhost:8080/api/warehouses/create";
+        String routeAddress = "http://localhost:8080/api/v1/warehouses/create";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -59,7 +59,7 @@ public class WarehouseWriteServiceImpl implements WarehouseWriteService {
     }
 
     public CompletableFuture<Optional<Warehouse>> updateWarehouse(UpdateWarehouseDTO warehouseDTO) {
-        String routeAddress = "http://localhost:8080/api/warehouses/update";
+        String routeAddress = "http://localhost:8080/api/v1/warehouses/update";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -94,7 +94,7 @@ public class WarehouseWriteServiceImpl implements WarehouseWriteService {
     }
 
     public CompletableFuture<Optional<Integer>> deleteWarehouse(Integer warehouseId) {
-        String routeAddress = "http://localhost:8080/api/warehouses/delete/" + warehouseId;
+        String routeAddress = "http://localhost:8080/api/v1/warehouses/delete/" + warehouseId;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

@@ -26,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<List<Product>>> getProductsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/products/organizations/" + organizationId;
+        String routeAddress = "http://localhost:8080/api/v1/products/organizations/" + organizationId;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
             Integer organizationId,
             SearchParams searchParams
     ) {
-        String routeAddress = "http://localhost:8080/api/products/organizations/advanced/" + organizationId.toString()
+        String routeAddress = "http://localhost:8080/api/v1/products/organizations/advanced/" + organizationId.toString()
                 + "?searchQuery=" + searchParams.getSearchQuery()
                 + "&sortBy=" + searchParams.getSortOption()
                 + "&ascending=" + searchParams.getAscending()
@@ -86,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public CompletableFuture<Optional<Product>> getProductWithStages(Integer productId) {
-        String routeAddress = "http://localhost:8080/api/products/" + productId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/products/" + productId.toString() + "/stages";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

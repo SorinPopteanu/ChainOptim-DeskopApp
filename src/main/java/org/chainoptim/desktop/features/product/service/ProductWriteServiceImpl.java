@@ -24,7 +24,7 @@ public class ProductWriteServiceImpl implements ProductWriteService {
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<Product>> createProduct(CreateProductDTO productDTO) {
-        String routeAddress = "http://localhost:8080/api/products/create";
+        String routeAddress = "http://localhost:8080/api/v1/products/create";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -60,7 +60,7 @@ public class ProductWriteServiceImpl implements ProductWriteService {
     }
 
     public CompletableFuture<Optional<Product>> updateProduct(UpdateProductDTO productDTO) {
-        String routeAddress = "http://localhost:8080/api/products/update";
+        String routeAddress = "http://localhost:8080/api/v1/products/update";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -95,7 +95,7 @@ public class ProductWriteServiceImpl implements ProductWriteService {
     }
 
     public CompletableFuture<Optional<Integer>> deleteProduct(Integer productId) {
-        String routeAddress = "http://localhost:8080/api/products/delete/" + productId;
+        String routeAddress = "http://localhost:8080/api/v1/products/delete/" + productId;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

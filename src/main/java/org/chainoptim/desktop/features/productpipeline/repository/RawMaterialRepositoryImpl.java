@@ -17,7 +17,7 @@ public class RawMaterialRepositoryImpl implements RawMaterialRepository {
     private final HttpClient client = HttpClient.newHttpClient();
 
     public Optional<List<RawMaterial>> getRawMaterialsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/raw-materials/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/raw-materials/organizations/" + organizationId.toString();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))

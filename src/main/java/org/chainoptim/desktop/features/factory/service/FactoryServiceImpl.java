@@ -23,7 +23,7 @@ public class FactoryServiceImpl implements FactoryService {
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/factories/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/factories/organizations/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -56,7 +56,7 @@ public class FactoryServiceImpl implements FactoryService {
             int page,
             int itemsPerPage
     ) {
-        String routeAddress = "http://localhost:8080/api/factories/organizations/advanced/" + organizationId.toString()
+        String routeAddress = "http://localhost:8080/api/v1/factories/organizations/advanced/" + organizationId.toString()
                 + "?searchQuery=" + searchQuery
                 + "&sortOption=" + sortOption
                 + "&ascending=" + ascending
@@ -87,7 +87,7 @@ public class FactoryServiceImpl implements FactoryService {
     }
 
     public CompletableFuture<Optional<Factory>> getFactoryById(Integer factoryId) {
-        String routeAddress = "http://localhost:8080/api/factories/" + factoryId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/factories/" + factoryId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

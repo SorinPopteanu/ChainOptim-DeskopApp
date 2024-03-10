@@ -24,7 +24,7 @@ public class SupplierWriteWriteServiceImpl implements SupplierWriteService {
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<Supplier>> createSupplier(CreateSupplierDTO supplierDTO) {
-        String routeAddress = "http://localhost:8080/api/suppliers/create";
+        String routeAddress = "http://localhost:8080/api/v1/suppliers/create";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -59,7 +59,7 @@ public class SupplierWriteWriteServiceImpl implements SupplierWriteService {
     }
 
     public CompletableFuture<Optional<Supplier>> updateSupplier(UpdateSupplierDTO supplierDTO) {
-        String routeAddress = "http://localhost:8080/api/suppliers/update";
+        String routeAddress = "http://localhost:8080/api/v1/suppliers/update";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -94,7 +94,7 @@ public class SupplierWriteWriteServiceImpl implements SupplierWriteService {
     }
 
     public CompletableFuture<Optional<Integer>> deleteSupplier(Integer supplierId) {
-        String routeAddress = "http://localhost:8080/api/suppliers/delete/" + supplierId;
+        String routeAddress = "http://localhost:8080/api/v1/suppliers/delete/" + supplierId;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

@@ -24,7 +24,7 @@ public class FactoryWriteServiceImpl implements FactoryWriteService {
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<Factory>> createFactory(CreateFactoryDTO factoryDTO) {
-        String routeAddress = "http://localhost:8080/api/factories/create";
+        String routeAddress = "http://localhost:8080/api/v1/factories/create";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -59,7 +59,7 @@ public class FactoryWriteServiceImpl implements FactoryWriteService {
     }
 
     public CompletableFuture<Optional<Factory>> updateFactory(UpdateFactoryDTO factoryDTO) {
-        String routeAddress = "http://localhost:8080/api/factories/update";
+        String routeAddress = "http://localhost:8080/api/v1/factories/update";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -94,7 +94,7 @@ public class FactoryWriteServiceImpl implements FactoryWriteService {
     }
 
     public CompletableFuture<Optional<Integer>> deleteFactory(Integer factoryId) {
-        String routeAddress = "http://localhost:8080/api/factories/delete/" + factoryId;
+        String routeAddress = "http://localhost:8080/api/v1/factories/delete/" + factoryId;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

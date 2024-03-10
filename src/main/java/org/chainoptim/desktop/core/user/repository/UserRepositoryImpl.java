@@ -21,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     public CompletableFuture<Optional<User>> getUserByUsername(String username) throws UnsupportedEncodingException {
         String encodedUsername = URLEncoder.encode(username, StandardCharsets.UTF_8);
-        String routeAddress = "http://localhost:8080/api/users/username/" + encodedUsername;
+        String routeAddress = "http://localhost:8080/api/v1/users/username/" + encodedUsername;
 
         // Retrieve the saved JWT token
         String jwtToken = TokenManager.getToken();

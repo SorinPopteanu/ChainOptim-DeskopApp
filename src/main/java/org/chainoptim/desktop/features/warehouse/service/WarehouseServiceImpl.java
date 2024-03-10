@@ -24,7 +24,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/warehouses/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/warehouses/organizations/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -57,7 +57,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             int page,
             int itemsPerPage
     ) {
-        String routeAddress = "http://localhost:8080/api/warehouses/organizations/advanced/" + organizationId.toString()
+        String routeAddress = "http://localhost:8080/api/v1/warehouses/organizations/advanced/" + organizationId.toString()
                 + "?searchQuery=" + searchQuery
                 + "&sortOption=" + sortOption
                 + "&ascending=" + ascending
@@ -88,7 +88,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     public CompletableFuture<Optional<Warehouse>> getWarehouseById(Integer warehouseId) {
-        String routeAddress = "http://localhost:8080/api/warehouses/" + warehouseId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/warehouses/" + warehouseId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
