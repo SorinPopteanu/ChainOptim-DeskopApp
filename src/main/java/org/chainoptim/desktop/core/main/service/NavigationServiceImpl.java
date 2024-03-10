@@ -51,7 +51,10 @@ public class NavigationServiceImpl implements NavigationService {
             "Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml",
             "Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml",
             // Dynamic route pages
-            "Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"
+            "Product", "/org/chainoptim/desktop/features/product/ProductView.fxml",
+
+            // Create forms
+            "Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"
     );
 
     public void switchView(String viewKey) {

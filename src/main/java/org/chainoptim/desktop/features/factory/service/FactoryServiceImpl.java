@@ -1,8 +1,8 @@
-package org.chainoptim.desktop.features.factory.repository;
+package org.chainoptim.desktop.features.factory.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.factory.repository.FactoryRepository;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
@@ -15,16 +15,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class FactoryRepositoryImpl implements FactoryRepository {
+public class FactoryServiceImpl implements FactoryService {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
+    private static final String HEADER_KEY = "Authorization";
+    private static final String HEADER_VALUE_PREFIX = "Bearer ";
+
     public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/factories/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/factories/organizations/" + organizationId.toString();
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -48,16 +56,21 @@ public class FactoryRepositoryImpl implements FactoryRepository {
             int page,
             int itemsPerPage
     ) {
-        String routeAddress = "http://localhost:8080/api/factories/organizations/advanced" + organizationId.toString()
+        String routeAddress = "http://localhost:8080/api/v1/factories/organizations/advanced/" + organizationId.toString()
                 + "?searchQuery=" + searchQuery
                 + "&sortOption=" + sortOption
                 + "&ascending=" + ascending
                 + "&page=" + page
                 + "&itemsPerPage=" + itemsPerPage;
 
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -74,11 +87,16 @@ public class FactoryRepositoryImpl implements FactoryRepository {
     }
 
     public CompletableFuture<Optional<Factory>> getFactoryById(Integer factoryId) {
-        String routeAddress = "http://localhost:8080/api/factories/" + factoryId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/factories/" + factoryId.toString();
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .GET()
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())

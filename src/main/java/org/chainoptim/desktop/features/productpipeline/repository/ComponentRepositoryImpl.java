@@ -17,7 +17,7 @@ public class ComponentRepositoryImpl implements ComponentRepository {
     private final HttpClient client = HttpClient.newHttpClient();
 
     public Optional<List<Component>> getComponentsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/components/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/components/organizations/" + organizationId.toString();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))

@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.product.repository;
+package org.chainoptim.desktop.features.product.service;
 
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface ProductRepository {
+public interface ProductService {
 
     public CompletableFuture<Optional<List<Product>>> getProductsByOrganizationId(Integer organizationId);
 

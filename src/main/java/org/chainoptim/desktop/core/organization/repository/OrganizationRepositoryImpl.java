@@ -15,7 +15,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     private final HttpClient client = HttpClient.newHttpClient();
 
     public Optional<Organization> getOrganizationById(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/organizations/" + organizationId.toString();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))

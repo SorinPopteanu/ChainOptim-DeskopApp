@@ -48,26 +48,30 @@ module org.chainoptim.desktop {
     // Features
     // - Product
     opens org.chainoptim.desktop.features.product.controller to javafx.fxml, com.google.guice;
-    opens org.chainoptim.desktop.features.product.repository to com.google.guice;
+    opens org.chainoptim.desktop.features.product.service to com.google.guice;
     opens org.chainoptim.desktop.features.product.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.product.dto to com.fasterxml.jackson.databind;
 
     // - Product pipeline
     opens org.chainoptim.desktop.features.productpipeline.model to com.fasterxml.jackson.databind;
 
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
-    opens org.chainoptim.desktop.features.factory.repository to com.google.guice;
+    opens org.chainoptim.desktop.features.factory.service to com.google.guice;
     opens org.chainoptim.desktop.features.factory.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.factory.dto to com.fasterxml.jackson.databind;
 
     // - Warehouse
     opens org.chainoptim.desktop.features.warehouse.controller to javafx.fxml, com.google.guice;
-    opens org.chainoptim.desktop.features.warehouse.repository to com.google.guice;
+    opens org.chainoptim.desktop.features.warehouse.service to com.google.guice;
     opens org.chainoptim.desktop.features.warehouse.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.warehouse.dto to com.fasterxml.jackson.databind;
 
     // - Supplier
     opens org.chainoptim.desktop.features.supplier.controller to javafx.fxml, com.google.guice;
-    opens org.chainoptim.desktop.features.supplier.repository to com.google.guice;
+    opens org.chainoptim.desktop.features.supplier.service to com.google.guice;
     opens org.chainoptim.desktop.features.supplier.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.supplier.dto to com.fasterxml.jackson.databind;
 
     // Shared
     // - Location

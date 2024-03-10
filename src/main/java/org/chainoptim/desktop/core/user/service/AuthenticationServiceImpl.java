@@ -30,7 +30,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public boolean login(String username, String password) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/login"))
+                .uri(URI.create("http://localhost:8080/api/v1/login"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password)))
                 .build();
@@ -56,7 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     // Call API endpoint to validate JWT token
     public boolean validateJWTToken(String jwtToken) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/validate-token"))
+                .uri(URI.create("http://localhost:8080/api/v1/validate-token"))
                 .POST(HttpRequest.BodyPublishers.ofString(jwtToken))
                 .header("Content-Type", "application/json")
                 .build();
@@ -73,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     // Call API endpoint to get username from token
     public Optional<String> getUsernameFromJWTToken(String jwtToken) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/get-username-from-token"))
+                .uri(URI.create("http://localhost:8080/api/v1/get-username-from-token"))
                 .POST(HttpRequest.BodyPublishers.ofString(jwtToken))
                 .header("Content-Type", "application/json")
                 .build();

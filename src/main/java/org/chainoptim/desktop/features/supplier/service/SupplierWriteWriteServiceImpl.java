@@ -1,6 +1,7 @@
-package org.chainoptim.desktop.features.supplier.repository;
+package org.chainoptim.desktop.features.supplier.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.supplier.dto.CreateSupplierDTO;
 import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
@@ -15,12 +16,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class SupplierWriteRepositoryImpl implements SupplierWriteRepository {
+public class SupplierWriteWriteServiceImpl implements SupplierWriteService {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
+    private static final String HEADER_KEY = "Authorization";
+    private static final String HEADER_VALUE_PREFIX = "Bearer ";
+
     public CompletableFuture<Optional<Supplier>> createSupplier(CreateSupplierDTO supplierDTO) {
-        String routeAddress = "http://localhost:8080/api/suppliers/create";
+        String routeAddress = "http://localhost:8080/api/v1/suppliers/create";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
         // Serialize DTO
         String requestBody = null;
@@ -34,6 +42,7 @@ public class SupplierWriteRepositoryImpl implements SupplierWriteRepository {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -50,7 +59,11 @@ public class SupplierWriteRepositoryImpl implements SupplierWriteRepository {
     }
 
     public CompletableFuture<Optional<Supplier>> updateSupplier(UpdateSupplierDTO supplierDTO) {
-        String routeAddress = "http://localhost:8080/api/suppliers/update";
+        String routeAddress = "http://localhost:8080/api/v1/suppliers/update";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
         // Serialize DTO
         String requestBody = null;
@@ -64,6 +77,7 @@ public class SupplierWriteRepositoryImpl implements SupplierWriteRepository {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -80,11 +94,16 @@ public class SupplierWriteRepositoryImpl implements SupplierWriteRepository {
     }
 
     public CompletableFuture<Optional<Integer>> deleteSupplier(Integer supplierId) {
-        String routeAddress = "http://localhost:8080/api/suppliers/delete/" + supplierId;
+        String routeAddress = "http://localhost:8080/api/v1/suppliers/delete/" + supplierId;
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString("", StandardCharsets.UTF_8))
+                .headers(HEADER_KEY, headerValue)
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
