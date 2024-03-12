@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.*;
 
 public class HeaderController {
 
@@ -26,7 +25,7 @@ public class HeaderController {
     @FXML
     private TextField searchBar;
     @FXML
-    private ComboBox filters;
+    private ComboBox sortOptions;
     @FXML
     private Button orderingButton;
     @FXML
@@ -34,7 +33,7 @@ public class HeaderController {
     @FXML
     private Button searchButton;
 
-    private Map<String,String> filtersMap;
+    private Map<String,String> sortOptionsMap;
 
     private final Image sortUpIcon = new Image(getClass().getResourceAsStream("/img/sort-up.png"));
     private final Image sortDownIcon = new Image(getClass().getResourceAsStream("/img/sort-down.png"));
@@ -50,12 +49,12 @@ public class HeaderController {
         this.navigationService = navigationService;
     }
 
-    public void initializeHeader(String titleText, String titleIconPath, Map<String, String> filtersMap, String createNewItemButtonText) {
-        this.filtersMap = filtersMap;
+    public void initializeHeader(String titleText, String titleIconPath, Map<String, String> sortOptionsMap, String createNewItemButtonText) {
+        this.sortOptionsMap = sortOptionsMap;
         setSearchButton();
         setTitle(titleText, titleIconPath);
         setOrderingButton();
-        setFilters(new ArrayList<>(filtersMap.values()));
+        setSortOptions(new ArrayList<>(sortOptionsMap.values()));
         setCreateNewItemButton(createNewItemButtonText);
     }
 
@@ -70,8 +69,8 @@ public class HeaderController {
         searchButton.setGraphic(searchIconView);
     }
 
-    private void setFilters(List<String> filters) {
-        this.filters.getItems().addAll(filters);
+    private void setSortOptions(List<String> sortOptions) {
+        this.sortOptions.getItems().addAll(sortOptions);
     }
 
     private void setOrderingButton() {
@@ -127,8 +126,8 @@ public class HeaderController {
 
     @FXML
     private void handleSortOption() {
-        String selectedFilter = filters.getValue().toString();
-        String backendFilter = filtersMap.entrySet().stream()
+        String selectedFilter = sortOptions.getValue().toString();
+        String backendFilter = sortOptionsMap.entrySet().stream()
             .filter(entry -> Objects.equals(entry.getValue(), selectedFilter))
             .map(Map.Entry::getKey)
             .findFirst()

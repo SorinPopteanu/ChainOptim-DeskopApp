@@ -9,6 +9,8 @@
 
     <VBox fx:id="productsVBox" styleClass="products-list"/>
 
+    <StackPane fx:id="pageSelectorContainer"/>
+
     <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
 
 </VBox>

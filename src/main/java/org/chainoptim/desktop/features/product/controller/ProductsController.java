@@ -9,6 +9,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -36,14 +37,21 @@ public class ProductsController implements Initializable {
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
-    private HeaderController headerController;
 
+    @FXML
+    private HeaderController headerController;
+    @FXML
+    private PageSelectorController pageSelectorController;
+    @FXML
+    private StackPane pageSelectorContainer;
     @FXML
     private StackPane fallbackContainer;
     @FXML
     private StackPane headerContainer;
     @FXML
     private VBox productsVBox;
+
+    private long totalCount;
 
     private final SearchParams searchParams;
     private final Map<String, String> sortOptions = Map.of(
@@ -75,6 +83,27 @@ public class ProductsController implements Initializable {
         loadFallbackManager();
         loadProducts();
         setUpListeners();
+        initializePageSelector();
+    }
+
+    private void initializePageSelector() {
+        // Load view into pageSelectorContainer and initialize it with appropriate values
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node pageSelectorView = loader.load();
+            pageSelectorContainer.getChildren().add(pageSelectorView);
+            pageSelectorController = loader.getController();
+
+
+            System.out.println("Total count: " + totalCount);
+
+            searchParams.getPageProperty().addListener((obs, oldPage, newPage) -> loadProducts());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initializeHeader() {
@@ -133,10 +162,12 @@ public class ProductsController implements Initializable {
             }
             productsVBox.getChildren().clear();
             PaginatedResults<Product> paginatedResults = productsOptional.get();
+            totalCount = paginatedResults.getTotalCount();
 
             if (!paginatedResults.results.isEmpty()) {
                 for (Product product : paginatedResults.results) {
                     loadProductCardUI(product);
+                    Platform.runLater(() -> pageSelectorController.initialize(totalCount));
                 }
             } else {
                 fallbackManager.setNoResults(true);
