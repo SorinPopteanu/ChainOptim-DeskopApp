@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.control.Label?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.factory.controller.FactoryController"
+            fx:controller="org.chainoptim.desktop.features.factory.controller.FactoryProductionGraphController"
             prefHeight="400.0" prefWidth="600.0">
 
-    <Label fx:id="factoryName"/>
-
     <StackPane fx:id="graphContainer"/>
-
-    <StackPane fx:id="fallbackContainer"/>
 </AnchorPane>

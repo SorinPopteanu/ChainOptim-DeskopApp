@@ -23,8 +23,10 @@ module org.chainoptim.desktop {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.google.guice;
+    requires gs.core;
+    requires gs.ui.javafx;
 
-    opens org.chainoptim.desktop to javafx.fxml;
+    opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core;
 
     // Core
     // - Main
