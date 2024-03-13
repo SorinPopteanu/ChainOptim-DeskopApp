@@ -52,6 +52,7 @@ public class NavigationServiceImpl implements NavigationService {
             "Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml",
             // Dynamic route pages
             "Product", "/org/chainoptim/desktop/features/product/ProductView.fxml",
+            "Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml",
 
             // Create forms
             "Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"

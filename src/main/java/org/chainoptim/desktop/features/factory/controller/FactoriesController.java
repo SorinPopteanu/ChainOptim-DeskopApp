@@ -1,4 +1,207 @@
 package org.chainoptim.desktop.features.factory.controller;
 
-public class FactoriesController {
+import com.google.inject.Inject;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.controller.HeaderController;
+import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.factory.service.FactoryService;
+import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.PaginatedResults;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
+public class FactoriesController implements Initializable {
+
+    private final FactoryService factoryService;
+    private final NavigationServiceImpl navigationService;
+    private final CurrentSelectionService currentSelectionService;
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
+    private final FallbackManager fallbackManager;
+
+    @FXML
+    private HeaderController headerController;
+    @FXML
+    private PageSelectorController pageSelectorController;
+    @FXML
+    private StackPane pageSelectorContainer;
+    @FXML
+    private StackPane fallbackContainer;
+    @FXML
+    private StackPane headerContainer;
+    @FXML
+    private VBox factoriesVBox;
+
+    private final SearchParams searchParams;
+    private final Map<String, String> sortOptions = Map.of(
+            "createdAt", "Created At",
+            "updatedAt", "Updated At"
+    );
+    private long totalCount;
+
+    @Inject
+    public FactoriesController(FactoryService factoryService,
+                              NavigationServiceImpl navigationService,
+                              CurrentSelectionService currentSelectionService,
+                              FXMLLoaderService fxmlLoaderService,
+                              ControllerFactory controllerFactory,
+                              FallbackManager fallbackManager,
+                              SearchParams searchParams
+    ) {
+        this.factoryService = factoryService;
+        this.navigationService = navigationService;
+        this.currentSelectionService = currentSelectionService;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
+        this.fallbackManager = fallbackManager;
+        this.searchParams = searchParams;
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resourceBundle) {
+        initializeHeader();
+        loadFallbackManager();
+        loadFactories();
+        initializePageSelector();
+        setUpListeners();
+    }
+
+    private void initializeHeader() {
+        // Load view into headerContainer and initialize it with appropriate values
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/main/HeaderView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node headerView = loader.load();
+            headerContainer.getChildren().add(headerView);
+            headerController = loader.getController();
+            headerController.initializeHeader("Factories", "/img/box-solid.png", sortOptions, "Factory");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initializePageSelector() {
+        // Load view into pageSelectorContainer and initialize it with appropriate values
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node pageSelectorView = loader.load();
+            pageSelectorContainer.getChildren().add(pageSelectorView);
+            pageSelectorController = loader.getController();
+
+            searchParams.getPageProperty().addListener((obs, oldPage, newPage) -> loadFactories());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
+    }
+
+    private void setUpListeners() {
+        // Listen to changes in search params
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadFactories());
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadFactories());
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadFactories());
+    }
+
+    private void loadFactories() {
+        User currentUser = TenantContext.getCurrentUser();
+        if (currentUser == null) {
+            Platform.runLater(() -> fallbackManager.setLoading(false));
+            return;
+        }
+
+        fallbackManager.setLoading(true);
+
+        Integer organizationId = currentUser.getOrganization().getId();
+        factoryService.getFactoriesByOrganizationIdAdvanced(organizationId, searchParams)
+                .thenApply(this::handleFactoryResponse)
+                .exceptionally(this::handleFactoryException)
+                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+    }
+
+    private Optional<PaginatedResults<Factory>> handleFactoryResponse(Optional<PaginatedResults<Factory>> factoriesOptional) {
+        Platform.runLater(() -> {
+            if (factoriesOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to load factories.");
+                return;
+            }
+            factoriesVBox.getChildren().clear();
+            PaginatedResults<Factory> paginatedResults = factoriesOptional.get();
+            totalCount = paginatedResults.getTotalCount();
+
+            if (!paginatedResults.results.isEmpty()) {
+                for (Factory factory : paginatedResults.results) {
+                    loadFactoryCardUI(factory);
+                    Platform.runLater(() -> pageSelectorController.initialize(totalCount));
+                }
+                fallbackManager.setNoResults(false);
+            } else {
+                fallbackManager.setNoResults(true);
+            }
+
+        });
+        return factoriesOptional;
+    }
+
+    private void loadFactoryCardUI(Factory factory) {
+        Label factoryName = new Label(factory.getName());
+        factoryName.getStyleClass().add("name-label");
+//        Label factoryDescription = new Label(factory.getDescription());
+//        factoryName.getStyleClass().add("description-label");
+        VBox factoryBox = new VBox(factoryName);
+        Button factoryButton = new Button();
+        factoryButton.getStyleClass().add("factory-button");
+        factoryButton.setGraphic(factoryBox);
+        factoryButton.setMaxWidth(Double.MAX_VALUE);
+        factoryButton.prefWidthProperty().bind(factoriesVBox.widthProperty());
+        factoryButton.setOnAction(event -> openFactoryDetails(factory.getId()));
+
+        factoriesVBox.getChildren().add(factoryButton);
+    }
+
+    private Optional<PaginatedResults<Factory>> handleFactoryException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factories."));
+        return Optional.empty();
+    }
+
+    private void openFactoryDetails(Integer factoryId) {
+        // Use currentSelectionService to remember the factoryId
+        // And also encode it in the viewKey for caching purposes
+        currentSelectionService.setSelectedId(factoryId);
+        currentSelectionService.setSelectedPage("Factory");
+
+        navigationService.switchView("Factory?id=" + factoryId);
+    }
 }
