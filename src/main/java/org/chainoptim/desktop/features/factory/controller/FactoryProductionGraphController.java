@@ -1,17 +1,22 @@
 package org.chainoptim.desktop.features.factory.controller;
 
-import com.google.inject.Inject;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.features.factory.factorygraph.model.*;
 import org.chainoptim.desktop.features.factory.factorygraph.model.SmallStage;
 import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.productpipeline.model.StageInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.util.JsonUtil;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.inject.Inject;
+import javafx.application.Platform;
+import javafx.concurrent.Worker;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
+import javafx.scene.web.WebView;
+import org.apache.commons.text.StringEscapeUtils;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.fx_viewer.FxViewer;
@@ -25,7 +30,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 
 public class FactoryProductionGraphController {
 
@@ -65,7 +70,7 @@ public class FactoryProductionGraphController {
             }
             this.productionGraph = productionGraphs.getFirst();
             System.out.println("Graph: " + productionGraph);
-            displayGraphData();
+            newDisplayGraphData();
         });
 
         return productionGraphs;
@@ -74,6 +79,35 @@ public class FactoryProductionGraphController {
     private List<FactoryProductionGraph> handleFactoryException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load graph."));
         return new ArrayList<>();
+    }
+
+    private void newDisplayGraphData() {
+        WebView webView = new WebView();
+        webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
+
+        String jsonString = "{}";
+        try {
+            jsonString = JsonUtil.getObjectMapper().writeValueAsString(productionGraph);
+        } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+        }
+        String finalJsonString = jsonString;
+        String escapedJsonString = StringEscapeUtils.escapeEcmaScript(finalJsonString);
+
+        webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == Worker.State.SUCCEEDED) {
+
+                // Execute script for rendering factory graph (using timeout for now to ensure bundle is loaded at this point)
+                String script = "setTimeout(function() { renderGraph('" + escapedJsonString + "'); }, 200);";
+                try {
+                    webView.getEngine().executeScript(script);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        graphContainer.getChildren().add(webView);
     }
 
     private void displayGraphData() {

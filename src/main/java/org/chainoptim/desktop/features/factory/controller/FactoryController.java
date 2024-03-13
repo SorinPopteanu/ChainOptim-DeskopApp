@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.factory.controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.web.WebView;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -109,6 +110,7 @@ public class FactoryController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
 }
