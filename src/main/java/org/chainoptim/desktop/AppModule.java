@@ -13,6 +13,8 @@ import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.repository.UserRepositoryImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
+import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
+import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
 import org.chainoptim.desktop.features.factory.service.FactoryServiceImpl;
 import org.chainoptim.desktop.features.product.service.ProductService;
@@ -58,6 +60,7 @@ public class AppModule extends AbstractModule {
         bind(ProductService.class).to(ProductServiceImpl.class);
         bind(ProductWriteService.class).to(ProductWriteServiceImpl.class);
         bind(FactoryService.class).to(FactoryServiceImpl.class);
+        bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
         bind(SupplierService.class).to(SupplierServiceImpl.class);
     }

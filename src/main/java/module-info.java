@@ -7,6 +7,7 @@ module org.chainoptim.desktop {
     // Java utils
     requires java.prefs;
     requires org.json;
+    requires java.base;
 
     // Http
     requires java.net.http;
@@ -60,8 +61,10 @@ module org.chainoptim.desktop {
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.factory.service to com.google.guice;
+    opens org.chainoptim.desktop.features.factory.factorygraph.service to com.google.guice;
     opens org.chainoptim.desktop.features.factory.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.factory.dto to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.factory.factorygraph.model to com.fasterxml.jackson.databind, java.base;
 
     // - Warehouse
     opens org.chainoptim.desktop.features.warehouse.controller to javafx.fxml, com.google.guice;
