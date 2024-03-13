@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 public class FactoryGraph {
-    private Map<Integer, Node> nodes = new HashMap<>(); // Key: factoryStageId
+    private Map<Integer, StageNode> nodes = new HashMap<>(); // Key: factoryStageId
     private Map<Integer, List<Edge>> adjList = new HashMap<>(); // Key: factoryStageId
     private Float pipelinePriority;
 }

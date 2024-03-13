@@ -3,7 +3,7 @@ package org.chainoptim.desktop.features.factory.factorygraph.model;
 import lombok.Data;
 
 @Data
-public class Node {
+public class StageNode {
     SmallStage smallStage;
     Float numberOfStepsCapacity;
     Float perDuration;
