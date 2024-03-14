@@ -177,12 +177,12 @@ public class FactoriesController implements Initializable {
 
     private void loadFactoryCardUI(Factory factory) {
         Label factoryName = new Label(factory.getName());
-        factoryName.getStyleClass().add("name-label");
-//        Label factoryDescription = new Label(factory.getDescription());
-//        factoryName.getStyleClass().add("description-label");
+        factoryName.getStyleClass().add("entity-name-label");
+//        Label supplierLocation = new Label(factory.getLocation().getFormattedLocation());
+//        supplierLocation.getStyleClass().add("entity-description-label");
         VBox factoryBox = new VBox(factoryName);
         Button factoryButton = new Button();
-        factoryButton.getStyleClass().add("factory-button");
+        factoryButton.getStyleClass().add("entity-card");
         factoryButton.setGraphic(factoryBox);
         factoryButton.setMaxWidth(Double.MAX_VALUE);
         factoryButton.prefWidthProperty().bind(factoriesVBox.widthProperty());

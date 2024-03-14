@@ -33,13 +33,11 @@ private long totalItems;
     @FXML
     public void initialize(long totalItems) {
         int itemsPerPage = searchParams.getItemsPerPage();
-        //long totalItems = paginatedResults.getTotalCount();
         this.totalItems = totalItems;
         int pageCount = (int) Math.ceil((double) totalItems / itemsPerPage);
         pagination.setPageCount(pageCount);
         pagination.setCurrentPageIndex(searchParams.getPage() - 1);
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            System.out.println("Page changed to: " + newIndex);
             searchParams.setPage(newIndex.intValue() + 1);
         });
     }

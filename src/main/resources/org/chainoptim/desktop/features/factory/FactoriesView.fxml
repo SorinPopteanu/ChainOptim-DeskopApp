@@ -7,7 +7,7 @@
 
     <StackPane fx:id="headerContainer"/>
 
-    <VBox fx:id="factoriesVBox" styleClass="products-list"/>
+    <VBox fx:id="factoriesVBox" styleClass="items-list"/>
 
     <StackPane fx:id="pageSelectorContainer"/>
 

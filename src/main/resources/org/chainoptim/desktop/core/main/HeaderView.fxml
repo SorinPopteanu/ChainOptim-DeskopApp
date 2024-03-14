@@ -7,11 +7,9 @@
             fx:controller="org.chainoptim.desktop.core.main.controller.HeaderController"
             styleClass="header">
 
+    <Label fx:id="title" styleClass="list-title"/>
 
-
-    <Label fx:id="title" styleClass="title"/>
-
-    <ToolBar styleClass="tool-bar">
+    <ToolBar styleClass="toolbar">
         <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
             <StackPane alignment="CENTER_RIGHT">
                 <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="200" styleClass="search-bar"/>
@@ -25,6 +23,5 @@
         </HBox>
     </ToolBar>
 
-    <Separator orientation="HORIZONTAL" styleClass="separator"/>
-
+    <Separator styleClass="separator"/>
 </VBox>

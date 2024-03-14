@@ -1,0 +1,24 @@
+.entity-card {
+    -fx-background-color: #f4f3f7;
+    -fx-border-color: #a9adad;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 8px;
+}
+
+.entity-card:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #e3e2e6;
+}
+
+.entity-name-label {
+    -fx-font-size: 18px;
+    -fx-padding: 4;
+    -fx-font-weight: bold;
+}
+
+.entity-description-label {
+    -fx-font-size: 15px;
+    -fx-padding: 4;
+    -fx-font-weight: 500;
+}
