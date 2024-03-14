@@ -3,11 +3,12 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
+      styleClass="main-container"
       fx:controller="org.chainoptim.desktop.features.product.controller.ProductsController">
 
     <StackPane fx:id="headerContainer"/>
 
-    <VBox fx:id="productsVBox" styleClass="products-list"/>
+    <VBox fx:id="productsVBox" styleClass="items-list"/>
 
     <StackPane fx:id="pageSelectorContainer"/>
 

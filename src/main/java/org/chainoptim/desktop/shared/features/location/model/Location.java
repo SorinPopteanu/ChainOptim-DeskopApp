@@ -1,5 +1,8 @@
 package org.chainoptim.desktop.shared.features.location.model;
 
+import lombok.Getter;
+
+@Getter
 public class Location {
 
     private Integer id;
@@ -11,5 +14,9 @@ public class Location {
     private Double longitude;
     private String zipCode;
     private Integer organizationId;
+
+    public String getFormattedLocation() {
+        return city + ", " + state + ", " + country;
+    }
 
 }

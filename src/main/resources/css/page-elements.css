@@ -1,31 +1,56 @@
+/* Everything related to the header: */
 .header {
     -fx-background-color: #ffffff;
+    -fx-padding: 20px;
+    -fx-spacing: 20px;
 }
 
 .tool-bar {
     -fx-background-color: #ffffff;
+    -fx-padding: 0px;
+}
+
+.search-bar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
 }
 
 .search-button {
-    -fx-background-color: #000000;
-    -fx-border-color: transparent;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+
+}
+
+.search-button:hover {
+    -fx-background-color: #f0f0f0;
 }
 
 .title {
     -fx-font-size: 30px;
     -fx-font-weight: bold;
-    -fx-padding: 10px;
     -fx-spacing: 20px;
 }
 
-.products-list {
-    -fx-backgroud-color: #ffffff;
+
+/* Everything related to the main stage: */
+.main-container {
+    -fx-background-color: #ffffff;
+}
+
+.items-list {
+    -fx-background-color: #ffffff;
     -fx-padding: 20px;
     -fx-spacing: 20px;
 }
 
-.product-button {
-    -fx-background-color: #eff8ff;
+
+/* Everything related to the displayed list: */
+.list-button {
+    -fx-background-color: #f0f0f0;
     -fx-border-color: #000000;
     -fx-border-width: 1px;
     -fx-border-radius: 5px;
@@ -41,9 +66,45 @@
 .description-label {
     -fx-font-size: 16px;
     -fx-padding: 5;
-    -fx-font-weight: normal;
+    -fx-font-weight: medium;
 }
 
+/* Everything related to pagination: */
+.pagination {
+    -fx-padding: 20px;
+    -fx-page-information-visible: false;
+}
+
+.pagination > .pagination-control > .control-box {
+    -fx-spacing: 0;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.pagination > .pagination-control > .control-box > .number-button,
+.pagination > .pagination-control > .control-box > .left-arrow-button,
+.pagination > .pagination-control > .control-box > .right-arrow-button {
+    -fx-background-insets: 0, 1;
+    -fx-background-color: #d3d3d3, #fafafa;
+    -fx-min-width: 35px;
+    -fx-min-height: 35px;
+}
+
+.pagination > .pagination-control > .control-box > .number-button:hover,
+.pagination > .pagination-control > .control-box > .left-arrow-button:hover,
+.pagination > .pagination-control > .control-box > .right-arrow-button:hover {
+    -fx-background-insets: 0;
+    -fx-background-color: #f0f0f0;
+}
+
+.pagination > .pagination-control > .control-box > .number-button:selected{
+    -fx-background-insets: 0;
+    -fx-background-color: #007fff;
+    -fx-text-fill: white;
+}
+
+
+/* Everything related to the fallbacks: */
 .fallback-container {
     -fx-spacing: 10px;
 }
@@ -58,6 +119,7 @@
     -fx-font-weight: normal;
 }
 
+/* Just for tests: */
 .test {
     -fx-background-color: #efb3b3;
 }

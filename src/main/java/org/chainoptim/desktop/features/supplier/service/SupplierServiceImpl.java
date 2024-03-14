@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -48,20 +49,17 @@ public class SupplierServiceImpl implements SupplierService {
                 });
     }
 
+
     public CompletableFuture<Optional<PaginatedResults<Supplier>>> getSuppliersByOrganizationIdAdvanced(
             Integer organizationId,
-            String searchQuery,
-            String sortOption,
-            boolean ascending,
-            int page,
-            int itemsPerPage
+            SearchParams searchParams
     ) {
         String routeAddress = "http://localhost:8080/api/v1/suppliers/organizations/advanced/" + organizationId.toString()
-                + "?searchQuery=" + searchQuery
-                + "&sortOption=" + sortOption
-                + "&ascending=" + ascending
-                + "&page=" + page
-                + "&itemsPerPage=" + itemsPerPage;
+                + "?searchQuery=" + searchParams.getSearchQuery()
+                + "&sortOption=" + searchParams.getSortOption()
+                + "&ascending=" + searchParams.getAscending()
+                + "&page=" + searchParams.getPage()
+                + "&itemsPerPage=" + searchParams.getItemsPerPage();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

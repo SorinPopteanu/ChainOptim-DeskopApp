@@ -36,7 +36,6 @@ private long totalItems;
         //long totalItems = paginatedResults.getTotalCount();
         this.totalItems = totalItems;
         int pageCount = (int) Math.ceil((double) totalItems / itemsPerPage);
-        System.out.println("Total items: " + totalItems + " Items per page: " + itemsPerPage + " Page count: " + pageCount);
         pagination.setPageCount(pageCount);
         pagination.setCurrentPageIndex(searchParams.getPage() - 1);
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
