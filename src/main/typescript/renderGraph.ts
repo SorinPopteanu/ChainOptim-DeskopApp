@@ -1,29 +1,35 @@
 import { FactoryProductionGraph, StageNode } from "./dataTypes";
 
 import * as d3 from "d3";
-import { Coordinates, StageNodeUI } from "./uiTypes";
+import { Coordinates, EdgeUI, StageNodeUI } from "./uiTypes";
 import { assignPositionsToNodes, findStartingNodes } from "./graphProcessing";
+import { encodeStageInputId, encodeStageOutputId } from "./utils";
+import { calculateEdgePoints, getCirclePoint } from "./geometryUtils";
 export {};
 
 function renderGraph(jsonData: string) {
     const data: FactoryProductionGraph = JSON.parse(jsonData);
 
-    // Preprocess graph
+    // Preprocess graph: assign position to nodes based on connections
     const startingNodeIds = findStartingNodes(data.factoryGraph);
     const factoryGraphUI = assignPositionsToNodes(startingNodeIds, data.factoryGraph);
 
     const width = 800,
         height = 600;
+    const stageInputNodeRadius = 10;
 
     // Create SVG container
     const svg = d3.select("#viz").append("svg").attr("width", width).attr("height", height);
 
     // Draw all nodes
-    Object.values(factoryGraphUI.nodes).forEach((node, index) => {
-        renderGraphNode(svg, node, index, node.coordinates.x, node.coordinates.y);
+    Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
+        renderGraphNode(svg, node, parseInt(stageNodeId, 10), node.coordinates.x, node.coordinates.y, stageInputNodeRadius);
     });
 
-    // const nodeElement = d3.select(`#${nodeId}`);
+    // Draw all edges
+    Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
+        renderEdges(svg, node, factoryGraphUI.adjList, stageInputNodeRadius,  parseInt(stageNodeId, 10));
+    });
 }
 
 function renderGraphNode(
@@ -31,7 +37,8 @@ function renderGraphNode(
     node: StageNodeUI,
     stageNodeId: number,
     centerX: number,
-    centerY: number
+    centerY: number,
+    circleRadius: number
 ) {
     // Render main stage box
     const stageBoxWidth = 80;
@@ -41,10 +48,9 @@ function renderGraphNode(
     // Add stage input and output subnodes
     const stageWidth = 100;
     const stageHeight = 120;
-    const stageInputNodeRadius = 10;
 
-    renderStageInputs(svg, node, stageNodeId, centerX, centerY, stageWidth, stageHeight, stageInputNodeRadius, stageBoxY);
-    renderStageOutputs(svg, node, stageNodeId, centerX, centerY, stageWidth, stageHeight, stageInputNodeRadius, stageBoxY + stageBoxHeight);
+    renderStageInputs(svg, node, stageNodeId, centerX, centerY, stageWidth, stageHeight, circleRadius, stageBoxY);
+    renderStageOutputs(svg, node, stageNodeId, centerX, centerY, stageWidth, stageHeight, circleRadius, stageBoxY + stageBoxHeight);
 }
 
 const renderMainNode = (
@@ -106,7 +112,8 @@ const renderStageInputs = (
         const stageInputX = centerX + stageInputRelativeX;
         const stageInputY = centerY - stageHeight / 2;
 
-        const nodeId: string = stageNodeId + ":si:" + input.id;
+        const nodeId: string = encodeStageInputId(stageNodeId, input.id);
+        console.log("NodeID: ", nodeId);
 
         svg.append("circle")
             .attr("id", nodeId)
@@ -118,11 +125,14 @@ const renderStageInputs = (
             .attr("r", stageInputNodeRadius);
 
         // Add edge from stage input to main stage box
-        const edgeId = nodeId + ":edge:" + stageNodeId;
+        const edgeId = nodeId + "_edge_" + stageNodeId;
+
+        const stageInputConnectingCoordinates = getCirclePoint(stageInputX, stageInputY + stageInputNodeRadius, stageInputNodeRadius, 0.25);
+
         svg.append("line")
             .attr("id", edgeId)
-            .attr("x1", stageInputX)
-            .attr("y1", stageInputY + stageInputNodeRadius) // Connect from the bottom of the circle
+            .attr("x1", stageInputConnectingCoordinates.x)
+            .attr("y1", stageInputConnectingCoordinates.y) // Connect from the bottom of the circle
             .attr("x2", centerX + stageInputRelativeX / 5) // Connect to around the center X and top Y of the box
             .attr("y2", stageBoxY)
             .attr("stroke", "black")
@@ -151,7 +161,8 @@ const renderStageOutputs = (
         const stageOutputX = centerX + stageOutputRelativeX;
         const stageOutputY = centerY + stageHeight / 2;
 
-        const nodeId: string = stageNodeId + ":so:" + output.id;
+        const nodeId: string = encodeStageOutputId(stageNodeId, output.id);
+        console.log("NodeID: ", nodeId);
 
         svg.append("circle")
             .attr("id", nodeId)
@@ -170,6 +181,53 @@ const renderStageOutputs = (
             .attr("y1", stageOutputY - stageOutputNodeRadius) // Connect from the top of the circle
             .attr("x2", centerX + stageOutputRelativeX / 5) // Connect to around the center X and bottm Y of the box
             .attr("y2", stageBoxY)
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
+    });
+};
+
+const renderEdges = (
+    svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>,
+    nodeUI: StageNodeUI,
+    adjListUI: Record<number, EdgeUI[]>,
+    circleRadius: number,
+    stageNodeId: number
+) => {
+    const neighbors = adjListUI[stageNodeId];
+    if (!neighbors) {
+        return;
+    }
+
+    neighbors.forEach((neighbor) => {
+        // Find incoming stage output and outgoing stage input
+        const sourceElement = d3.select(
+            `#${encodeStageOutputId(neighbor.edge.incomingFactoryStageId, neighbor.edge.incomingStageOutputId)}`
+        );
+        const targetElement = d3.select(
+            `#${encodeStageInputId(neighbor.edge.outgoingFactoryStageId, neighbor.edge.outgoingStageInputId)}`
+        );
+
+        if (sourceElement.empty() || targetElement.empty()) {
+            console.log(
+                "Source or target element empty for: ",
+                encodeStageOutputId(neighbor.edge.incomingFactoryStageId, neighbor.edge.incomingStageOutputId),
+                encodeStageInputId(neighbor.edge.outgoingFactoryStageId, neighbor.edge.outgoingStageInputId)
+            );
+            return;
+        }
+
+        const { start, end } = calculateEdgePoints(
+            { x: parseFloat(sourceElement.attr("cx")), y: parseFloat(sourceElement.attr("cy")) },
+            { x: parseFloat(targetElement.attr("cx")), y: parseFloat(targetElement.attr("cy")) },
+            circleRadius,
+            circleRadius
+        );
+
+        svg.append("line")
+            .attr("x1", start.x)
+            .attr("y1", start.y)
+            .attr("x2", end.x)
+            .attr("y2", end.y)
             .attr("stroke", "black")
             .attr("stroke-width", 1);
     });

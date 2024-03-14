@@ -17,11 +17,13 @@ export function findStartingNodes(factoryGraph: FactoryGraph): number[] {
 
     // Find starting nodes
     const startingNodeIds = Array.from(allNodeIds).filter((nodeId) => !targetNodeIds.has(nodeId));
+    console.log("Starting nodes: ", startingNodeIds);
+
     return startingNodeIds;
 }
 
 /*
- * Function for transforming data types in UI types 
+ * Function for transforming data types in UI types
  * and recursively assigning positions to nodes in the graph based on their edges.
  */
 export function assignPositionsToNodes(
@@ -75,6 +77,7 @@ export function assignPositionsRecursively(
     factoryGraph: FactoryGraphUI,
     depth: number,
 ): FactoryGraphUI {
+    console.log("Node: ", startingNodeId, "Depth: ", depth, "Index: ", startingNodeIndex);
     factoryGraph.nodes[startingNodeId].coordinates = { x: 100 + startingNodeIndex * 200, y: 100 + depth * 200 };
     factoryGraph.nodes[startingNodeId].visited = true;
 
@@ -85,7 +88,7 @@ export function assignPositionsRecursively(
         if (!factoryGraph.nodes[targetNodeId].visited) {
             factoryGraph = assignPositionsRecursively(
                 targetNodeId,
-                startingNodeIndex + 1,
+                startingNodeIndex,
                 factoryGraph,
                 depth + 1
             );
