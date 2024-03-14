@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "target": "es6",
+    "outDir": "./dist",
+    "moduleResolution": "node",
+    "lib": ["dom", "es6", "dom.iterable", "scripthost"],
+    "noImplicitAny": true,
+    "allowJs": true,
+    "sourceMap": false
+  },
+  "include": [
+    "src/main/typescript/**/*"
+  ]
+}

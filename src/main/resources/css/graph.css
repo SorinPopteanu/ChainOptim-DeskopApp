@@ -1,0 +1,24 @@
+node.stage {
+    shape: box;
+    size: 80px, 40px;
+    fill-color: gray;
+    text-alignment: center;
+    text-color: black;
+    text-size: 14;
+    text-style: bold;
+}
+
+node.input {
+    size: 30px, 30px;
+    fill-color: red;
+}
+
+node.output {
+    size: 30px, 30px;
+    fill-color: blue;
+}
+
+edge {
+    fill-color: grey;
+    size: 1px;
+}

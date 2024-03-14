@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.factory.service;
 
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +13,7 @@ public interface FactoryService {
     CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId);
     CompletableFuture<Optional<PaginatedResults<Factory>>> getFactoriesByOrganizationIdAdvanced(
             Integer organizationId,
-            String searchQuery,
-            String sortOption,
-            boolean ascending,
-            int page,
-            int itemsPerPage
+            SearchParams searchParams
     );
     CompletableFuture<Optional<Factory>> getFactoryById(Integer factoryId);
 }

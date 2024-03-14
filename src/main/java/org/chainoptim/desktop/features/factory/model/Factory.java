@@ -16,4 +16,5 @@ public class Factory {
     private LocalDateTime updatedAt;
     private Integer organizationId;
     private Location location;
+    private Set<FactoryStage> factoryStages;
 }
