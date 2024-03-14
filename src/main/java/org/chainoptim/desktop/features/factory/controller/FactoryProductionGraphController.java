@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.factory.controller;
 
+import javafx.scene.control.ScrollPane;
 import org.chainoptim.desktop.features.factory.factorygraph.model.*;
 import org.chainoptim.desktop.features.factory.factorygraph.model.SmallStage;
 import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
@@ -84,7 +85,6 @@ public class FactoryProductionGraphController {
     private void newDisplayGraphData() {
         WebView webView = new WebView();
         webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
-
 
         String jsonString = "{}";
         try {

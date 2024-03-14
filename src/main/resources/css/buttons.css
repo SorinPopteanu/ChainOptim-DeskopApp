@@ -1,7 +1,9 @@
 .standard-write-button {
     -fx-background-color: #0077dd;
     -fx-text-fill: white;
-    -fx-padding: 4px 8px;
+    -fx-font-weight: normal;
+    -fx-font-size: 15px;
+    -fx-padding: 4px 8px 4px 8px;
 }
 
 .standard-write-button:hover {

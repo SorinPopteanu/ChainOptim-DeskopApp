@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.factory.controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebView;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
@@ -42,6 +43,8 @@ public class FactoryController implements Initializable {
 
     @FXML
     private Label factoryName;
+    @FXML
+    private Label factoryLocation;
 
     @Inject
     public FactoryController(FactoryService factoryService,
@@ -85,6 +88,7 @@ public class FactoryController implements Initializable {
             }
             this.factory = factoryOptional.get();
             factoryName.setText(factory.getName());
+            factoryLocation.setText(factory.getLocation().getFormattedLocation());
             System.out.println("Factory: " + factory);
         });
 
@@ -96,6 +100,7 @@ public class FactoryController implements Initializable {
         return Optional.empty();
     }
 
+
     private void initializeGraph() {
         // Load view into headerContainer and initialize it with appropriate values
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
@@ -103,14 +108,27 @@ public class FactoryController implements Initializable {
                 controllerFactory::createController
         );
         try {
-            Node headerView = loader.load();
-            graphContainer.getChildren().add(headerView);
+            Node graphView = loader.load();
+            graphContainer.getChildren().add(graphView);
+            adjustGraphLayout();
             graphController = loader.getController();
             graphController.initializeGraph();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }
+    private void adjustGraphLayout() {
+        // Calculate the total height of the header
+        double headerHeight = 160;
+
+        // Set the top anchor for graphContainer to be below the header
+        AnchorPane.setTopAnchor(graphContainer, headerHeight);
+    }
+
+    @FXML
+    private void handleEditFactory() {
+        System.out.println("Edit Factory Working");
     }
 
 }
