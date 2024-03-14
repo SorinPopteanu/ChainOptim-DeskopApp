@@ -85,8 +85,8 @@ public class HeaderController {
         title.setText(titleText);
         Image titleIcon = new Image(getClass().getResourceAsStream(titleIconPath));
         ImageView titleIconView = new ImageView(titleIcon);
-        titleIconView.setFitWidth(23);
-        titleIconView.setFitHeight(23);
+        titleIconView.setFitWidth(21);
+        titleIconView.setFitHeight(21);
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(-1);
         titleIconView.setEffect(colorAdjust);

@@ -165,6 +165,7 @@ public class ProductsController implements Initializable {
                     loadProductCardUI(product);
                     Platform.runLater(() -> pageSelectorController.initialize(totalCount));
                 }
+                fallbackManager.setNoResults(false);
             } else {
                 fallbackManager.setNoResults(true);
             }
@@ -175,12 +176,12 @@ public class ProductsController implements Initializable {
 
     private void loadProductCardUI(Product product) {
         Label productName = new Label(product.getName());
-        productName.getStyleClass().add("name-label");
+        productName.getStyleClass().add("entity-name-label");
         Label productDescription = new Label(product.getDescription());
-        productName.getStyleClass().add("description-label");
+        productDescription.getStyleClass().add("entity-description-label");
         VBox productBox = new VBox(productName, productDescription);
         Button productButton = new Button();
-        productButton.getStyleClass().add("list-button");
+        productButton.getStyleClass().add("entity-card");
         productButton.setGraphic(productBox);
         productButton.setMaxWidth(Double.MAX_VALUE);
         productButton.prefWidthProperty().bind(productsVBox.widthProperty());

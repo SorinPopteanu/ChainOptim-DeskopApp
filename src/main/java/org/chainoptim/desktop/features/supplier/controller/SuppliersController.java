@@ -162,6 +162,7 @@ public class SuppliersController implements Initializable {
                    loadSupplierCardUI(supplier);
                    Platform.runLater(() -> pageSelectorController.initialize(totalCount));
                }
+               fallbackManager.setNoResults(false);
            } else {
                fallbackManager.setNoResults(true);
            }
@@ -171,12 +172,12 @@ public class SuppliersController implements Initializable {
 
     private void loadSupplierCardUI(Supplier supplier) {
         Label supplierName = new Label(supplier.getName());
-        supplierName.getStyleClass().add("name-label");
+        supplierName.getStyleClass().add("entity-name-label");
         Label supplierLocation = new Label(supplier.getLocation().getFormattedLocation());
-        supplierLocation.getStyleClass().add("description-label");
+        supplierLocation.getStyleClass().add("entity-description-label");
         VBox supplierBox = new VBox(supplierName, supplierLocation);
         Button supplierButton = new Button();
-        supplierButton.getStyleClass().add("list-button");
+        supplierButton.getStyleClass().add("entity-card");
         supplierButton.setGraphic(supplierBox);
         supplierButton.setMaxWidth(Double.MAX_VALUE);
         supplierButton.prefWidthProperty().bind(suppliersVBox.widthProperty());
