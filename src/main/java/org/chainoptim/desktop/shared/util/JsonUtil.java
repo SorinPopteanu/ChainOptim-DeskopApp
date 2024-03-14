@@ -13,7 +13,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  *
  */
 public class JsonUtil {
+
+    @Getter
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private JsonUtil() {}
 
     static {
         // Register the JavaTimeModule
@@ -26,7 +30,4 @@ public class JsonUtil {
         objectMapper.findAndRegisterModules();
     }
 
-    public static ObjectMapper getObjectMapper() {
-        return objectMapper;
-    }
 }

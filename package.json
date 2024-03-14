@@ -1,0 +1,26 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^7.9.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-typescript-tsc": "^2.12.0",
+    "@types/d3": "^7.4.3",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.2",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  },
+  "description": ""
+}
