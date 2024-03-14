@@ -85,6 +85,7 @@ public class FactoryProductionGraphController {
         WebView webView = new WebView();
         webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
 
+
         String jsonString = "{}";
         try {
             jsonString = JsonUtil.getObjectMapper().writeValueAsString(productionGraph);
@@ -96,6 +97,7 @@ public class FactoryProductionGraphController {
 
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
+
 
                 // Execute script for rendering factory graph (using timeout for now to ensure bundle is loaded at this point)
                 String script = "setTimeout(function() { renderGraph('" + escapedJsonString + "'); }, 200);";
