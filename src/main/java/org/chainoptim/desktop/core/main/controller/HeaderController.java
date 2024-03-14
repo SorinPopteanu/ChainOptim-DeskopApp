@@ -63,9 +63,9 @@ public class HeaderController {
         ImageView searchIconView = new ImageView(searchIcon);
         searchIconView.setFitWidth(17);
         searchIconView.setFitHeight(17);
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(1);
-        searchIconView.setEffect(colorAdjust);
+//        ColorAdjust colorAdjust = new ColorAdjust();
+//        colorAdjust.setBrightness(1);
+//        searchIconView.setEffect(colorAdjust);
         searchButton.setGraphic(searchIconView);
     }
 

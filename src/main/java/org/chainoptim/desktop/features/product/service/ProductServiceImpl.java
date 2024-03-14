@@ -77,7 +77,6 @@ public class ProductServiceImpl implements ProductService {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<PaginatedResults<Product>>empty();
                     try {
                         PaginatedResults<Product> products = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<Product>>() {});
-                        System.out.println(products.getTotalCount());
                         return Optional.of(products);
                     } catch (Exception e) {
                         e.printStackTrace();
