@@ -37,6 +37,7 @@ public class ProductsController implements Initializable {
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
+    private final SearchParams searchParams;
 
     @FXML
     private HeaderController headerController;
@@ -53,7 +54,6 @@ public class ProductsController implements Initializable {
 
     private long totalCount;
 
-    private final SearchParams searchParams;
     private final Map<String, String> sortOptions = Map.of(
             "createdAt", "Created At",
             "updatedAt", "Updated At"
@@ -86,26 +86,6 @@ public class ProductsController implements Initializable {
         initializePageSelector();
     }
 
-    private void initializePageSelector() {
-        // Load view into pageSelectorContainer and initialize it with appropriate values
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node pageSelectorView = loader.load();
-            pageSelectorContainer.getChildren().add(pageSelectorView);
-            pageSelectorController = loader.getController();
-
-
-            System.out.println("Total count: " + totalCount);
-
-            searchParams.getPageProperty().addListener((obs, oldPage, newPage) -> loadProducts());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void initializeHeader() {
         // Load view into headerContainer and initialize it with appropriate values
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
@@ -131,13 +111,6 @@ public class ProductsController implements Initializable {
         fallbackContainer.getChildren().add(fallbackView);
     }
 
-    private void setUpListeners() {
-        // Listen to changes in search params
-        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadProducts());
-        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadProducts());
-        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadProducts());
-    }
-
     private void loadProducts() {
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
@@ -152,6 +125,29 @@ public class ProductsController implements Initializable {
                 .thenApply(this::handleProductResponse)
                 .exceptionally(this::handleProductException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+    }
+
+    private void setUpListeners() {
+        // Listen to changes in search params
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadProducts());
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadProducts());
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadProducts());
+    }
+
+    private void initializePageSelector() {
+        // Load view into pageSelectorContainer and initialize it with appropriate values
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node pageSelectorView = loader.load();
+            pageSelectorContainer.getChildren().add(pageSelectorView);
+            pageSelectorController = loader.getController();
+            searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadProducts());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Optional<PaginatedResults<Product>> handleProductResponse(Optional<PaginatedResults<Product>> productsOptional) {
@@ -184,12 +180,11 @@ public class ProductsController implements Initializable {
         productName.getStyleClass().add("description-label");
         VBox productBox = new VBox(productName, productDescription);
         Button productButton = new Button();
-        productButton.getStyleClass().add("product-button");
+        productButton.getStyleClass().add("list-button");
         productButton.setGraphic(productBox);
         productButton.setMaxWidth(Double.MAX_VALUE);
         productButton.prefWidthProperty().bind(productsVBox.widthProperty());
         productButton.setOnAction(event -> openProductDetails(product.getId()));
-
         productsVBox.getChildren().add(productButton);
     }
 
@@ -203,7 +198,6 @@ public class ProductsController implements Initializable {
         // And also encode it in the viewKey for caching purposes
         currentSelectionService.setSelectedId(productId);
         currentSelectionService.setSelectedPage("Product");
-
         navigationService.switchView("Product?id=" + productId);
     }
 }

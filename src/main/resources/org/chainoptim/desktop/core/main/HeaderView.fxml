@@ -14,7 +14,7 @@
     <ToolBar styleClass="tool-bar">
         <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
             <StackPane alignment="CENTER_RIGHT">
-                <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="200"/>
+                <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="200" styleClass="search-bar"/>
                 <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
             </StackPane>
             <Region HBox.hgrow="ALWAYS"/>
@@ -24,5 +24,7 @@
             <Button fx:id="createNewItemButton" onAction="#handleCreateNewItem" styleClass="standard-write-button"/>
         </HBox>
     </ToolBar>
+
+    <Separator orientation="HORIZONTAL" styleClass="separator"/>
 
 </VBox>

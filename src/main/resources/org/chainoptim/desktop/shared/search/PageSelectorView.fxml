@@ -10,8 +10,8 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.shared.search.controller.PageSelectorController">
 
-    <center>
+    <right>
         <Pagination fx:id="pagination"/>
-    </center>
+    </right>
 
 </BorderPane>
