@@ -3,7 +3,7 @@
     -fx-text-fill: white;
     -fx-font-weight: normal;
     -fx-font-size: 15px;
-    -fx-padding: 4px 8px 4px 8px;
+    -fx-padding: 4px 12px 4px 12px;
 }
 
 .standard-write-button:hover {

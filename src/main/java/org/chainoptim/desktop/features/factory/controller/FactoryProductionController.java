@@ -1,12 +1,10 @@
 package org.chainoptim.desktop.features.factory.controller;
 
-import javafx.scene.control.ScrollPane;
 import org.chainoptim.desktop.features.factory.factorygraph.model.*;
-import org.chainoptim.desktop.features.factory.factorygraph.model.SmallStage;
 import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.productpipeline.model.StageInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,11 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class FactoryProductionGraphController {
+public class FactoryProductionController implements DataReceiver<Factory> {
 
     private final FactoryProductionGraphService graphService;
 
     private final FallbackManager fallbackManager;
+
+    private Factory factory;
 
     @FXML
     private StackPane graphContainer;
@@ -45,7 +45,7 @@ public class FactoryProductionGraphController {
     private FactoryProductionGraph productionGraph;
 
     @Inject
-    public FactoryProductionGraphController(
+    public FactoryProductionController(
                                         FactoryProductionGraphService graphService,
                                         FallbackManager fallbackManager
     ) {
@@ -53,7 +53,10 @@ public class FactoryProductionGraphController {
         this.fallbackManager = fallbackManager;
     }
 
-    public void initializeGraph() {
+    @Override
+    public void setData(Factory factory) {
+        this.factory = factory;
+        System.out.println("Factory received in production: " + factory.getName());
         loadGraphData();
     }
 
