@@ -16,10 +16,22 @@ function renderGraph(jsonData: string) {
 
     const width = 800,
         height = 600;
-    const stageInputNodeRadius = 10;
+    const stageInputNodeRadius = 14;
 
     // Create SVG container
     const svg = d3.select("#viz").append("svg").attr("width", width).attr("height", height);
+
+    svg.append("defs").append("marker")
+        .attr("id", "arrowhead")
+        .attr("viewBox", "-0 -5 10 10")
+        .attr("refX", 5)
+        .attr("refY", 0)
+        .attr("markerWidth", 5)
+        .attr("markerHeight", 5)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .attr("fill", "#000");
 
     // Draw all nodes
     Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
@@ -41,13 +53,13 @@ function renderGraphNode(
     circleRadius: number
 ) {
     // Render main stage box
-    const stageBoxWidth = 80;
-    const stageBoxHeight = 50;
+    const stageBoxWidth = 90;
+    const stageBoxHeight = 60;
     const { x: stageBoxX, y: stageBoxY } = renderMainNode(svg, node, stageNodeId, centerX, centerY, stageBoxWidth, stageBoxHeight);
 
     // Add stage input and output subnodes
     const stageWidth = 100;
-    const stageHeight = 120;
+    const stageHeight = 140;
 
     renderStageInputs(svg, node, stageNodeId, centerX, centerY, stageWidth, stageHeight, circleRadius, stageBoxY);
     renderStageOutputs(svg, node, stageNodeId, centerX, centerY, stageWidth, stageHeight, circleRadius, stageBoxY + stageBoxHeight);
@@ -76,7 +88,11 @@ const renderMainNode = (
         .style("stroke", "gray")
         .style("stroke-width", 1)
         .attr("rx", 4)
-        .attr("ry", 4);
+        .attr("ry", 4)
+        .on("click", function(event) {
+            const clickedNodeId = this.id;
+            window.javaConnector.handleNodeClick(clickedNodeId);
+        });
 
     svg.append("text")
         .attr("x", centerX)
@@ -124,6 +140,16 @@ const renderStageInputs = (
             .style("stroke-width", 1)
             .attr("r", stageInputNodeRadius);
 
+        svg.append("text")
+            .attr("x", stageInputX)
+            .attr("y", stageInputY)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "central")
+            .text(input.componentId)
+            .style("fill", "black")
+            .style("font-family", "Arial, sans-serif")
+            .style("font-size", "10px");
+
         // Add edge from stage input to main stage box
         const edgeId = nodeId + "_edge_" + stageNodeId;
 
@@ -136,7 +162,8 @@ const renderStageInputs = (
             .attr("x2", centerX + stageInputRelativeX / 5) // Connect to around the center X and top Y of the box
             .attr("y2", stageBoxY)
             .attr("stroke", "black")
-            .attr("stroke-width", 1);
+            .attr("stroke-width", 1)
+            .attr("marker-end", "url(#arrowhead)");
     });
 };
 
@@ -162,7 +189,6 @@ const renderStageOutputs = (
         const stageOutputY = centerY + stageHeight / 2;
 
         const nodeId: string = encodeStageOutputId(stageNodeId, output.id);
-        console.log("NodeID: ", nodeId);
 
         svg.append("circle")
             .attr("id", nodeId)
@@ -173,16 +199,30 @@ const renderStageOutputs = (
             .style("stroke-width", 1)
             .attr("r", stageOutputNodeRadius);
 
+        svg.append("text")
+            .attr("x", stageOutputX)
+            .attr("y", stageOutputY)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "central")
+            .text(output.componentId)
+            .style("fill", "black")
+            .style("font-family", "Arial, sans-serif")
+            .style("font-size", "10px");
+
         // Add edge from stage output to main stage box
         const edgeId = nodeId + ":edge:" + stageNodeId;
+
+        const stageOutputConnectingCoordinates = getCirclePoint(stageOutputX, stageOutputY + stageOutputNodeRadius, stageOutputNodeRadius, 0.75);
+
         svg.append("line")
             .attr("id", edgeId)
-            .attr("x1", stageOutputX)
-            .attr("y1", stageOutputY - stageOutputNodeRadius) // Connect from the top of the circle
-            .attr("x2", centerX + stageOutputRelativeX / 5) // Connect to around the center X and bottm Y of the box
-            .attr("y2", stageBoxY)
+            .attr("x1", centerX + stageOutputRelativeX / 5) // Connect to around the center X and bottm Y of the box
+            .attr("y1", stageBoxY) // Connect from the top of the circle
+            .attr("x2", stageOutputConnectingCoordinates.x)
+            .attr("y2", stageOutputConnectingCoordinates.y)
             .attr("stroke", "black")
-            .attr("stroke-width", 1);
+            .attr("stroke-width", 1)
+            .attr("marker-end", "url(#arrowhead)");
     });
 };
 
@@ -228,8 +268,9 @@ const renderEdges = (
             .attr("y1", start.y)
             .attr("x2", end.x)
             .attr("y2", end.y)
-            .attr("stroke", "black")
-            .attr("stroke-width", 1);
+            .attr("stroke", "blue")
+            .attr("stroke-width", 1)
+            .attr("marker-end", "url(#arrowhead)");
     });
 };
 

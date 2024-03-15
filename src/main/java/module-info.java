@@ -27,6 +27,7 @@ module org.chainoptim.desktop {
     requires gs.core;
     requires gs.ui.javafx;
     requires org.apache.commons.text;
+    requires jdk.jsobject;
 
     opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core;
 
@@ -62,7 +63,7 @@ module org.chainoptim.desktop {
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.factory.service to com.google.guice;
-    opens org.chainoptim.desktop.features.factory.factorygraph.service to com.google.guice;
+    opens org.chainoptim.desktop.features.factory.factorygraph.service to com.google.guice, javafx.web;
     opens org.chainoptim.desktop.features.factory.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.factory.dto to com.fasterxml.jackson.databind;
 

@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.features.factory.factorygraph.model.*;
 import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
+import org.chainoptim.desktop.features.factory.factorygraph.service.JavaConnector;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -16,6 +17,8 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import org.apache.commons.text.StringEscapeUtils;
+import netscape.javascript.JSObject;
+
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.fx_viewer.FxViewer;
@@ -101,7 +104,6 @@ public class FactoryProductionController implements DataReceiver<Factory> {
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
 
-
                 // Execute script for rendering factory graph (using timeout for now to ensure bundle is loaded at this point)
                 String script = "setTimeout(function() { renderGraph('" + escapedJsonString + "'); }, 200);";
                 try {
@@ -109,6 +111,10 @@ public class FactoryProductionController implements DataReceiver<Factory> {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                // Set up connector between JavaFX and Typescript
+                JSObject jsObject = (JSObject) webView.getEngine().executeScript("window");
+                jsObject.setMember("javaConnector", new JavaConnector());
             }
         });
 
