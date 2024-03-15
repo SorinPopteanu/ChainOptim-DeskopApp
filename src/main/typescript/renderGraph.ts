@@ -5,43 +5,46 @@ import { Coordinates, EdgeUI, StageNodeUI } from "./uiTypes";
 import { assignPositionsToNodes, findStartingNodes } from "./graphProcessing";
 import { encodeStageInputId, encodeStageOutputId } from "./utils";
 import { calculateEdgePoints, getCirclePoint } from "./geometryUtils";
+import { GraphRenderer } from "./GraphRenderer";
 export {};
 
 function renderGraph(jsonData: string) {
     const data: FactoryProductionGraph = JSON.parse(jsonData);
 
-    // Preprocess graph: assign position to nodes based on connections
-    const startingNodeIds = findStartingNodes(data.factoryGraph);
-    const factoryGraphUI = assignPositionsToNodes(startingNodeIds, data.factoryGraph);
+    const graphRenderer = new GraphRenderer("#viz");
+    graphRenderer.renderGraph(data);
+    // // Preprocess graph: assign position to nodes based on connections
+    // const startingNodeIds = findStartingNodes(data.factoryGraph);
+    // const factoryGraphUI = assignPositionsToNodes(startingNodeIds, data.factoryGraph);
 
-    const width = 800,
-        height = 600;
-    const stageInputNodeRadius = 14;
+    // const width = 800,
+    //     height = 600;
+    // const stageInputNodeRadius = 14;
 
-    // Create SVG container
-    const svg = d3.select("#viz").append("svg").attr("width", width).attr("height", height);
+    // // Create SVG container
+    // const svg = d3.select("#viz").append("svg").attr("width", width).attr("height", height);
 
-    svg.append("defs").append("marker")
-        .attr("id", "arrowhead")
-        .attr("viewBox", "-0 -5 10 10")
-        .attr("refX", 5)
-        .attr("refY", 0)
-        .attr("markerWidth", 5)
-        .attr("markerHeight", 5)
-        .attr("orient", "auto")
-        .append("path")
-        .attr("d", "M0,-5L10,0L0,5")
-        .attr("fill", "#000");
+    // svg.append("defs").append("marker")
+    //     .attr("id", "arrowhead")
+    //     .attr("viewBox", "-0 -5 10 10")
+    //     .attr("refX", 5)
+    //     .attr("refY", 0)
+    //     .attr("markerWidth", 5)
+    //     .attr("markerHeight", 5)
+    //     .attr("orient", "auto")
+    //     .append("path")
+    //     .attr("d", "M0,-5L10,0L0,5")
+    //     .attr("fill", "#000");
 
-    // Draw all nodes
-    Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
-        renderGraphNode(svg, node, parseInt(stageNodeId, 10), node.coordinates.x, node.coordinates.y, stageInputNodeRadius);
-    });
+    // // Draw all nodes
+    // Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
+    //     renderGraphNode(svg, node, parseInt(stageNodeId, 10), node.coordinates.x, node.coordinates.y, stageInputNodeRadius);
+    // });
 
-    // Draw all edges
-    Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
-        renderEdges(svg, node, factoryGraphUI.adjList, stageInputNodeRadius,  parseInt(stageNodeId, 10));
-    });
+    // // Draw all edges
+    // Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
+    //     renderEdges(svg, node, factoryGraphUI.adjList, stageInputNodeRadius,  parseInt(stageNodeId, 10));
+    // });
 }
 
 function renderGraphNode(
@@ -78,7 +81,28 @@ const renderMainNode = (
     const stageBoxY = centerY - stageBoxHeight / 2;
     const stageName = nodeUI.node.smallStage.stageName;
 
-    svg.append("rect")
+    // Define drop shadow filter
+    const defs = svg.append("defs");
+    const filter = defs.append("filter")
+        .attr("id", "drop-shadow")
+        .attr("height", "130%");
+    filter.append("feGaussianBlur")
+        .attr("in", "SourceAlpha")
+        .attr("stdDeviation", 3)
+        .attr("result", "blur");
+    filter.append("feOffset")
+        .attr("in", "blur")
+        .attr("dx", 1)
+        .attr("dy", 2)
+        .attr("result", "offsetBlur");
+    const feMerge = filter.append("feMerge");
+    feMerge.append("feMergeNode")
+        .attr("in", "offsetBlur")
+    feMerge.append("feMergeNode")
+        .attr("in", "SourceGraphic");
+
+    // Draw the node
+    const node = svg.append("rect")
         .attr("id", stageNodeId)
         .attr("x", stageBoxX)
         .attr("y", stageBoxY)
@@ -88,11 +112,16 @@ const renderMainNode = (
         .style("stroke", "gray")
         .style("stroke-width", 1)
         .attr("rx", 4)
-        .attr("ry", 4)
-        .on("click", function(event) {
-            const clickedNodeId = this.id;
-            window.javaConnector.handleNodeClick(clickedNodeId);
-        });
+        .attr("ry", 4);
+
+    // Add node click event listener
+    node.on("click", function(event) {
+        unhighlightNodes(svg);
+        highlightNode(d3.select(this));
+
+        const clickedNodeId = this.id;
+        window.javaConnector.handleNodeClick(clickedNodeId);
+    });
 
     svg.append("text")
         .attr("x", centerX)
@@ -102,7 +131,8 @@ const renderMainNode = (
         .text(stageName)
         .style("fill", "black")
         .style("font-family", "Arial, sans-serif")
-        .style("font-size", "12px");
+        .style("font-size", "12px")
+        .style("pointer-events", "none");
 
     return { x: stageBoxX, y: stageBoxY };
 };
@@ -273,5 +303,24 @@ const renderEdges = (
             .attr("marker-end", "url(#arrowhead)");
     });
 };
+
+export const highlightNode = (node: d3.Selection<d3.BaseType, unknown, HTMLElement, any>) => {
+    node
+        .transition()
+        .duration(150)
+        .style("fill", "#d9e2ef")
+        .style("stroke-width", 3)
+        .attr("filter", "url(#drop-shadow)");
+};
+
+export const unhighlightNodes = (svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>) => {
+    svg.selectAll("rect")
+        .transition()
+        .duration(150)
+        .style("fill", "#f0f0f0")
+        .style("stroke-width", 1)
+        .attr("filter", null);
+};
+
 
 window.renderGraph = renderGraph;
