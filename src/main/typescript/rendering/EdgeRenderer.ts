@@ -1,18 +1,24 @@
 import * as d3 from "d3";
-import { EdgeUI, StageNodeUI } from "./uiTypes";
-import { encodeStageInputId, encodeStageOutputId } from "./utils";
-import { calculateEdgePoints } from "./geometryUtils";
+import { EdgeUI, StageNodeUI } from "../types/uiTypes";
+import { calculateEdgePoints } from "../utils/geometryUtils";
+import { GraphUIConfig } from "../config/GraphUIConfig";
+import { ElementIdentifier } from "../utils/ElementIdentifier";
 
 export class EdgeRenderer {
-    constructor(private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>) {}
+    private elementIdentifier: ElementIdentifier;
 
-        
+    constructor(private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>) {
+        this.elementIdentifier = new ElementIdentifier();
+    }
+
+    
     renderEdges = (
         nodeUI: StageNodeUI,
         adjListUI: Record<number, EdgeUI[]>,
-        circleRadius: number,
-        stageNodeId: number
+        stageNodeId: number,
     ) => {
+        const { node: { subnodeRadius }, edge: { color, width, markerEnd } } = GraphUIConfig;
+
         const neighbors = adjListUI[stageNodeId];
         if (!neighbors) {
             return;
@@ -21,10 +27,10 @@ export class EdgeRenderer {
         neighbors.forEach((neighbor) => {
             // Find incoming stage output and outgoing stage input
             const sourceElement = d3.select(
-                `#${encodeStageOutputId(neighbor.edge.incomingFactoryStageId, neighbor.edge.incomingStageOutputId)}`
+                `#${this.elementIdentifier.encodeStageOutputId(neighbor.edge.incomingFactoryStageId, neighbor.edge.incomingStageOutputId)}`
             );
             const targetElement = d3.select(
-                `#${encodeStageInputId(neighbor.edge.outgoingFactoryStageId, neighbor.edge.outgoingStageInputId)}`
+                `#${this.elementIdentifier.encodeStageInputId(neighbor.edge.outgoingFactoryStageId, neighbor.edge.outgoingStageInputId)}`
             );
 
             if (sourceElement.empty() || targetElement.empty()) {
@@ -34,8 +40,8 @@ export class EdgeRenderer {
             const { start, end } = calculateEdgePoints(
                 { x: parseFloat(sourceElement.attr("cx")), y: parseFloat(sourceElement.attr("cy")) },
                 { x: parseFloat(targetElement.attr("cx")), y: parseFloat(targetElement.attr("cy")) },
-                circleRadius,
-                circleRadius
+                subnodeRadius,
+                subnodeRadius
             );
 
             this.svg.append("line")
@@ -43,9 +49,9 @@ export class EdgeRenderer {
                 .attr("y1", start.y)
                 .attr("x2", end.x)
                 .attr("y2", end.y)
-                .attr("stroke", "blue")
-                .attr("stroke-width", 1)
-                .attr("marker-end", "url(#arrowhead)");
+                .attr("stroke", color)
+                .attr("stroke-width", width)
+                .attr("marker-end", markerEnd);
         });
     };
 }

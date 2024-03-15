@@ -5,4 +5,8 @@ public class JavaConnector {
     public void handleNodeClick(String nodeId) {
         System.out.println("Node clicked: " + nodeId);
     }
+
+    public void log(String message) {
+        System.out.println(message);
+    }
 }

@@ -3,6 +3,7 @@ declare global {
         renderGraph: (jsonData: string) => void;
         javaConnector: {
             handleNodeClick: (nodeId: string) => void;
+            log: (message: string) => void;
         }
     }
 }

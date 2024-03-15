@@ -1,11 +1,15 @@
 import * as d3 from "d3";
-import { Coordinates, StageNodeUI } from "./uiTypes";
-import { highlightNode, unhighlightNodes } from "./renderGraph";
-import { encodeStageInputId, encodeStageOutputId } from "./utils";
-import { getCirclePoint } from "./geometryUtils";
+import { Coordinates, StageNodeUI } from "../types/uiTypes";
+import { getCirclePoint } from "../utils/geometryUtils";
+import { GraphUIConfig } from "../config/GraphUIConfig";
+import { ElementIdentifier } from "../utils/ElementIdentifier";
 
 export class NodeRenderer {
-    constructor(private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>) {}
+    private elementIdentifier: ElementIdentifier;
+
+    constructor(private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>) {
+        this.elementIdentifier = new ElementIdentifier();
+    }
 
     
     public renderGraphNode = (
@@ -13,21 +17,16 @@ export class NodeRenderer {
         stageNodeId: number,
         centerX: number,
         centerY: number,
-        circleRadius: number
     ) => {
+        const { stageWidth, stageHeight, stageBoxWidth, stageBoxHeight, subnodeRadius } = GraphUIConfig.node;
+
         // Render main stage box
-        const stageBoxWidth = 90;
-        const stageBoxHeight = 60;
         const { x: stageBoxX, y: stageBoxY } = this.renderMainNode(node, stageNodeId, centerX, centerY, stageBoxWidth, stageBoxHeight);
 
         // Add stage input and output subnodes
-        const stageWidth = 100;
-        const stageHeight = 140;
-
-        this.renderStageInputs(node, stageNodeId, centerX, centerY, stageWidth, stageHeight, circleRadius, stageBoxY);
-        this.renderStageOutputs(node, stageNodeId, centerX, centerY, stageWidth, stageHeight, circleRadius, stageBoxY + stageBoxHeight);
+        this.renderStageInputs(node, stageNodeId, centerX, centerY, stageWidth, stageHeight, subnodeRadius, stageBoxY);
+        this.renderStageOutputs(node, stageNodeId, centerX, centerY, stageWidth, stageHeight, subnodeRadius, stageBoxY + stageBoxHeight);
     }
-
 
     renderMainNode = (
         nodeUI: StageNodeUI,
@@ -37,32 +36,24 @@ export class NodeRenderer {
         stageBoxWidth: number,
         stageBoxHeight: number
     ): Coordinates => {
+        const { backgroundColor, borderColor, borderRadius, borderWidth, fontColor, mainNodeFontSize } = GraphUIConfig.node;
+
         const stageBoxX = centerX - stageBoxWidth / 2;
         const stageBoxY = centerY - stageBoxHeight / 2;
         const stageName = nodeUI.node.smallStage.stageName;
 
         // Draw the node
-        const node = this.svg.append("rect")
+        this.svg.append("rect")
             .attr("id", stageNodeId)
             .attr("x", stageBoxX)
             .attr("y", stageBoxY)
             .attr("width", stageBoxWidth)
             .attr("height", stageBoxHeight)
-            .style("fill", "#f0f0f0")
-            .style("stroke", "gray")
-            .style("stroke-width", 1)
-            .attr("rx", 4)
-            .attr("ry", 4);
-
-        // Add node click event listener
-        node.on("click", (event) => {
-            const clickedNode = d3.select(event.currentTarget);
-            const clickedNodeId = clickedNode.attr("id");
-            unhighlightNodes(this.svg);
-            highlightNode(clickedNode);
-
-            window.javaConnector.handleNodeClick(clickedNodeId);
-        });
+            .style("fill", backgroundColor)
+            .style("stroke", borderColor)
+            .style("stroke-width", borderWidth)
+            .attr("rx", borderRadius)
+            .attr("ry", borderRadius);
 
         this.svg.append("text")
             .attr("x", centerX)
@@ -70,9 +61,9 @@ export class NodeRenderer {
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "central")
             .text(stageName)
-            .style("fill", "black")
+            .style("fill", fontColor)
             .style("font-family", "Arial, sans-serif")
-            .style("font-size", "12px")
+            .style("font-size", mainNodeFontSize)
             .style("pointer-events", "none");
 
         return { x: stageBoxX, y: stageBoxY };
@@ -88,9 +79,11 @@ export class NodeRenderer {
         stageInputNodeRadius: number,
         stageBoxY: number
     ) => {
+        const { backgroundColor, borderColor, borderWidth, fontColor, subnodeFontSize, subedgeColor, subedgeWidth } = GraphUIConfig.node;
+
         const stageInputs = nodeUI.node.smallStage.stageInputs;
         const numberOfInputs = stageInputs.length - 1;
-
+        
         stageInputs.forEach((input, index) => {
             // Add stage input subnode
             const stageInputRelativeX =
@@ -98,16 +91,15 @@ export class NodeRenderer {
             const stageInputX = centerX + stageInputRelativeX;
             const stageInputY = centerY - stageHeight / 2;
 
-            const nodeId: string = encodeStageInputId(stageNodeId, input.id);
-            console.log("NodeID: ", nodeId);
-
+            const nodeId: string = this.elementIdentifier.encodeStageInputId(stageNodeId, input.id);
+           
             this.svg.append("circle")
                 .attr("id", nodeId)
                 .attr("cx", stageInputX)
                 .attr("cy", stageInputY)
-                .style("fill", "#f0f0f0")
-                .style("stroke", "gray")
-                .style("stroke-width", 1)
+                .style("fill", backgroundColor)
+                .style("stroke", borderColor)
+                .style("stroke-width", borderWidth)
                 .attr("r", stageInputNodeRadius);
 
             this.svg.append("text")
@@ -116,23 +108,23 @@ export class NodeRenderer {
                 .attr("text-anchor", "middle")
                 .attr("dominant-baseline", "central")
                 .text(input.componentId)
-                .style("fill", "black")
+                .style("fill", fontColor)
                 .style("font-family", "Arial, sans-serif")
-                .style("font-size", "10px");
+                .style("font-size", subnodeFontSize);
 
             // Add edge from stage input to main stage box
-            const edgeId = nodeId + "_edge_" + stageNodeId;
+            const edgeId = this.elementIdentifier.encodeEdgeId(nodeId, stageNodeId);
 
             const stageInputConnectingCoordinates = getCirclePoint(stageInputX, stageInputY + stageInputNodeRadius, stageInputNodeRadius, 0.25);
 
             this.svg.append("line")
                 .attr("id", edgeId)
-                .attr("x1", stageInputConnectingCoordinates.x)
-                .attr("y1", stageInputConnectingCoordinates.y) // Connect from the bottom of the circle
+                .attr("x1", stageInputConnectingCoordinates.x) // Connect from the bottom of the circle
+                .attr("y1", stageInputConnectingCoordinates.y) 
                 .attr("x2", centerX + stageInputRelativeX / 5) // Connect to around the center X and top Y of the box
                 .attr("y2", stageBoxY)
-                .attr("stroke", "black")
-                .attr("stroke-width", 1)
+                .attr("stroke", subedgeColor)
+                .attr("stroke-width", subedgeWidth)
                 .attr("marker-end", "url(#arrowhead)");
         });
     };
@@ -147,6 +139,8 @@ export class NodeRenderer {
         stageOutputNodeRadius: number,
         stageBoxY: number
     ) => {
+        const { backgroundColor, borderColor, borderWidth, fontColor, subnodeFontSize, subedgeColor, subedgeWidth } = GraphUIConfig.node;
+
         const stageOutputs = nodeUI.node.smallStage.stageOutputs;
         const numberOfOutputs = stageOutputs.length - 1;
 
@@ -157,15 +151,15 @@ export class NodeRenderer {
             const stageOutputX = centerX + stageOutputRelativeX;
             const stageOutputY = centerY + stageHeight / 2;
 
-            const nodeId: string = encodeStageOutputId(stageNodeId, output.id);
+            const nodeId: string = this.elementIdentifier.encodeStageOutputId(stageNodeId, output.id);
 
             this.svg.append("circle")
                 .attr("id", nodeId)
                 .attr("cx", stageOutputX)
                 .attr("cy", stageOutputY)
-                .style("fill", "#f0f0f0")
-                .style("stroke", "gray")
-                .style("stroke-width", 1)
+                .style("fill", backgroundColor)
+                .style("stroke", borderColor)
+                .style("stroke-width", borderWidth)
                 .attr("r", stageOutputNodeRadius);
 
             this.svg.append("text")
@@ -174,43 +168,46 @@ export class NodeRenderer {
                 .attr("text-anchor", "middle")
                 .attr("dominant-baseline", "central")
                 .text(output.componentId)
-                .style("fill", "black")
+                .style("fill", fontColor)
                 .style("font-family", "Arial, sans-serif")
-                .style("font-size", "10px");
+                .style("font-size", subnodeFontSize);
 
             // Add edge from stage output to main stage box
-            const edgeId = nodeId + ":edge:" + stageNodeId;
+            const edgeId = this.elementIdentifier.encodeEdgeId(nodeId, stageNodeId);
 
             const stageOutputConnectingCoordinates = getCirclePoint(stageOutputX, stageOutputY + stageOutputNodeRadius, stageOutputNodeRadius, 0.75);
 
             this.svg.append("line")
                 .attr("id", edgeId)
-                .attr("x1", centerX + stageOutputRelativeX / 5) // Connect to around the center X and bottm Y of the box
-                .attr("y1", stageBoxY) // Connect from the top of the circle
-                .attr("x2", stageOutputConnectingCoordinates.x)
+                .attr("x1", centerX + stageOutputRelativeX / 5) // Connect to around the center X and bottom Y of the box
+                .attr("y1", stageBoxY) 
+                .attr("x2", stageOutputConnectingCoordinates.x) // Connect from the top of the circle
                 .attr("y2", stageOutputConnectingCoordinates.y)
-                .attr("stroke", "black")
-                .attr("stroke-width", 1)
+                .attr("stroke", subedgeColor)
+                .attr("stroke-width", subedgeWidth)
                 .attr("marker-end", "url(#arrowhead)");
         });
     };
 
-    public highlightNode = (nodeId: string) => {
-        const node = this.svg.select(`#${nodeId}`);
+    public highlightNode = (node: d3.Selection<d3.BaseType, unknown, HTMLElement, any>) => {
+        const { highlightDuration, highlightColor, highlightWidth } = GraphUIConfig.node;
+        
         node
             .transition()
-            .duration(150)
-            .style("fill", "#d9e2ef")
-            .style("stroke-width", 3)
+            .duration(highlightDuration)
+            .style("fill", highlightColor)
+            .style("stroke-width", highlightWidth)
             .attr("filter", "url(#drop-shadow)");
     };
     
     public unhighlightAllNodes = () => {
+        const { highlightDuration, backgroundColor, borderWidth } = GraphUIConfig.node;
+        
         this.svg.selectAll("rect")
             .transition()
-            .duration(150)
-            .style("fill", "#f0f0f0")
-            .style("stroke-width", 1)
+            .duration(highlightDuration)
+            .style("fill", backgroundColor)
+            .style("stroke-width", borderWidth)
             .attr("filter", null);
     };
 }

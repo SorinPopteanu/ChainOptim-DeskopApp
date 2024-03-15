@@ -2,11 +2,16 @@ import * as d3 from "d3";
 import { InteractionManager } from "./InteractionManager";
 import { NodeRenderer } from "./NodeRenderer";
 import { EdgeRenderer } from "./EdgeRenderer";
-import { FactoryProductionGraph } from "./dataTypes";
-import { assignPositionsToNodes, findStartingNodes } from "./graphProcessing";
-import { highlightNode, unhighlightNodes } from "./renderGraph";
+import { FactoryProductionGraph } from "../types/dataTypes";
+import { GraphUIConfig } from "../config/GraphUIConfig";
+import { GraphPreprocessor } from "./GraphPreprocessor";
 
+/*
+ * Orchestrator of the typescript modules.
+ *
+ */
 export class GraphRenderer {
+    private graphPreprocessor: GraphPreprocessor;
     private nodeRenderer: NodeRenderer;
     private edgeRenderer: EdgeRenderer;
     private interactionManager: InteractionManager;
@@ -14,39 +19,41 @@ export class GraphRenderer {
 
 
     constructor(containerId: string) {
+        const { width, height } = GraphUIConfig.graph;
         this.svg = d3.select(containerId).append("svg")
-            .attr("width", 800)
-            .attr("height", 600)
+            .attr("width", width)
+            .attr("height", height);
 
+        this.graphPreprocessor = new GraphPreprocessor();
         this.nodeRenderer = new NodeRenderer(this.svg);
         this.edgeRenderer = new EdgeRenderer(this.svg);
     }
 
     renderGraph(graphData: FactoryProductionGraph) {
         // Preprocess graph: assign position to nodes based on connections
-        const startingNodeIds = findStartingNodes(graphData.factoryGraph);
-        const factoryGraphUI = assignPositionsToNodes(startingNodeIds, graphData.factoryGraph);
-
+        const factoryGraphUI = this.graphPreprocessor.preprocessGraph(graphData.factoryGraph);
+        
+        // Set up definitions for needed elements (arrows, shadows, etc.)
         this.setupSvgDefinitions();
-
-        const stageInputNodeRadius = 14;
 
         // Draw all nodes
         Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
-            this.nodeRenderer.renderGraphNode(node, parseInt(stageNodeId, 10), node.coordinates.x, node.coordinates.y, stageInputNodeRadius);
+            this.nodeRenderer.renderGraphNode(node, parseInt(stageNodeId, 10), node.coordinates.x, node.coordinates.y);
         });
 
         // Draw all edges
         Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
-            this.edgeRenderer.renderEdges(node, factoryGraphUI.adjList, stageInputNodeRadius,  parseInt(stageNodeId, 10));
+            this.edgeRenderer.renderEdges(node, factoryGraphUI.adjList, parseInt(stageNodeId, 10));
         });
 
         // Set up interactions and connect them to JavaFX via JavaConnector
-        // this.interactionManager = new InteractionManager(this.svg, this.nodeRenderer);
-        // this.interactionManager.setupNodeInteractions((nodeId) => {
-        //     console.log("Node clicked:", nodeId);
-        //     window.javaConnector.handleNodeClick(nodeId);
-        // });
+        this.interactionManager = new InteractionManager(this.svg, this.nodeRenderer);
+        if (window.javaConnector) {
+            window.javaConnector.log("javaConnector is defined.");
+        }        
+        this.interactionManager.setupNodeInteractions((nodeId) => {
+            window.javaConnector.handleNodeClick(nodeId);
+        });
     }
 
     setupSvgDefinitions() {

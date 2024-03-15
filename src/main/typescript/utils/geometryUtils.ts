@@ -1,4 +1,4 @@
-import { Coordinates } from "./uiTypes";
+import { Coordinates } from "../types/uiTypes";
 
 export function calculateEdgePoints(
     sourceCenter: Coordinates,
