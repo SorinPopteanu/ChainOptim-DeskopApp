@@ -1,3 +1,4 @@
+import { GraphUIConfig } from "../config/GraphUIConfig";
 import { FactoryGraph } from "../types/dataTypes";
 import { FactoryGraphUI } from "../types/uiTypes";
 
@@ -87,7 +88,12 @@ export class GraphPreprocessor {
         factoryGraph: FactoryGraphUI,
         depth: number,
     ): FactoryGraphUI {
-        factoryGraph.nodes[startingNodeId].coordinates = { x: 100 + startingNodeIndex * 200, y: 100 + depth * 200 };
+        const { spaceBetweenStagesX, spaceBetweenStagesY, paddingX, paddingY } = GraphUIConfig.graph;
+
+        factoryGraph.nodes[startingNodeId].coordinates = { 
+            x: paddingX + startingNodeIndex * spaceBetweenStagesX, 
+            y: paddingY + depth * spaceBetweenStagesY 
+        };
         factoryGraph.nodes[startingNodeId].visited = true;
     
         let adjNodes = factoryGraph.adjList[startingNodeId];
@@ -99,7 +105,7 @@ export class GraphPreprocessor {
                     targetNodeId,
                     startingNodeIndex,
                     factoryGraph,
-                    depth + 1
+                    depth + 1 // Just go down for now. In the future, find a middle point with siblings.
                 );
             }
         }

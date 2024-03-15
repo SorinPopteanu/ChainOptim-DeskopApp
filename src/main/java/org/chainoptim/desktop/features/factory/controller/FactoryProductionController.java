@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.factory.controller;
 
+import javafx.scene.control.CheckBox;
 import org.chainoptim.desktop.features.factory.factorygraph.model.*;
 import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.factory.factorygraph.service.JavaConnector;
@@ -37,21 +38,24 @@ import java.util.Objects;
 public class FactoryProductionController implements DataReceiver<Factory> {
 
     private final FactoryProductionGraphService graphService;
-
     private final FallbackManager fallbackManager;
 
     private Factory factory;
+    private FactoryProductionGraph productionGraph;
 
     @FXML
     private StackPane graphContainer;
 
-    private FactoryProductionGraph productionGraph;
+    @FXML
+    private CheckBox quantitiesCheckBox;
+    @FXML
+    private CheckBox capacityCheckBox;
+    @FXML
+    private CheckBox priorityCheckBox;
 
     @Inject
-    public FactoryProductionController(
-                                        FactoryProductionGraphService graphService,
-                                        FallbackManager fallbackManager
-    ) {
+    public FactoryProductionController(FactoryProductionGraphService graphService,
+                                        FallbackManager fallbackManager) {
         this.graphService = graphService;
         this.fallbackManager = fallbackManager;
     }
@@ -59,7 +63,6 @@ public class FactoryProductionController implements DataReceiver<Factory> {
     @Override
     public void setData(Factory factory) {
         this.factory = factory;
-        System.out.println("Factory received in production: " + factory.getName());
         loadGraphData();
     }
 
@@ -77,7 +80,7 @@ public class FactoryProductionController implements DataReceiver<Factory> {
             }
             this.productionGraph = productionGraphs.getFirst();
             System.out.println("Graph: " + productionGraph);
-            newDisplayGraphData();
+            displayGraph();
         });
 
         return productionGraphs;
@@ -88,7 +91,7 @@ public class FactoryProductionController implements DataReceiver<Factory> {
         return new ArrayList<>();
     }
 
-    private void newDisplayGraphData() {
+    private void displayGraph() {
         WebView webView = new WebView();
         webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
 
@@ -115,89 +118,27 @@ public class FactoryProductionController implements DataReceiver<Factory> {
                 // Set up connector between JavaFX and Typescript
                 JSObject jsObject = (JSObject) webView.getEngine().executeScript("window");
                 jsObject.setMember("javaConnector", new JavaConnector());
+
+                // Set up listeners
+                setupCheckboxListeners(webView);
             }
         });
 
         graphContainer.getChildren().add(webView);
     }
 
-    private void displayGraphData() {
-        // Get data into graph
-        Graph graph = new SingleGraph("FactoryGraph");
-        graph.setAttribute("ui.quality");
-        graph.setAttribute("ui.antialias");
+    private void setupCheckboxListeners(WebView webView) {
+        quantitiesCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            webView.getEngine().executeScript("window.renderInfo('quantities', " + newValue + ");");
+        });
 
-        try {
-            String stylesheet = new String(Files.readAllBytes(Paths.get(getClass().getResource("/css/graph.css").toURI())));
-            graph.setAttribute("ui.stylesheet", stylesheet);
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+        capacityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            webView.getEngine().executeScript("window.renderInfo('capacities', " + newValue + ");");
+        });
 
-        int index = 0;
-
-        for (Map.Entry<Integer, StageNode> nodeEntry : productionGraph.getFactoryGraph().getNodes().entrySet()) {
-            Integer factoryStageId = nodeEntry.getKey();
-            StageNode node = nodeEntry.getValue();
-            String nodeId = factoryStageId.toString();
-
-            graph.addNode(nodeId);
-
-            String label = node.getSmallStage().getStageName();
-            if (label == null || label.isEmpty()) {
-                label = "Stage " + factoryStageId; // Fallback label
-            }
-            graph.getNode(nodeId).setAttribute("ui.class", "stage");
-            graph.getNode(nodeId).setAttribute("ui.label", label);
-            float x = index * 30;
-            float y = 0;
-            graph.getNode(nodeId).setAttribute("xyz", x, y, 0);
-
-            // Draw stage input nodes
-            drawGraphStage(node, nodeId, graph, x, y);
-
-            index++;
-        }
-
-        // Add edges (only after all nodes populated)
-//        for (Map.Entry<Integer, StageNode> nodeEntry : productionGraph.getFactoryGraph().getNodes().entrySet()) {
-//            Integer factoryStageId = nodeEntry.getKey();
-//            StageNode node = nodeEntry.getValue();
-//            for (Edge edge : productionGraph.getFactoryGraph().getAdjList().get(factoryStageId)) {
-//                graph.addEdge(factoryStageId.toString() + edge.getOutgoingFactoryStageId(), factoryStageId.toString(), edge.getOutgoingFactoryStageId().toString());
-//            }
-//
-//        }
-
-        FxViewer viewer = new FxViewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-        viewer.disableAutoLayout();
-
-        View view = viewer.addDefaultView(false);
-
-        graphContainer.getChildren().add((Node) view);
+        priorityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            webView.getEngine().executeScript("window.renderInfo('priorities', " + newValue + ");");
+        });
     }
 
-    private void drawGraphStage(StageNode node, String stageNodeId, Graph graphUI, float centerX, float centerY) {
-        float stageWidth = 20f;
-        float stageHeight = 30f;
-        float startingX = centerX - stageWidth / 2;
-        int index = 0;
-
-        List<SmallStageInput> stageInputs = node.getSmallStage().getStageInputs();
-        int numberOfInputs = stageInputs.size() - 1;
-
-        for (SmallStageInput stageInput : stageInputs) {
-            float stageInputX = numberOfInputs > 0 ? (startingX + ((float) index / numberOfInputs) * stageWidth) : startingX;
-            float stageInputY = centerY + stageHeight / 2;
-            index++;
-
-            String nodeId = stageNodeId + ":si:" + stageInput.getId().toString(); // si: to distinguish from stage nodes
-
-            graphUI.addNode(nodeId);
-            graphUI.getNode(nodeId).setAttribute("ui.class", "input");
-            graphUI.getNode(nodeId).setAttribute("xyz", stageInputX, stageInputY, 0);
-
-            graphUI.addEdge(nodeId + stageNodeId, nodeId, stageNodeId);
-        }
-    }
 }

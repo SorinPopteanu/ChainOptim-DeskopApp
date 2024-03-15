@@ -3,6 +3,7 @@ import { Coordinates, StageNodeUI } from "../types/uiTypes";
 import { getCirclePoint } from "../utils/geometryUtils";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { ElementIdentifier } from "../utils/ElementIdentifier";
+import { findStageInputPosition, findStageOutputPosition } from "../utils/utils";
 
 export class NodeRenderer {
     private elementIdentifier: ElementIdentifier;
@@ -88,8 +89,7 @@ export class NodeRenderer {
             // Add stage input subnode
             const stageInputRelativeX =
                 numberOfInputs > 0 ? (index - numberOfInputs / 2) * (stageWidth / numberOfInputs) : 0;
-            const stageInputX = centerX + stageInputRelativeX;
-            const stageInputY = centerY - stageHeight / 2;
+            const { x: stageInputX, y: stageInputY } = findStageInputPosition(centerX, centerY, numberOfInputs, index);
 
             const nodeId: string = this.elementIdentifier.encodeStageInputId(stageNodeId, input.id);
            
@@ -148,8 +148,7 @@ export class NodeRenderer {
             // Add stage output subnode
             const stageOutputRelativeX =
                 numberOfOutputs > 0 ? (index - numberOfOutputs / 2) * (stageWidth / numberOfOutputs) : 0;
-            const stageOutputX = centerX + stageOutputRelativeX;
-            const stageOutputY = centerY + stageHeight / 2;
+            const { x: stageOutputX, y: stageOutputY } = findStageOutputPosition(centerX, centerY, numberOfOutputs, index);
 
             const nodeId: string = this.elementIdentifier.encodeStageOutputId(stageNodeId, output.id);
 

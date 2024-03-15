@@ -9,9 +9,11 @@ export class InteractionManager {
         this.svg.selectAll('rect').on("click", (event) => {
             const clickedNode = d3.select(event.currentTarget);
             const clickedNodeId = clickedNode.attr("id");
+            
             // Unhighlight all nodes and highlight the clicked one
             this.nodeRenderer.unhighlightAllNodes();
             this.nodeRenderer.highlightNode(clickedNode);
+            
             // Execute any additional logic
             handleNodeClick(clickedNodeId);
         });

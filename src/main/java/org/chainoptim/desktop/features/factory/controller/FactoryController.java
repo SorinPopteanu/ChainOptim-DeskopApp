@@ -30,8 +30,6 @@ public class FactoryController implements Initializable {
 
     private final FactoryService factoryService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
     private Factory factory;
@@ -41,8 +39,6 @@ public class FactoryController implements Initializable {
 
     @FXML
     private StackPane fallbackContainer;
-    @FXML
-    private StackPane graphContainer;
 
     @FXML
     private TabPane tabPane;
@@ -63,13 +59,9 @@ public class FactoryController implements Initializable {
     @Inject
     public FactoryController(FactoryService factoryService,
                              CurrentSelectionService currentSelectionService,
-                             FXMLLoaderService fxmlLoaderService,
-                             ControllerFactory controllerFactory,
                              FallbackManager fallbackManager) {
         this.factoryService = factoryService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
 
@@ -103,7 +95,6 @@ public class FactoryController implements Initializable {
             this.factory = factoryOptional.get();
             factoryName.setText(factory.getName());
             factoryLocation.setText(factory.getLocation().getFormattedLocation());
-            System.out.println("Factory: " + factory);
 
             // Load overview tab
             loadTabContent(overviewTab, "/org/chainoptim/desktop/features/factory/FactoryOverviewView.fxml", this.factory);

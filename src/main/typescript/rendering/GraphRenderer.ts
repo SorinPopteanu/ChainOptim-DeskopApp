@@ -5,6 +5,7 @@ import { EdgeRenderer } from "./EdgeRenderer";
 import { FactoryProductionGraph } from "../types/dataTypes";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { GraphPreprocessor } from "./GraphPreprocessor";
+import { InfoRenderer } from "./InfoRenderer";
 
 /*
  * Orchestrator of the typescript modules.
@@ -14,6 +15,7 @@ export class GraphRenderer {
     private graphPreprocessor: GraphPreprocessor;
     private nodeRenderer: NodeRenderer;
     private edgeRenderer: EdgeRenderer;
+    private infoRenderer: InfoRenderer;
     private interactionManager: InteractionManager;
     private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
 
@@ -27,14 +29,23 @@ export class GraphRenderer {
         this.graphPreprocessor = new GraphPreprocessor();
         this.nodeRenderer = new NodeRenderer(this.svg);
         this.edgeRenderer = new EdgeRenderer(this.svg);
+        this.infoRenderer = new InfoRenderer(this.svg);
+        // Bind renderInfo to window for JavaFX access
+        window.renderInfo = this.infoRenderer.renderInfo.bind(this.infoRenderer);
     }
 
+    /*
+     * Entry point for the subproject. Called from JavaFX's WebView.
+     */
     renderGraph(graphData: FactoryProductionGraph) {
         // Preprocess graph: assign position to nodes based on connections
         const factoryGraphUI = this.graphPreprocessor.preprocessGraph(graphData.factoryGraph);
         
         // Set up definitions for needed elements (arrows, shadows, etc.)
         this.setupSvgDefinitions();
+
+        // Pass factoryGraphUI to the infoRenderer
+        this.infoRenderer.setFactoryGraph(factoryGraphUI);
 
         // Draw all nodes
         Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
@@ -82,7 +93,7 @@ export class GraphRenderer {
         filter.append("feOffset")
             .attr("in", "blur")
             .attr("dx", 1)
-            .attr("dy", 2)
+            .attr("dy", 1)
             .attr("result", "offsetBlur");
         const feMerge = filter.append("feMerge");
         feMerge.append("feMergeNode")
@@ -91,4 +102,7 @@ export class GraphRenderer {
             .attr("in", "SourceGraphic");
     }
     
+    getSvg() {
+        return this.svg;
+    }
 }
