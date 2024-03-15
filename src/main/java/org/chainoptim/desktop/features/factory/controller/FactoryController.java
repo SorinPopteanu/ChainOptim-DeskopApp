@@ -2,10 +2,13 @@ package org.chainoptim.desktop.features.factory.controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.web.WebView;
+import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
@@ -34,12 +37,23 @@ public class FactoryController implements Initializable {
     private Factory factory;
 
     @FXML
-    private FactoryProductionGraphController graphController;
+    private FactoryProductionController graphController;
 
     @FXML
     private StackPane fallbackContainer;
     @FXML
     private StackPane graphContainer;
+
+    @FXML
+    private TabPane tabPane;
+    @FXML
+    private Tab overviewTab;
+    @FXML
+    private Tab productionTab;
+    @FXML
+    private Tab inventoryTab;
+    @FXML
+    private Tab performanceTab;
 
     @FXML
     private Label factoryName;
@@ -68,7 +82,7 @@ public class FactoryController implements Initializable {
         }
 
         loadFactory(factoryId);
-        initializeGraph();
+        setupTabListeners();
     }
 
     private void loadFactory(Integer factoryId) {
@@ -90,6 +104,9 @@ public class FactoryController implements Initializable {
             factoryName.setText(factory.getName());
             factoryLocation.setText(factory.getLocation().getFormattedLocation());
             System.out.println("Factory: " + factory);
+
+            // Load overview tab
+            loadTabContent(overviewTab, "/org/chainoptim/desktop/features/factory/FactoryOverviewView.fxml", this.factory);
         });
 
         return factoryOptional;
@@ -100,30 +117,40 @@ public class FactoryController implements Initializable {
         return Optional.empty();
     }
 
+    private void setupTabListeners() {
+        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
+                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/factory/FactoryOverviewView.fxml", this.factory);
+            }
+        });
+        productionTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && productionTab.getContent() == null) {
+                loadTabContent(productionTab, "/org/chainoptim/desktop/features/factory/FactoryProductionView.fxml", this.factory);
+            }
+        });
+        inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
+                loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/factory/FactoryInventoryView.fxml", this.factory);
+            }
+        });
+        performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
+                loadTabContent(performanceTab, "/org/chainoptim/desktop/features/factory/FactoryPerformanceView.fxml", this.factory);
+            }
+        });
+    }
 
-    private void initializeGraph() {
-        // Load view into headerContainer and initialize it with appropriate values
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/features/factory/FactoryProductionGraphView.fxml",
-                controllerFactory::createController
-        );
+    private void loadTabContent(Tab tab, String fxmlFilepath, Factory factory) {
         try {
-            Node graphView = loader.load();
-            graphContainer.getChildren().add(graphView);
-            adjustGraphLayout();
-            graphController = loader.getController();
-            graphController.initializeGraph();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
+            loader.setControllerFactory(MainApplication.injector::getInstance);
+            Node content = loader.load();
+            DataReceiver<Factory> controller = loader.getController();
+            controller.setData(factory);
+            tab.setContent(content);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-    }
-    private void adjustGraphLayout() {
-        // Calculate the total height of the header
-        double headerHeight = 160;
-
-        // Set the top anchor for graphContainer to be below the header
-        AnchorPane.setTopAnchor(graphContainer, headerHeight);
     }
 
     @FXML

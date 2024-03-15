@@ -11,27 +11,44 @@
     -fx-font-size: 14px;
 }
 
-.menu-bar {
-    -fx-background-color: #ffffff;
+/* Tabs */
+.tab-pane {
+    -fx-tab-min-height: 32px;
 }
 
-.menu {
-    -fx-font-size: 16px;
-    -fx-background-color: #ffffff;
+.tab-pane .tab-header-area .headers-region {
+    -fx-padding: 0;
+    -fx-border-color: #d1d3bb;
+    -fx-border-width: 0 0 1px 0;
+    -fx-alignment: center-left;
 }
 
-.menu-item {
-    -fx-padding: 10 20;
+.tab-pane .tab-header-background {
+    -fx-background-color: transparent; /* Hide the tab header background */
+}
+
+.tab {
+    -fx-background-color: transparent; /* Hide individual tab backgrounds */
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.tab:selected {
+    -fx-background-color: #ffffff; /* Background of selected tab, adjust color as needed */
+}
+
+.tab .tab-label {
+    -fx-font-size: 17px;
     -fx-font-weight: bold;
+    -fx-text-fill: #333333;
 }
 
-.menu-item:focused, .menu-item:hover {
-    -fx-background-color: #f9f9f9;
-    -fx-text-fill: black;
+.tab-pane:focused, .tab:selected:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent; /* Remove focus ring */
 }
 
-.header-bottom-border {
-    -fx-pref-height: 1;
-    -fx-background-color: #d1d5db;
-    -fx-max-height: 1;
+.tab:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
