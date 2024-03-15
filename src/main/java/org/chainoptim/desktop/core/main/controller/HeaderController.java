@@ -17,8 +17,8 @@ import java.util.Objects;
 public class HeaderController {
 
     private final SearchParams searchParams;
-
     private final NavigationService navigationService;
+    private String createNewItem;
 
     @FXML
     private Label title;
@@ -49,13 +49,14 @@ public class HeaderController {
         this.navigationService = navigationService;
     }
 
-    public void initializeHeader(String titleText, String titleIconPath, Map<String, String> sortOptionsMap, String createNewItemButtonText) {
+    public void initializeHeader(String titleText, String titleIconPath, Map<String, String> sortOptionsMap, String createNewItemButtonText, String createNewItem) {
         this.sortOptionsMap = sortOptionsMap;
         setSearchButton();
         setTitle(titleText, titleIconPath);
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
         setCreateNewItemButton(createNewItemButtonText);
+        setNewItemKey(createNewItem);
     }
 
     private void setSearchButton() {
@@ -133,9 +134,13 @@ public class HeaderController {
         System.out.println(searchParams.getSortOption());
     }
 
+    private void setNewItemKey(String createNewItem) {
+        this.createNewItem = createNewItem;
+    }
+
     @FXML
     private void handleCreateNewItem() {
-        navigationService.switchView("Create-Product");
+        navigationService.switchView(createNewItem);
     }
 
 }

@@ -55,7 +55,8 @@ public class NavigationServiceImpl implements NavigationService {
             "Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml",
 
             // Create forms
-            "Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"
+            "Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml",
+            "Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"
     );
 
     public void switchView(String viewKey) {

@@ -23,6 +23,8 @@ import org.chainoptim.desktop.features.product.service.ProductWriteService;
 import org.chainoptim.desktop.features.product.service.ProductWriteServiceImpl;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
 import org.chainoptim.desktop.features.supplier.service.SupplierServiceImpl;
+import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
+import org.chainoptim.desktop.features.supplier.service.SupplierWriteServiceImpl;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -63,5 +65,6 @@ public class AppModule extends AbstractModule {
         bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
         bind(SupplierService.class).to(SupplierServiceImpl.class);
+        bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
     }
 }
