@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.factory.controller;
 
+import javafx.scene.control.ScrollPane;
 import org.chainoptim.desktop.features.factory.factorygraph.model.*;
 import org.chainoptim.desktop.features.factory.factorygraph.model.SmallStage;
 import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
@@ -96,6 +97,7 @@ public class FactoryProductionGraphController {
 
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
+
 
                 // Execute script for rendering factory graph (using timeout for now to ensure bundle is loaded at this point)
                 String script = "setTimeout(function() { renderGraph('" + escapedJsonString + "'); }, 200);";
