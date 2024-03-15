@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class SupplierWriteWriteServiceImpl implements SupplierWriteService {
+public class SupplierWriteServiceImpl implements SupplierWriteService {
 
     private final HttpClient client = HttpClient.newHttpClient();
 

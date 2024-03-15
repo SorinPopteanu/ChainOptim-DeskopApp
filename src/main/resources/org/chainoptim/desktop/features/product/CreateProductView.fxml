@@ -16,11 +16,11 @@
         <Text text="Create Product" styleClass="form-title"/>
     </HBox>
 
-    <!-- Username Label and TextField -->
+    <!-- Name Label and TextField -->
     <Label text="Name:" styleClass="form-label"/>
     <TextField fx:id="nameField"/>
 
-    <!-- Password Label and PasswordField -->
+    <!-- Description Label and TextField -->
     <Label text="Description:" styleClass="form-label"/>
     <TextField fx:id="descriptionField"/>
 
