@@ -192,6 +192,7 @@ public class SuppliersController implements Initializable {
     }
 
     private void openSupplierDetails(Integer supplierId) {
+        System.out.println("Supplier about to be initialized");
         currentSelectionService.setSelectedId(supplierId);
         currentSelectionService.setSelectedPage("Supplier");
 

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -23,7 +24,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class SupplierController {
+public class SupplierController implements Initializable {
 
     private final SupplierService supplierService;
     private final CurrentSelectionService currentSelectionService;
@@ -71,6 +72,7 @@ public class SupplierController {
             fallbackManager.setErrorMessage("Failed to load supplier.");
         }
         loadSupplier(supplierId);
+        System.out.println("Supplier initialized");
         setupTabListeners();
     }
 
@@ -90,8 +92,9 @@ public class SupplierController {
                 return;
             }
             this.supplier = supplierOptional.get();
-            supplierName.setText(supplier.getLocation().getFormattedLocation());
-            System.out.println("Supplier: " + supplier);
+            supplierName.setText(supplier.getName());
+            supplierLocation.setText(supplier.getLocation().getFormattedLocation());
+
 
             loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/overview/SupplierOverview.fxml", this.supplier);
         });

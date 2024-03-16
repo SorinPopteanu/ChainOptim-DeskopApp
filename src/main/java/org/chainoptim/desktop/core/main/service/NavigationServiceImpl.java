@@ -42,21 +42,22 @@ public class NavigationServiceImpl implements NavigationService {
     @Getter
     private static final Map<String, Node> viewCache = new HashMap<>();
 
-    private final Map<String, String> viewMap = Map.of(
+    private final Map<String, String> viewMap = Map.ofEntries(
             // Main pages
-            "Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml",
-            "Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml",
-            "Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml",
-            "Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml",
-            "Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml",
-            "Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml",
+            Map.entry("Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml"),
+            Map.entry("Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml"),
+            Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
+            Map.entry("Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml"),
+            Map.entry("Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml"),
+            Map.entry("Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"),
             // Dynamic route pages
-            "Product", "/org/chainoptim/desktop/features/product/ProductView.fxml",
-            "Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml",
+            Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
+            Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
+            Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
 
             // Create forms
-            "Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml",
-            "Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"
+            Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
+            Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml")
     );
 
     public void switchView(String viewKey) {
