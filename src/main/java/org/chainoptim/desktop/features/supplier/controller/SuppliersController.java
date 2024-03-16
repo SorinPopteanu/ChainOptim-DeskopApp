@@ -111,7 +111,7 @@ public class SuppliersController implements Initializable {
             Node headerView = loader.load();
             headerContainer.getChildren().add(headerView);
             headerController = loader.getController();
-            headerController.initializeHeader("Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, "Supplier");
+            headerController.initializeHeader("Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, "Supplier", "Create-Supplier");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -192,6 +192,7 @@ public class SuppliersController implements Initializable {
     }
 
     private void openSupplierDetails(Integer supplierId) {
+        System.out.println("Supplier about to be initialized");
         currentSelectionService.setSelectedId(supplierId);
         currentSelectionService.setSelectedPage("Supplier");
 
