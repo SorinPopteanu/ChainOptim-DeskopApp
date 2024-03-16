@@ -45,7 +45,7 @@ export class NodeRenderer {
 
         // Draw the node
         this.svg.append("rect")
-            .attr("id", stageNodeId)
+            .attr("id", this.elementIdentifier.encodeStageNodeId(stageNodeId))
             .attr("x", stageBoxX)
             .attr("y", stageBoxY)
             .attr("width", stageBoxWidth)
@@ -113,10 +113,13 @@ export class NodeRenderer {
                 .style("font-size", subnodeFontSize);
 
             // Add edge from stage input to main stage box
-            const edgeId = this.elementIdentifier.encodeEdgeId(nodeId, stageNodeId);
+            const edgeId = this.elementIdentifier.encodeInnerEdgeId(nodeId, stageNodeId);
 
             const stageInputConnectingCoordinates = getCirclePoint(stageInputX, stageInputY + stageInputNodeRadius, stageInputNodeRadius, 0.25);
 
+            if (window.javaConnector) {
+                window.javaConnector.log("Rendering inner edge with ID: " + edgeId);
+            }
             this.svg.append("line")
                 .attr("id", edgeId)
                 .attr("x1", stageInputConnectingCoordinates.x) // Connect from the bottom of the circle
@@ -172,7 +175,7 @@ export class NodeRenderer {
                 .style("font-size", subnodeFontSize);
 
             // Add edge from stage output to main stage box
-            const edgeId = this.elementIdentifier.encodeEdgeId(nodeId, stageNodeId);
+            const edgeId = this.elementIdentifier.encodeInnerEdgeId(stageNodeId, nodeId);
 
             const stageOutputConnectingCoordinates = getCirclePoint(stageOutputX, stageOutputY + stageOutputNodeRadius, stageOutputNodeRadius, 0.75);
 

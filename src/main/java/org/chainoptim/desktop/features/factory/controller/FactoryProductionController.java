@@ -102,14 +102,7 @@ public class FactoryProductionController implements DataReceiver<Factory> {
         webView = new WebView();
         webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
 
-        String jsonString = "{}";
-        try {
-            jsonString = JsonUtil.getObjectMapper().writeValueAsString(productionGraph);
-        } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
-        }
-        String finalJsonString = jsonString;
-        String escapedJsonString = StringEscapeUtils.escapeEcmaScript(finalJsonString);
+        String escapedJsonString = prepareJsonString(productionGraph);
 
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
@@ -157,17 +150,13 @@ public class FactoryProductionController implements DataReceiver<Factory> {
             return new AllocationPlan();
         }
         AllocationPlan allocationPlan = allocationPlanOptional.get();
-        String jsonString = "{}";
-        try {
-            jsonString = JsonUtil.getObjectMapper().writeValueAsString(allocationPlan);
-        } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
-        }
-        String finalJsonString = jsonString;
-        String escapedJsonString = StringEscapeUtils.escapeEcmaScript(finalJsonString);
+
+        String escapedJsonString = prepareJsonString(allocationPlan);
 
         String script = "window.renderResourceAllocations('" + escapedJsonString + "');";
+
         System.out.println("Allocation Plan: " + script);
+
         // Ensure script execution happens on the JavaFX Application Thread
         Platform.runLater(() -> {
             try {
@@ -178,6 +167,17 @@ public class FactoryProductionController implements DataReceiver<Factory> {
         });
 
         return allocationPlan;
+    }
+
+    private <T> String prepareJsonString(T data) {
+        String jsonString = "{}";
+        try {
+            jsonString = JsonUtil.getObjectMapper().writeValueAsString(data);
+        } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+        }
+        String finalJsonString = jsonString;
+        return StringEscapeUtils.escapeEcmaScript(finalJsonString);
     }
 
 }
