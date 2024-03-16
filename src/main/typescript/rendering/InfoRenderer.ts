@@ -113,7 +113,6 @@ export class InfoRenderer {
         });   
     }
 
-
     public setFactoryGraph(factoryGraph: FactoryGraphUI) {
         this.factoryGraph = factoryGraph;
     }

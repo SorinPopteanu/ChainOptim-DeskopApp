@@ -1,10 +1,14 @@
 package org.chainoptim.desktop.features.factory.controller;
 
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import org.chainoptim.desktop.features.factory.factorygraph.model.*;
 import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.factory.factorygraph.service.JavaConnector;
 import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.JsonUtil;
@@ -14,30 +18,22 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import org.apache.commons.text.StringEscapeUtils;
 import netscape.javascript.JSObject;
 
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.ui.fx_viewer.FxViewer;
-import org.graphstream.ui.view.View;
-import org.graphstream.ui.view.Viewer;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+
+import static java.lang.Float.parseFloat;
 
 public class FactoryProductionController implements DataReceiver<Factory> {
 
     private final FactoryProductionGraphService graphService;
+    private final ResourceAllocationService resourceAllocationService;
     private final FallbackManager fallbackManager;
 
     private Factory factory;
@@ -45,6 +41,8 @@ public class FactoryProductionController implements DataReceiver<Factory> {
 
     @FXML
     private StackPane graphContainer;
+    @FXML
+    private WebView webView;
 
     @FXML
     private CheckBox quantitiesCheckBox;
@@ -53,10 +51,19 @@ public class FactoryProductionController implements DataReceiver<Factory> {
     @FXML
     private CheckBox priorityCheckBox;
 
+    @FXML
+    private TextField resourceAllocationInput;
+
+    @FXML
+    private ComboBox<String> timePeriodSelect;
+
+
     @Inject
     public FactoryProductionController(FactoryProductionGraphService graphService,
+                                        ResourceAllocationService resourceAllocationService,
                                         FallbackManager fallbackManager) {
         this.graphService = graphService;
+        this.resourceAllocationService = resourceAllocationService;
         this.fallbackManager = fallbackManager;
     }
 
@@ -92,7 +99,7 @@ public class FactoryProductionController implements DataReceiver<Factory> {
     }
 
     private void displayGraph() {
-        WebView webView = new WebView();
+        webView = new WebView();
         webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
 
         String jsonString = "{}";
@@ -120,25 +127,57 @@ public class FactoryProductionController implements DataReceiver<Factory> {
                 jsObject.setMember("javaConnector", new JavaConnector());
 
                 // Set up listeners
-                setupCheckboxListeners(webView);
+                setupCheckboxListeners();
             }
         });
 
         graphContainer.getChildren().add(webView);
     }
 
-    private void setupCheckboxListeners(WebView webView) {
-        quantitiesCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            webView.getEngine().executeScript("window.renderInfo('quantities', " + newValue + ");");
+    private void setupCheckboxListeners() {
+        quantitiesCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> webView.getEngine().executeScript("window.renderInfo('quantities', " + newValue + ");"));
+
+        capacityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> webView.getEngine().executeScript("window.renderInfo('capacities', " + newValue + ");"));
+
+        priorityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> webView.getEngine().executeScript("window.renderInfo('priorities', " + newValue + ");"));
+    }
+
+    @FXML
+    private void handleAllocateResources() {
+        System.out.println(resourceAllocationInput + " " + timePeriodSelect);
+        if (resourceAllocationInput != null && !Objects.equals(resourceAllocationInput.getText(), "") && !Objects.equals(timePeriodSelect.getPromptText(), "")) {
+            resourceAllocationService
+                    .allocateFactoryResources(factory.getId(), parseFloat(resourceAllocationInput.getText()))
+                    .thenApply(this::drawResourceAllocation);
+        }
+    }
+
+    private AllocationPlan drawResourceAllocation(Optional<AllocationPlan> allocationPlanOptional) {
+        if (allocationPlanOptional.isEmpty()) {
+            return new AllocationPlan();
+        }
+        AllocationPlan allocationPlan = allocationPlanOptional.get();
+        String jsonString = "{}";
+        try {
+            jsonString = JsonUtil.getObjectMapper().writeValueAsString(allocationPlan);
+        } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+        }
+        String finalJsonString = jsonString;
+        String escapedJsonString = StringEscapeUtils.escapeEcmaScript(finalJsonString);
+
+        String script = "window.renderResourceAllocations('" + escapedJsonString + "');";
+        System.out.println("Allocation Plan: " + script);
+        // Ensure script execution happens on the JavaFX Application Thread
+        Platform.runLater(() -> {
+            try {
+                webView.getEngine().executeScript(script);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
 
-        capacityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            webView.getEngine().executeScript("window.renderInfo('capacities', " + newValue + ");");
-        });
-
-        priorityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            webView.getEngine().executeScript("window.renderInfo('priorities', " + newValue + ");");
-        });
+        return allocationPlan;
     }
 
 }

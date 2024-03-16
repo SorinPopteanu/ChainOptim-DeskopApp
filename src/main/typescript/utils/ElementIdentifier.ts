@@ -1,11 +1,11 @@
 export class ElementIdentifier {
     constructor() {}
 
-    encodeStageInputId(stageId: number, inputId: number) {
+    encodeStageInputId(stageId: number | string, inputId: number) {
         return `s_${stageId}_si_${inputId}`;
     }
     
-    encodeStageOutputId(stageId: number, outputId: number) {
+    encodeStageOutputId(stageId: number | string, outputId: number) {
         return `s_${stageId}_so_${outputId}`;
     }
 

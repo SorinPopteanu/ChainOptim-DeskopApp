@@ -5,6 +5,10 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.factory.controller.FactoryProductionController">
@@ -18,18 +22,36 @@
         <!-- Toolbar Side -->
         <ScrollPane fitToWidth="true" fitToHeight="true">
             <VBox spacing="10" style="-fx-padding: 10;">
-                <Label text="Toolbar" style="-fx-font-size: 18px;"/>
+                <Label text="Toolbar" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
 
-                <!-- "Display" label -->
+                <!-- Section: Display info -->
                 <Label text="Display" style="-fx-font-size: 14px;"/>
 
-                <!-- Checkboxes -->
                 <CheckBox fx:id="quantitiesCheckBox" text="Quantities (Q)" />
                 <CheckBox fx:id="capacityCheckBox" text="Capacities (C)" />
                 <CheckBox fx:id="priorityCheckBox" text="Priorities (P)" />
 
-                <Button text="Button 1"/>
-                <Button text="Button 2"/>
+                <!-- Section: Resource Allocation -->
+                <Label text="Resource Allocation" style="-fx-font-size: 14px;"/>
+                <Label text="From Inventory" style="-fx-font-size: 12px;"/>
+                <HBox spacing="10">
+                    <TextField fx:id="resourceAllocationInput" promptText="Enter number" style="-fx-pref-width: 100px;" />
+                    <ComboBox fx:id="timePeriodSelect" style="-fx-pref-width: 150px;">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Days"/>
+                                <String fx:value="Weeks"/>
+                                <String fx:value="Months"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+                <Button text="Allocate Resources" onAction="#handleAllocateResources"/>
+
+
+
+
+                <Button text="Seek Missing Resources"/>
                 <!-- Add more toolbar buttons or components here -->
             </VBox>
         </ScrollPane>

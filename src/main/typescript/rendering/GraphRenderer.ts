@@ -6,6 +6,7 @@ import { FactoryProductionGraph } from "../types/dataTypes";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { GraphPreprocessor } from "./GraphPreprocessor";
 import { InfoRenderer } from "./InfoRenderer";
+import { ResourceAllocationRenderer } from "./ResourceAllocationRenderer";
 
 /*
  * Orchestrator of the typescript modules.
@@ -16,6 +17,7 @@ export class GraphRenderer {
     private nodeRenderer: NodeRenderer;
     private edgeRenderer: EdgeRenderer;
     private infoRenderer: InfoRenderer;
+    private resourceAllocationRenderer: ResourceAllocationRenderer;
     private interactionManager: InteractionManager;
     private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
 
@@ -30,8 +32,11 @@ export class GraphRenderer {
         this.nodeRenderer = new NodeRenderer(this.svg);
         this.edgeRenderer = new EdgeRenderer(this.svg);
         this.infoRenderer = new InfoRenderer(this.svg);
-        // Bind renderInfo to window for JavaFX access
+        this.resourceAllocationRenderer = new ResourceAllocationRenderer(this.svg);
+
+        // Bind functions to window for JavaFX access
         window.renderInfo = this.infoRenderer.renderInfo.bind(this.infoRenderer);
+        window.renderResourceAllocations = this.resourceAllocationRenderer.renderResourceAllocations.bind(this.resourceAllocationRenderer);
     }
 
     /*
@@ -44,8 +49,9 @@ export class GraphRenderer {
         // Set up definitions for needed elements (arrows, shadows, etc.)
         this.setupSvgDefinitions();
 
-        // Pass factoryGraphUI to the infoRenderer
+        // Pass factoryGraphUI to the needed renderers
         this.infoRenderer.setFactoryGraph(factoryGraphUI);
+        this.resourceAllocationRenderer.setFactoryGraph(factoryGraphUI);
 
         // Draw all nodes
         Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
