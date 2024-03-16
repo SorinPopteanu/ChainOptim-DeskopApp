@@ -25,6 +25,8 @@ import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.Res
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationServiceImpl;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
 import org.chainoptim.desktop.features.supplier.service.SupplierServiceImpl;
+import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
+import org.chainoptim.desktop.features.supplier.service.SupplierWriteServiceImpl;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -66,5 +68,6 @@ public class AppModule extends AbstractModule {
         bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
         bind(SupplierService.class).to(SupplierServiceImpl.class);
+        bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
     }
 }

@@ -96,7 +96,7 @@ public class FactoriesController implements Initializable {
             Node headerView = loader.load();
             headerContainer.getChildren().add(headerView);
             headerController = loader.getController();
-            headerController.initializeHeader("Factories", "/img/box-solid.png", sortOptions, "Factory");
+            headerController.initializeHeader("Factories", "/img/box-solid.png", sortOptions, "Factory", "Create-Factory");
         } catch (IOException e) {
             e.printStackTrace();
         }

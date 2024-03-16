@@ -96,7 +96,7 @@ public class ProductsController implements Initializable {
             Node headerView = loader.load();
             headerContainer.getChildren().add(headerView);
             headerController = loader.getController();
-            headerController.initializeHeader("Products", "/img/box-solid.png", sortOptions, "Product");
+            headerController.initializeHeader("Products", "/img/box-solid.png", sortOptions, "Product", "Create-Product");
         } catch (IOException e) {
             e.printStackTrace();
         }
