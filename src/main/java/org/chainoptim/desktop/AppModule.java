@@ -21,6 +21,8 @@ import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.features.product.service.ProductServiceImpl;
 import org.chainoptim.desktop.features.product.service.ProductWriteService;
 import org.chainoptim.desktop.features.product.service.ProductWriteServiceImpl;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationServiceImpl;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
 import org.chainoptim.desktop.features.supplier.service.SupplierServiceImpl;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
@@ -61,6 +63,7 @@ public class AppModule extends AbstractModule {
         bind(ProductWriteService.class).to(ProductWriteServiceImpl.class);
         bind(FactoryService.class).to(FactoryServiceImpl.class);
         bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
+        bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
         bind(SupplierService.class).to(SupplierServiceImpl.class);
     }

@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/main/typescript/renderGraph.ts',
+    entry: './src/main/typescript/main.ts',
     module: {
         rules: [
             {

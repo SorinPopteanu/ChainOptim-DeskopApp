@@ -1,4 +1,4 @@
-import { Edge, StageNode } from "./dataTypes";
+import { Edge, FactoryInventoryItem, ResourceAllocation, StageNode } from "./dataTypes";
 
 export interface FactoryGraphUI {
     nodes: Record<number, StageNodeUI>;
@@ -18,6 +18,12 @@ export interface EdgeUI {
 }
 
 
+// Resource allocation
+export interface AllocationPlanUI {
+    factoryGraph: FactoryGraphUI;
+    inventoryBalance: Record<number, FactoryInventoryItem>;
+    allocationDeficit: ResourceAllocation[];
+}
 
 
 
@@ -26,8 +32,7 @@ export interface EdgeUI {
 
 
 
-
-
+// Utils
 export interface Coordinates {
     x: number;
     y: number;
