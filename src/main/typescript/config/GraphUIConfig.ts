@@ -1,19 +1,20 @@
 export const GraphUIConfig = {
     graph: {
-        width: 800,
-        height: 600,
-        spaceBetweenStagesX: 240,
-        spaceBetweenStagesY: 200,
+        width: 960,
+        height: 640,
+        spaceBetweenStagesX: 250,
+        spaceBetweenStagesY: 250,
         paddingX: 100,
-        paddingY: 100,
+        paddingY: 120,
+        backgroundColor: "#eeeeee",
     },
     node: {
-        stageWidth: 100,
-        stageHeight: 140,
+        stageWidth: 120,
+        stageHeight: 160,
         stageBoxWidth: 90,
         stageBoxHeight: 60,
         subnodeRadius: 14,
-        backgroundColor: "#f0f0f0",
+        backgroundColor: "#ffffff",
         borderColor: "gray",
         borderWidth: 1,
         borderRadius: 4,
@@ -27,8 +28,8 @@ export const GraphUIConfig = {
         highlightWidth: 2,
     },
     edge: {
-        color: "blue",
-        width: 1,
+        color: "#111111",
+        width: 1.5,
         markerEnd: "url(#arrowhead)",
     },
     info: {
@@ -39,10 +40,11 @@ export const GraphUIConfig = {
         priorityPaddingY: 10
     },
     resourceAllocation: {
-        surplusColor: "green",
-        deficitColor: "red",
-        highlightWidth: 1.5,
-    },
+        surplusColor: "#4CAF50", 
+        aboveRequiredCapacityColor: "#FFEB3B", 
+        deficitColor: "#F44336", 
+        highlightWidth: 1.3,
+    },    
     shadow: {
         id: "drop-shadow",
         dx: 1,

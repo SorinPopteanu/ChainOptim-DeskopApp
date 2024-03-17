@@ -3,7 +3,7 @@ import { Coordinates, StageNodeUI } from "../types/uiTypes";
 import { getCirclePoint } from "../utils/geometryUtils";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { ElementIdentifier } from "../utils/ElementIdentifier";
-import { findStageInputPosition, findStageOutputPosition } from "../utils/utils";
+import { findStageInputPosition, findStageOutputPosition, truncateString } from "../utils/utils";
 
 export class NodeRenderer {
     private elementIdentifier: ElementIdentifier;
@@ -61,7 +61,7 @@ export class NodeRenderer {
             .attr("y", centerY)
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "central")
-            .text(stageName)
+            .text(truncateString(stageName, 11))
             .style("fill", fontColor)
             .style("font-family", "Arial, sans-serif")
             .style("font-size", mainNodeFontSize)

@@ -6,6 +6,7 @@ import lombok.Data;
 public class StageNode {
     SmallStage smallStage;
     Float numberOfStepsCapacity;
+    Float minimumRequiredCapacity;
     Float perDuration;
     Integer priority;
     Float allocationCapacityRatio;

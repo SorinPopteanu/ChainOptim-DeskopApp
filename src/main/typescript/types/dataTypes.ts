@@ -15,6 +15,7 @@ export interface FactoryGraph {
 export interface StageNode {
     smallStage: SmallStage;
     numberOfStepsCapacity: number;
+    minimumRequiredCapacity: number;
     perDuration: number;
     priority: number;
     allocationCapacityRatio: number;
@@ -40,6 +41,7 @@ export interface SmallStageOutput {
     componentId: number;
     quantityPerStage: number;
     expectedOutputPerAllocation: number;
+    outputPerRequest: number;
 }
 
 export interface Edge {

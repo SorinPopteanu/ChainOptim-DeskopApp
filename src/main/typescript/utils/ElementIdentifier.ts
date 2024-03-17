@@ -20,8 +20,12 @@ export class ElementIdentifier {
     }
 
     // Info texts
-    encodeQuantityTextId(nodeId: number | string, inputId: number | string) {
-        return `quantity-text-${nodeId}-${inputId}`;
+    encodeInputQuantityTextId(nodeId: number | string, inputId: number | string) {
+        return `quantity-text-i-${nodeId}-${inputId}`;
+    }
+
+    encodeOutputQuantityTextId(nodeId: number | string, inputId: number | string) {
+        return `quantity-text-o-${nodeId}-${inputId}`;
     }
 
     encodeCapacityTextId(nodeId: number | string) {

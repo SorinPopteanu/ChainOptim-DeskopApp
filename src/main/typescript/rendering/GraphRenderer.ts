@@ -23,10 +23,11 @@ export class GraphRenderer {
 
 
     constructor(containerId: string) {
-        const { width, height } = GraphUIConfig.graph;
+        const { width, height, backgroundColor } = GraphUIConfig.graph;
         this.svg = d3.select(containerId).append("svg")
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", height)
+            .style("background-color", backgroundColor);
 
         this.graphPreprocessor = new GraphPreprocessor();
         this.nodeRenderer = new NodeRenderer(this.svg);

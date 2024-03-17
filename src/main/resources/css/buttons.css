@@ -26,3 +26,9 @@
 .no-style-button:pressed {
     -fx-background-color: transparent;
 }
+
+.common-button {
+    -fx-background-color: #fefefe;
+    -fx-padding: 4px 2px 4px 2px;
+    -fx-font-size: 14px;
+}

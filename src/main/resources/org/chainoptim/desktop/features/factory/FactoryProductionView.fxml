@@ -21,12 +21,12 @@
 
         <!-- Toolbar Side -->
         <ScrollPane fitToWidth="true" fitToHeight="true">
-            <VBox spacing="10" style="-fx-padding: 10;">
+            <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff;">
                 <Label text="Toolbar" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
 
                 <!-- Section: Edit Configuration -->
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Edit Configuration" style="-fx-font-size: 14px;"/>
+                    <Label text="Edit Configuration" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
                     <Button fx:id="toggleEditConfigurationButton" onAction="#toggleEditConfigurationSection" styleClass="no-style-button"/>
                 </HBox>
                 <VBox spacing="10">
@@ -39,7 +39,7 @@
 
                 <!-- Section: Display info -->
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Display Info" style="-fx-font-size: 14px;"/>
+                    <Label text="Display Info" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
                     <Button fx:id="toggleDisplayInfoButton" onAction="#toggleDisplayInfoSection" styleClass="no-style-button"/>
                 </HBox>
                 <VBox spacing="10">
@@ -52,7 +52,7 @@
 
                 <!-- Section: Resource Allocation -->
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Allocate Resources" style="-fx-font-size: 14px;"/>
+                    <Label text="Allocate Resources" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
                     <Button fx:id="toggleResourceAllocationButton" onAction="#toggleResourceAllocationSection" styleClass="no-style-button"/>
                 </HBox>
                 <VBox spacing="10">
@@ -78,7 +78,7 @@
 
                 <!-- Section: Seek resources -->
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Seek Resources" style="-fx-font-size: 14px;"/>
+                    <Label text="Seek Resources" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
                     <Button fx:id="toggleSeekResourcesButton" onAction="#toggleSeekResourcesSection" styleClass="no-style-button"/>
                 </HBox>
                 <VBox spacing="10">
