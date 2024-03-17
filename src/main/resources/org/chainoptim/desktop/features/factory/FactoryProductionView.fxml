@@ -24,35 +24,68 @@
             <VBox spacing="10" style="-fx-padding: 10;">
                 <Label text="Toolbar" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
 
-                <!-- Section: Display info -->
-                <Label text="Display" style="-fx-font-size: 14px;"/>
+                <!-- Section: Edit Configuration -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Edit Configuration" style="-fx-font-size: 14px;"/>
+                    <Button fx:id="toggleEditConfigurationButton" onAction="#toggleEditConfigurationSection" styleClass="no-style-button"/>
+                </HBox>
+                <VBox spacing="10">
+                    <VBox fx:id="editConfigurationContentVBox" spacing="10">
+                        <Button text="Add Stage"/>
+                        <Button text="Edit Stage"/>
+                        <Button text="Add Connection"/>
+                    </VBox>
+                </VBox>
 
-                <CheckBox fx:id="quantitiesCheckBox" text="Quantities (Q)" />
-                <CheckBox fx:id="capacityCheckBox" text="Capacities (C)" />
-                <CheckBox fx:id="priorityCheckBox" text="Priorities (P)" />
+                <!-- Section: Display info -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Display Info" style="-fx-font-size: 14px;"/>
+                    <Button fx:id="toggleDisplayInfoButton" onAction="#toggleDisplayInfoSection" styleClass="no-style-button"/>
+                </HBox>
+                <VBox spacing="10">
+                    <VBox fx:id="displayInfoContentVBox" spacing="10">
+                        <CheckBox fx:id="quantitiesCheckBox" text="Quantities (Q)"/>
+                        <CheckBox fx:id="capacityCheckBox" text="Capacities (C)"/>
+                        <CheckBox fx:id="priorityCheckBox" text="Priorities (P)" />
+                    </VBox>
+                </VBox>
 
                 <!-- Section: Resource Allocation -->
-                <Label text="Resource Allocation" style="-fx-font-size: 14px;"/>
-                <Label text="From Inventory" style="-fx-font-size: 12px;"/>
-                <HBox spacing="10">
-                    <TextField fx:id="resourceAllocationInput" promptText="Enter number" style="-fx-pref-width: 100px;" />
-                    <ComboBox fx:id="timePeriodSelect" style="-fx-pref-width: 150px;">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Days"/>
-                                <String fx:value="Weeks"/>
-                                <String fx:value="Months"/>
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Allocate Resources" style="-fx-font-size: 14px;"/>
+                    <Button fx:id="toggleResourceAllocationButton" onAction="#toggleResourceAllocationSection" styleClass="no-style-button"/>
                 </HBox>
-                <Button text="Allocate Resources" onAction="#handleAllocateResources"/>
+                <VBox spacing="10">
+                    <VBox fx:id="resourceAllocationContentBox" spacing="10">
+                        <Label text="From Inventory" style="-fx-font-size: 12px;"/>
+                        <HBox spacing="10">
+                            <TextField fx:id="resourceAllocationInput" promptText="Enter number" style="-fx-pref-width: 100px;" />
+                            <ComboBox fx:id="timePeriodSelect" style="-fx-pref-width: 150px;">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="Hours"/>
+                                        <String fx:value="Days"/>
+                                        <String fx:value="Weeks"/>
+                                        <String fx:value="Months"/>
+                                    </FXCollections>
+                                </items>
+                            </ComboBox>
+                        </HBox>
+                        <Button text="Allocate Resources" onAction="#handleAllocateResources"/>
 
+                    </VBox>
+                </VBox>
 
-
-
-                <Button text="Seek Missing Resources"/>
-                <!-- Add more toolbar buttons or components here -->
+                <!-- Section: Seek resources -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Seek Resources" style="-fx-font-size: 14px;"/>
+                    <Button fx:id="toggleSeekResourcesButton" onAction="#toggleSeekResourcesSection" styleClass="no-style-button"/>
+                </HBox>
+                <VBox spacing="10">
+                    <VBox fx:id="seekResourcesContentBox" spacing="10">
+                        <Button text="Seek Missing Resources"/>
+                    </VBox>
+                </VBox>
             </VBox>
         </ScrollPane>
     </SplitPane>

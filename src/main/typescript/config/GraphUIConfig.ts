@@ -34,7 +34,7 @@ export const GraphUIConfig = {
     info: {
         infoFontSize: 14,
         infoColor: "black",
-        infoPaddingX: 20,
+        infoPaddingX: 15,
         capacityPaddingY: -10,
         priorityPaddingY: 10
     },

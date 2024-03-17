@@ -46,7 +46,8 @@ export class ResourceAllocationRenderer {
                 const quantityTextId = this.elementIdentifier.encodeQuantityTextId(stageNodeId, stageInput.id);
                 const quantityTextElement = this.svg.select(`#${quantityTextId}`);
                 if (!quantityTextElement.empty() && correspondingAllocation) {
-                    const updatedText = `Q: ${correspondingAllocation.allocatedAmount.toFixed(0)}/${correspondingAllocation.requestedAmount.toFixed(0)}`;
+                    const ratio = correspondingAllocation.requestedAmount != 0 ? (correspondingAllocation.allocatedAmount / correspondingAllocation.requestedAmount) : 0;
+                    const updatedText = `Q: ${(ratio * 100).toFixed(2)}%`;
                     quantityTextElement.text(updatedText);
                 }
 

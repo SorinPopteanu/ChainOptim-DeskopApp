@@ -9,3 +9,20 @@
 .standard-write-button:hover {
     -fx-background-color: #0066bb;
 }
+
+/* Button with default JavaFX styles removed */
+.no-style-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.no-style-button:hover {
+    -fx-background-color: transparent;
+}
+
+.no-style-button:pressed {
+    -fx-background-color: transparent;
+}
