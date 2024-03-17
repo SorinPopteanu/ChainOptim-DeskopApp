@@ -42,8 +42,6 @@ export const GraphUIConfig = {
         surplusColor: "green",
         deficitColor: "red",
         highlightWidth: 1.5,
-        allocationRatioPaddingX: -20,
-        allocationRatioPaddingY: 0,
     },
     shadow: {
         id: "drop-shadow",

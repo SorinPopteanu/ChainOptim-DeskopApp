@@ -64,10 +64,7 @@ export class GraphRenderer {
         });
 
         // Set up interactions and connect them to JavaFX via JavaConnector
-        this.interactionManager = new InteractionManager(this.svg, this.nodeRenderer);
-        if (window.javaConnector) {
-            window.javaConnector.log("javaConnector is defined.");
-        }        
+        this.interactionManager = new InteractionManager(this.svg, this.nodeRenderer);    
         this.interactionManager.setupNodeInteractions((nodeId) => {
             window.javaConnector.handleNodeClick(nodeId);
         });

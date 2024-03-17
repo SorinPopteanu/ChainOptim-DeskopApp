@@ -84,9 +84,8 @@ export interface FactoryInventoryItem {
 
 // Resource Allocation
 export interface AllocationPlan {
-    factoryGraph: FactoryGraph;
     inventoryBalance: Record<number, FactoryInventoryItem>;
-    allocationDeficit: ResourceAllocation[];
+    allocations: ResourceAllocation[];
 }
 
 export interface ResourceAllocation {

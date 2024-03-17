@@ -117,9 +117,6 @@ export class NodeRenderer {
 
             const stageInputConnectingCoordinates = getCirclePoint(stageInputX, stageInputY + stageInputNodeRadius, stageInputNodeRadius, 0.25);
 
-            if (window.javaConnector) {
-                window.javaConnector.log("Rendering inner edge with ID: " + edgeId);
-            }
             this.svg.append("line")
                 .attr("id", edgeId)
                 .attr("x1", stageInputConnectingCoordinates.x) // Connect from the bottom of the circle

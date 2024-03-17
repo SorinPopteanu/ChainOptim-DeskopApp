@@ -1,13 +1,13 @@
 import { BaseType } from "d3";
 import { AllocationPlan, FactoryGraph } from "../types/dataTypes";
-import { AllocationPlanUI, FactoryGraphUI, StageNodeUI } from "../types/uiTypes";
+import { FactoryGraphUI, StageNodeUI } from "../types/uiTypes";
 import { ElementIdentifier } from "../utils/ElementIdentifier";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { findStageInputPosition } from "../utils/utils";
 
 export class ResourceAllocationRenderer {
-    private allocationPlanUI: AllocationPlanUI;
     private factoryGraphUI: FactoryGraphUI;
+    private allocationPlan: AllocationPlan;
 
     private elementIdentifier: ElementIdentifier;
 
@@ -18,13 +18,12 @@ export class ResourceAllocationRenderer {
 
     public renderResourceAllocations(jsonData: string) {
         const allocationPlan: AllocationPlan = JSON.parse(jsonData);
-        this.allocationPlanUI = {
-            factoryGraph: this.factoryGraphUI,
+        this.allocationPlan = {
             inventoryBalance: allocationPlan.inventoryBalance,
-            allocationDeficit: allocationPlan.allocationDeficit
+            allocations: allocationPlan.allocations
         };
 
-        Object.entries(this.allocationPlanUI.factoryGraph.nodes).forEach(([stageNodeId, nodeUI]) => {
+        Object.entries(this.factoryGraphUI.nodes).forEach(([stageNodeId, nodeUI]) => {
             let hasDeficits = false;
 
             let stageInputs = nodeUI.node.smallStage.stageInputs;
@@ -35,19 +34,23 @@ export class ResourceAllocationRenderer {
                 const innerEdgeId = this.elementIdentifier.encodeInnerEdgeId(inputId, stageNodeId);
                 const innerEdgeElement = this.svg.select(`#${innerEdgeId}`);
 
-                if (window.javaConnector) {
-                    window.javaConnector.log("Attempting to select inner edge with  ID: " + innerEdgeId);
-                }
                 // Determine color based on allocation
-                const correspondingDeficit = this.allocationPlanUI.allocationDeficit.find((deficit) => deficit.stageInputId === stageInput.id);
-                hasDeficits = correspondingDeficit && correspondingDeficit.allocatedAmount < correspondingDeficit.requestedAmount;
+                const correspondingAllocation = this.allocationPlan.allocations.find((allocation) => allocation.stageInputId === stageInput.id);
+                hasDeficits = correspondingAllocation && correspondingAllocation.allocatedAmount < correspondingAllocation.requestedAmount;
 
                 // Apply styling based on deficits
                 this.applyDeficitHighlighting(inputElement, hasDeficits);
                 this.applyDeficitHighlighting(innerEdgeElement, hasDeficits);
 
-                const { x: stageInputX, y: stageInputY } = findStageInputPosition(nodeUI.coordinates.x, nodeUI.coordinates.x, stageInputs.length - 1, index);
-                
+                // Update info texts
+                const quantityTextId = this.elementIdentifier.encodeQuantityTextId(stageNodeId, stageInput.id);
+                const quantityTextElement = this.svg.select(`#${quantityTextId}`);
+                if (!quantityTextElement.empty() && correspondingAllocation) {
+                    const updatedText = `Q: ${correspondingAllocation.allocatedAmount.toFixed(0)}/${correspondingAllocation.requestedAmount.toFixed(0)}`;
+                    quantityTextElement.text(updatedText);
+                }
+
+
             });
             nodeUI.node.smallStage.stageOutputs.forEach((stageOutput) => {
                 // Find output and inner edge elements

@@ -1,11 +1,15 @@
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { FactoryGraphUI } from "../types/uiTypes";
+import { ElementIdentifier } from "../utils/ElementIdentifier";
 import { findStageInputPosition } from "../utils/utils";
 
 export class InfoRenderer {
     private factoryGraph: FactoryGraphUI;
+    private elementIdentifier: ElementIdentifier;
 
-    constructor(private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>) {}
+    constructor(private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>) {
+        this.elementIdentifier = new ElementIdentifier();
+    }
 
 
     public renderInfo(infoType: string, isVisible: boolean) {
@@ -32,7 +36,7 @@ export class InfoRenderer {
         const { infoFontSize, infoColor, infoPaddingX, capacityPaddingY } = GraphUIConfig.info;
 
         Object.entries(this.factoryGraph.nodes).forEach(([nodeId, nodeUI]) => {
-            const textId = `capacity-text-${nodeId}`;
+            const textId = this.elementIdentifier.encodeCapacityTextId(nodeId);
             const textX = nodeUI.coordinates.x + stageBoxWidth / 2 + infoPaddingX;
             const textY = nodeUI.coordinates.y + capacityPaddingY;
             
@@ -59,7 +63,7 @@ export class InfoRenderer {
         const { infoFontSize, infoColor, infoPaddingX, priorityPaddingY } = GraphUIConfig.info;
 
         Object.entries(this.factoryGraph.nodes).forEach(([nodeId, nodeUI]) => {
-            const textId = `priority-text-${nodeId}`;
+            const textId = this.elementIdentifier.encodePriorityTextId(nodeId);
             const textX = nodeUI.coordinates.x + stageBoxWidth / 2 + infoPaddingX;
             const textY = nodeUI.coordinates.y + priorityPaddingY;
             
@@ -90,7 +94,7 @@ export class InfoRenderer {
             stageInputs.forEach((input, index) => {
                 const { x: stageInputX, y: stageInputY } = findStageInputPosition(nodeUI.coordinates.x, nodeUI.coordinates.y, stageInputs.length - 1, index);
                 
-                const textId = `quantity-text-${nodeId}-${index}`;
+                const textId = this.elementIdentifier.encodeQuantityTextId(nodeId, input.id);
                 const textX = stageInputX + subnodeRadius + infoPaddingX;
                 const textY = stageInputY;
 
