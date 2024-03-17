@@ -8,5 +8,5 @@ public class StageNode {
     Float numberOfStepsCapacity;
     Float perDuration;
     Integer priority;
-
+    Float allocationCapacityRatio;
 }

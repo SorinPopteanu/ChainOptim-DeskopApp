@@ -17,6 +17,7 @@ export interface StageNode {
     numberOfStepsCapacity: number;
     perDuration: number;
     priority: number;
+    allocationCapacityRatio: number;
 }
 
 export interface SmallStage {
@@ -31,6 +32,7 @@ export interface SmallStageInput {
     componentId: number;
     quantityPerStage: number;
     allocatedQuantity: number;
+    requestedQuantity: number;
 }
 
 export interface SmallStageOutput {
@@ -84,6 +86,7 @@ export interface FactoryInventoryItem {
 
 // Resource Allocation
 export interface AllocationPlan {
+    factoryGraph: FactoryGraph;
     inventoryBalance: Record<number, FactoryInventoryItem>;
     allocations: ResourceAllocation[];
 }

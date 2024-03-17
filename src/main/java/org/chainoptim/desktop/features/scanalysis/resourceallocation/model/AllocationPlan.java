@@ -15,6 +15,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class AllocationPlan {
 
+    private FactoryGraph factoryGraph;
+
     private Map<Integer, FactoryInventoryItem> inventoryBalance;
 
     private List<ResourceAllocation> allocations;
