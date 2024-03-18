@@ -173,9 +173,9 @@ public class ClientsController implements Initializable {
     private void loadClientCardUI(Client client) {
         Label clientName = new Label(client.getName());
         clientName.getStyleClass().add("entity-name-label");
-        Label clientLocation = new Label(client.getLocation().getFormattedLocation());
-        clientLocation.getStyleClass().add("entity-description-label");
-        VBox clientBox = new VBox(clientName, clientLocation);
+//        Label clientLocation = new Label(client.getLocation().getFormattedLocation());
+//        clientLocation.getStyleClass().add("entity-description-label");
+        VBox clientBox = new VBox(clientName);
         Button clientButton = new Button();
         clientButton.getStyleClass().add("entity-card");
         clientButton.setGraphic(clientBox);

@@ -54,7 +54,7 @@ public class SidebarController {
     public Button logoutButton;
 
     // Configuration
-    private final List<String> orderedKeys = List.of("Overview", "Organization", "Products", "Factories", "Warehouses", "Suppliers");
+    private final List<String> orderedKeys = List.of("Overview", "Organization", "Products", "Factories", "Warehouses", "Suppliers", "Clients");
     private final Map<String, String> buttonIconMap = Map.of(
             "Overview", "globe-solid.png",
             "Organization", "building-regular.png",
@@ -62,6 +62,7 @@ public class SidebarController {
             "Factories", "industry-solid.png",
             "Warehouses", "warehouse-solid.png",
             "Suppliers", "truck-arrow-right-solid.png",
+            "Clients", "universal-access-solid.png",
             "Account", "user-solid.png",
             "Toggle", "bars-solid.png"
     );

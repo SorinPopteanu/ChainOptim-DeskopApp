@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            styleClass="main-container"
+            fx:controller="org.chainoptim.desktop.features.client.controller.ClientsController">
+
+    <StackPane fx:id="headerContainer"/>
+
+    <VBox fx:id="clientsVBox" styleClass="items-list"/>
+
+    <StackPane fx:id="pageSelectorContainer"/>
+
+    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+
+</VBox>

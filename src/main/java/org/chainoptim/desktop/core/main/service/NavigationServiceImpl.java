@@ -50,14 +50,17 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml"),
             Map.entry("Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml"),
             Map.entry("Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"),
+            Map.entry("Clients", "/org/chainoptim/desktop/features/client/ClientsView.fxml"),
             // Dynamic route pages
             Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
             Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
             Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
+            Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),
 
             // Create forms
             Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
-            Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml")
+            Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"),
+            Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml")
     );
 
     public void switchView(String viewKey) {

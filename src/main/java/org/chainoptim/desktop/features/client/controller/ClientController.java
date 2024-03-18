@@ -45,11 +45,11 @@ public class ClientController implements Initializable {
     @FXML
     private Tab shipmentsTab;
     @FXML
-    private Tab performanceTab;
+    private Tab evaluationTab;
     @FXML
     private Label clientName;
-    @FXML
-    private Label clientLocation;
+//    @FXML
+//    private Label clientLocation;
 
     @Inject
     public ClientController(ClientService clientService,
@@ -67,7 +67,7 @@ public class ClientController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Integer clientId = currentSelectionService.getSelectedId();
-        if (client == null) {
+        if (clientId == null) {
             System.out.println("Missing client id.");
             fallbackManager.setErrorMessage("Failed to load client.");
         }
@@ -93,10 +93,10 @@ public class ClientController implements Initializable {
             }
             this.client = clientOptional.get();
             clientName.setText(client.getName());
-            clientLocation.setText(client.getLocation().getFormattedLocation());
+//            clientLocation.setText(client.getLocation().getFormattedLocation());
 
 
-            loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/overview/ClientOverview.fxml", this.client);
+            loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
         });
 
         return clientOptional;
@@ -123,9 +123,9 @@ public class ClientController implements Initializable {
                 loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/client/ClientShipmentsView.fxml", this.client);
             }
         });
-        performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
-                loadTabContent(performanceTab, "/org/chainoptim/desktop/features/client/ClientPerformanceView.fxml", this.client);
+        evaluationTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && evaluationTab.getContent() == null) {
+                loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/client/ClientEvaluationView.fxml", this.client);
             }
         });
     }

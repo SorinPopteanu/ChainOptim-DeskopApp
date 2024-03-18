@@ -2,11 +2,11 @@
 .sidebar {
     -fx-background-color: #000000;
     -fx-border-color: #333;
-    -fx-spacing: 10px;
+    -fx-spacing: 12px;
 }
 
 .sidebar-inner-container {
-    -fx-padding: 10px;
+    -fx-padding: 16px;
 }
 
 .sidebar-title {
@@ -25,7 +25,7 @@
     -fx-padding: 10px;
     -fx-border-radius: 5px;
     -fx-min-height: 40;
-    -fx-max-height: 40;
+    -fx-max-height: 48;
     -fx-alignment: baseline-left;
 
 }
