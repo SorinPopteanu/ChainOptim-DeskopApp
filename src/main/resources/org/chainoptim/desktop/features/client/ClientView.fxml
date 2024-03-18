@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -13,16 +9,16 @@
         <VBox spacing="16" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" styleClass="entity-header-container">
             <HBox alignment="CENTER_LEFT" spacing="40">
                 <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                    <Label fx:id="supplierName" styleClass="entity-page-title"/>
-                    <Label fx:id="supplierLocation" styleClass="entity-page-description"/>
+                    <Label fx:id="clientName" styleClass="entity-page-title"/>
+<!--                    <Label fx:id="clientLocation" styleClass="entity-page-description"/>-->
                 </VBox>
-                <Button text="EditSupplier" onAction="#handleEditSupplier" styleClass="standard-write-button"/>
+                <Button text="Edit Client" onAction="#handleEditClient" styleClass="standard-write-button"/>
             </HBox>
             <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
                 <Tab fx:id="overviewTab" text="Overview"/>
                 <Tab fx:id="ordersTab" text="Orders"/>
                 <Tab fx:id="shipmentsTab" text="Shipments"/>
-                <Tab fx:id="performanceTab" text="Performance"/>
+                <Tab fx:id="evaluationTab" text="Evaluation"/>
             </TabPane>
         </VBox>
 

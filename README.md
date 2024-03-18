@@ -2,7 +2,7 @@
 
 **ChainOptim** is a Supply Chain Manager and Optimizer, consisting of a [Spring Boot backend](https://github.com/TudorOrban/ChainOptim-backend), a [web frontend](https://github.com/TudorOrban/ChainOptim-frontend) in Angular and a [Desktop frontend](https://github.com/SorinPopteanu/ChainOptim-DesktopApp) in JavaFX.
 It is designed as a general service that can accommodate the needs of companies from a variety of sectors, providing
-detailed insights into their supply chain, from suppliers to production to clients.
+detailed insights into their supply chain, from clients to production to clients.
 
 ### Features
 
@@ -19,7 +19,7 @@ allows the software to provide valuable information into its operations, includi
 ![Factory Production Graph](/screenshots/FactoryProductionGraph.png)
 
 #### **Suppliers** and **Clients**:
-ChainOptim allows registration of suppliers and clients, tracking orders and shipments and responding in real time to unpredictable disruptions that are more and more common in the present supply chain.
+ChainOptim allows registration of clients and clients, tracking orders and shipments and responding in real time to unpredictable disruptions that are more and more common in the present supply chain.
 
 ### How to use
 ChainOptim is not yet deployed. To use it, you will have to set up locally the database, backend server and chosen frontend.
