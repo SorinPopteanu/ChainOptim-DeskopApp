@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.core.main.service;
 
 import com.google.inject.Injector;
+import javafx.scene.image.Image;
 import lombok.Setter;
 import org.chainoptim.desktop.MainApplication;
 
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 /*
  * Manager of current scene.
@@ -41,6 +43,8 @@ public class SceneManager {
         applyCss(mainScene, "/css/globals.css");
         primaryStage.setScene(mainScene);
         primaryStage.setTitle("ChainOptim");
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(SceneManager.class.getResourceAsStream("/img/settings.png"))));
+
         primaryStage.show();
     }
 
