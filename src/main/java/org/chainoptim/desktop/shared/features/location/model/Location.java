@@ -16,7 +16,11 @@ public class Location {
     private Integer organizationId;
 
     public String getFormattedLocation() {
-        return city + ", " + state + ", " + country;
+        String formattedCity = (city != null) ? city : "-";
+        String formattedState = (state != null) ? state : "-";
+        String formattedCountry = (country != null) ? country : "-";
+
+        return formattedCity + ", " + formattedState + ", " + formattedCountry;
     }
 
 }

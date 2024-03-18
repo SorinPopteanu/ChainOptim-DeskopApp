@@ -96,7 +96,7 @@ public class SupplierController implements Initializable {
             supplierLocation.setText(supplier.getLocation().getFormattedLocation());
 
 
-            loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/overview/SupplierOverview.fxml", this.supplier);
+            loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
         });
 
         return supplierOptional;
@@ -120,7 +120,7 @@ public class SupplierController implements Initializable {
         });
         shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
+                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
             }
         });
         performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
