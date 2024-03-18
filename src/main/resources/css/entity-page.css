@@ -12,32 +12,29 @@
 }
 
 /* Tabs */
-.tab-pane {
-    -fx-tab-min-height: 32px;
-}
-
 .tab-pane .tab-header-area .headers-region {
     -fx-padding: 0;
-    -fx-border-color: #d1d3bb;
-    -fx-border-width: 0 0 1px 0;
     -fx-alignment: center-left;
 }
 
 .tab-pane .tab-header-background {
-    -fx-background-color: transparent; /* Hide the tab header background */
+    -fx-background-color: transparent;
 }
 
 .tab {
-    -fx-background-color: transparent; /* Hide individual tab backgrounds */
-    -fx-padding: 12px;
+    -fx-background-color: transparent;
+    -fx-padding: 16px;
     -fx-cursor: hand;
 }
 
 .tab:selected {
-    -fx-background-color: #ffffff; /* Background of selected tab, adjust color as needed */
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: transparent transparent #0077dd transparent;
+    -fx-border-width: 0 0 2px 0;
 }
 
 .tab .tab-label {
+    -fx-padding: 0 0 0 0;
     -fx-font-size: 17px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
@@ -45,7 +42,7 @@
 
 .tab-pane:focused, .tab:selected:focused {
     -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent; /* Remove focus ring */
+    -fx-faint-focus-color: transparent;
 }
 
 .tab:focused {

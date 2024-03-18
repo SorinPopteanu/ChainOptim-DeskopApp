@@ -1,8 +1,11 @@
 package org.chainoptim.desktop.features.factory.controller;
 
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.event.ActionEvent;
+import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.features.factory.factorygraph.model.*;
 import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.factory.factorygraph.service.JavaConnector;
@@ -22,6 +25,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import org.apache.commons.text.StringEscapeUtils;
 import netscape.javascript.JSObject;
+import org.chainoptim.desktop.shared.util.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +43,24 @@ public class FactoryProductionController implements DataReceiver<Factory> {
     private Factory factory;
     private FactoryProductionGraph productionGraph;
 
+    // Graph
     @FXML
     private StackPane graphContainer;
     @FXML
     private WebView webView;
 
+    // Toolbar elements
+    // - Edit Configuration
+    @FXML
+    private Button toggleEditConfigurationButton;
+    @FXML
+    private VBox editConfigurationContentVBox;
+
+    // - Display Info
+    @FXML
+    private Button toggleDisplayInfoButton;
+    @FXML
+    private VBox displayInfoContentVBox;
     @FXML
     private CheckBox quantitiesCheckBox;
     @FXML
@@ -51,12 +68,25 @@ public class FactoryProductionController implements DataReceiver<Factory> {
     @FXML
     private CheckBox priorityCheckBox;
 
+    // - Resource Allocation
+    @FXML
+    private Button toggleResourceAllocationButton;
+    @FXML
+    private VBox resourceAllocationContentBox;
     @FXML
     private TextField resourceAllocationInput;
-
     @FXML
     private ComboBox<String> timePeriodSelect;
 
+    // - Seek Resources
+    @FXML
+    private Button toggleSeekResourcesButton;
+    @FXML
+    private VBox seekResourcesContentBox;
+
+    // - Icons
+    private Image angleUpImage;
+    private Image angleDownImage;
 
     @Inject
     public FactoryProductionController(FactoryProductionGraphService graphService,
@@ -70,6 +100,7 @@ public class FactoryProductionController implements DataReceiver<Factory> {
     @Override
     public void setData(Factory factory) {
         this.factory = factory;
+        initializeToolbarUI();
         loadGraphData();
     }
 
@@ -102,14 +133,7 @@ public class FactoryProductionController implements DataReceiver<Factory> {
         webView = new WebView();
         webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
 
-        String jsonString = "{}";
-        try {
-            jsonString = JsonUtil.getObjectMapper().writeValueAsString(productionGraph);
-        } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
-        }
-        String finalJsonString = jsonString;
-        String escapedJsonString = StringEscapeUtils.escapeEcmaScript(finalJsonString);
+        String escapedJsonString = prepareJsonString(productionGraph);
 
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
@@ -144,10 +168,13 @@ public class FactoryProductionController implements DataReceiver<Factory> {
 
     @FXML
     private void handleAllocateResources() {
-        System.out.println(resourceAllocationInput + " " + timePeriodSelect);
-        if (resourceAllocationInput != null && !Objects.equals(resourceAllocationInput.getText(), "") && !Objects.equals(timePeriodSelect.getPromptText(), "")) {
+        if (resourceAllocationInput != null && !Objects.equals(resourceAllocationInput.getText(), "") && timePeriodSelect.getValue() != null) {
+            float inputDuration = parseFloat(resourceAllocationInput.getText());
+            float durationSeconds = TimeUtil.getSeconds(inputDuration, timePeriodSelect.getValue());
+            if (durationSeconds == -1.0f) return;
+
             resourceAllocationService
-                    .allocateFactoryResources(factory.getId(), parseFloat(resourceAllocationInput.getText()))
+                    .allocateFactoryResources(factory.getId(), durationSeconds)
                     .thenApply(this::drawResourceAllocation);
         }
     }
@@ -157,17 +184,10 @@ public class FactoryProductionController implements DataReceiver<Factory> {
             return new AllocationPlan();
         }
         AllocationPlan allocationPlan = allocationPlanOptional.get();
-        String jsonString = "{}";
-        try {
-            jsonString = JsonUtil.getObjectMapper().writeValueAsString(allocationPlan);
-        } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
-        }
-        String finalJsonString = jsonString;
-        String escapedJsonString = StringEscapeUtils.escapeEcmaScript(finalJsonString);
+        String escapedJsonString = prepareJsonString(allocationPlan);
 
         String script = "window.renderResourceAllocations('" + escapedJsonString + "');";
-        System.out.println("Allocation Plan: " + script);
+
         // Ensure script execution happens on the JavaFX Application Thread
         Platform.runLater(() -> {
             try {
@@ -180,4 +200,64 @@ public class FactoryProductionController implements DataReceiver<Factory> {
         return allocationPlan;
     }
 
+    private <T> String prepareJsonString(T data) {
+        String jsonString = "{}";
+        try {
+            jsonString = JsonUtil.getObjectMapper().writeValueAsString(data);
+        } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+        }
+        String finalJsonString = jsonString;
+        return StringEscapeUtils.escapeEcmaScript(finalJsonString);
+    }
+
+    // Toolbar
+    private void initializeToolbarUI() {
+        angleUpImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
+        angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
+
+        toggleEditConfigurationButton.setGraphic(createImageView(angleUpImage));
+        toggleDisplayInfoButton.setGraphic(createImageView(angleUpImage));
+        toggleResourceAllocationButton.setGraphic(createImageView(angleUpImage));
+        toggleSeekResourcesButton.setGraphic(createImageView(angleUpImage));
+    }
+
+    // Toggle Toolbar sections
+    @FXML
+    private void toggleEditConfigurationSection(ActionEvent event) {
+        toggleSection(editConfigurationContentVBox, toggleEditConfigurationButton);
+    }
+
+    @FXML
+    private void toggleDisplayInfoSection(ActionEvent event) {
+        toggleSection(displayInfoContentVBox, toggleDisplayInfoButton);
+    }
+
+    @FXML
+    private void toggleResourceAllocationSection(ActionEvent event) {
+        toggleSection(resourceAllocationContentBox, toggleResourceAllocationButton);
+    }
+
+    @FXML
+    private void toggleSeekResourcesSection(ActionEvent event) {
+        toggleSection(seekResourcesContentBox, toggleSeekResourcesButton);
+    }
+
+    private void toggleSection(VBox sectionVBox, Button sectionToggleButton) {
+        boolean isVisible = sectionVBox.isVisible();
+        sectionVBox.setVisible(!isVisible);
+        sectionVBox.setManaged(!isVisible);
+        if (isVisible) {
+            sectionToggleButton.setGraphic(createImageView(angleDownImage));
+        } else {
+            sectionToggleButton.setGraphic(createImageView(angleUpImage));
+        }
+    }
+
+    private ImageView createImageView(Image image) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(12);
+        imageView.setFitHeight(12);
+        return imageView;
+    }
 }

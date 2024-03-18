@@ -8,4 +8,5 @@ public class SmallStageOutput {
     Integer componentId;
     Float quantityPerStage;
     Float expectedOutputPerAllocation;
+    Float outputPerRequest;
 }
