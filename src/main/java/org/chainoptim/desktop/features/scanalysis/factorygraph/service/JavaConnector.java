@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.factory.factorygraph.service;
+package org.chainoptim.desktop.features.scanalysis.factorygraph.service;
 
 public class JavaConnector {
 

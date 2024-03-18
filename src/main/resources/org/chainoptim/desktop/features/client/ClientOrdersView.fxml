@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOrdersController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <Label fx:id="clientName" />
+    <TableView fx:id="tableView" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" styleClass="table-view">
+        <columns>
+        <TableColumn text="Order ID" fx:id="orderIdColumn"/>
+        <TableColumn text="Client ID" fx:id="clientIdColumn"/>
+        <TableColumn text="Product ID" fx:id="productIdColumn"/>
+        <TableColumn text="Quantity" fx:id="quantityColumn"/>
+        <TableColumn text="Status" fx:id="statusColumn"/>
+        <TableColumn text="Order Date" fx:id="orderDateColumn"/>
+        <TableColumn text="Estimated Delivery Date" fx:id="estimatedDeliveryDateColumn"/>
+        <TableColumn text="Delivery Date" fx:id="deliveryDateColumn"/>
+
+        </columns>
+    </TableView>
+</AnchorPane>
