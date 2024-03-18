@@ -81,6 +81,7 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.supplier.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.supplier.dto to com.fasterxml.jackson.databind;
 
+
     // - SC Analysis
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.service to com.google.guice;
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind;
