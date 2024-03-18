@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Text?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.supplier.controller.CreateSupplierController"
+      fx:controller="org.chainoptim.desktop.features.client.controller.CreateClientController"
       styleClass="form-container">
 
     <HBox styleClass="title-container">
