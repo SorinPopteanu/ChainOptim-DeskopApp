@@ -18,7 +18,7 @@
     </VBox>
 
     <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" style="-fx-padding: 12;">
-        <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="sidebar-button" style="-fx-padding: 8;">
+        <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="sidebar-button" style="-fx-padding: 14;">
         </Button>
     </VBox>
 

@@ -27,7 +27,7 @@
     -fx-min-height: 40;
     -fx-max-height: 48;
     -fx-alignment: baseline-left;
-
+    -fx-cursor: hand;
 }
 
 .sidebar-button:hover {
