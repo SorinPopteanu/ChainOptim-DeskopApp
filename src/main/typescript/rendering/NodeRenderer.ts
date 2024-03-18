@@ -3,7 +3,7 @@ import { Coordinates, StageNodeUI } from "../types/uiTypes";
 import { getCirclePoint } from "../utils/geometryUtils";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { ElementIdentifier } from "../utils/ElementIdentifier";
-import { findStageInputPosition, findStageOutputPosition } from "../utils/utils";
+import { findStageInputPosition, findStageOutputPosition, truncateString } from "../utils/utils";
 
 export class NodeRenderer {
     private elementIdentifier: ElementIdentifier;
@@ -45,7 +45,7 @@ export class NodeRenderer {
 
         // Draw the node
         this.svg.append("rect")
-            .attr("id", stageNodeId)
+            .attr("id", this.elementIdentifier.encodeStageNodeId(stageNodeId))
             .attr("x", stageBoxX)
             .attr("y", stageBoxY)
             .attr("width", stageBoxWidth)
@@ -61,7 +61,7 @@ export class NodeRenderer {
             .attr("y", centerY)
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "central")
-            .text(stageName)
+            .text(truncateString(stageName, 11))
             .style("fill", fontColor)
             .style("font-family", "Arial, sans-serif")
             .style("font-size", mainNodeFontSize)
@@ -113,7 +113,7 @@ export class NodeRenderer {
                 .style("font-size", subnodeFontSize);
 
             // Add edge from stage input to main stage box
-            const edgeId = this.elementIdentifier.encodeEdgeId(nodeId, stageNodeId);
+            const edgeId = this.elementIdentifier.encodeInnerEdgeId(nodeId, stageNodeId);
 
             const stageInputConnectingCoordinates = getCirclePoint(stageInputX, stageInputY + stageInputNodeRadius, stageInputNodeRadius, 0.25);
 
@@ -172,7 +172,7 @@ export class NodeRenderer {
                 .style("font-size", subnodeFontSize);
 
             // Add edge from stage output to main stage box
-            const edgeId = this.elementIdentifier.encodeEdgeId(nodeId, stageNodeId);
+            const edgeId = this.elementIdentifier.encodeInnerEdgeId(stageNodeId, nodeId);
 
             const stageOutputConnectingCoordinates = getCirclePoint(stageOutputX, stageOutputY + stageOutputNodeRadius, stageOutputNodeRadius, 0.75);
 

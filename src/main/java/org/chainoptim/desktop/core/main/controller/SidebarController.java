@@ -74,6 +74,7 @@ public class SidebarController {
     public void initialize() {
         initializeNavigationButtons();
         createSidebarButtons();
+        setButtonGraphic(logoutButton, "/img/right-from-bracket-solid.png");
 
         // Navigate to Overview
         navigationService.switchView("Overview");

@@ -19,5 +19,5 @@ public class AllocationPlan {
 
     private Map<Integer, FactoryInventoryItem> inventoryBalance;
 
-    private List<ResourceAllocation> allocationDeficit;
+    private List<ResourceAllocation> allocations;
 }

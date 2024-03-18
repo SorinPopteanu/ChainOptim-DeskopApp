@@ -23,10 +23,11 @@ export class GraphRenderer {
 
 
     constructor(containerId: string) {
-        const { width, height } = GraphUIConfig.graph;
+        const { width, height, backgroundColor } = GraphUIConfig.graph;
         this.svg = d3.select(containerId).append("svg")
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", height)
+            .style("background-color", backgroundColor);
 
         this.graphPreprocessor = new GraphPreprocessor();
         this.nodeRenderer = new NodeRenderer(this.svg);
@@ -64,10 +65,7 @@ export class GraphRenderer {
         });
 
         // Set up interactions and connect them to JavaFX via JavaConnector
-        this.interactionManager = new InteractionManager(this.svg, this.nodeRenderer);
-        if (window.javaConnector) {
-            window.javaConnector.log("javaConnector is defined.");
-        }        
+        this.interactionManager = new InteractionManager(this.svg, this.nodeRenderer);    
         this.interactionManager.setupNodeInteractions((nodeId) => {
             window.javaConnector.handleNodeClick(nodeId);
         });

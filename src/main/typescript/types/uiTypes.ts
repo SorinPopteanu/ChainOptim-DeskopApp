@@ -18,17 +18,6 @@ export interface EdgeUI {
 }
 
 
-// Resource allocation
-export interface AllocationPlanUI {
-    factoryGraph: FactoryGraphUI;
-    inventoryBalance: Record<number, FactoryInventoryItem>;
-    allocationDeficit: ResourceAllocation[];
-}
-
-
-
-
-
 
 
 
