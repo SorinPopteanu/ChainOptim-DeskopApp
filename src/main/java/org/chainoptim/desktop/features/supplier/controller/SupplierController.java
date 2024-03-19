@@ -72,7 +72,6 @@ public class SupplierController implements Initializable {
             fallbackManager.setErrorMessage("Failed to load supplier.");
         }
         loadSupplier(supplierId);
-        System.out.println("Supplier initialized");
         setupTabListeners();
     }
 
@@ -94,7 +93,6 @@ public class SupplierController implements Initializable {
             this.supplier = supplierOptional.get();
             supplierName.setText(supplier.getName());
             supplierLocation.setText(supplier.getLocation().getFormattedLocation());
-
 
             loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
         });
