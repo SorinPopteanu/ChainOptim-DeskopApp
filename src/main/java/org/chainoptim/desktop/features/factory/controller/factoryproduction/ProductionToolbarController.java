@@ -1,6 +1,10 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
+import org.chainoptim.desktop.shared.util.TimeUtil;
+
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -13,17 +17,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
-import org.apache.commons.text.StringEscapeUtils;
-import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
-import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
-import org.chainoptim.desktop.shared.util.JsonUtil;
-import org.chainoptim.desktop.shared.util.TimeUtil;
 
 import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.Float.parseFloat;
+import static org.chainoptim.desktop.shared.util.JsonUtil.prepareJsonString;
 
 public class ProductionToolbarController {
 
@@ -81,6 +80,7 @@ public class ProductionToolbarController {
         this.factory = factory;
 
         setupCheckboxListeners();
+        initializeToolbarUI();
     }
 
     private void setupCheckboxListeners() {
@@ -124,17 +124,6 @@ public class ProductionToolbarController {
         });
 
         return allocationPlan;
-    }
-
-    private <T> String prepareJsonString(T data) {
-        String jsonString = "{}";
-        try {
-            jsonString = JsonUtil.getObjectMapper().writeValueAsString(data);
-        } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
-        }
-        String finalJsonString = jsonString;
-        return StringEscapeUtils.escapeEcmaScript(finalJsonString);
     }
 
     // Toolbar

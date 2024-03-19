@@ -32,6 +32,7 @@ import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.util.JsonUtil;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderServiceImpl;
 

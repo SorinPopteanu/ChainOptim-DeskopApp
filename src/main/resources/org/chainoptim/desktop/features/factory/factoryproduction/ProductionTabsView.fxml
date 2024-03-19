@@ -5,7 +5,9 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.ProductionTabsController">
 
-    <TabPane fx:id="productionTabPane" style="-fx-background-color: white;">
+    <TabPane fx:id="productionTabPane" style="-fx-background-color: white;"
+             AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
+             AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
         <!-- Dynamic Tabs -->
     </TabPane>
 </AnchorPane>

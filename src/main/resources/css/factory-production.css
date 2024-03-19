@@ -1,8 +1,16 @@
-/* Specific styles for the TabPane in the Production tab */
-#productionTabPane .tab-pane .tab-header-area .headers-region {
-    /* Custom styles */
-    -fx-background-color: red;
+.custom-tab {
+    /* Use important to overwrite general tab styles */
+    -fx-padding: 8px 10px 8px 10px !important;
+    -fx-background-color: #f0f0f0 !important;
+    -fx-border-width: 1px 1px 1px 1px !important;
+    -fx-border-color: #c0c0c0 !important;
+    -fx-border-radius: 5 5 0 0 !important;
 }
 
-/* Add more custom styles as needed */
+.custom-tab .tab-label {
+    -fx-font-size: 14px !important;
+}
 
+.custom-tab:selected {
+    -fx-background-color: #d0d0d0 !important;
+}

@@ -43,9 +43,15 @@ public class ProductionTabsController {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(tabsViewPaths.get(tabPaneKey), MainApplication.injector::getInstance);
         try {
             Node tabsView = loader.load();
-            System.out.println("tabsView: " + tabsView);
+
+            // Inject the webView in the controller in case of Factory Graph
+            if (tabPaneKey.equals("Factory Graph")) {
+                FactoryGraphController controller = loader.getController();
+                controller.initialize(webView);
+            }
+
             tab.setContent(tabsView);
-            tab.getStyleClass().add("custom-tab-style");
+            tab.getStyleClass().add("custom-tab");
             productionTabPane.getTabs().add(tab);
         } catch (IOException e) {
             e.printStackTrace();

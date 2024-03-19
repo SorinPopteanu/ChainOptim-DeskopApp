@@ -38,7 +38,6 @@
 }
 
 .tab .tab-label {
-    -fx-padding: 0 0 0 0;
     -fx-font-size: 17px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
@@ -52,9 +51,4 @@
 .tab:focused {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
-}
-
-.custom-tab-style {
-    -fx-background-color: green;
-    /* Add more custom styles as needed */
 }

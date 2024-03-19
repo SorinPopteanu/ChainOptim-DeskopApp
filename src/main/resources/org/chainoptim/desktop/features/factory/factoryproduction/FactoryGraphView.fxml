@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
-
-<?import javafx.scene.control.Label?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.FactoryGraphController" style="-fx-background-color: blue;">
+            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.FactoryGraphController">
 
-    <Label text="Factory Graph"/>
+    <StackPane fx:id="graphContainer"  style="-fx-border-color: #c0c0c0; -fx-border-width: 1px;"/>
 </AnchorPane>

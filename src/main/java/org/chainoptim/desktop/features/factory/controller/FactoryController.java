@@ -4,12 +4,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.AnchorPane;
 import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.shared.util.DataReceiver;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -116,7 +113,7 @@ public class FactoryController implements Initializable {
         });
         productionTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && productionTab.getContent() == null) {
-                loadTabContent(productionTab, "/org/chainoptim/desktop/features/factory/FactoryProductionViewNew.fxml", this.factory);
+                loadTabContent(productionTab, "/org/chainoptim/desktop/features/factory/FactoryProductionView.fxml", this.factory);
             }
         });
         inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
