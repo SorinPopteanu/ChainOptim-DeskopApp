@@ -1,6 +1,6 @@
-package org.chainoptim.desktop.features.factory.factorygraph.service;
+package org.chainoptim.desktop.features.scanalysis.factorygraph.service;
 
-import org.chainoptim.desktop.features.factory.factorygraph.model.FactoryProductionGraph;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

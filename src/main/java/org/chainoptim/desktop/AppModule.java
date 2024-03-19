@@ -13,12 +13,9 @@ import org.chainoptim.desktop.core.user.repository.UserRepository;
 import org.chainoptim.desktop.core.user.repository.UserRepositoryImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
-import org.chainoptim.desktop.features.client.service.ClientService;
-import org.chainoptim.desktop.features.client.service.ClientServiceImpl;
-import org.chainoptim.desktop.features.client.service.ClientWriteService;
-import org.chainoptim.desktop.features.client.service.ClientWriteServiceImpl;
-import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
-import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphServiceImpl;
+import org.chainoptim.desktop.features.client.service.*;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
 import org.chainoptim.desktop.features.factory.service.FactoryServiceImpl;
 import org.chainoptim.desktop.features.product.service.ProductService;
@@ -75,5 +72,6 @@ public class AppModule extends AbstractModule {
         bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
         bind(ClientService.class).to(ClientServiceImpl.class);
         bind(ClientWriteService.class).to(ClientWriteServiceImpl.class);
+        bind(ClientOrdersService.class).to(ClientOrdersServiceImpl.class);
     }
 }

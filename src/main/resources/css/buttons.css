@@ -4,6 +4,7 @@
     -fx-font-weight: normal;
     -fx-font-size: 15px;
     -fx-padding: 4px 12px 4px 12px;
+    -fx-cursor: hand;
 }
 
 .standard-write-button:hover {
@@ -17,6 +18,7 @@
     -fx-padding: 0;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+    -fx-cursor: hand;
 }
 
 .no-style-button:hover {
@@ -31,4 +33,5 @@
     -fx-background-color: #fefefe;
     -fx-padding: 4px 2px 4px 2px;
     -fx-font-size: 14px;
+    -fx-cursor: hand;
 }

@@ -93,8 +93,11 @@ public class SupplierController implements Initializable {
             }
             this.supplier = supplierOptional.get();
             supplierName.setText(supplier.getName());
-            supplierLocation.setText(supplier.getLocation().getFormattedLocation());
-
+            if (supplier.getLocation() != null) {
+                supplierLocation.setText(supplier.getLocation().getFormattedLocation());
+            } else {
+                supplierLocation.setText("");
+            }
 
             loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
         });

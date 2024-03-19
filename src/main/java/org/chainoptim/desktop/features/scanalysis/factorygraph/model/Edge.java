@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.factory.factorygraph.model;
+package org.chainoptim.desktop.features.scanalysis.factorygraph.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

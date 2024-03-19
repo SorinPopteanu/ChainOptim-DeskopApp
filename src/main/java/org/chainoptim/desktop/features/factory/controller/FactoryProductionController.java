@@ -2,13 +2,12 @@ package org.chainoptim.desktop.features.factory.controller;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import org.chainoptim.desktop.features.factory.factorygraph.model.*;
-import org.chainoptim.desktop.features.factory.factorygraph.service.FactoryProductionGraphService;
-import org.chainoptim.desktop.features.factory.factorygraph.service.JavaConnector;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
