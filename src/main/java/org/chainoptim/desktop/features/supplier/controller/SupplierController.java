@@ -72,7 +72,6 @@ public class SupplierController implements Initializable {
             fallbackManager.setErrorMessage("Failed to load supplier.");
         }
         loadSupplier(supplierId);
-        System.out.println("Supplier initialized");
         setupTabListeners();
     }
 
@@ -93,6 +92,7 @@ public class SupplierController implements Initializable {
             }
             this.supplier = supplierOptional.get();
             supplierName.setText(supplier.getName());
+
             if (supplier.getLocation() != null) {
                 supplierLocation.setText(supplier.getLocation().getFormattedLocation());
             } else {

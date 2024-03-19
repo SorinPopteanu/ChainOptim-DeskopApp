@@ -60,11 +60,13 @@ public class NavigationServiceImpl implements NavigationService {
             // Dynamic route pages
             Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
             Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
+            Map.entry("Warehouse", "/org/chainoptim/desktop/features/warehouse/WarehouseView.fxml"),
             Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
             Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),
 
             // Create forms
             Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
+            Map.entry("Create-Warehouse", "/org/chainoptim/desktop/features/warehouse/CreateWarehouseView.fxml"),
             Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"),
             Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml"),
             Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml")

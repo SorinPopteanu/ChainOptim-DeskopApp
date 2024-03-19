@@ -43,13 +43,13 @@ public class SuppliersController implements Initializable {
     @FXML
     private HeaderController headerController;
     @FXML
+    private StackPane headerContainer;
+    @FXML
     private PageSelectorController pageSelectorController;
     @FXML
     private StackPane pageSelectorContainer;
     @FXML
     private StackPane fallbackContainer;
-    @FXML
-    private StackPane headerContainer;
     @FXML
     private VBox suppliersVBox;
 
@@ -192,7 +192,6 @@ public class SuppliersController implements Initializable {
     }
 
     private void openSupplierDetails(Integer supplierId) {
-        System.out.println("Supplier about to be initialized");
         currentSelectionService.setSelectedId(supplierId);
         currentSelectionService.setSelectedPage("Supplier");
 
