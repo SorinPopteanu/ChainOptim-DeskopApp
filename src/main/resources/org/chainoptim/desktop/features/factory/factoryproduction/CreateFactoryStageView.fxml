@@ -5,34 +5,39 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
-<VBox xmlns="http://javafx.com/javafx"
+<?import javafx.scene.control.ScrollPane?>
+<ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.CreateFactoryStageController"
-        styleClass="create-stage-form"
-        spacing="10">
+            fitToWidth="true">
+    <VBox styleClass="create-stage-form" spacing="10">
 
-    <HBox styleClass="title-container">
-        <Text text="Add Factory Stage" styleClass="form-title"/>
-    </HBox>
+        <HBox styleClass="title-container">
+            <Text text="Add Factory Stage" styleClass="form-title"/>
+        </HBox>
 
-    <Label text="Product Stage:" styleClass="form-label"/>
-    <StackPane fx:id="selectStageContainer"/>
+        <Label text="Product Stage (*):" styleClass="form-label"/>
+        <StackPane fx:id="selectStageContainer"/>
 
-    <Label text="Capacity:" styleClass="form-label"/>
-    <TextField fx:id="capacityField"/>
+        <Label text="Factory (*):" styleClass="form-label"/>
+        <StackPane fx:id="selectFactoryContainer"/>
 
-    <Label text="Duration:" styleClass="form-label"/>
-    <StackPane fx:id="durationInputContainer"/>
+        <Label text="Capacity:" styleClass="form-label"/>
+        <TextField fx:id="capacityField"/>
 
-    <Label text="Priority:" styleClass="form-label"/>
-    <TextField fx:id="priorityField"/>
+        <Label text="Duration:" styleClass="form-label"/>
+        <StackPane fx:id="durationInputContainer"/>
 
-    <Label text="Minimum Required Capacity:" styleClass="form-label"/>
-    <TextField fx:id="minimumRequiredCapacityField"/>
+        <Label text="Priority:" styleClass="form-label"/>
+        <TextField fx:id="priorityField"/>
 
-    <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px;">
-        <Button text="Add" onAction="#handleSubmit" styleClass="standard-write-button"/>
-    </HBox>
+        <Label text="Minimum Required Capacity:" styleClass="form-label"/>
+        <TextField fx:id="minimumRequiredCapacityField"/>
 
-    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
-</VBox>
+        <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px;">
+            <Button text="Add Stage" onAction="#handleSubmit" styleClass="standard-write-button"/>
+        </HBox>
+
+        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+    </VBox>
+</ScrollPane>

@@ -22,8 +22,10 @@ public class FactoryStageWriteServiceImpl implements FactoryStageWriteService {
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
-    public CompletableFuture<Optional<FactoryStage>> createFactoryStage(CreateFactoryStageDTO stageDTO) {
+    public CompletableFuture<Optional<FactoryStage>> createFactoryStage(CreateFactoryStageDTO stageDTO, Boolean refreshGraph) {
         String routeAddress = "http://localhost:8080/api/v1/factory-stages/create";
+        if (Boolean.TRUE.equals(refreshGraph)) routeAddress += "/true";
+        else routeAddress += "/false";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

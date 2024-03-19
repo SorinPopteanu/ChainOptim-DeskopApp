@@ -8,5 +8,5 @@ import java.util.concurrent.CompletableFuture;
 
 public interface FactoryStageWriteService {
 
-    CompletableFuture<Optional<FactoryStage>> createFactoryStage(CreateFactoryStageDTO stageDTO);
+    CompletableFuture<Optional<FactoryStage>> createFactoryStage(CreateFactoryStageDTO stageDTO, Boolean refreshGraph);
 }

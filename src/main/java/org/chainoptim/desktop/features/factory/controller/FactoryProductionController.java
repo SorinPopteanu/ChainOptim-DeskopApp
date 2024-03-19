@@ -54,7 +54,6 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
         webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
-
                 JSObject jsObject = (JSObject) webView.getEngine().executeScript("window");
                 jsObject.setMember("javaConnector", new JavaConnector());
             }
@@ -90,4 +89,5 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     public void onOpenAddStageRequested() {
         productionTabsController.addTab("Add Stage");
     }
+
 }

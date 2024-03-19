@@ -21,7 +21,6 @@ public class FactoryGraphController {
     private final FactoryProductionGraphService graphService;
     private final FallbackManager fallbackManager;
 
-    private FactoryProductionGraph productionGraph;
 
     private WebView webView;
 
@@ -53,9 +52,9 @@ public class FactoryGraphController {
                 fallbackManager.setErrorMessage("Failed to load graph.");
                 return;
             }
-            this.productionGraph = productionGraphs.getFirst();
+            FactoryProductionGraph productionGraph = productionGraphs.getFirst();
             System.out.println("Graph: " + productionGraph);
-            displayGraph();
+            displayGraph(productionGraph);
         });
 
         return productionGraphs;
@@ -66,9 +65,9 @@ public class FactoryGraphController {
         return new ArrayList<>();
     }
 
-    private void displayGraph() {
+    public void displayGraph(FactoryProductionGraph productionGraph) {
         String escapedJsonString = prepareJsonString(productionGraph);
-
+        System.out.println("Production Graph: " + escapedJsonString);
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
 

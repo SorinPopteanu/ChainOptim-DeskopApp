@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.factory.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.features.factory.dto.FactoriesSearchDTO;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -23,6 +24,31 @@ public class FactoryServiceImpl implements FactoryService {
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
+    public CompletableFuture<Optional<List<FactoriesSearchDTO>>> getFactoriesByOrganizationIdSmall(Integer organizationId) {
+        String routeAddress = "http://localhost:8080/api/v1/factories/organization/" + organizationId.toString() + "/small";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .GET()
+                .headers(HEADER_KEY, headerValue)
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<FactoriesSearchDTO>>empty();
+                    try {
+                        List<FactoriesSearchDTO> factories = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<FactoriesSearchDTO>>() {});
+                        return Optional.of(factories);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<List<FactoriesSearchDTO>>empty();
+                    }
+                });
+    }
     public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/factories/organizations/" + organizationId.toString();
 

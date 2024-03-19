@@ -1,23 +1,32 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import com.google.inject.Inject;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.web.WebView;
+import lombok.Setter;
 import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
+import org.chainoptim.desktop.features.factory.model.TabsActionListener;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryGraph;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class ProductionTabsController {
+import static org.chainoptim.desktop.shared.util.JsonUtil.prepareJsonString;
+
+public class ProductionTabsController implements TabsActionListener {
 
     private final FXMLLoaderService fxmlLoaderService;
 
     private WebView webView;
+    private FactoryGraphController factoryGraphController;
 
     @FXML
     private TabPane productionTabPane;
@@ -46,8 +55,13 @@ public class ProductionTabsController {
 
             // Inject the webView in the controller in case of Factory Graph
             if (tabPaneKey.equals("Factory Graph")) {
-                FactoryGraphController controller = loader.getController();
-                controller.initialize(webView);
+                factoryGraphController = loader.getController();
+                factoryGraphController.initialize(webView);
+            }
+            // Set up Add Stage listener in case of Add Stage
+            if (tabPaneKey.equals("Add Stage")) {
+                CreateFactoryStageController controller = loader.getController();
+                controller.setActionListener(this);
             }
 
             tab.setContent(tabsView);
@@ -58,6 +72,16 @@ public class ProductionTabsController {
             productionTabPane.getSelectionModel().select(tab);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onAddStage(FactoryProductionGraph productionGraph) {
+        // Refresh graph
+        if (factoryGraphController != null) {
+            factoryGraphController.displayGraph(productionGraph);
+        } else {
+            System.out.println("Factory Graph Controller is null");
         }
     }
 }
