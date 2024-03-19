@@ -63,11 +63,11 @@ module org.chainoptim.desktop {
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.factory.service to com.google.guice;
-    opens org.chainoptim.desktop.features.factory.factorygraph.service to com.google.guice, javafx.web;
+    opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
     opens org.chainoptim.desktop.features.factory.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.factory.dto to com.fasterxml.jackson.databind;
 
-    opens org.chainoptim.desktop.features.factory.factorygraph.model to com.fasterxml.jackson.databind, java.base;
+    opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
 
     // - Warehouse
     opens org.chainoptim.desktop.features.warehouse.controller to javafx.fxml, com.google.guice;
@@ -84,7 +84,7 @@ module org.chainoptim.desktop {
     // - Client
     opens org.chainoptim.desktop.features.client.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.client.service to com.google.guice;
-    opens org.chainoptim.desktop.features.client.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.client.model to com.fasterxml.jackson.databind, javafx.base;
     opens org.chainoptim.desktop.features.client.dto to com.fasterxml.jackson.databind;
 
     // - SC Analysis

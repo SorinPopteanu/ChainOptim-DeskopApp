@@ -48,8 +48,8 @@ public class ClientController implements Initializable {
     private Tab evaluationTab;
     @FXML
     private Label clientName;
-//    @FXML
-//    private Label clientLocation;
+    @FXML
+    private Label clientLocation;
 
     @Inject
     public ClientController(ClientService clientService,
@@ -93,9 +93,13 @@ public class ClientController implements Initializable {
             }
             this.client = clientOptional.get();
             clientName.setText(client.getName());
-//            clientLocation.setText(client.getLocation().getFormattedLocation());
+            if (client.getLocation() != null) {
+                clientLocation.setText(client.getLocation().getFormattedLocation());
+            } else {
+                clientLocation.setText("");
+            }
 
-
+            // Load overview tab
             loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
         });
 

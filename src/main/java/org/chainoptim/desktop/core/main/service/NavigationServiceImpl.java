@@ -2,6 +2,7 @@ package org.chainoptim.desktop.core.main.service;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.abstraction.ThreadRunner;
+import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
@@ -26,12 +27,17 @@ public class NavigationServiceImpl implements NavigationService {
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final ThreadRunner threadRunner;
+    private final FallbackManager fallbackManager;
 
     @Inject
-    public NavigationServiceImpl(FXMLLoaderService fxmlLoaderService, ControllerFactory controllerFactory, ThreadRunner threadRunner) {
+    public NavigationServiceImpl(FXMLLoaderService fxmlLoaderService,
+                                 ControllerFactory controllerFactory,
+                                 ThreadRunner threadRunner,
+                                 FallbackManager fallbackManager) {
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
         this.threadRunner = threadRunner;
+        this.fallbackManager = fallbackManager;
     }
 
     @Setter
@@ -77,7 +83,10 @@ public class NavigationServiceImpl implements NavigationService {
 
         // Display view
         if (view != null) {
-            threadRunner.runLater(() -> mainContentArea.getChildren().setAll(view));
+            threadRunner.runLater(() -> {
+                mainContentArea.getChildren().setAll(view);
+                fallbackManager.reset();
+            });
             currentViewKey = viewKey;
         }
     }

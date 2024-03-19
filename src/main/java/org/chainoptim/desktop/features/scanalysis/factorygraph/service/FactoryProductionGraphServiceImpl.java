@@ -1,8 +1,8 @@
-package org.chainoptim.desktop.features.factory.factorygraph.service;
+package org.chainoptim.desktop.features.scanalysis.factorygraph.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
-import org.chainoptim.desktop.features.factory.factorygraph.model.FactoryProductionGraph;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;

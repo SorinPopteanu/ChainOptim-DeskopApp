@@ -60,4 +60,11 @@ public class FallbackManager {
     public BooleanProperty noResultsProperty() {
         return noResults;
     }
+
+    public void reset() {
+        setErrorMessage("");
+        setLoading(false);
+        setNoOrganization(false);
+        setNoResults(false);
+    }
 }

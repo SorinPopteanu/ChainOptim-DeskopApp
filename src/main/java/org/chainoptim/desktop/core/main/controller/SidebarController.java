@@ -136,6 +136,7 @@ public class SidebarController {
                 button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             }
         });
+        logoutButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
     }
 
     private void expandSidebar() {
@@ -148,6 +149,7 @@ public class SidebarController {
                 button.setContentDisplay(ContentDisplay.LEFT);
             }
         });
+        logoutButton.setContentDisplay(ContentDisplay.LEFT);
     }
 
     // Handle logout

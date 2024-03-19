@@ -11,7 +11,7 @@
             prefHeight="720.0" prefWidth="600.0">
 
     <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" style="-fx-background-color: #ffffff;">
-        <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container" style="-fx-background-color: #eeeeee;">
+        <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                 <Label fx:id="factoryName" styleClass="entity-page-title"/>
                 <Label fx:id="factoryLocation" styleClass="entity-page-description"/>
