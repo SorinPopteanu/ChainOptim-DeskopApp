@@ -1,0 +1,8 @@
+/* Specific styles for the TabPane in the Production tab */
+#productionTabPane .tab-pane .tab-header-area .headers-region {
+    /* Custom styles */
+    -fx-background-color: red;
+}
+
+/* Add more custom styles as needed */
+

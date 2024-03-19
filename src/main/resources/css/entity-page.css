@@ -53,3 +53,8 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 }
+
+.custom-tab-style {
+    -fx-background-color: green;
+    /* Add more custom styles as needed */
+}

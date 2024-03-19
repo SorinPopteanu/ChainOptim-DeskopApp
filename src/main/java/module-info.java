@@ -67,7 +67,9 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.factory.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.factory.dto to com.fasterxml.jackson.databind;
 
+    // -- Factory Production
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
+    opens org.chainoptim.desktop.features.factory.controller.factoryproduction to com.google.guice, javafx.fxml;
 
     // - Warehouse
     opens org.chainoptim.desktop.features.warehouse.controller to javafx.fxml, com.google.guice;

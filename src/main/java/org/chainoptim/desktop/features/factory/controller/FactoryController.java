@@ -116,7 +116,7 @@ public class FactoryController implements Initializable {
         });
         productionTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && productionTab.getContent() == null) {
-                loadTabContent(productionTab, "/org/chainoptim/desktop/features/factory/FactoryProductionView.fxml", this.factory);
+                loadTabContent(productionTab, "/org/chainoptim/desktop/features/factory/FactoryProductionViewNew.fxml", this.factory);
             }
         });
         inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
