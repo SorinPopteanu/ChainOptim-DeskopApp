@@ -14,6 +14,8 @@ import org.chainoptim.desktop.core.user.repository.UserRepositoryImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.features.client.service.*;
+import org.chainoptim.desktop.features.productpipeline.service.StageWriteService;
+import org.chainoptim.desktop.features.productpipeline.service.StageWriteServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
@@ -65,6 +67,7 @@ public class AppModule extends AbstractModule {
         bind(UserRepository.class).to(UserRepositoryImpl.class);
         bind(ProductService.class).to(ProductServiceImpl.class);
         bind(ProductWriteService.class).to(ProductWriteServiceImpl.class);
+        bind(StageWriteService.class).to(StageWriteServiceImpl.class);
         bind(FactoryService.class).to(FactoryServiceImpl.class);
         bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
         bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);

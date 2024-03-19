@@ -4,5 +4,5 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.FactoryGraphController">
 
-    <StackPane fx:id="graphContainer"  style="-fx-border-color: #c0c0c0; -fx-border-width: 1px;"/>
+    <StackPane fx:id="graphContainer" style="-fx-border-color: #c0c0c0; -fx-border-width: 1px;"/>
 </AnchorPane>

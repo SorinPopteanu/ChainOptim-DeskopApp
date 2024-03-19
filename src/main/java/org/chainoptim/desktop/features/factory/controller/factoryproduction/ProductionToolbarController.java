@@ -1,6 +1,8 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
+import lombok.Setter;
 import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.shared.util.TimeUtil;
@@ -27,6 +29,8 @@ import static org.chainoptim.desktop.shared.util.JsonUtil.prepareJsonString;
 public class ProductionToolbarController {
 
     private final ResourceAllocationService resourceAllocationService;
+    @Setter
+    private ProductionToolbarActionListener actionListener;
 
     private Factory factory;
 
@@ -174,5 +178,12 @@ public class ProductionToolbarController {
         imageView.setFitWidth(12);
         imageView.setFitHeight(12);
         return imageView;
+    }
+
+    @FXML
+    private void addStageAction() {
+        if (actionListener != null) {
+            actionListener.onAddStageRequested();
+        }
     }
 }

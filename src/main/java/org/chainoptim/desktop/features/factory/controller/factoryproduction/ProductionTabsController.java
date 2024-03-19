@@ -53,6 +53,9 @@ public class ProductionTabsController {
             tab.setContent(tabsView);
             tab.getStyleClass().add("custom-tab");
             productionTabPane.getTabs().add(tab);
+
+            // Select the newly added tab
+            productionTabPane.getSelectionModel().select(tab);
         } catch (IOException e) {
             e.printStackTrace();
         }

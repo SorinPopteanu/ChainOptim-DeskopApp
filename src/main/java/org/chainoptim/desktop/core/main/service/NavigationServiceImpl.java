@@ -66,7 +66,8 @@ public class NavigationServiceImpl implements NavigationService {
             // Create forms
             Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
             Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"),
-            Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml")
+            Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml"),
+            Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateStageView.fxml")
     );
 
     public void switchView(String viewKey) {

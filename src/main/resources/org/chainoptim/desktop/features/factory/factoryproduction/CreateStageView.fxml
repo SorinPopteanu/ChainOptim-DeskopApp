@@ -2,9 +2,24 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.Label?>
-<AnchorPane xmlns="http://javafx.com/javafx"
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.CreateStageController">
+            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.CreateStageController"
+        styleClass="create-stage-form">
 
-    <Label text="Create Stage"/>
-</AnchorPane>
+    <HBox styleClass="title-container">
+        <Text text="Add Stage" styleClass="form-title"/>
+    </HBox>
+
+    <Label text="Stage:" styleClass="form-label"/>
+    <TextField fx:id="nameField"/>
+
+    <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px;">
+        <Button text="Add" onAction="#handleSubmit" styleClass="standard-write-button"/>
+    </HBox>
+
+    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+</VBox>

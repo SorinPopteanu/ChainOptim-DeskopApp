@@ -24,7 +24,7 @@
     </HBox>
     <VBox spacing="10">
         <VBox fx:id="editConfigurationContentVBox" spacing="10">
-            <Button text="Add Stage"/>
+            <Button text="Add Stage" onAction="#addStageAction"/>
             <Button text="Edit Stage"/>
             <Button text="Add Connection"/>
         </VBox>
