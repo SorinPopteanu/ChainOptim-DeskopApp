@@ -30,6 +30,8 @@ import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
 import org.chainoptim.desktop.features.supplier.service.SupplierWriteServiceImpl;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseServiceImpl;
+import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
+import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -68,10 +70,13 @@ public class AppModule extends AbstractModule {
         bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
         bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
+        bind(WarehouseWriteService.class).to(WarehouseWriteServiceImpl.class);
         bind(SupplierService.class).to(SupplierServiceImpl.class);
         bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
         bind(ClientService.class).to(ClientServiceImpl.class);
         bind(ClientWriteService.class).to(ClientWriteServiceImpl.class);
+
         bind(ClientOrdersService.class).to(ClientOrdersServiceImpl.class);
+
     }
 }
