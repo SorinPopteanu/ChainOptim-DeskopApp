@@ -1,9 +1,9 @@
-package org.chainoptim.desktop.features.productpipeline.service;
+package org.chainoptim.desktop.features.factory.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
-import org.chainoptim.desktop.features.productpipeline.dto.CreateStageDTO;
-import org.chainoptim.desktop.features.productpipeline.model.Stage;
+import org.chainoptim.desktop.features.factory.dto.CreateFactoryStageDTO;
+import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -15,15 +15,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class StageWriteServiceImpl implements StageWriteService {
+public class FactoryStageWriteServiceImpl implements FactoryStageWriteService {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
-    public CompletableFuture<Optional<Stage>> createStage(CreateStageDTO stageDTO) {
-        String routeAddress = "http://localhost:8080/api/v1/stages/create";
+    public CompletableFuture<Optional<FactoryStage>> createFactoryStage(CreateFactoryStageDTO stageDTO) {
+        String routeAddress = "http://localhost:8080/api/v1/factory-stages/create";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -49,11 +49,11 @@ public class StageWriteServiceImpl implements StageWriteService {
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
-                        Stage stage = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Stage>() {});
+                        FactoryStage stage = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<FactoryStage>() {});
                         return Optional.of(stage);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<Stage>empty();
+                        return Optional.<FactoryStage>empty();
                     }
                 });
     }
