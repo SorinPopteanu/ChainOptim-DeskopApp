@@ -87,7 +87,7 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     }
 
     @Override
-    public void onAddStageRequested() {
+    public void onOpenAddStageRequested() {
         productionTabsController.addTab("Add Stage");
     }
 }

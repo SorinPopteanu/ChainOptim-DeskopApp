@@ -24,7 +24,7 @@ public class ProductionTabsController {
 
     private static final Map<String, String> tabsViewPaths = Map.of(
             "Factory Graph", "/org/chainoptim/desktop/features/factory/factoryproduction/FactoryGraphView.fxml",
-            "Add Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/CreateStageView.fxml"
+            "Add Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/CreateFactoryStageView.fxml"
     );
 
     @Inject

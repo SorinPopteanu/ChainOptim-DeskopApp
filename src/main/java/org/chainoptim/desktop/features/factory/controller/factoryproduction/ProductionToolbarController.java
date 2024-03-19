@@ -1,13 +1,16 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import lombok.Setter;
+import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
-import org.chainoptim.desktop.shared.util.TimeUtil;
+import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
-import com.google.inject.Inject;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,16 +22,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
+import lombok.Setter;
+import com.google.inject.Inject;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
-import static java.lang.Float.parseFloat;
 import static org.chainoptim.desktop.shared.util.JsonUtil.prepareJsonString;
 
 public class ProductionToolbarController {
 
     private final ResourceAllocationService resourceAllocationService;
+    private final FXMLLoaderService fxmlLoaderService;
+
     @Setter
     private ProductionToolbarActionListener actionListener;
 
@@ -60,9 +67,8 @@ public class ProductionToolbarController {
     @FXML
     private VBox resourceAllocationContentBox;
     @FXML
-    private TextField resourceAllocationInput;
-    @FXML
-    private ComboBox<String> timePeriodSelect;
+    private StackPane durationInputContainer;
+    private SelectDurationController selectDurationController;
 
     // - Seek Resources
     @FXML
@@ -75,16 +81,18 @@ public class ProductionToolbarController {
     private Image angleDownImage;
 
     @Inject
-    public ProductionToolbarController(ResourceAllocationService resourceAllocationService) {
+    public ProductionToolbarController(ResourceAllocationService resourceAllocationService,
+                                       FXMLLoaderService fxmlLoaderService) {
         this.resourceAllocationService = resourceAllocationService;
+        this.fxmlLoaderService = fxmlLoaderService;
     }
 
     public void initialize(WebView webView, Factory factory) {
         this.webView = webView;
         this.factory = factory;
 
-        setupCheckboxListeners();
         initializeToolbarUI();
+        setupCheckboxListeners();
     }
 
     private void setupCheckboxListeners() {
@@ -97,16 +105,11 @@ public class ProductionToolbarController {
 
     @FXML
     private void handleAllocateResources() {
-        System.out.println("Webview: " + webView);
-        if (resourceAllocationInput != null && !Objects.equals(resourceAllocationInput.getText(), "") && timePeriodSelect.getValue() != null) {
-            float inputDuration = parseFloat(resourceAllocationInput.getText());
-            float durationSeconds = TimeUtil.getSeconds(inputDuration, timePeriodSelect.getValue());
-            if (durationSeconds == -1.0f) return;
+        Float durationSeconds = selectDurationController.getTimeSeconds();
 
-            resourceAllocationService
-                    .allocateFactoryResources(factory.getId(), durationSeconds)
-                    .thenApply(this::drawResourceAllocation);
-        }
+        resourceAllocationService
+                .allocateFactoryResources(factory.getId(), durationSeconds)
+                .thenApply(this::drawResourceAllocation);
     }
 
     private AllocationPlan drawResourceAllocation(Optional<AllocationPlan> allocationPlanOptional) {
@@ -132,6 +135,7 @@ public class ProductionToolbarController {
 
     // Toolbar
     private void initializeToolbarUI() {
+        // Initialize expand/collapse buttons
         angleUpImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
         angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
 
@@ -139,6 +143,19 @@ public class ProductionToolbarController {
         toggleDisplayInfoButton.setGraphic(createImageView(angleUpImage));
         toggleResourceAllocationButton.setGraphic(createImageView(angleUpImage));
         toggleSeekResourcesButton.setGraphic(createImageView(angleUpImage));
+
+        // Initialize time selection input view
+        FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/common/uielements/SelectDurationView.fxml",
+                MainApplication.injector::getInstance
+        );
+        try {
+            Node timeInputView = timeInputLoader.load();
+            selectDurationController = timeInputLoader.getController();
+            durationInputContainer.getChildren().add(timeInputView);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Toggle Toolbar sections
@@ -181,9 +198,9 @@ public class ProductionToolbarController {
     }
 
     @FXML
-    private void addStageAction() {
+    private void openAddStageAction() {
         if (actionListener != null) {
-            actionListener.onAddStageRequested();
+            actionListener.onOpenAddStageRequested();
         }
     }
 }

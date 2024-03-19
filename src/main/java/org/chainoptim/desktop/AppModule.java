@@ -16,6 +16,8 @@ import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.features.client.service.*;
 import org.chainoptim.desktop.features.factory.service.FactoryStageWriteService;
 import org.chainoptim.desktop.features.factory.service.FactoryStageWriteServiceImpl;
+import org.chainoptim.desktop.features.productpipeline.service.StageService;
+import org.chainoptim.desktop.features.productpipeline.service.StageServiceImpl;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteService;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
@@ -63,12 +65,11 @@ public class AppModule extends AbstractModule {
         bind(ThreadRunner.class).to(JavaFXThreadRunner.class);
         bind(NavigationService.class).to(NavigationServiceImpl.class);
         bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class);
-
-        // Repositories
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(UserRepository.class).to(UserRepositoryImpl.class);
         bind(ProductService.class).to(ProductServiceImpl.class);
         bind(ProductWriteService.class).to(ProductWriteServiceImpl.class);
+        bind(StageService.class).to(StageServiceImpl.class);
         bind(StageWriteService.class).to(StageWriteServiceImpl.class);
         bind(FactoryService.class).to(FactoryServiceImpl.class);
         bind(FactoryStageWriteService.class).to(FactoryStageWriteServiceImpl.class);

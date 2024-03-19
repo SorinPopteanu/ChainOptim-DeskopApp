@@ -7,21 +7,22 @@
 <?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.CreateStageController"
-        styleClass="create-stage-form">
+            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.CreateFactoryStageController"
+        styleClass="create-stage-form"
+        spacing="10">
 
     <HBox styleClass="title-container">
         <Text text="Add Factory Stage" styleClass="form-title"/>
     </HBox>
 
     <Label text="Product Stage:" styleClass="form-label"/>
-    <TextField/>
+    <StackPane fx:id="selectStageContainer"/>
 
     <Label text="Capacity:" styleClass="form-label"/>
     <TextField fx:id="capacityField"/>
 
     <Label text="Duration:" styleClass="form-label"/>
-    <TextField fx:id="durationField"/>
+    <StackPane fx:id="durationInputContainer"/>
 
     <Label text="Priority:" styleClass="form-label"/>
     <TextField fx:id="priorityField"/>

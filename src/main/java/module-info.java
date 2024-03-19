@@ -60,6 +60,7 @@ module org.chainoptim.desktop {
     // - Product pipeline
     opens org.chainoptim.desktop.features.productpipeline.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.productpipeline.service to com.google.guice;
+    opens org.chainoptim.desktop.features.productpipeline.dto to com.fasterxml.jackson.databind;
 
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
@@ -95,6 +96,9 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind;
 
     // Shared
+    // - Common UI elements
+    opens org.chainoptim.desktop.shared.common.uielements to javafx.fxml, com.google.guice;
+
     // - Location
     opens org.chainoptim.desktop.shared.features.location.model to com.fasterxml.jackson.databind;
 
