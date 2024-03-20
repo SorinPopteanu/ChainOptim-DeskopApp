@@ -2,24 +2,23 @@ package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.web.WebView;
-import lombok.Setter;
+import netscape.javascript.JSObject;
 import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
+import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
-import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryGraph;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.io.IOException;
 import java.util.Map;
-
-import static org.chainoptim.desktop.shared.util.JsonUtil.prepareJsonString;
 
 public class ProductionTabsController implements TabsActionListener {
 
@@ -33,7 +32,8 @@ public class ProductionTabsController implements TabsActionListener {
 
     private static final Map<String, String> tabsViewPaths = Map.of(
             "Factory Graph", "/org/chainoptim/desktop/features/factory/factoryproduction/FactoryGraphView.fxml",
-            "Add Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/CreateFactoryStageView.fxml"
+            "Add Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/CreateFactoryStageView.fxml",
+            "Update Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/UpdateFactoryStageView.fxml"
     );
 
     @Inject
@@ -44,34 +44,43 @@ public class ProductionTabsController implements TabsActionListener {
     public void initialize(WebView webView) {
         this.webView = webView;
 
-        addTab("Factory Graph");
+        addTab("Factory Graph", null);
     }
 
-    public void addTab(String tabPaneKey) {
+    public <T> void addTab(String tabPaneKey, T extraData) {
         Tab tab = new Tab(tabPaneKey);
         FXMLLoader loader = fxmlLoaderService.setUpLoader(tabsViewPaths.get(tabPaneKey), MainApplication.injector::getInstance);
         try {
             Node tabsView = loader.load();
 
-            // Inject the webView in the controller in case of Factory Graph
-            if (tabPaneKey.equals("Factory Graph")) {
-                factoryGraphController = loader.getController();
-                factoryGraphController.initialize(webView);
-            }
-            // Set up Add Stage listener in case of Add Stage
-            if (tabPaneKey.equals("Add Stage")) {
-                CreateFactoryStageController controller = loader.getController();
-                controller.setActionListener(this);
-            }
+            handleSpecialTabs(tabPaneKey, extraData, loader);
 
+            // Add new tab and select it
             tab.setContent(tabsView);
             tab.getStyleClass().add("custom-tab");
             productionTabPane.getTabs().add(tab);
-
-            // Select the newly added tab
             productionTabPane.getSelectionModel().select(tab);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private <T> void handleSpecialTabs(String tabPaneKey, T extraData, FXMLLoader loader) {
+        // Inject the webView in the controller in case of Factory Graph
+        if (tabPaneKey.equals("Factory Graph")) {
+            factoryGraphController = loader.getController();
+            factoryGraphController.initialize(webView);
+        }
+        // Set up Add Stage listener in case of Add Stage
+        if (tabPaneKey.equals("Add Stage")) {
+            CreateFactoryStageController controller = loader.getController();
+            controller.setActionListener(this);
+        }
+        if (tabPaneKey.equals("Update Stage")) {
+            System.out.println("Initializing Update Stage tab with factory stage id: " + extraData);
+            UpdateFactoryStageController controller = loader.getController();
+            controller.setActionListener(this);
+            controller.initialize((Integer) extraData);
         }
     }
 

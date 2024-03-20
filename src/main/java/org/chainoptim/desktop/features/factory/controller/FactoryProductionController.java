@@ -28,6 +28,7 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     private Factory factory;
 
     private WebView webView;
+    private JavaConnector javaConnector;
 
     private ProductionTabsController productionTabsController;
 
@@ -55,7 +56,8 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
                 JSObject jsObject = (JSObject) webView.getEngine().executeScript("window");
-                jsObject.setMember("javaConnector", new JavaConnector());
+                javaConnector = new JavaConnector();
+                jsObject.setMember("javaConnector", javaConnector);
             }
         });
     }
@@ -87,7 +89,17 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
 
     @Override
     public void onOpenAddStageRequested() {
-        productionTabsController.addTab("Add Stage");
+        productionTabsController.addTab("Add Stage", null);
+    }
+
+    @Override
+    public void onOpenUpdateStageRequested() {
+        System.out.println("Parent listening");
+        Integer factoryStageId = javaConnector.getSelectedNodeId();
+        if (factoryStageId != null) {
+            System.out.println("Selected factory stage: " + factoryStageId);
+            productionTabsController.addTab("Update Stage", factoryStageId);
+        }
     }
 
 }

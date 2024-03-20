@@ -20,10 +20,22 @@ public class SelectDurationController {
     public Float getTimeSeconds() {
         if (timeInput != null && !Objects.equals(timeInput.getText(), "") && timePeriodSelect.getValue() != null) {
             float inputDuration = parseFloat(timeInput.getText());
-            float durationSeconds = TimeUtil.getSeconds(inputDuration, timePeriodSelect.getValue());
-            return durationSeconds;
+            return TimeUtil.getSeconds(inputDuration, timePeriodSelect.getValue());
         } else {
             return -1.0f; // Marker for invalid input
+        }
+    }
+
+    public void setTime(Float timeSeconds) {
+        if (timeSeconds != null && timeSeconds > 0) {
+            String timePeriod = "Hours";
+            timePeriodSelect.setValue(timePeriod);
+            float durationHours = TimeUtil.getDuration(timeSeconds, timePeriod);
+            if (durationHours != -1.0f) {
+                timeInput.setText(String.valueOf(durationHours));
+            } else {
+                timeInput.setText("");
+            }
         }
     }
 }

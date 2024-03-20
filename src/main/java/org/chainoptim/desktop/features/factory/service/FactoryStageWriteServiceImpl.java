@@ -3,6 +3,7 @@ package org.chainoptim.desktop.features.factory.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.factory.dto.CreateFactoryStageDTO;
+import org.chainoptim.desktop.features.factory.dto.UpdateFactoryStageDTO;
 import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
@@ -38,8 +39,44 @@ public class FactoryStageWriteServiceImpl implements FactoryStageWriteService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         assert requestBody != null;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .headers(HEADER_KEY, headerValue)
+                .headers("Content-Type", "application/json")
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
+                    try {
+                        FactoryStage stage = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<FactoryStage>() {});
+                        return Optional.of(stage);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<FactoryStage>empty();
+                    }
+                });
+    }
+
+    public CompletableFuture<Optional<FactoryStage>> updateFactoryStage(UpdateFactoryStageDTO stageDTO) {
+        String routeAddress = "http://localhost:8080/api/v1/factory-stages/update";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
+        // Serialize DTO
+        String requestBody = null;
+        try {
+            requestBody = JsonUtil.getObjectMapper().writeValueAsString(stageDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assert requestBody != null;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))

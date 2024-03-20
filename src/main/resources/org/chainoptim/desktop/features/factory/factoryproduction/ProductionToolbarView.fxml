@@ -19,7 +19,7 @@
     <VBox spacing="10">
         <VBox fx:id="editConfigurationContentVBox" spacing="10">
             <Button text="Add Stage" onAction="#openAddStageAction"/>
-            <Button text="Edit Stage"/>
+            <Button text="Edit Stage" onAction="#openUpdateStageAction"/>
             <Button text="Add Connection"/>
         </VBox>
     </VBox>

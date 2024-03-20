@@ -2,7 +2,9 @@ package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
@@ -201,6 +203,14 @@ public class ProductionToolbarController {
     private void openAddStageAction() {
         if (actionListener != null) {
             actionListener.onOpenAddStageRequested();
+        }
+    }
+
+    @FXML
+    private void openUpdateStageAction() {
+        if (actionListener != null) {
+            System.out.println("Toolbar listening");
+            actionListener.onOpenUpdateStageRequested();
         }
     }
 }
