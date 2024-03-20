@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.ProductionToolbarController"
+            prefHeight="400.0" prefWidth="600.0"
+            spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff;">
+
+    <Label text="Toolbar" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
+
+    <!-- Section: Edit Configuration -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Edit Configuration" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
+        <Button fx:id="toggleEditConfigurationButton" onAction="#toggleEditConfigurationSection" styleClass="no-style-button"/>
+    </HBox>
+    <VBox spacing="10">
+        <VBox fx:id="editConfigurationContentVBox" spacing="10">
+            <Button text="Add Stage" onAction="#openAddStageAction"/>
+            <Button text="Edit Stage"/>
+            <Button text="Add Connection"/>
+        </VBox>
+    </VBox>
+
+    <!-- Section: Display info -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Display Info" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
+        <Button fx:id="toggleDisplayInfoButton" onAction="#toggleDisplayInfoSection" styleClass="no-style-button"/>
+    </HBox>
+    <VBox spacing="10">
+        <VBox fx:id="displayInfoContentVBox" spacing="10">
+            <CheckBox fx:id="quantitiesCheckBox" text="Quantities (Q)"/>
+            <CheckBox fx:id="capacityCheckBox" text="Capacities (C)"/>
+            <CheckBox fx:id="priorityCheckBox" text="Priorities (P)" />
+        </VBox>
+    </VBox>
+
+    <!-- Section: Resource Allocation -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Allocate Resources" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
+        <Button fx:id="toggleResourceAllocationButton" onAction="#toggleResourceAllocationSection" styleClass="no-style-button"/>
+    </HBox>
+    <VBox spacing="10">
+        <VBox fx:id="resourceAllocationContentBox" spacing="10">
+            <Label text="From Inventory" style="-fx-font-size: 12px;"/>
+            <!-- Selection of duration container -->
+            <StackPane fx:id="durationInputContainer"/>
+            <Button text="Allocate Resources" onAction="#handleAllocateResources"/>
+        </VBox>
+    </VBox>
+
+    <!-- Section: Seek resources -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Seek Resources" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
+        <Button fx:id="toggleSeekResourcesButton" onAction="#toggleSeekResourcesSection" styleClass="no-style-button"/>
+    </HBox>
+    <VBox spacing="10">
+        <VBox fx:id="seekResourcesContentBox" spacing="10">
+            <Button text="Seek Missing Resources"/>
+        </VBox>
+    </VBox>
+</VBox>

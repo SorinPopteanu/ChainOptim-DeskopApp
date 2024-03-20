@@ -4,6 +4,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.abstraction.ThreadRunner;
+import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class NavigationServiceTest {
+class NavigationServiceTest {
 
     private NavigationServiceImpl navigationService;
     @Mock
@@ -29,9 +30,11 @@ public class NavigationServiceTest {
         ControllerFactory mockControllerFactory = mock(ControllerFactory.class);
         ThreadRunner mockThreadRunner = mock(ThreadRunner.class);
         FXMLLoaderService mockFxmlLoaderService = mock(FXMLLoaderService.class);
+        FallbackManager mockFallbackManager = mock(FallbackManager.class);
+
         when(mockFxmlLoaderService.loadView(anyString(), any())).thenReturn(new Pane());
 
-        navigationService = new NavigationServiceImpl(mockFxmlLoaderService, mockControllerFactory, mockThreadRunner);
+        navigationService = new NavigationServiceImpl(mockFxmlLoaderService, mockControllerFactory, mockThreadRunner, mockFallbackManager);
         navigationService.setMainContentArea(mockMainContentArea);
     }
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectDurationController">
+
+    <HBox spacing="10">
+        <TextField fx:id="timeInput" promptText="Enter number" style="-fx-pref-width: 100px;" />
+        <ComboBox fx:id="timePeriodSelect" style="-fx-pref-width: 150px;">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Hours"/>
+                    <String fx:value="Days"/>
+                    <String fx:value="Weeks"/>
+                    <String fx:value="Months"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </HBox>
+</VBox>

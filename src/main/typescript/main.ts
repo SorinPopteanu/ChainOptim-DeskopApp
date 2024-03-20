@@ -1,6 +1,5 @@
 import { FactoryProductionGraph, StageNode } from "./types/dataTypes";
 import { GraphRenderer } from "./rendering/GraphRenderer";
-import { InfoRenderer } from "./rendering/InfoRenderer";
 export {};
 
 function renderGraph(jsonData: string) {
