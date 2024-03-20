@@ -9,7 +9,7 @@ import org.chainoptim.desktop.features.productpipeline.dto.CreateStageDTO;
 import org.chainoptim.desktop.features.productpipeline.model.Stage;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteService;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
-import org.chainoptim.desktop.shared.common.uielements.SelectFactoryController;
+import org.chainoptim.desktop.shared.common.uielements.SelectProductController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
@@ -42,8 +42,8 @@ public class CreateProductStageController implements Initializable {
     private StackPane fallbackContainer;
 
     @FXML
-    private StackPane selectFactoryContainer;
-    private SelectFactoryController selectFactoryController;
+    private StackPane selectProductContainer;
+    private SelectProductController selectProductController;
     @FXML
     private TextField nameField;
 
@@ -65,7 +65,7 @@ public class CreateProductStageController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadFallbackManager();
-        loadSelectFactoryView();
+        loadSelectProductView();
     }
 
     private void loadFallbackManager() {
@@ -76,17 +76,17 @@ public class CreateProductStageController implements Initializable {
         fallbackContainer.getChildren().add(fallbackView);
     }
 
-    private void loadSelectFactoryView() {
+    private void loadSelectProductView() {
         // Initialize time selection input view
-        FXMLLoader selectFactoryLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectFactoryView.fxml",
-                MainApplication.injector::getInstance
+        FXMLLoader selectProductLoader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/common/uielements/SelectProductView.fxml",
+                controllerFactory::createController
         );
         try {
-            Node selectFactoryView = selectFactoryLoader.load();
-            selectFactoryController = selectFactoryLoader.getController();
-            selectFactoryController.initialize();
-            selectFactoryContainer.getChildren().add(selectFactoryView);
+            Node selectProductView = selectProductLoader.load();
+            selectProductController = selectProductLoader.getController();
+            selectProductController.initialize();
+            selectProductContainer.getChildren().add(selectProductView);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,7 +102,7 @@ public class CreateProductStageController implements Initializable {
             return;
         }
 
-        CreateStageDTO stageDTO = getStageDTO();
+        CreateStageDTO stageDTO = getStageDTO(currentUser.getOrganization().getId());
         System.out.println(stageDTO);
 
         stageWriteService.createStage(stageDTO)
@@ -116,28 +116,30 @@ public class CreateProductStageController implements Initializable {
                         fallbackManager.setLoading(false);
 
                         graphService.refreshProductGraph(stageDTO.getProductId()).thenApply(productionGraphOptional -> {
-                            if (productionGraphOptional.isEmpty()) {
-                                fallbackManager.setErrorMessage("Failed to refresh product graph");
-                            }
-                            if (actionListener != null) {
-                                actionListener.onAddStage(productionGraphOptional.get());
-                            }
+                            Platform.runLater(() -> {
+                                if (productionGraphOptional.isEmpty()) {
+                                    fallbackManager.setErrorMessage("Failed to refresh product graph");
+                                }
+                                if (actionListener != null && productionGraphOptional.isPresent()) {
+                                    actionListener.onAddStage(productionGraphOptional.get());
+                                }
+                            });
                             return productionGraphOptional;
                         });
                     })
                 )
                 .exceptionally(ex -> {
-                    fallbackManager.setErrorMessage("Failed to create stage");
                     ex.printStackTrace();
                     return null;
                 });
     }
 
-    private CreateStageDTO getStageDTO() {
+    private CreateStageDTO getStageDTO(Integer organizationId) {
         CreateStageDTO stageDTO = new CreateStageDTO();
 
-        Integer factoryId = selectFactoryController.getSelectedFactory().getId();
-        stageDTO.setProductId(factoryId);
+        Integer productId = selectProductController.getSelectedProduct().getId();
+        stageDTO.setProductId(productId);
+        stageDTO.setOrganizationId(organizationId);
 
         stageDTO.setName(nameField.getText());
         return stageDTO;

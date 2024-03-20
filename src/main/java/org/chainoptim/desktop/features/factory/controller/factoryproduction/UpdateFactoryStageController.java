@@ -1,20 +1,9 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import com.google.inject.Inject;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
-import lombok.Setter;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.factory.dto.CreateFactoryStageDTO;
 import org.chainoptim.desktop.features.factory.dto.UpdateFactoryStageDTO;
 import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
@@ -22,14 +11,20 @@ import org.chainoptim.desktop.features.factory.service.FactoryStageService;
 import org.chainoptim.desktop.features.factory.service.FactoryStageWriteService;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
-import org.chainoptim.desktop.shared.common.uielements.SelectFactoryController;
-import org.chainoptim.desktop.shared.common.uielements.SelectStageController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
+import com.google.inject.Inject;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
+import lombok.Setter;
+
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;

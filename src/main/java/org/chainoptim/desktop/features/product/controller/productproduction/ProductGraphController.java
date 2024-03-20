@@ -40,7 +40,7 @@ public class ProductGraphController {
     }
 
     private void loadGraphData() {
-        graphService.getProductGraphById(3).thenApply(this::handleProductResponse)
+        graphService.getProductGraphById(21).thenApply(this::handleProductResponse)
                 .exceptionally(this::handleProductException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
@@ -52,7 +52,6 @@ public class ProductGraphController {
                 return;
             }
             ProductProductionGraph productionGraph = productionGraphs.getFirst();
-            System.out.println("Graph: " + productionGraph);
             displayGraph(productionGraph);
         });
 

@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.product.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.features.product.dto.ProductsSearchDTO;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -25,8 +26,8 @@ public class ProductServiceImpl implements ProductService {
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
-    public CompletableFuture<Optional<List<Product>>> getProductsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/products/organizations/" + organizationId;
+    public CompletableFuture<Optional<List<ProductsSearchDTO>>> getProductsByOrganizationId(Integer organizationId, boolean small) {
+        String routeAddress = "http://localhost:8080/api/v1/products/organizations/" + organizationId.toString() + (small ? "/small" : "");
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -40,13 +41,13 @@ public class ProductServiceImpl implements ProductService {
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Product>>empty();
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<ProductsSearchDTO>>empty();
                     try {
-                        List<Product> products = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Product>>() {});
+                        List<ProductsSearchDTO> products = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<ProductsSearchDTO>>() {});
                         return Optional.of(products);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<List<Product>>empty();
+                        return Optional.<List<ProductsSearchDTO>>empty();
                     }
                 });
     }

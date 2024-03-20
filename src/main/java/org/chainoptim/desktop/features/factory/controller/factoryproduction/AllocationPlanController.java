@@ -1,14 +1,13 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocation;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import org.chainoptim.desktop.features.client.model.ClientOrder;
-import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
-import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocation;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class AllocationPlanController {
