@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.scanalysis.factorygraph.model;
+package org.chainoptim.desktop.features.scanalysis.productgraph.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Edge {
-    Integer incomingFactoryStageId;
+public class ProductEdge {
+    Integer incomingStageId;
     Integer incomingStageOutputId;
-    Integer outgoingFactoryStageId;
+    Integer outgoingStageId;
     Integer outgoingStageInputId;
 }

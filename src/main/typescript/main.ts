@@ -1,4 +1,4 @@
-import { FactoryProductionGraph, StageNode } from "./types/dataTypes";
+import { FactoryProductionGraph, FactoryStageNode } from "./types/dataTypes";
 import { GraphRenderer } from "./rendering/GraphRenderer";
 export {};
 

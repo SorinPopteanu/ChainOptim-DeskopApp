@@ -65,12 +65,8 @@ module org.chainoptim.desktop {
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.factory.service to com.google.guice;
-    opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
     opens org.chainoptim.desktop.features.factory.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.factory.dto to com.fasterxml.jackson.databind;
-
-    // -- Factory Production
-    opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
     opens org.chainoptim.desktop.features.factory.controller.factoryproduction to com.google.guice, javafx.fxml;
 
     // - Warehouse
@@ -92,8 +88,15 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.client.dto to com.fasterxml.jackson.databind;
 
     // - SC Analysis
+    // -- Product
+    opens org.chainoptim.desktop.features.scanalysis.productgraph.model to com.fasterxml.jackson.databind, java.base;
+    opens org.chainoptim.desktop.features.scanalysis.productgraph.service to com.google.guice, javafx.web;
+
+    // -- Factory
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.service to com.google.guice;
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind, javafx.base;
+    opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
+    opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
 
     // Shared
     // - Common UI elements
