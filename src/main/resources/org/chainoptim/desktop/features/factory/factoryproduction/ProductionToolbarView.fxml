@@ -3,11 +3,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Tooltip?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.ProductionToolbarController"
-            prefHeight="400.0" prefWidth="600.0"
-            spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff;">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.ProductionToolbarController"
+      prefHeight="400.0" prefWidth="600.0"
+      spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff;">
 
     <Label text="Toolbar" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
 
@@ -16,12 +17,26 @@
         <Label text="Edit Configuration" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
         <Button fx:id="toggleEditConfigurationButton" onAction="#toggleEditConfigurationSection" styleClass="no-style-button"/>
     </HBox>
-    <VBox spacing="10">
-        <VBox fx:id="editConfigurationContentVBox" spacing="10">
-            <Button text="Add Stage" onAction="#openAddStageAction"/>
-            <Button text="Edit Stage" onAction="#openUpdateStageAction"/>
-            <Button text="Add Connection"/>
-        </VBox>
+    <VBox fx:id="editConfigurationContentVBox" spacing="10">
+        <HBox alignment="CENTER_LEFT" spacing="4">
+            <Label text="Stages" style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
+            <Button fx:id="addStageButton" onAction="#openAddStageAction" style="-fx-background-color: #0078D7;">
+                <tooltip>
+                    <Tooltip text="Add a new stage"/>
+                </tooltip>
+            </Button>
+            <Button fx:id="updateStageButton" onAction="#openUpdateStageAction" style="-fx-background-color: #00A283;">
+                <tooltip>
+                    <Tooltip text="Update an existing stage"/>
+                </tooltip>
+            </Button>
+            <Button fx:id="deleteStageButton" onAction="#deleteStageAction" style="-fx-background-color: #D71112;">
+                <tooltip>
+                    <Tooltip text="Delete a stage"/>
+                </tooltip>
+            </Button>
+        </HBox>
+        <Button text="Add Connection"/>
     </VBox>
 
     <!-- Section: Display info -->

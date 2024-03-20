@@ -50,6 +50,12 @@ public class ProductionToolbarController {
     private Button toggleEditConfigurationButton;
     @FXML
     private VBox editConfigurationContentVBox;
+    @FXML
+    private Button addStageButton;
+    @FXML
+    private Button updateStageButton;
+    @FXML
+    private Button deleteStageButton;
 
     // - Display Info
     @FXML
@@ -79,6 +85,9 @@ public class ProductionToolbarController {
     private VBox seekResourcesContentBox;
 
     // - Icons
+    private Image addImage;
+    private Image updateImage;
+    private Image deleteImage;
     private Image angleUpImage;
     private Image angleDownImage;
 
@@ -140,11 +149,17 @@ public class ProductionToolbarController {
         // Initialize expand/collapse buttons
         angleUpImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
         angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
+        addImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
+        updateImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
+        deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
 
         toggleEditConfigurationButton.setGraphic(createImageView(angleUpImage));
         toggleDisplayInfoButton.setGraphic(createImageView(angleUpImage));
         toggleResourceAllocationButton.setGraphic(createImageView(angleUpImage));
         toggleSeekResourcesButton.setGraphic(createImageView(angleUpImage));
+        addStageButton.setGraphic(createImageView(addImage));
+        updateStageButton.setGraphic(createImageView(updateImage));
+        deleteStageButton.setGraphic(createImageView(deleteImage));
 
         // Initialize time selection input view
         FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
@@ -211,6 +226,13 @@ public class ProductionToolbarController {
         if (actionListener != null) {
             System.out.println("Toolbar listening");
             actionListener.onOpenUpdateStageRequested();
+        }
+    }
+
+    @FXML
+    private void deleteStageAction() {
+        if (actionListener != null) {
+//            actionListener.onDeleteStageRequested();
         }
     }
 }

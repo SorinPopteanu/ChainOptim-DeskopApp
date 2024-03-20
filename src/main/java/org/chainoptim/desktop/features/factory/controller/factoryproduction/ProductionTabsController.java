@@ -11,6 +11,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
@@ -27,6 +28,8 @@ public class ProductionTabsController implements TabsActionListener {
     private WebView webView;
     private FactoryGraphController factoryGraphController;
 
+    private Factory factory;
+
     @FXML
     private TabPane productionTabPane;
 
@@ -41,8 +44,9 @@ public class ProductionTabsController implements TabsActionListener {
         this.fxmlLoaderService = fxmlLoaderService;
     }
 
-    public void initialize(WebView webView) {
+    public void initialize(WebView webView, Factory factory) {
         this.webView = webView;
+        this.factory = factory;
 
         addTab("Factory Graph", null);
     }
@@ -80,7 +84,7 @@ public class ProductionTabsController implements TabsActionListener {
             System.out.println("Initializing Update Stage tab with factory stage id: " + extraData);
             UpdateFactoryStageController controller = loader.getController();
             controller.setActionListener(this);
-            controller.initialize((Integer) extraData);
+            controller.initialize((Integer) extraData, factory.getId());
         }
     }
 
@@ -107,6 +111,19 @@ public class ProductionTabsController implements TabsActionListener {
             Platform.runLater(() -> {
                 factoryGraphController.refreshGraph(productionGraph);
                 closeTab("Add Stage");
+                selectTab("Factory Graph");
+            });
+        } else {
+            System.out.println("Factory Graph Controller is null");
+        }
+    }
+
+    @Override
+    public void onUpdateStage(FactoryProductionGraph productionGraph) {
+        if (factoryGraphController != null) {
+            Platform.runLater(() -> {
+                factoryGraphController.refreshGraph(productionGraph);
+                closeTab("Update Stage");
                 selectTab("Factory Graph");
             });
         } else {

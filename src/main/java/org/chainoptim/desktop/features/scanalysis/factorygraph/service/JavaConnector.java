@@ -5,9 +5,9 @@ import lombok.Getter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Getter
 public class JavaConnector {
 
-    @Getter
     private Integer selectedNodeId;
 
     public void renderInfo(String infoType, Boolean isVisible) {

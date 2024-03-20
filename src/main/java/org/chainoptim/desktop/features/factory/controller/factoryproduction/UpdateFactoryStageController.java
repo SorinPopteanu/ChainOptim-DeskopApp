@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.dto.CreateFactoryStageDTO;
+import org.chainoptim.desktop.features.factory.dto.UpdateFactoryStageDTO;
 import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.factory.service.FactoryStageService;
@@ -41,6 +43,9 @@ public class UpdateFactoryStageController {
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
+    private FactoryStage factoryStage;
+    private Integer factoryId;
+
     @Setter
     private TabsActionListener actionListener;
 
@@ -48,11 +53,7 @@ public class UpdateFactoryStageController {
     private StackPane fallbackContainer;
 
     @FXML
-    private StackPane selectStageContainer;
-    private SelectStageController selectStageController;
-    @FXML
-    private StackPane selectFactoryContainer;
-    private SelectFactoryController selectFactoryController;
+    private Label stageNameLabel;
     @FXML
     private TextField capacityField;
     @FXML
@@ -80,7 +81,8 @@ public class UpdateFactoryStageController {
         this.fallbackManager = fallbackManager;
     }
 
-    public void initialize(Integer factoryStageId) {
+    public void initialize(Integer factoryStageId, Integer factoryId) {
+        this.factoryId = factoryId;
         loadFallbackManager();
         loadFactoryStageIntoForm(factoryStageId);
         loadSelectDurationView();
@@ -104,6 +106,9 @@ public class UpdateFactoryStageController {
                     FactoryStage factoryStage = factoryStageOptional.get();
                     System.out.println("Factory stage: " + factoryStage);
                     Platform.runLater(() -> {
+                        this.factoryStage = factoryStage;
+
+                        stageNameLabel.setText("Stage: " + factoryStage.getStage().getName());
                         capacityField.setText(String.valueOf(factoryStage.getCapacity()));
                         selectDurationController.setTime(factoryStage.getDuration());
                         priorityField.setText(String.valueOf(factoryStage.getPriority()));
@@ -141,11 +146,11 @@ public class UpdateFactoryStageController {
             return;
         }
 
-        CreateFactoryStageDTO stageDTO = getStageDTO();
+        UpdateFactoryStageDTO stageDTO = getStageDTO();
 
         System.out.println(stageDTO);
 
-        factoryStageWriteService.createFactoryStage(stageDTO, true)
+        factoryStageWriteService.updateFactoryStage(stageDTO)
                 .thenAccept(stageOptional ->
                     Platform.runLater(() -> {
                         if (stageOptional.isEmpty()) {
@@ -155,12 +160,12 @@ public class UpdateFactoryStageController {
                         FactoryStage stage = stageOptional.get();
                         fallbackManager.setLoading(false);
 
-                        graphService.refreshFactoryGraph(stageDTO.getFactoryId()).thenApply(productionGraphOptional -> {
+                        graphService.refreshFactoryGraph(factoryId).thenApply(productionGraphOptional -> {
                             if (productionGraphOptional.isEmpty()) {
                                 fallbackManager.setErrorMessage("Failed to refresh factory graph");
                             }
                             if (actionListener != null) {
-                                actionListener.onAddStage(productionGraphOptional.get());
+                                actionListener.onUpdateStage(productionGraphOptional.get());
                             }
                             return productionGraphOptional;
                         });
@@ -172,14 +177,10 @@ public class UpdateFactoryStageController {
                 });
     }
 
-    private CreateFactoryStageDTO getStageDTO() {
-        CreateFactoryStageDTO stageDTO = new CreateFactoryStageDTO();
+    private UpdateFactoryStageDTO getStageDTO() {
+        UpdateFactoryStageDTO stageDTO = new UpdateFactoryStageDTO();
 
-        Integer stageId = selectStageController.getSelectedStage().getId();
-        stageDTO.setStageId(stageId);
-        Integer factoryId = selectFactoryController.getSelectedFactory().getId();
-        stageDTO.setFactoryId(factoryId);
-
+        stageDTO.setId(factoryStage.getId());
         stageDTO.setCapacity(parseFloat(capacityField.getText()));
         stageDTO.setDuration(selectDurationController.getTimeSeconds());
         stageDTO.setPriority(parseInt(priorityField.getText()));

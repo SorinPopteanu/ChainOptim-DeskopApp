@@ -79,7 +79,7 @@ public class FactoryStageWriteServiceImpl implements FactoryStageWriteService {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                 .headers(HEADER_KEY, headerValue)
                 .headers("Content-Type", "application/json")
                 .build();

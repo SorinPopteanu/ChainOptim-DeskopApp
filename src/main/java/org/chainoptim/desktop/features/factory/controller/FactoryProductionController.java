@@ -68,7 +68,7 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
             Node tabsView = loader.load();
             tabsContainer.getChildren().add(tabsView);
             productionTabsController = loader.getController();
-            productionTabsController.initialize(webView);
+            productionTabsController.initialize(webView, factory);
         } catch (IOException e) {
             e.printStackTrace();
         }
