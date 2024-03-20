@@ -75,11 +75,31 @@ public class ProductionTabsController implements TabsActionListener {
         }
     }
 
+    private void closeTab(String tabKey) {
+        productionTabPane.getTabs().removeIf(tab -> tabKey.equals(tab.getText()));
+    }
+
+    private void selectTab(String tabKey) {
+        Tab selectedTab = productionTabPane.getTabs().stream()
+                .filter(tab -> tabKey.equals(tab.getText()))
+                .findFirst()
+                .orElse(null);
+
+        if (selectedTab != null) {
+            productionTabPane.getSelectionModel().select(selectedTab);
+        }
+    }
+
+
     @Override
     public void onAddStage(FactoryProductionGraph productionGraph) {
-        // Refresh graph
+        // Refresh graph, close Add Stage tab and select Factory Graph tab
         if (factoryGraphController != null) {
-            factoryGraphController.displayGraph(productionGraph);
+            Platform.runLater(() -> {
+                factoryGraphController.refreshGraph(productionGraph);
+                closeTab("Add Stage");
+                selectTab("Factory Graph");
+            });
         } else {
             System.out.println("Factory Graph Controller is null");
         }

@@ -109,4 +109,8 @@ export class GraphRenderer {
     getSvg() {
         return this.svg;
     }
+
+    clearGraph() {
+        this.svg.selectAll("*").remove();
+    }
 }
