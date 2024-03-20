@@ -1,28 +1,25 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
+import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.factory.model.TabsActionListener;
+import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+
 import com.google.inject.Inject;
 import javafx.application.Platform;
-import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.web.WebView;
-import netscape.javascript.JSObject;
-import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.factory.model.FactoryStage;
-import org.chainoptim.desktop.features.factory.model.TabsActionListener;
-import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
-import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
-import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class ProductionTabsController implements TabsActionListener {
+public class FactoryProductionTabsController implements TabsActionListener {
 
     private final FXMLLoaderService fxmlLoaderService;
 
@@ -42,7 +39,7 @@ public class ProductionTabsController implements TabsActionListener {
     );
 
     @Inject
-    public ProductionTabsController(FXMLLoaderService fxmlLoaderService) {
+    public FactoryProductionTabsController(FXMLLoaderService fxmlLoaderService) {
         this.fxmlLoaderService = fxmlLoaderService;
     }
 

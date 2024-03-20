@@ -1,8 +1,8 @@
 package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.features.factory.controller.factoryproduction.ProductionTabsController;
-import org.chainoptim.desktop.features.factory.controller.factoryproduction.ProductionToolbarController;
+import org.chainoptim.desktop.features.factory.controller.factoryproduction.FactoryProductionTabsController;
+import org.chainoptim.desktop.features.factory.controller.factoryproduction.FactoryProductionToolbarController;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
@@ -31,7 +31,7 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     private WebView webView;
     private JavaConnector javaConnector;
 
-    private ProductionTabsController productionTabsController;
+    private FactoryProductionTabsController productionTabsController;
 
     @FXML
     private StackPane tabsContainer;
@@ -64,7 +64,7 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     }
 
     private void loadTabs() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/features/factory/factoryproduction/ProductionTabsView.fxml", MainApplication.injector::getInstance);
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/features/factory/factoryproduction/FactoryProductionTabsView.fxml", MainApplication.injector::getInstance);
         try {
             Node tabsView = loader.load();
             tabsContainer.getChildren().add(tabsView);
@@ -76,11 +76,11 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     }
 
     private void loadToolbar() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/features/factory/factoryproduction/ProductionToolbarView.fxml", MainApplication.injector::getInstance);
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/features/factory/factoryproduction/FactoryProductionToolbarView.fxml", MainApplication.injector::getInstance);
         try {
             Node toolbarView = loader.load();
             toolbarContainer.getChildren().add(toolbarView);
-            ProductionToolbarController toolbarController = loader.getController();
+            FactoryProductionToolbarController toolbarController = loader.getController();
             toolbarController.initialize(webView, factory);
             toolbarController.setActionListener(this);
         } catch (IOException e) {

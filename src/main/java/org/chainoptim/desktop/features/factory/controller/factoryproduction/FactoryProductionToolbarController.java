@@ -2,9 +2,7 @@ package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
-import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
@@ -18,8 +16,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -33,7 +29,7 @@ import java.util.Optional;
 
 import static org.chainoptim.desktop.shared.util.JsonUtil.prepareJsonString;
 
-public class ProductionToolbarController {
+public class FactoryProductionToolbarController {
 
     private final ResourceAllocationService resourceAllocationService;
     private final FXMLLoaderService fxmlLoaderService;
@@ -99,8 +95,8 @@ public class ProductionToolbarController {
     private Image angleDownImage;
 
     @Inject
-    public ProductionToolbarController(ResourceAllocationService resourceAllocationService,
-                                       FXMLLoaderService fxmlLoaderService) {
+    public FactoryProductionToolbarController(ResourceAllocationService resourceAllocationService,
+                                              FXMLLoaderService fxmlLoaderService) {
         this.resourceAllocationService = resourceAllocationService;
         this.fxmlLoaderService = fxmlLoaderService;
     }
