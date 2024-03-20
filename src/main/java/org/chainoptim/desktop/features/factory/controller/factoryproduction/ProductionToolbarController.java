@@ -236,44 +236,29 @@ public class ProductionToolbarController {
 
     @FXML
     private void openAddStageAction() {
-        if (actionListener != null) {
-            actionListener.onOpenAddStageRequested();
-        }
+        actionListener.onOpenAddStageRequested();
     }
 
     @FXML
     private void openUpdateStageAction() {
-        if (actionListener != null) {
-            System.out.println("Toolbar listening");
-            actionListener.onOpenUpdateStageRequested();
-        }
+        actionListener.onOpenUpdateStageRequested();
     }
 
     @FXML
     private void deleteStageAction() {
-        if (actionListener != null) {
-//            actionListener.onDeleteStageRequested();
-        }
+//        actionListener.onDeleteStageRequested();
     }
 
     @FXML
     private void addConnectionAction() {
-        if (actionListener != null) {
-
-        }
     }
 
     @FXML
     private void deleteConnectionAction() {
-        if (actionListener != null) {
-
-        }
     }
 
     @FXML
     private void openAllocationPlan() {
-        if (actionListener != null) {
-            actionListener.onOpenAllocationPlanRequested(allocationPlan);
-        }
+        actionListener.onOpenAllocationPlanRequested(allocationPlan);
     }
 }

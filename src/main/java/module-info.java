@@ -93,7 +93,7 @@ module org.chainoptim.desktop {
 
     // - SC Analysis
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.service to com.google.guice;
-    opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind, javafx.base;
 
     // Shared
     // - Common UI elements

@@ -18,7 +18,7 @@
         <Button fx:id="toggleEditConfigurationButton" onAction="#toggleEditConfigurationSection" styleClass="no-style-button"/>
     </HBox>
     <VBox fx:id="editConfigurationContentVBox" spacing="10">
-        <HBox alignment="CENTER_LEFT" spacing="4">
+        <HBox alignment="CENTER_LEFT" spacing="6">
             <Label text="Stages" styleClass="edit-configuration-sublabel"/>
             <Button fx:id="addStageButton" onAction="#openAddStageAction" styleClass="add-button">
                 <tooltip>
@@ -36,7 +36,7 @@
                 </tooltip>
             </Button>
         </HBox>
-        <HBox alignment="CENTER_LEFT" spacing="4">
+        <HBox alignment="CENTER_LEFT" spacing="6">
             <Label text="Connections" styleClass="edit-configuration-sublabel"/>
             <Button fx:id="addConnectionButton" onAction="#addConnectionAction" styleClass="add-button">
                 <tooltip>
@@ -75,7 +75,7 @@
             <Label text="For Duration:" style="-fx-font-size: 12px;"/>
             <!-- Selection of duration container -->
             <StackPane fx:id="durationInputContainer"/>
-            <Button text="Allocate Resources" onAction="#handleAllocateResources"/>
+            <Button text="Allocate Resources" onAction="#handleAllocateResources" styleClass="allocate-resources-button"/>
             <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan"/>
         </VBox>
     </VBox>

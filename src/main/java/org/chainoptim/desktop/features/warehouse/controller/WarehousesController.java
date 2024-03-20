@@ -175,8 +175,14 @@ public class WarehousesController implements Initializable {
     private void loadWarehouseCardUI(Warehouse warehouse) {
         Label warehouseName = new Label(warehouse.getName());
         warehouseName.getStyleClass().add("entity-name-label");
-        Label warehouseLocation = new Label(warehouse.getLocation().getFormattedLocation());
+        Label warehouseLocation = new Label();
+        if (warehouse.getLocation() != null) {
+            warehouseLocation.setText(warehouse.getLocation().getFormattedLocation());
+        } else {
+            warehouseLocation.setText("");
+        }
         warehouseLocation.getStyleClass().add("entity-description-label");
+
         VBox warehouseBox = new VBox(warehouseName, warehouseLocation);
         Button warehouseButton = new Button();
         warehouseButton.getStyleClass().add("entity-card");

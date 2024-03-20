@@ -36,6 +36,7 @@
 
 .add-button {
     -fx-background-color: #0077C7;
+    -fx-cursor: hand;
 }
 
 .add-button:hover {
@@ -44,6 +45,7 @@
 
 .update-button {
     -fx-background-color: #00A062;
+    -fx-cursor: hand;
 }
 
 .update-button:hover {
@@ -52,8 +54,20 @@
 
 .delete-button {
     -fx-background-color: #B71011;
+    -fx-cursor: hand;
 }
 
 .delete-button:hover {
     -fx-background-color: #A50F0F;
+}
+
+.allocate-resources-button {
+    -fx-background-color: #00A062;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.allocate-resources-button:hover {
+    -fx-background-color: #007D4C;
 }
