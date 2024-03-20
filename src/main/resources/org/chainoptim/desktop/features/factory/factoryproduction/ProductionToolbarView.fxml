@@ -14,34 +14,46 @@
 
     <!-- Section: Edit Configuration -->
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="Edit Configuration" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
+        <Label text="Edit Configuration" styleClass="section-label"/>
         <Button fx:id="toggleEditConfigurationButton" onAction="#toggleEditConfigurationSection" styleClass="no-style-button"/>
     </HBox>
     <VBox fx:id="editConfigurationContentVBox" spacing="10">
         <HBox alignment="CENTER_LEFT" spacing="4">
-            <Label text="Stages" style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
-            <Button fx:id="addStageButton" onAction="#openAddStageAction" style="-fx-background-color: #0078D7;">
+            <Label text="Stages" styleClass="edit-configuration-sublabel"/>
+            <Button fx:id="addStageButton" onAction="#openAddStageAction" styleClass="add-button">
                 <tooltip>
                     <Tooltip text="Add a new stage"/>
                 </tooltip>
             </Button>
-            <Button fx:id="updateStageButton" onAction="#openUpdateStageAction" style="-fx-background-color: #00A283;">
+            <Button fx:id="updateStageButton" onAction="#openUpdateStageAction" styleClass="update-button">
                 <tooltip>
                     <Tooltip text="Update an existing stage"/>
                 </tooltip>
             </Button>
-            <Button fx:id="deleteStageButton" onAction="#deleteStageAction" style="-fx-background-color: #D71112;">
+            <Button fx:id="deleteStageButton" onAction="#deleteStageAction" styleClass="delete-button">
                 <tooltip>
                     <Tooltip text="Delete a stage"/>
                 </tooltip>
             </Button>
         </HBox>
-        <Button text="Add Connection"/>
+        <HBox alignment="CENTER_LEFT" spacing="4">
+            <Label text="Connections" styleClass="edit-configuration-sublabel"/>
+            <Button fx:id="addConnectionButton" onAction="#addConnectionAction" styleClass="add-button">
+                <tooltip>
+                    <Tooltip text="Add a new connection"/>
+                </tooltip>
+            </Button>
+            <Button fx:id="deleteConnectionButton" onAction="#deleteConnectionAction"  styleClass="delete-button">
+                <tooltip>
+                    <Tooltip text="Delete a connection"/>
+                </tooltip>
+            </Button>
+        </HBox>
     </VBox>
 
     <!-- Section: Display info -->
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="Display Info" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
+        <Label text="Display Info" styleClass="section-label"/>
         <Button fx:id="toggleDisplayInfoButton" onAction="#toggleDisplayInfoSection" styleClass="no-style-button"/>
     </HBox>
     <VBox spacing="10">
@@ -54,21 +66,23 @@
 
     <!-- Section: Resource Allocation -->
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="Allocate Resources" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
+        <Label text="Allocate Resources" styleClass="section-label"/>
         <Button fx:id="toggleResourceAllocationButton" onAction="#toggleResourceAllocationSection" styleClass="no-style-button"/>
     </HBox>
     <VBox spacing="10">
         <VBox fx:id="resourceAllocationContentBox" spacing="10">
             <Label text="From Inventory" style="-fx-font-size: 12px;"/>
+            <Label text="For Duration:" style="-fx-font-size: 12px;"/>
             <!-- Selection of duration container -->
             <StackPane fx:id="durationInputContainer"/>
             <Button text="Allocate Resources" onAction="#handleAllocateResources"/>
+            <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan"/>
         </VBox>
     </VBox>
 
     <!-- Section: Seek resources -->
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="Seek Resources" style="-fx-font-size: 14px; -fx-font-weight: bold"/>
+        <Label text="Seek Resources" styleClass="section-label"/>
         <Button fx:id="toggleSeekResourcesButton" onAction="#toggleSeekResourcesSection" styleClass="no-style-button"/>
     </HBox>
     <VBox spacing="10">

@@ -6,6 +6,7 @@ import org.chainoptim.desktop.features.factory.controller.factoryproduction.Prod
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
@@ -102,4 +103,8 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
         }
     }
 
+    @Override
+    public void onOpenAllocationPlanRequested(AllocationPlan allocationPlan) {
+        productionTabsController.addTab("Allocation Plan", allocationPlan);
+    }
 }

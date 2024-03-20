@@ -1,3 +1,4 @@
+/* Tabs */
 .custom-tab {
     /* Use important to overwrite general tab styles */
     -fx-padding: 8px 10px 8px 10px !important;
@@ -19,4 +20,40 @@
     -fx-padding: 20px;
     -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
+}
+
+/* Toolbar */
+.section-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.edit-configuration-sublabel {
+    -fx-padding: 0 4px 0 0;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.add-button {
+    -fx-background-color: #0077C7;
+}
+
+.add-button:hover {
+    -fx-background-color: #0058A3;
+}
+
+.update-button {
+    -fx-background-color: #00A062;
+}
+
+.update-button:hover {
+    -fx-background-color: #007D4C;
+}
+
+.delete-button {
+    -fx-background-color: #B71011;
+}
+
+.delete-button:hover {
+    -fx-background-color: #A50F0F;
 }

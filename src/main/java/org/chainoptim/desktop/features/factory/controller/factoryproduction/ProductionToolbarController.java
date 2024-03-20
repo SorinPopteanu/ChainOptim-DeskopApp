@@ -42,6 +42,7 @@ public class ProductionToolbarController {
     private ProductionToolbarActionListener actionListener;
 
     private Factory factory;
+    private AllocationPlan allocationPlan;
 
     private WebView webView;
 
@@ -56,6 +57,10 @@ public class ProductionToolbarController {
     private Button updateStageButton;
     @FXML
     private Button deleteStageButton;
+    @FXML
+    private Button addConnectionButton;
+    @FXML
+    private Button deleteConnectionButton;
 
     // - Display Info
     @FXML
@@ -77,6 +82,8 @@ public class ProductionToolbarController {
     @FXML
     private StackPane durationInputContainer;
     private SelectDurationController selectDurationController;
+    @FXML
+    private Button viewAllocationPlanButton;
 
     // - Seek Resources
     @FXML
@@ -120,16 +127,17 @@ public class ProductionToolbarController {
 
         resourceAllocationService
                 .allocateFactoryResources(factory.getId(), durationSeconds)
-                .thenApply(this::drawResourceAllocation);
+                .thenApply(this::handleAllocationPlanResponse);
     }
 
-    private AllocationPlan drawResourceAllocation(Optional<AllocationPlan> allocationPlanOptional) {
+    private AllocationPlan handleAllocationPlanResponse(Optional<AllocationPlan> allocationPlanOptional) {
         if (allocationPlanOptional.isEmpty()) {
             return new AllocationPlan();
         }
-        AllocationPlan allocationPlan = allocationPlanOptional.get();
-        String escapedJsonString = prepareJsonString(allocationPlan);
+        allocationPlan = allocationPlanOptional.get();
+        updateViewAllocationPlanButtonVisibility();
 
+        String escapedJsonString = prepareJsonString(allocationPlan);
         String script = "window.renderResourceAllocations('" + escapedJsonString + "');";
 
         // Ensure script execution happens on the JavaFX Application Thread
@@ -140,7 +148,6 @@ public class ProductionToolbarController {
                 e.printStackTrace();
             }
         });
-
         return allocationPlan;
     }
 
@@ -160,6 +167,11 @@ public class ProductionToolbarController {
         addStageButton.setGraphic(createImageView(addImage));
         updateStageButton.setGraphic(createImageView(updateImage));
         deleteStageButton.setGraphic(createImageView(deleteImage));
+        addConnectionButton.setGraphic(createImageView(addImage));
+        deleteConnectionButton.setGraphic(createImageView(deleteImage));
+
+        viewAllocationPlanButton.setVisible(false);
+        viewAllocationPlanButton.setManaged(false);
 
         // Initialize time selection input view
         FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
@@ -214,6 +226,14 @@ public class ProductionToolbarController {
         return imageView;
     }
 
+    private void updateViewAllocationPlanButtonVisibility() {
+        // Update button visibility based on whether an allocation plan is available
+        System.out.println("Allocation plan: " + allocationPlan);
+        boolean isAllocationPlanAvailable = allocationPlan != null;
+        viewAllocationPlanButton.setVisible(isAllocationPlanAvailable);
+        viewAllocationPlanButton.setManaged(isAllocationPlanAvailable);
+    }
+
     @FXML
     private void openAddStageAction() {
         if (actionListener != null) {
@@ -233,6 +253,27 @@ public class ProductionToolbarController {
     private void deleteStageAction() {
         if (actionListener != null) {
 //            actionListener.onDeleteStageRequested();
+        }
+    }
+
+    @FXML
+    private void addConnectionAction() {
+        if (actionListener != null) {
+
+        }
+    }
+
+    @FXML
+    private void deleteConnectionAction() {
+        if (actionListener != null) {
+
+        }
+    }
+
+    @FXML
+    private void openAllocationPlan() {
+        if (actionListener != null) {
+            actionListener.onOpenAllocationPlanRequested(allocationPlan);
         }
     }
 }

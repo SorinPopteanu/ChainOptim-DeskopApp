@@ -16,6 +16,7 @@ import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.io.IOException;
@@ -36,7 +37,8 @@ public class ProductionTabsController implements TabsActionListener {
     private static final Map<String, String> tabsViewPaths = Map.of(
             "Factory Graph", "/org/chainoptim/desktop/features/factory/factoryproduction/FactoryGraphView.fxml",
             "Add Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/CreateFactoryStageView.fxml",
-            "Update Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/UpdateFactoryStageView.fxml"
+            "Update Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/UpdateFactoryStageView.fxml",
+                "Allocation Plan", "/org/chainoptim/desktop/features/factory/factoryproduction/AllocationPlanView.fxml"
     );
 
     @Inject
@@ -80,11 +82,16 @@ public class ProductionTabsController implements TabsActionListener {
             CreateFactoryStageController controller = loader.getController();
             controller.setActionListener(this);
         }
+        // Set up Update Stage listener and send factoryStageId and factoryId in case of Update Stage
         if (tabPaneKey.equals("Update Stage")) {
             System.out.println("Initializing Update Stage tab with factory stage id: " + extraData);
             UpdateFactoryStageController controller = loader.getController();
             controller.setActionListener(this);
             controller.initialize((Integer) extraData, factory.getId());
+        }
+        if (tabPaneKey.equals("Allocation Plan")) {
+            AllocationPlanController controller = loader.getController();
+            controller.initialize((AllocationPlan) extraData);
         }
     }
 
@@ -107,27 +114,29 @@ public class ProductionTabsController implements TabsActionListener {
     @Override
     public void onAddStage(FactoryProductionGraph productionGraph) {
         // Refresh graph, close Add Stage tab and select Factory Graph tab
-        if (factoryGraphController != null) {
-            Platform.runLater(() -> {
-                factoryGraphController.refreshGraph(productionGraph);
-                closeTab("Add Stage");
-                selectTab("Factory Graph");
-            });
-        } else {
+        if (factoryGraphController == null) {
             System.out.println("Factory Graph Controller is null");
+            return;
         }
+
+        Platform.runLater(() -> {
+            factoryGraphController.refreshGraph(productionGraph);
+            closeTab("Add Stage");
+            selectTab("Factory Graph");
+        });
     }
 
     @Override
     public void onUpdateStage(FactoryProductionGraph productionGraph) {
-        if (factoryGraphController != null) {
-            Platform.runLater(() -> {
-                factoryGraphController.refreshGraph(productionGraph);
-                closeTab("Update Stage");
-                selectTab("Factory Graph");
-            });
-        } else {
+        if (factoryGraphController == null) {
             System.out.println("Factory Graph Controller is null");
+            return;
         }
+
+        Platform.runLater(() -> {
+            factoryGraphController.refreshGraph(productionGraph);
+            closeTab("Update Stage");
+            selectTab("Factory Graph");
+        });
     }
 }
