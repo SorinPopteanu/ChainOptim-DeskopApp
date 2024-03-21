@@ -56,7 +56,7 @@ public class ProductProductionGraphServiceImpl implements ProductProductionGraph
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
-                .GET()
+                .PUT(HttpRequest.BodyPublishers.noBody())
                 .headers(HEADER_KEY, headerValue)
                 .build();
 

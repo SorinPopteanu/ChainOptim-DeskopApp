@@ -1,10 +1,10 @@
 import { GraphUIConfig } from "../config/GraphUIConfig";
-import { FactoryGraphUI } from "../types/uiTypes";
+import { FactoryGraphUI, GenericGraphUI } from "../types/uiTypes";
 import { ElementIdentifier } from "../utils/ElementIdentifier";
 import { findStageInputPosition, findStageOutputPosition } from "../utils/utils";
 
 export class InfoRenderer {
-    private factoryGraph: FactoryGraphUI;
+    private genericGraph: GenericGraphUI;
     private elementIdentifier: ElementIdentifier;
 
     constructor(private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>) {
@@ -32,7 +32,7 @@ export class InfoRenderer {
         const { stageBoxWidth } = GraphUIConfig.node;
         const { infoFontSize, infoColor, infoPaddingX, capacityPaddingY } = GraphUIConfig.info;
 
-        Object.entries(this.factoryGraph.nodes).forEach(([nodeId, nodeUI]) => {
+        Object.entries(this.genericGraph.nodes).forEach(([nodeId, nodeUI]) => {
             const textId = this.elementIdentifier.encodeCapacityTextId(nodeId);
             const textX = nodeUI.coordinates.x + stageBoxWidth / 2 + infoPaddingX;
             const textY = nodeUI.coordinates.y + capacityPaddingY;
@@ -59,7 +59,7 @@ export class InfoRenderer {
         const { stageBoxWidth } = GraphUIConfig.node;
         const { infoFontSize, infoColor, infoPaddingX, priorityPaddingY } = GraphUIConfig.info;
 
-        Object.entries(this.factoryGraph.nodes).forEach(([nodeId, nodeUI]) => {
+        Object.entries(this.genericGraph.nodes).forEach(([nodeId, nodeUI]) => {
             const textId = this.elementIdentifier.encodePriorityTextId(nodeId);
             const textX = nodeUI.coordinates.x + stageBoxWidth / 2 + infoPaddingX;
             const textY = nodeUI.coordinates.y + priorityPaddingY;
@@ -86,7 +86,7 @@ export class InfoRenderer {
         const { subnodeRadius } = GraphUIConfig.node;
         const { infoFontSize, infoColor, infoPaddingX, priorityPaddingY } = GraphUIConfig.info;
 
-        Object.entries(this.factoryGraph.nodes).forEach(([nodeId, nodeUI]) => {
+        Object.entries(this.genericGraph.nodes).forEach(([nodeId, nodeUI]) => {
             // Render stage input quantities
             const stageInputs = nodeUI.node.smallStage.stageInputs;
             stageInputs.forEach((input, index) => {
@@ -141,7 +141,7 @@ export class InfoRenderer {
         });   
     }
 
-    public setFactoryGraph(factoryGraph: FactoryGraphUI) {
-        this.factoryGraph = factoryGraph;
+    public setGenericGraph(genericGraph: GenericGraphUI) {
+        this.genericGraph = genericGraph;
     }
 }

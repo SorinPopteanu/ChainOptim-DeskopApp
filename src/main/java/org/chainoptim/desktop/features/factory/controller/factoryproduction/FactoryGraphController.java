@@ -72,7 +72,7 @@ public class FactoryGraphController {
             if (newValue == Worker.State.SUCCEEDED) {
 
                 // Execute script for rendering factory graph (using timeout for now to ensure bundle is loaded at this point)
-                String script = "setTimeout(function() { renderGraph('" + escapedJsonString + "'); }, 200);";
+                String script = "setTimeout(function() { renderFactoryGraph('" + escapedJsonString + "'); }, 200);";
                 System.out.println("Production Graph Script: " + script);
                 try {
                     webView.getEngine().executeScript(script);
@@ -89,7 +89,7 @@ public class FactoryGraphController {
         String escapedJsonString = prepareJsonString(productionGraph);
 
         // Execute script for rendering factory graph (using timeout for now to ensure bundle is loaded at this point)
-        String script = "window.renderGraph('" + escapedJsonString + "');";
+        String script = "window.renderFactoryGraph('" + escapedJsonString + "');";
         System.out.println("Production Graph Script: " + script);
         try {
             webView.getEngine().executeScript(script);

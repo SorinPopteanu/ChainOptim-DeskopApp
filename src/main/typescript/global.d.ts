@@ -1,6 +1,7 @@
 declare global {
     interface Window {
-        renderGraph: (jsonData: string) => void;
+        renderProductGraph: (jsonData: string) => void;
+        renderFactoryGraph: (jsonData: string) => void;
         renderInfo: (infoType: string, isVisible: boolean) => void;
         renderResourceAllocations: (jsonData: string) => void;
         javaConnector: {

@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { EdgeUI, StageNodeUI } from "../types/uiTypes";
+import { FactoryEdgeUI, FactoryStageNodeUI, GenericEdgeUI, GenericNodeUI } from "../types/uiTypes";
 import { calculateEdgePoints } from "../utils/geometryUtils";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { ElementIdentifier } from "../utils/ElementIdentifier";
@@ -13,8 +13,8 @@ export class EdgeRenderer {
 
     
     renderEdges = (
-        nodeUI: StageNodeUI,
-        adjListUI: Record<number, EdgeUI[]>,
+        nodeUI: GenericNodeUI,
+        adjListUI: Record<number, GenericEdgeUI[]>,
         stageNodeId: number,
     ) => {
         const { node: { subnodeRadius }, edge: { color, width, markerEnd } } = GraphUIConfig;
@@ -27,10 +27,10 @@ export class EdgeRenderer {
         neighbors.forEach((neighbor) => {
             // Find incoming stage output and outgoing stage input
             const sourceElement = d3.select(
-                `#${this.elementIdentifier.encodeStageOutputId(neighbor.edge.incomingFactoryStageId, neighbor.edge.incomingStageOutputId)}`
+                `#${this.elementIdentifier.encodeStageOutputId(neighbor.edge.incomingStageId, neighbor.edge.incomingStageOutputId)}`
             );
             const targetElement = d3.select(
-                `#${this.elementIdentifier.encodeStageInputId(neighbor.edge.outgoingFactoryStageId, neighbor.edge.outgoingStageInputId)}`
+                `#${this.elementIdentifier.encodeStageInputId(neighbor.edge.outgoingStageId, neighbor.edge.outgoingStageInputId)}`
             );
 
             if (sourceElement.empty() || targetElement.empty()) {
