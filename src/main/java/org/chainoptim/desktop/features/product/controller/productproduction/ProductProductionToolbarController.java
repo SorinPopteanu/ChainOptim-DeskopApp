@@ -51,10 +51,6 @@ public class ProductProductionToolbarController {
     private VBox displayInfoContentVBox;
     @FXML
     private CheckBox quantitiesCheckBox;
-    @FXML
-    private CheckBox capacityCheckBox;
-    @FXML
-    private CheckBox priorityCheckBox;
 
     // - Icons
     private Image addImage;
@@ -78,10 +74,6 @@ public class ProductProductionToolbarController {
 
     private void setupCheckboxListeners() {
         quantitiesCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> webView.getEngine().executeScript("window.renderInfo('quantities', " + newValue + ");"));
-
-        capacityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> webView.getEngine().executeScript("window.renderInfo('capacities', " + newValue + ");"));
-
-        priorityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> webView.getEngine().executeScript("window.renderInfo('priorities', " + newValue + ");"));
     }
 
     // Toolbar

@@ -105,6 +105,8 @@ module org.chainoptim.desktop {
 
     // - Location
     opens org.chainoptim.desktop.shared.features.location.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.shared.features.location.dto to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.shared.features.location.service to com.google.guice;
 
     // -  Fallback Manager
     opens org.chainoptim.desktop.shared.fallback to javafx.fxml, com.google.guice;

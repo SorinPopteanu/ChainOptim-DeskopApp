@@ -44,12 +44,9 @@ export class GraphRenderer {
      * Entry point for the subproject. Called from JavaFX's WebView.
      */
     renderGraph(graphData: GenericGraph) {
-        window.javaConnector.log("Graph data: " + JSON.stringify(graphData));
-        
         // Preprocess graph: assign position to nodes based on connections
         const genericGraphUI = this.graphPreprocessor.preprocessGraph(graphData);
         
-        window.javaConnector.log("Graph data UI: " + JSON.stringify(genericGraphUI));
         // Set up definitions for needed elements (arrows, shadows, etc.)
         this.setupSvgDefinitions();
 
