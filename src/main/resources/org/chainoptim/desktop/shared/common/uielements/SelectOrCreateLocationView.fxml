@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController" spacing="8">
+
+    <VBox styleClass="radio-button-group">
+        <RadioButton fx:id="selectExistingRadio" text="Select Existing Location" selected="true" styleClass="radio-button"/>
+        <RadioButton fx:id="createNewRadio" text="Create New Location" styleClass="radio-button"/>
+    </VBox>
+
+    <!-- Select existing location ComboBox -->
+    <ComboBox fx:id="locationComboBox" prefWidth="200"/>
+
+    <!-- Create New Location subform -->
+    <VBox fx:id="createLocationForm" visible="false">
+        <Label text="Address" styleClass="form-label"/>
+        <TextField fx:id="addressField"/>
+
+        <Label text="City" styleClass="form-label"/>
+        <TextField fx:id="cityField"/>
+
+        <Label text="State" styleClass="form-label"/>
+        <TextField fx:id="stateField"/>
+
+        <Label text="Country" styleClass="form-label"/>
+        <TextField fx:id="countryField"/>
+
+        <Label text="Zip Code" styleClass="form-label"/>
+        <TextField fx:id="zipCodeField"/>
+
+        <Label text="Latitude" styleClass="form-label"/>
+        <TextField fx:id="latitudeField"/>
+
+        <Label text="Longitude" styleClass="form-label"/>
+        <TextField fx:id="longitudeField"/>
+    </VBox>
+</VBox>

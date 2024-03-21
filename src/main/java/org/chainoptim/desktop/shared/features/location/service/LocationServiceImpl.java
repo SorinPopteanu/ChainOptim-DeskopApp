@@ -28,7 +28,7 @@ public class LocationServiceImpl implements LocationService {
 
     // Fetch
     public CompletableFuture<Optional<List<Location>>> getLocationsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/location/organization/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/locations/organization/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -55,7 +55,7 @@ public class LocationServiceImpl implements LocationService {
 
     // Create
     public CompletableFuture<Optional<Location>> createLocation(CreateLocationDTO locationDTO) {
-        String routeAddress = "http://localhost:8080/api/v1/location/create";
+        String routeAddress = "http://localhost:8080/api/v1/locations/create";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -92,7 +92,7 @@ public class LocationServiceImpl implements LocationService {
 
     // Update
     public CompletableFuture<Optional<Location>> updateLocation(UpdateLocationDTO locationDTO) {
-        String routeAddress = "http://localhost:8080/api/v1/location/update";
+        String routeAddress = "http://localhost:8080/api/v1/locations/update";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -129,7 +129,7 @@ public class LocationServiceImpl implements LocationService {
 
     // Delete
     public CompletableFuture<Optional<Integer>> deleteLocation(Integer id) {
-        String routeAddress = "http://localhost:8080/api/v1/location/delete/" + id.toString();
+        String routeAddress = "http://localhost:8080/api/v1/locations/delete/" + id.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
