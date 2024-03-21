@@ -16,8 +16,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -31,7 +29,7 @@ import java.util.Optional;
 
 import static org.chainoptim.desktop.shared.util.JsonUtil.prepareJsonString;
 
-public class ProductionToolbarController {
+public class FactoryProductionToolbarController {
 
     private final ResourceAllocationService resourceAllocationService;
     private final FXMLLoaderService fxmlLoaderService;
@@ -40,6 +38,7 @@ public class ProductionToolbarController {
     private ProductionToolbarActionListener actionListener;
 
     private Factory factory;
+    private AllocationPlan allocationPlan;
 
     private WebView webView;
 
@@ -48,6 +47,16 @@ public class ProductionToolbarController {
     private Button toggleEditConfigurationButton;
     @FXML
     private VBox editConfigurationContentVBox;
+    @FXML
+    private Button addStageButton;
+    @FXML
+    private Button updateStageButton;
+    @FXML
+    private Button deleteStageButton;
+    @FXML
+    private Button addConnectionButton;
+    @FXML
+    private Button deleteConnectionButton;
 
     // - Display Info
     @FXML
@@ -69,6 +78,8 @@ public class ProductionToolbarController {
     @FXML
     private StackPane durationInputContainer;
     private SelectDurationController selectDurationController;
+    @FXML
+    private Button viewAllocationPlanButton;
 
     // - Seek Resources
     @FXML
@@ -77,12 +88,15 @@ public class ProductionToolbarController {
     private VBox seekResourcesContentBox;
 
     // - Icons
+    private Image addImage;
+    private Image updateImage;
+    private Image deleteImage;
     private Image angleUpImage;
     private Image angleDownImage;
 
     @Inject
-    public ProductionToolbarController(ResourceAllocationService resourceAllocationService,
-                                       FXMLLoaderService fxmlLoaderService) {
+    public FactoryProductionToolbarController(ResourceAllocationService resourceAllocationService,
+                                              FXMLLoaderService fxmlLoaderService) {
         this.resourceAllocationService = resourceAllocationService;
         this.fxmlLoaderService = fxmlLoaderService;
     }
@@ -109,16 +123,17 @@ public class ProductionToolbarController {
 
         resourceAllocationService
                 .allocateFactoryResources(factory.getId(), durationSeconds)
-                .thenApply(this::drawResourceAllocation);
+                .thenApply(this::handleAllocationPlanResponse);
     }
 
-    private AllocationPlan drawResourceAllocation(Optional<AllocationPlan> allocationPlanOptional) {
+    private AllocationPlan handleAllocationPlanResponse(Optional<AllocationPlan> allocationPlanOptional) {
         if (allocationPlanOptional.isEmpty()) {
             return new AllocationPlan();
         }
-        AllocationPlan allocationPlan = allocationPlanOptional.get();
-        String escapedJsonString = prepareJsonString(allocationPlan);
+        allocationPlan = allocationPlanOptional.get();
+        updateViewAllocationPlanButtonVisibility();
 
+        String escapedJsonString = prepareJsonString(allocationPlan);
         String script = "window.renderResourceAllocations('" + escapedJsonString + "');";
 
         // Ensure script execution happens on the JavaFX Application Thread
@@ -129,7 +144,6 @@ public class ProductionToolbarController {
                 e.printStackTrace();
             }
         });
-
         return allocationPlan;
     }
 
@@ -138,11 +152,22 @@ public class ProductionToolbarController {
         // Initialize expand/collapse buttons
         angleUpImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
         angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
+        addImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
+        updateImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
+        deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
 
         toggleEditConfigurationButton.setGraphic(createImageView(angleUpImage));
         toggleDisplayInfoButton.setGraphic(createImageView(angleUpImage));
         toggleResourceAllocationButton.setGraphic(createImageView(angleUpImage));
         toggleSeekResourcesButton.setGraphic(createImageView(angleUpImage));
+        addStageButton.setGraphic(createImageView(addImage));
+        updateStageButton.setGraphic(createImageView(updateImage));
+        deleteStageButton.setGraphic(createImageView(deleteImage));
+        addConnectionButton.setGraphic(createImageView(addImage));
+        deleteConnectionButton.setGraphic(createImageView(deleteImage));
+
+        viewAllocationPlanButton.setVisible(false);
+        viewAllocationPlanButton.setManaged(false);
 
         // Initialize time selection input view
         FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
@@ -197,10 +222,39 @@ public class ProductionToolbarController {
         return imageView;
     }
 
+    private void updateViewAllocationPlanButtonVisibility() {
+        // Update button visibility based on whether an allocation plan is available
+        System.out.println("Allocation plan: " + allocationPlan);
+        boolean isAllocationPlanAvailable = allocationPlan != null;
+        viewAllocationPlanButton.setVisible(isAllocationPlanAvailable);
+        viewAllocationPlanButton.setManaged(isAllocationPlanAvailable);
+    }
+
     @FXML
     private void openAddStageAction() {
-        if (actionListener != null) {
-            actionListener.onOpenAddStageRequested();
-        }
+        actionListener.onOpenAddStageRequested();
+    }
+
+    @FXML
+    private void openUpdateStageAction() {
+        actionListener.onOpenUpdateStageRequested();
+    }
+
+    @FXML
+    private void deleteStageAction() {
+//        actionListener.onDeleteStageRequested();
+    }
+
+    @FXML
+    private void addConnectionAction() {
+    }
+
+    @FXML
+    private void deleteConnectionAction() {
+    }
+
+    @FXML
+    private void openAllocationPlan() {
+        actionListener.onOpenAllocationPlanRequested(allocationPlan);
     }
 }

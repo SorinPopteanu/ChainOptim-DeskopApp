@@ -5,4 +5,5 @@ import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProd
 public interface TabsActionListener {
 
     void onAddStage(FactoryProductionGraph factoryGraph);
+    void onUpdateStage(FactoryProductionGraph factoryGraph);
 }

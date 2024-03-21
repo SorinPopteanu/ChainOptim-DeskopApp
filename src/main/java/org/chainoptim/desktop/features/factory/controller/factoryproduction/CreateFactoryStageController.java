@@ -1,16 +1,13 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import lombok.Setter;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.dto.CreateFactoryStageDTO;
 import org.chainoptim.desktop.features.factory.model.FactoryStage;
-import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.factory.service.FactoryStageWriteService;
-import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
 import org.chainoptim.desktop.shared.common.uielements.SelectFactoryController;
@@ -18,6 +15,7 @@ import org.chainoptim.desktop.shared.common.uielements.SelectStageController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
+import lombok.Setter;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -29,7 +27,6 @@ import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static java.lang.Float.parseFloat;
@@ -100,7 +97,7 @@ public class CreateFactoryStageController implements Initializable {
         // Initialize time selection input view
         FXMLLoader selectStageLoader = fxmlLoaderService.setUpLoader(
                 "/org/chainoptim/desktop/shared/common/uielements/SelectStageView.fxml",
-                MainApplication.injector::getInstance
+                controllerFactory::createController
         );
         try {
             Node selectStageView = selectStageLoader.load();
@@ -168,12 +165,14 @@ public class CreateFactoryStageController implements Initializable {
                         fallbackManager.setLoading(false);
 
                         graphService.refreshFactoryGraph(stageDTO.getFactoryId()).thenApply(productionGraphOptional -> {
-                            if (productionGraphOptional.isEmpty()) {
-                                fallbackManager.setErrorMessage("Failed to refresh factory graph");
-                            }
-                            if (actionListener != null) {
-                                actionListener.onAddStage(productionGraphOptional.get());
-                            }
+                            Platform.runLater(() -> {
+                                if (productionGraphOptional.isEmpty()) {
+                                    fallbackManager.setErrorMessage("Failed to refresh factory graph");
+                                }
+                                if (actionListener != null && productionGraphOptional.isPresent()) {
+                                    actionListener.onAddStage(productionGraphOptional.get());
+                                }
+                            });
                             return productionGraphOptional;
                         });
                     })

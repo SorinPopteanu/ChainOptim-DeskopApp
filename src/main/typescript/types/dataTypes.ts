@@ -1,3 +1,25 @@
+// Product
+export interface ProductProductionGraph {
+    id: number;
+    productId: number;
+    createdAt: string;
+    updatedAt: string;
+    productGraph: ProductGraph;
+}
+
+export interface ProductGraph {
+    nodes: Record<number, SmallStage>;
+    adjList: Record<number, ProductEdge[]>;
+}
+
+export interface ProductEdge {
+    incomingStageId: number;
+    incomingStageOutputId: number;
+    outgoingStageId: number;
+    outgoingStageInputId: number;
+}
+
+// Factory
 export interface FactoryProductionGraph {
     id: number;
     factoryId: number;
@@ -7,12 +29,12 @@ export interface FactoryProductionGraph {
 }
 
 export interface FactoryGraph {
-    nodes: Record<number, StageNode>;
-    adjList: Record<number, Edge[]>;
+    nodes: Record<number, FactoryStageNode>;
+    adjList: Record<number, FactoryEdge[]>;
     pipelinePriority: number;
 }
 
-export interface StageNode {
+export interface FactoryStageNode {
     smallStage: SmallStage;
     numberOfStepsCapacity: number;
     minimumRequiredCapacity: number;
@@ -44,7 +66,7 @@ export interface SmallStageOutput {
     outputPerRequest: number;
 }
 
-export interface Edge {
+export interface FactoryEdge {
     incomingFactoryStageId: number;
     incomingStageOutputId: number;
     outgoingFactoryStageId: number;

@@ -13,9 +13,6 @@ export class InfoRenderer {
 
 
     public renderInfo(infoType: string, isVisible: boolean) {
-        if (window.javaConnector) {
-            window.javaConnector.log("Rendering info: " + infoType + " " + isVisible);
-        } 
         switch (infoType) {
             case "capacities":
                 this.renderCapacities(isVisible);

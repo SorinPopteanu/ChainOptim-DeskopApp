@@ -23,7 +23,7 @@ public class FactoryProductionGraphServiceImpl implements FactoryProductionGraph
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
 
     public CompletableFuture<List<FactoryProductionGraph>> getFactoryGraphById(Integer factoryId) {
-        String routeAddress = "http://localhost:8080/api/v1/graphs/" + factoryId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/factory-graphs/" + factoryId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -48,7 +48,7 @@ public class FactoryProductionGraphServiceImpl implements FactoryProductionGraph
     }
 
     public CompletableFuture<Optional<FactoryProductionGraph>> refreshFactoryGraph(Integer factoryId) {
-        String routeAddress = "http://localhost:8080/api/v1/graphs/update/" + factoryId.toString() + "/refresh";
+        String routeAddress = "http://localhost:8080/api/v1/factory-graphs/update/" + factoryId.toString() + "/refresh";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

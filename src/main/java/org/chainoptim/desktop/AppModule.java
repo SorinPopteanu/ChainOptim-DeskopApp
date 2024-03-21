@@ -14,20 +14,19 @@ import org.chainoptim.desktop.core.user.repository.UserRepositoryImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.features.client.service.*;
-import org.chainoptim.desktop.features.factory.service.FactoryStageWriteService;
-import org.chainoptim.desktop.features.factory.service.FactoryStageWriteServiceImpl;
+import org.chainoptim.desktop.features.factory.service.*;
 import org.chainoptim.desktop.features.productpipeline.service.StageService;
 import org.chainoptim.desktop.features.productpipeline.service.StageServiceImpl;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteService;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphServiceImpl;
-import org.chainoptim.desktop.features.factory.service.FactoryService;
-import org.chainoptim.desktop.features.factory.service.FactoryServiceImpl;
 import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.features.product.service.ProductServiceImpl;
 import org.chainoptim.desktop.features.product.service.ProductWriteService;
 import org.chainoptim.desktop.features.product.service.ProductWriteServiceImpl;
+import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
+import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationServiceImpl;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
@@ -62,29 +61,44 @@ public class AppModule extends AbstractModule {
         bind(HttpClient.class).toInstance(HttpClient.newHttpClient());
 
         // Bind interfaces to implementations
-        // Services
+        // Core
         bind(ControllerFactory.class).to(GuiceControllerFactory.class);
         bind(ThreadRunner.class).to(JavaFXThreadRunner.class);
         bind(NavigationService.class).to(NavigationServiceImpl.class);
         bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class);
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(UserRepository.class).to(UserRepositoryImpl.class);
+
+        // Features
+        // - Product
         bind(ProductService.class).to(ProductServiceImpl.class);
         bind(ProductWriteService.class).to(ProductWriteServiceImpl.class);
         bind(StageService.class).to(StageServiceImpl.class);
         bind(StageWriteService.class).to(StageWriteServiceImpl.class);
+
+        // - Factory
         bind(FactoryService.class).to(FactoryServiceImpl.class);
+        bind(FactoryStageService.class).to(FactoryStageServiceImpl.class);
         bind(FactoryStageWriteService.class).to(FactoryStageWriteServiceImpl.class);
-        bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
-        bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);
+
+
+        // - Warehouse
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
         bind(WarehouseWriteService.class).to(WarehouseWriteServiceImpl.class);
+
+        // - Supplier
         bind(SupplierService.class).to(SupplierServiceImpl.class);
         bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
+
+        // - Client
         bind(ClientService.class).to(ClientServiceImpl.class);
         bind(ClientWriteService.class).to(ClientWriteServiceImpl.class);
-
         bind(ClientOrdersService.class).to(ClientOrdersServiceImpl.class);
+
+        // - SC Analysis
+        bind(ProductProductionGraphService.class).to(ProductProductionGraphServiceImpl.class);
+        bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
+        bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);
 
     }
 }

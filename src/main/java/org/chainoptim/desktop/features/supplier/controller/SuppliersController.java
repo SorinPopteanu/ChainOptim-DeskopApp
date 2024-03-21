@@ -173,8 +173,14 @@ public class SuppliersController implements Initializable {
     private void loadSupplierCardUI(Supplier supplier) {
         Label supplierName = new Label(supplier.getName());
         supplierName.getStyleClass().add("entity-name-label");
-        Label supplierLocation = new Label(supplier.getLocation().getFormattedLocation());
+        Label supplierLocation = new Label();
+        if (supplier.getLocation() != null) {
+            supplierLocation.setText(supplier.getLocation().getFormattedLocation());
+        } else {
+            supplierLocation.setText("");
+        }
         supplierLocation.getStyleClass().add("entity-description-label");
+
         VBox supplierBox = new VBox(supplierName, supplierLocation);
         Button supplierButton = new Button();
         supplierButton.getStyleClass().add("entity-card");

@@ -47,11 +47,15 @@ public class FallbackManagerController {
             try {
                 URL url = getClass().getResource(viewPath);
                 if (url == null) {
-                    System.out.println("Resource not found: " + viewPath);
                     return;
                 }
                 System.out.println("Update to view: " + url);
-                Node fallbackView = FXMLLoader.load(url);
+                FXMLLoader loader = new FXMLLoader(url);
+                Node fallbackView = loader.load();
+                if (viewPath == "/org/chainoptim/desktop/shared/fallback/ErrorFallbackView.fxml") {
+                    ErrorFallbackController controller = loader.getController();
+                    controller.initialize(fallbackManager.getErrorMessage());
+                }
                 fallbackContentHolder.getChildren().setAll(fallbackView);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -60,7 +64,6 @@ public class FallbackManagerController {
             // No fallback
             fallbackContentHolder.getChildren().clear();
             fallbackContentHolder.setPrefSize(0, 0);
-            System.out.println("Clearing fallback view");
         }
     }
     private String determineViewPathBasedOnState() {

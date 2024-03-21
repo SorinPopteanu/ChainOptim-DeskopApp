@@ -96,7 +96,7 @@ public class FactoriesController implements Initializable {
             Node headerView = loader.load();
             headerContainer.getChildren().add(headerView);
             headerController = loader.getController();
-            headerController.initializeHeader("Factories", "/img/box-solid.png", sortOptions, "Factory", "Create-Factory");
+            headerController.initializeHeader("Factories", "/img/industry-solid.png", sortOptions, "Factory", "Create-Factory");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -178,9 +178,15 @@ public class FactoriesController implements Initializable {
     private void loadFactoryCardUI(Factory factory) {
         Label factoryName = new Label(factory.getName());
         factoryName.getStyleClass().add("entity-name-label");
-//        Label supplierLocation = new Label(factory.getLocation().getFormattedLocation());
-//        supplierLocation.getStyleClass().add("entity-description-label");
-        VBox factoryBox = new VBox(factoryName);
+        Label factoryLocation = new Label();
+        if (factory.getLocation() != null) {
+            factoryLocation.setText(factory.getLocation().getFormattedLocation());
+        } else {
+            factoryLocation.setText("");
+        }
+        factoryLocation.getStyleClass().add("entity-description-label");
+
+        VBox factoryBox = new VBox(factoryName, factoryLocation);
         Button factoryButton = new Button();
         factoryButton.getStyleClass().add("entity-card");
         factoryButton.setGraphic(factoryBox);

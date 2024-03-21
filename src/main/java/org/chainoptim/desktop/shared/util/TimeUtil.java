@@ -18,4 +18,15 @@ public class TimeUtil {
             default -> -1.0f;
         };
     }
+
+    public static float getDuration(Float timeSeconds, String timePeriod) {
+        return switch (timePeriod) {
+            case "Hours" -> timeSeconds / HOUR_SECONDS;
+            case "Days" -> timeSeconds / DAY_SECONDS;
+            case "Weeks" -> timeSeconds / WEEK_SECONDS;
+            case "Months" -> timeSeconds / MONTH_SECONDS;
+            case "Years" -> timeSeconds / YEAR_SECONDS;
+            default -> -1.0f;
+        };
+    }
 }
