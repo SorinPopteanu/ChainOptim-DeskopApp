@@ -64,15 +64,26 @@ public class WarehouseController implements Initializable {
     @Override
     public void initialize (URL location, ResourceBundle resources) {
         Integer warehouseId = currentSelectionService.getSelectedId();
-        if (warehouse == null) {
+        if (warehouseId == null) {
             System.out.println("Missing warehouse id.");
             fallbackManager.setErrorMessage("Failed to load warehouse.");
         }
+        loadFallbackManager();
         loadWarehouse(warehouseId);
         setupTabListeners();
     }
 
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
+    }
+
     private void loadWarehouse(Integer warehouseId) {
+        fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         warehouseService.getWarehouseById(warehouseId)

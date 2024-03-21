@@ -125,14 +125,36 @@ public class SelectOrCreateLocationController {
 
     public CreateLocationDTO getNewLocationDTO() {
         CreateLocationDTO locationDTO = new CreateLocationDTO();
+        locationDTO.setOrganizationId(organizationId);
         locationDTO.setAddress(addressField.getText());
         locationDTO.setCity(cityField.getText());
         locationDTO.setState(stateField.getText());
         locationDTO.setCountry(countryField.getText());
         locationDTO.setZipCode(zipCodeField.getText());
-        locationDTO.setLatitude(Double.parseDouble(latitudeField.getText()));
-        locationDTO.setLongitude(Double.parseDouble(longitudeField.getText()));
-        locationDTO.setOrganizationId(organizationId);
+
+        String latitudeStr = latitudeField.getText().trim();
+        if (!latitudeStr.isEmpty()) {
+            try {
+                double latitude = Double.parseDouble(latitudeStr);
+                locationDTO.setLatitude(latitude);
+            } catch (NumberFormatException e) {
+                System.out.println("Error parsing longitude");
+            }
+        }
+
+        String longitudeStr = longitudeField.getText().trim();
+        if (!longitudeStr.isEmpty()) {
+            try {
+                double longitude = Double.parseDouble(longitudeStr);
+                locationDTO.setLongitude(longitude);
+            } catch (NumberFormatException e) {
+                System.out.println("Error parsing longitude");
+            }
+        }
         return locationDTO;
+    }
+
+    public boolean isCreatingNewLocation() {
+        return createNewRadio.isSelected();
     }
 }

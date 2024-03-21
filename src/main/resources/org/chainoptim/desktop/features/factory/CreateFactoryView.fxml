@@ -5,13 +5,12 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.supplier.controller.CreateSupplierController"
+      fx:controller="org.chainoptim.desktop.features.factory.controller.CreateFactoryController"
       styleClass="form-container">
 
     <HBox styleClass="title-container">
-        <Text text="Create Supplier" styleClass="form-title"/>
+        <Text text="Create Factory" styleClass="form-title"/>
     </HBox>
-
 
     <Label text="Name *:" styleClass="form-label"/>
     <TextField fx:id="nameField"/>

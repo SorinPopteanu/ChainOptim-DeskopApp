@@ -128,7 +128,7 @@ public class CreateWarehouseController implements Initializable {
         CreateWarehouseDTO warehouseDTO = new CreateWarehouseDTO();
         warehouseDTO.setName(nameField.getText());
         warehouseDTO.setOrganizationId(organizationId);
-        if (selectOrCreateLocationController.getNewLocationDTO() != null) {
+        if (selectOrCreateLocationController.isCreatingNewLocation()) {
             warehouseDTO.setCreateLocation(true);
             warehouseDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
         } else {

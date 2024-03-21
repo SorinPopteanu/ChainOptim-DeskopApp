@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -10,17 +6,19 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.warehouse.controller.WarehouseController">
 
-    <VBox spacing="16" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" styleClass="entity-header-container">
-        <HBox alignment="CENTER_LEFT" spacing="40">
+    <VBox spacing="16" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" style="-fx-background-color: #ffffff;">
+        <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                 <Label fx:id="warehouseName" styleClass="entity-page-title"/>
                 <Label fx:id="warehouseLocation" styleClass="entity-page-description"/>
             </VBox>
-            <Button text="EditWarehouse" onAction="#handleEditWarehouse" styleClass="standard-write-button"/>
+            <Button text="Edit Warehouse" onAction="#handleEditWarehouse" styleClass="standard-write-button"/>
         </HBox>
         <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
             <Tab fx:id="overviewTab" text="Overview"/>
             <Tab fx:id="inventoryTab" text="Inventory"/>
         </TabPane>
     </VBox>
+
+    <StackPane fx:id="fallbackContainer"/>
 </AnchorPane>

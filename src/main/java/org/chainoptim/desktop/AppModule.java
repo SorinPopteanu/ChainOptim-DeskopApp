@@ -78,6 +78,7 @@ public class AppModule extends AbstractModule {
 
         // - Factory
         bind(FactoryService.class).to(FactoryServiceImpl.class);
+        bind(FactoryWriteService.class).to(FactoryWriteServiceImpl.class);
         bind(FactoryStageService.class).to(FactoryStageServiceImpl.class);
         bind(FactoryStageWriteService.class).to(FactoryStageWriteServiceImpl.class);
 

@@ -1,13 +1,13 @@
-package org.chainoptim.desktop.features.supplier.controller;
+package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.supplier.dto.CreateSupplierDTO;
-import org.chainoptim.desktop.features.supplier.model.Supplier;
-import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
+import org.chainoptim.desktop.features.factory.dto.CreateFactoryDTO;
+import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.factory.service.FactoryWriteService;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -25,9 +25,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CreateSupplierController implements Initializable {
+public class CreateFactoryController implements Initializable {
 
-    private final SupplierWriteService supplierWriteService;
+    private final FactoryWriteService factoryWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
@@ -43,16 +43,17 @@ public class CreateSupplierController implements Initializable {
     @FXML
     private TextField nameField;
 
+
     @Inject
-    public CreateSupplierController(
-            SupplierWriteService supplierWriteService,
+    public CreateFactoryController(
+            FactoryWriteService factoryWriteService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
             FallbackManager fallbackManager,
             FXMLLoaderService fxmlLoaderService,
             ControllerFactory controllerFactory
     ) {
-        this.supplierWriteService = supplierWriteService;
+        this.factoryWriteService = factoryWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
@@ -100,21 +101,21 @@ public class CreateSupplierController implements Initializable {
         }
         Integer organizationId = currentUser.getOrganization().getId();
 
-        CreateSupplierDTO supplierDTO = getCreateSupplierDTO(organizationId);
+        CreateFactoryDTO factoryDTO = getCreateFactoryDTO(organizationId);
 
-        System.out.println(supplierDTO);
+        System.out.println(factoryDTO);
 
-        supplierWriteService.createSupplier(supplierDTO)
-                .thenAccept(supplierOptional ->
+        factoryWriteService.createFactory(factoryDTO)
+                .thenAccept(factoryOptional ->
                     Platform.runLater(() -> {
-                        if (supplierOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create supplier.");
+                        if (factoryOptional.isEmpty()) {
+                            fallbackManager.setErrorMessage("Failed to create factory.");
                             return;
                         }
-                        Supplier supplier = supplierOptional.get();
+                        Factory factory = factoryOptional.get();
                         fallbackManager.setLoading(false);
-                        currentSelectionService.setSelectedId(supplier.getId());
-                        navigationService.switchView("Supplier?id=" + supplier.getId());
+                        currentSelectionService.setSelectedId(factory.getId());
+                        navigationService.switchView("Factory?id=" + factory.getId());
                     })
                 )
                 .exceptionally(ex -> {
@@ -123,19 +124,19 @@ public class CreateSupplierController implements Initializable {
                 });
     }
 
-    private CreateSupplierDTO getCreateSupplierDTO(Integer organizationId) {
-        CreateSupplierDTO supplierDTO = new CreateSupplierDTO();
-        supplierDTO.setName(nameField.getText());
-        supplierDTO.setOrganizationId(organizationId);
+    private CreateFactoryDTO getCreateFactoryDTO(Integer organizationId) {
+        CreateFactoryDTO factoryDTO = new CreateFactoryDTO();
+        factoryDTO.setName(nameField.getText());
+        factoryDTO.setOrganizationId(organizationId);
         if (selectOrCreateLocationController.isCreatingNewLocation()) {
-            supplierDTO.setCreateLocation(true);
-            supplierDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
+            factoryDTO.setCreateLocation(true);
+            factoryDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
         } else {
-            supplierDTO.setCreateLocation(false);
-            supplierDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
+            factoryDTO.setCreateLocation(false);
+            factoryDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
         }
 
-        return supplierDTO;
+        return factoryDTO;
     }
 }
 
