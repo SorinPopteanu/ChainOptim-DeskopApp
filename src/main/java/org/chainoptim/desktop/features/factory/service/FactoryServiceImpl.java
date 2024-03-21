@@ -49,6 +49,7 @@ public class FactoryServiceImpl implements FactoryService {
                     }
                 });
     }
+
     public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/factories/organizations/" + organizationId.toString();
 
