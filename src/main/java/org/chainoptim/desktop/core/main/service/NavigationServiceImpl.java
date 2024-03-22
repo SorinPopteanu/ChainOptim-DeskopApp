@@ -78,17 +78,16 @@ public class NavigationServiceImpl implements NavigationService {
         if (Objects.equals(currentViewKey, viewKey)) {
             return;
         }
-        System.out.println(viewCache);
+
+        // Reset fallback state between pages
+        fallbackManager.reset();
 
         // Get view from cache or load it
         Node view = viewCache.computeIfAbsent(viewKey, this::loadView);
 
         // Display view
         if (view != null) {
-            threadRunner.runLater(() -> {
-                mainContentArea.getChildren().setAll(view);
-                fallbackManager.reset();
-            });
+            threadRunner.runLater(() -> mainContentArea.getChildren().setAll(view));
             currentViewKey = viewKey;
         }
     }

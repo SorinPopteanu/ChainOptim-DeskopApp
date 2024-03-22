@@ -9,9 +9,9 @@
            fx:controller="org.chainoptim.desktop.shared.fallback.ErrorFallbackController">
 
     <VBox alignment="TOP_CENTER" styleClass="fallback-container">
-        <Text text="Something Went Wrong" styleClass="fallback-title"/>
+        <Text text="An error occurred." styleClass="fallback-title"/>
         <ImageView fx:id="errorImage"/>
-        <Label fx:id="errorMessage"/>
+        <Label fx:id="errorMessage" styleClass="error-message"/>
     </VBox>
 
 </StackPane>

@@ -42,6 +42,10 @@ public class ProductsController implements Initializable {
     @FXML
     private HeaderController headerController;
     @FXML
+    private StackPane contentOrFallbackContainer;
+    @FXML
+    private ScrollPane productsScrollPane;
+    @FXML
     private PageSelectorController pageSelectorController;
     @FXML
     private StackPane pageSelectorContainer;
@@ -81,8 +85,8 @@ public class ProductsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeHeader();
         loadFallbackManager();
-        loadProducts();
         setUpListeners();
+        loadProducts();
         initializePageSelector();
     }
 
@@ -112,15 +116,16 @@ public class ProductsController implements Initializable {
     }
 
     private void loadProducts() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
             return;
         }
-
-        fallbackManager.setLoading(true);
-
         Integer organizationId = currentUser.getOrganization().getId();
+
         productService.getProductsByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleProductResponse)
                 .exceptionally(this::handleProductException)
@@ -132,6 +137,14 @@ public class ProductsController implements Initializable {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadProducts());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadProducts());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadProducts());
+
+        // Listen to empty fallback state
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            productsScrollPane.setVisible(newValue);
+            productsScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void initializePageSelector() {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.control.ScrollPane?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="main-container"
@@ -8,10 +9,15 @@
 
     <StackPane fx:id="headerContainer"/>
 
-    <VBox fx:id="productsVBox" styleClass="items-list"/>
+    <StackPane VBox.vgrow="ALWAYS" fx:id="contentOrFallbackContainer">
+        <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true" fx:id="productsScrollPane">
+            <VBox>
+                <VBox fx:id="productsVBox" styleClass="items-list"/>
+                <StackPane fx:id="pageSelectorContainer"/>
+            </VBox>
+        </ScrollPane>
 
-    <StackPane fx:id="pageSelectorContainer"/>
-
-    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS" style="-fx-padding: 40px;"/>
+    </StackPane>
 
 </VBox>

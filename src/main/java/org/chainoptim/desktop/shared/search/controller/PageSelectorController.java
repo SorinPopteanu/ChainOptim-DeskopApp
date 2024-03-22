@@ -14,33 +14,24 @@ import java.util.function.Supplier;
 
 public class PageSelectorController {
 
-
     @FXML
     private Pagination pagination;
     private final SearchParams searchParams;
-//    private final PaginatedResults paginatedResults;
-private long totalItems;
 
     @Inject
-    public PageSelectorController(
-            SearchParams searchParams
-           // PaginatedResults paginatedResults
-    ) {
+    public PageSelectorController(SearchParams searchParams) {
         this.searchParams = searchParams;
-        //this.paginatedResults = paginatedResults;
     }
 
     @FXML
     public void initialize(long totalItems) {
         int itemsPerPage = searchParams.getItemsPerPage();
-        this.totalItems = totalItems;
         int pageCount = (int) Math.ceil((double) totalItems / itemsPerPage);
         pagination.setPageCount(pageCount);
         pagination.setCurrentPageIndex(searchParams.getPage() - 1);
-        pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            searchParams.setPage(newIndex.intValue() + 1);
-        });
+        pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) ->
+            searchParams.setPage(newIndex.intValue() + 1)
+        );
     }
-
 
 }
