@@ -9,7 +9,7 @@
 
     <StackPane fx:id="headerContainer"/>
 
-    <StackPane VBox.vgrow="ALWAYS" fx:id="contentOrFallbackContainer">
+    <StackPane VBox.vgrow="ALWAYS">
         <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true" fx:id="productsScrollPane">
             <VBox>
                 <VBox fx:id="productsVBox" styleClass="items-list"/>

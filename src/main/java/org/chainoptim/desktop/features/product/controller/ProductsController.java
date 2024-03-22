@@ -42,8 +42,6 @@ public class ProductsController implements Initializable {
     @FXML
     private HeaderController headerController;
     @FXML
-    private StackPane contentOrFallbackContainer;
-    @FXML
     private ScrollPane productsScrollPane;
     @FXML
     private PageSelectorController pageSelectorController;
