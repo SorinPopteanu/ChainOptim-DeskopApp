@@ -1,18 +1,34 @@
-import { FactoryEdge, FactoryInventoryItem, ResourceAllocation, FactoryStageNode } from "./dataTypes";
+import { FactoryEdge, FactoryInventoryItem, ResourceAllocation, FactoryStageNode, GenericNode, GenericEdge } from "./dataTypes";
+
+export interface GenericGraphUI {
+    nodes: Record<number, GenericNodeUI>;
+    adjList: Record<number, GenericEdgeUI[]>;
+}
+
+export interface GenericNodeUI {
+    node: GenericNode;
+    coordinates?: Coordinates;
+    visited?: boolean;
+}
+
+export interface GenericEdgeUI {
+    edge: GenericEdge;
+
+}
 
 export interface FactoryGraphUI {
-    nodes: Record<number, StageNodeUI>;
-    adjList: Record<number, EdgeUI[]>;
+    nodes: Record<number, FactoryStageNodeUI>;
+    adjList: Record<number, FactoryEdgeUI[]>;
     pipelinePriority: number;
 }
 
-export interface StageNodeUI {
+export interface FactoryStageNodeUI {
     node: FactoryStageNode;
     coordinates?: Coordinates; // Center of the node's stage box
     visited?: boolean;
 }
 
-export interface EdgeUI {
+export interface FactoryEdgeUI {
     edge: FactoryEdge;
 
 }

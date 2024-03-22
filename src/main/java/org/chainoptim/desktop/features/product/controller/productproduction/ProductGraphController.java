@@ -64,19 +64,12 @@ public class ProductGraphController {
     }
 
     private void displayGraph(ProductProductionGraph productionGraph) {
-        String escapedJsonString = prepareJsonString(productionGraph);
-
+        if (webView.getEngine().getLoadWorker().getState() == Worker.State.SUCCEEDED) {
+            refreshGraph(productionGraph);
+        }
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
-
-                // Execute script for rendering factory graph (using timeout for now to ensure bundle is loaded at this point)
-                String script = "setTimeout(function() { renderGraph('" + escapedJsonString + "'); }, 200);";
-                System.out.println("Production Graph Script: " + script);
-                try {
-                    webView.getEngine().executeScript(script);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                refreshGraph(productionGraph);
             }
         });
 
@@ -87,11 +80,12 @@ public class ProductGraphController {
         String escapedJsonString = prepareJsonString(productionGraph);
 
         // Execute script for rendering factory graph (using timeout for now to ensure bundle is loaded at this point)
-        String script = "window.renderGraph('" + escapedJsonString + "');";
-        System.out.println("Production Graph Script: " + script);
+        String script = "window.renderProductGraph('" + escapedJsonString + "');";
+        System.out.println("Product Production Graph Script: " + script);
         try {
             webView.getEngine().executeScript(script);
         } catch (Exception e) {
+            fallbackManager.setErrorMessage("Error drawing graph. Please try again.");
             e.printStackTrace();
         }
     }

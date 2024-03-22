@@ -1,3 +1,26 @@
+// Generic types for unified rendering logic
+export interface GenericGraph {
+    nodes: Record<number, GenericNode>;
+    adjList: Record<number, GenericEdge[]>;
+    type?: "product" | "factory";
+}
+
+export interface GenericNode {
+    smallStage: SmallStage;
+    numberOfStepsCapacity?: number;
+    minimumRequiredCapacity?: number;
+    perDuration?: number;
+    priority?: number;
+    allocationCapacityRatio?: number;
+}
+
+export interface GenericEdge {
+    incomingStageId: number;
+    incomingStageOutputId: number;
+    outgoingStageId: number;
+    outgoingStageInputId: number;
+}
+
 // Product
 export interface ProductProductionGraph {
     id: number;
@@ -31,7 +54,6 @@ export interface FactoryProductionGraph {
 export interface FactoryGraph {
     nodes: Record<number, FactoryStageNode>;
     adjList: Record<number, FactoryEdge[]>;
-    pipelinePriority: number;
 }
 
 export interface FactoryStageNode {
@@ -74,7 +96,6 @@ export interface FactoryEdge {
 }
 
 // Components and products
-
 export interface Component {
     id: number;
     name: string;

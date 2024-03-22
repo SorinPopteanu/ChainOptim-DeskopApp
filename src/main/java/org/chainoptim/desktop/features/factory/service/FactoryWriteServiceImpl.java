@@ -37,12 +37,13 @@ public class FactoryWriteServiceImpl implements FactoryWriteService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         assert requestBody != null;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                 .headers(HEADER_KEY, headerValue)
+                .headers("Content-Type", "application/json")
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -72,12 +73,13 @@ public class FactoryWriteServiceImpl implements FactoryWriteService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         assert requestBody != null;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                 .headers(HEADER_KEY, headerValue)
+                .headers("Content-Type", "application/json")
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())

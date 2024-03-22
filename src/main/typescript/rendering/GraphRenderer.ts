@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { InteractionManager } from "./InteractionManager";
 import { NodeRenderer } from "./NodeRenderer";
 import { EdgeRenderer } from "./EdgeRenderer";
-import { FactoryProductionGraph } from "../types/dataTypes";
+import { FactoryProductionGraph, GenericGraph } from "../types/dataTypes";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { GraphPreprocessor } from "./GraphPreprocessor";
 import { InfoRenderer } from "./InfoRenderer";
@@ -43,25 +43,25 @@ export class GraphRenderer {
     /*
      * Entry point for the subproject. Called from JavaFX's WebView.
      */
-    renderGraph(graphData: FactoryProductionGraph) {
+    renderGraph(graphData: GenericGraph) {
         // Preprocess graph: assign position to nodes based on connections
-        const factoryGraphUI = this.graphPreprocessor.preprocessGraph(graphData.factoryGraph);
+        const genericGraphUI = this.graphPreprocessor.preprocessGraph(graphData);
         
         // Set up definitions for needed elements (arrows, shadows, etc.)
         this.setupSvgDefinitions();
 
-        // Pass factoryGraphUI to the needed renderers
-        this.infoRenderer.setFactoryGraph(factoryGraphUI);
-        this.resourceAllocationRenderer.setFactoryGraph(factoryGraphUI);
+        // Pass genericGraphUI to the needed renderers
+        this.infoRenderer.setGenericGraph(genericGraphUI);
+        this.resourceAllocationRenderer.setGenericGraph(genericGraphUI);
 
         // Draw all nodes
-        Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
+        Object.entries(genericGraphUI.nodes).forEach(([stageNodeId, node]) => {
             this.nodeRenderer.renderGraphNode(node, parseInt(stageNodeId, 10), node.coordinates.x, node.coordinates.y);
         });
 
         // Draw all edges
-        Object.entries(factoryGraphUI.nodes).forEach(([stageNodeId, node]) => {
-            this.edgeRenderer.renderEdges(node, factoryGraphUI.adjList, parseInt(stageNodeId, 10));
+        Object.entries(genericGraphUI.nodes).forEach(([stageNodeId, node]) => {
+            this.edgeRenderer.renderEdges(node, genericGraphUI.adjList, parseInt(stageNodeId, 10));
         });
 
         // Set up interactions and connect them to JavaFX via JavaConnector

@@ -1,10 +1,10 @@
 import { AllocationPlan } from "../types/dataTypes";
-import { FactoryGraphUI } from "../types/uiTypes";
+import { FactoryGraphUI, GenericGraphUI } from "../types/uiTypes";
 import { ElementIdentifier } from "../utils/ElementIdentifier";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 
 export class ResourceAllocationRenderer {
-    private factoryGraphUI: FactoryGraphUI;
+    private genericGraphUI: GenericGraphUI;
     private allocationPlan: AllocationPlan;
 
     private elementIdentifier: ElementIdentifier;
@@ -106,7 +106,7 @@ export class ResourceAllocationRenderer {
     };
     
 
-    public setFactoryGraph(factoryGraphUI: FactoryGraphUI) {
-        this.factoryGraphUI = factoryGraphUI;
+    public setGenericGraph(genericGraphUI: GenericGraphUI) {
+        this.genericGraphUI = genericGraphUI;
     }
 }

@@ -1,34 +1,33 @@
 import { GraphUIConfig } from "../config/GraphUIConfig";
-import { FactoryGraph } from "../types/dataTypes";
-import { FactoryGraphUI } from "../types/uiTypes";
+import { FactoryGraph, GenericGraph } from "../types/dataTypes";
+import { FactoryGraphUI, GenericGraphUI } from "../types/uiTypes";
 
 export class GraphPreprocessor {
     constructor() {}
 
     
-    public preprocessGraph = (factoryGraph: FactoryGraph): FactoryGraphUI => {
-        const startingNodeIds = this.findStartingNodes(factoryGraph);
-        const factoryGraphUI = this.assignPositionsToNodes(startingNodeIds, factoryGraph);
+    public preprocessGraph = (genericGraph: GenericGraph): GenericGraphUI => {
+        const startingNodeIds = this.findStartingNodes(genericGraph);
+        const factoryGraphUI = this.assignPositionsToNodes(startingNodeIds, genericGraph);
         return factoryGraphUI;
     }
 
     /*
     * Function for finding the nodes that have no incoming edges.
     */
-    findStartingNodes = (factoryGraph: FactoryGraph): number[] => {
-        const allNodeIds = new Set<number>(Object.keys(factoryGraph.nodes).map(Number));
+    findStartingNodes = (genericGraph: GenericGraph): number[] => {
+        const allNodeIds = new Set<number>(Object.keys(genericGraph.nodes).map(Number));
 
         // Identify target nodes
         const targetNodeIds = new Set<number>();
-        Object.values(factoryGraph.adjList).forEach((edges) => {
+        Object.values(genericGraph.adjList).forEach((edges) => {
             edges.forEach((edge) => {
-                targetNodeIds.add(edge.outgoingFactoryStageId);
+                targetNodeIds.add(edge.outgoingStageId);
             });
         });
 
         // Find starting nodes
         const startingNodeIds = Array.from(allNodeIds).filter((nodeId) => !targetNodeIds.has(nodeId));
-        console.log("Starting nodes: ", startingNodeIds);
 
         return startingNodeIds;
     }
@@ -39,11 +38,11 @@ export class GraphPreprocessor {
     */
     assignPositionsToNodes(
         startingNodeIds: number[],
-        factoryGraph: FactoryGraph
-    ): FactoryGraphUI {
+        genericGraph: GenericGraph
+    ): GenericGraphUI {
         // Transform to UI types
         const nodesUI = Object.fromEntries(
-            Object.entries(factoryGraph.nodes).map(([nodeId, node]) => {
+            Object.entries(genericGraph.nodes).map(([nodeId, node]) => {
                 return [
                     nodeId,
                     {
@@ -55,7 +54,7 @@ export class GraphPreprocessor {
             })
         );
         const adjListUI = Object.fromEntries(
-            Object.entries(factoryGraph.adjList).map(([nodeId, edges]) => {
+            Object.entries(genericGraph.adjList).map(([nodeId, edges]) => {
                 return [
                     nodeId,
                     edges.map((edge) => {
@@ -67,49 +66,49 @@ export class GraphPreprocessor {
             })
         );
     
-        let factoryGraphUI: FactoryGraphUI = {
+        let genericGraphUI: GenericGraphUI = {
             nodes: nodesUI,
             adjList: adjListUI,
-            pipelinePriority: factoryGraph.pipelinePriority,
         };
     
+
         // Assign positions to nodes
         for (let i = 0; i < startingNodeIds.length; i++) {
             let depth = 0;
-            factoryGraphUI = this.assignPositionsRecursively(startingNodeIds[i], i, factoryGraphUI, depth);
+            genericGraphUI = this.assignPositionsRecursively(startingNodeIds[i], i, genericGraphUI, depth);
         }
     
-        return factoryGraphUI;
+        return genericGraphUI;
     }
     
     assignPositionsRecursively(
         startingNodeId: number,
         startingNodeIndex: number,
-        factoryGraph: FactoryGraphUI,
+        genericGraphUI: GenericGraphUI,
         depth: number,
-    ): FactoryGraphUI {
+    ): GenericGraphUI {
         const { spaceBetweenStagesX, spaceBetweenStagesY, paddingX, paddingY } = GraphUIConfig.graph;
 
-        factoryGraph.nodes[startingNodeId].coordinates = { 
+        genericGraphUI.nodes[startingNodeId].coordinates = { 
             x: paddingX + startingNodeIndex * spaceBetweenStagesX, 
             y: paddingY + depth * spaceBetweenStagesY 
         };
-        factoryGraph.nodes[startingNodeId].visited = true;
+        genericGraphUI.nodes[startingNodeId].visited = true;
     
-        let adjNodes = factoryGraph.adjList[startingNodeId];
+        let adjNodes = genericGraphUI.adjList[startingNodeId];
     
         for (let j = 0; j < adjNodes.length; j++) {
-            const targetNodeId = adjNodes[j].edge.outgoingFactoryStageId;
-            if (!factoryGraph.nodes[targetNodeId].visited) {
-                factoryGraph = this.assignPositionsRecursively(
+            const targetNodeId = adjNodes[j].edge.outgoingStageId;
+            if (!genericGraphUI.nodes[targetNodeId].visited) {
+                genericGraphUI = this.assignPositionsRecursively(
                     targetNodeId,
                     startingNodeIndex,
-                    factoryGraph,
+                    genericGraphUI,
                     depth + 1 // Just go down for now. In the future, find a middle point with siblings.
                 );
             }
         }
     
-        return factoryGraph;
+        return genericGraphUI;
     }    
 }

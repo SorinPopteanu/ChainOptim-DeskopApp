@@ -53,7 +53,7 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
 
     private void initializeWebView() {
         webView = new WebView();
-        webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/graph.html")).toExternalForm());
+        webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/factorygraph.html")).toExternalForm());
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
                 JSObject jsObject = (JSObject) webView.getEngine().executeScript("window");

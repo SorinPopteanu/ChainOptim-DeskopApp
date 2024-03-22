@@ -15,16 +15,13 @@ import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.features.client.service.*;
 import org.chainoptim.desktop.features.factory.service.*;
+import org.chainoptim.desktop.features.product.service.*;
 import org.chainoptim.desktop.features.productpipeline.service.StageService;
 import org.chainoptim.desktop.features.productpipeline.service.StageServiceImpl;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteService;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphServiceImpl;
-import org.chainoptim.desktop.features.product.service.ProductService;
-import org.chainoptim.desktop.features.product.service.ProductServiceImpl;
-import org.chainoptim.desktop.features.product.service.ProductWriteService;
-import org.chainoptim.desktop.features.product.service.ProductWriteServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
@@ -38,6 +35,8 @@ import org.chainoptim.desktop.features.warehouse.service.WarehouseServiceImpl;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.features.location.service.LocationService;
+import org.chainoptim.desktop.shared.features.location.service.LocationServiceImpl;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -75,12 +74,13 @@ public class AppModule extends AbstractModule {
         bind(ProductWriteService.class).to(ProductWriteServiceImpl.class);
         bind(StageService.class).to(StageServiceImpl.class);
         bind(StageWriteService.class).to(StageWriteServiceImpl.class);
+        bind(UnitOfMeasurementService.class).to(UnitOfMeasurementServiceImpl.class);
 
         // - Factory
         bind(FactoryService.class).to(FactoryServiceImpl.class);
+        bind(FactoryWriteService.class).to(FactoryWriteServiceImpl.class);
         bind(FactoryStageService.class).to(FactoryStageServiceImpl.class);
         bind(FactoryStageWriteService.class).to(FactoryStageWriteServiceImpl.class);
-
 
         // - Warehouse
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
@@ -100,5 +100,8 @@ public class AppModule extends AbstractModule {
         bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
         bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);
 
+        // Shared
+        // - Location
+        bind(LocationService.class).to(LocationServiceImpl.class);
     }
 }

@@ -21,3 +21,12 @@
     -fx-font-size: 24px;
     -fx-font-weight: bold;
 }
+
+.radio-button-group {
+    -fx-spacing: 6px;
+}
+
+.radio-button {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController" spacing="8">
+
+    <VBox styleClass="radio-button-group">
+        <RadioButton fx:id="selectExistingRadio" text="Select Existing Unit of Measurement" selected="true" styleClass="radio-button"/>
+        <RadioButton fx:id="createNewRadio" text="Create New Unit of Measurement" styleClass="radio-button"/>
+    </VBox>
+
+    <!-- Select existing unit ComboBox -->
+    <ComboBox fx:id="unitComboBox" prefWidth="200"/>
+
+    <!-- Create New Unit subform -->
+    <VBox fx:id="createUnitForm" visible="false">
+        <Label text="Name *" styleClass="form-label"/>
+        <TextField fx:id="nameField"/>
+
+        <Label text="Unit Type" styleClass="form-label"/>
+        <TextField fx:id="unitTypeField"/>
+    </VBox>
+</VBox>

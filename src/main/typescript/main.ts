@@ -1,19 +1,40 @@
-import { FactoryProductionGraph, FactoryStageNode } from "./types/dataTypes";
+import { FactoryProductionGraph, GenericGraph, ProductProductionGraph } from "./types/dataTypes";
 import { GraphRenderer } from "./rendering/GraphRenderer";
+import { transformFactoryToGenericGraph, transformProductToGenericGraph } from "./utils/utils";
 export {};
 
-let graphRenderer: GraphRenderer | null = null;
+let factoryGraphRenderer: GraphRenderer | null = null;
+let productGraphRenderer: GraphRenderer | null = null;
 
-function renderGraph(jsonData: string) {
+function renderFactoryGraph(jsonData: string) {
     const data: FactoryProductionGraph = JSON.parse(jsonData);
 
-    if (graphRenderer !== null) {
-        graphRenderer.clearGraph();
+    if (factoryGraphRenderer !== null) {
+        factoryGraphRenderer.clearGraph();
     } else {
-        graphRenderer = new GraphRenderer("#viz");
+        factoryGraphRenderer = new GraphRenderer("#viz");
     }
 
-    graphRenderer.renderGraph(data);
+    // Use GenericGraph type to unify rendering logic
+    const genericGraph: GenericGraph = transformFactoryToGenericGraph(data.factoryGraph);
+    
+    factoryGraphRenderer.renderGraph(genericGraph);
 }
 
-window.renderGraph = renderGraph;
+function renderProductGraph(jsonData: string) {
+    const data: ProductProductionGraph = JSON.parse(jsonData);
+
+    if (productGraphRenderer !== null) {
+        productGraphRenderer.clearGraph();
+    } else {
+        productGraphRenderer = new GraphRenderer("#viz");
+    }
+
+    // Use GenericGraph type to unify rendering logic
+    const genericGraph: GenericGraph = transformProductToGenericGraph(data.productGraph);
+    
+    productGraphRenderer.renderGraph(genericGraph);
+}
+
+window.renderProductGraph = renderProductGraph;
+window.renderFactoryGraph = renderFactoryGraph;

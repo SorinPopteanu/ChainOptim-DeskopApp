@@ -16,9 +16,9 @@ public class Location {
     private Integer organizationId;
 
     public String getFormattedLocation() {
-        String formattedCity = (city != null) ? city : "";
-        String formattedState = (state != null) ? ", " + state : "";
-        String formattedCountry = (country != null) ? ", " + country : "";
+        String formattedCity = (city != null && !city.isEmpty()) ? city : "";
+        String formattedState = (state != null && !state.isEmpty()) ? ", " + state : "";
+        String formattedCountry = (country != null && !country.isEmpty()) ? ", " + country : "";
 
         return formattedCity + formattedState + formattedCountry;
     }

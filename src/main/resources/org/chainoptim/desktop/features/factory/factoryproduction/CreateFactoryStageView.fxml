@@ -16,10 +16,10 @@
             <Text text="Add Factory Stage" styleClass="form-title"/>
         </HBox>
 
-        <Label text="Product Stage (*):" styleClass="form-label"/>
+        <Label text="Product Stage *:" styleClass="form-label"/>
         <StackPane fx:id="selectStageContainer"/>
 
-        <Label text="Factory (*):" styleClass="form-label"/>
+        <Label text="Factory *:" styleClass="form-label"/>
         <StackPane fx:id="selectFactoryContainer"/>
 
         <Label text="Capacity:" styleClass="form-label"/>
@@ -34,7 +34,7 @@
         <Label text="Minimum Required Capacity:" styleClass="form-label"/>
         <TextField fx:id="minimumRequiredCapacityField"/>
 
-        <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px;">
+        <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px 0px;">
             <Button text="Add Stage" onAction="#handleSubmit" styleClass="standard-write-button"/>
         </HBox>
 

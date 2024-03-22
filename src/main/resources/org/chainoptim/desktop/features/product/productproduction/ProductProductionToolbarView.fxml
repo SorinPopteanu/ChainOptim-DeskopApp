@@ -59,8 +59,6 @@
     <VBox spacing="10">
         <VBox fx:id="displayInfoContentVBox" spacing="10">
             <CheckBox fx:id="quantitiesCheckBox" text="Quantities (Q)"/>
-            <CheckBox fx:id="capacityCheckBox" text="Capacities (C)"/>
-            <CheckBox fx:id="priorityCheckBox" text="Priorities (P)" />
         </VBox>
     </VBox>
 </VBox>

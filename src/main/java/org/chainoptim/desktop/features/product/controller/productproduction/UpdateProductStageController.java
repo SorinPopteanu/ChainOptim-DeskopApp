@@ -40,6 +40,9 @@ public class UpdateProductStageController {
 
     @FXML
     private TextField stageNameField;
+    @FXML
+    private TextField stageDescriptionField;
+
 
     @Inject
     public UpdateProductStageController(
@@ -85,6 +88,7 @@ public class UpdateProductStageController {
                         this.stage = stage;
 
                         stageNameField.setText(String.valueOf(stage.getName()));
+                        stageDescriptionField.setText(String.valueOf(stage.getDescription()));
                     });
                 })
                 .exceptionally(ex -> {

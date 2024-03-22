@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { Coordinates, StageNodeUI } from "../types/uiTypes";
+import { Coordinates, GenericNodeUI } from "../types/uiTypes";
 import { getCirclePoint } from "../utils/geometryUtils";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { ElementIdentifier } from "../utils/ElementIdentifier";
@@ -14,7 +14,7 @@ export class NodeRenderer {
 
     
     public renderGraphNode = (
-        node: StageNodeUI,
+        nodeUI: GenericNodeUI,
         stageNodeId: number,
         centerX: number,
         centerY: number,
@@ -22,15 +22,15 @@ export class NodeRenderer {
         const { stageWidth, stageHeight, stageBoxWidth, stageBoxHeight, subnodeRadius } = GraphUIConfig.node;
 
         // Render main stage box
-        const { x: stageBoxX, y: stageBoxY } = this.renderMainNode(node, stageNodeId, centerX, centerY, stageBoxWidth, stageBoxHeight);
+        const { x: stageBoxX, y: stageBoxY } = this.renderMainNode(nodeUI, stageNodeId, centerX, centerY, stageBoxWidth, stageBoxHeight);
 
         // Add stage input and output subnodes
-        this.renderStageInputs(node, stageNodeId, centerX, centerY, stageWidth, stageHeight, subnodeRadius, stageBoxY);
-        this.renderStageOutputs(node, stageNodeId, centerX, centerY, stageWidth, stageHeight, subnodeRadius, stageBoxY + stageBoxHeight);
+        this.renderStageInputs(nodeUI, stageNodeId, centerX, centerY, stageWidth, stageHeight, subnodeRadius, stageBoxY);
+        this.renderStageOutputs(nodeUI, stageNodeId, centerX, centerY, stageWidth, stageHeight, subnodeRadius, stageBoxY + stageBoxHeight);
     }
 
     renderMainNode = (
-        nodeUI: StageNodeUI,
+        nodeUI: GenericNodeUI,
         stageNodeId: number,
         centerX: number,
         centerY: number,
@@ -71,7 +71,7 @@ export class NodeRenderer {
     };
 
     renderStageInputs = (
-        nodeUI: StageNodeUI,
+        nodeUI: GenericNodeUI,
         stageNodeId: number,
         centerX: number,
         centerY: number,
@@ -130,7 +130,7 @@ export class NodeRenderer {
     };
 
     renderStageOutputs = (
-        nodeUI: StageNodeUI,
+        nodeUI: GenericNodeUI,
         stageNodeId: number,
         centerX: number,
         centerY: number,

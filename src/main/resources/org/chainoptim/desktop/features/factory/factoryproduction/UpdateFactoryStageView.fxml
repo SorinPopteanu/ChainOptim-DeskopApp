@@ -30,7 +30,7 @@
         <Label text="Minimum Required Capacity:" styleClass="form-label"/>
         <TextField fx:id="minimumRequiredCapacityField"/>
 
-        <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px;">
+        <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px 0px;">
             <Button text="Add Stage" onAction="#handleSubmit" styleClass="standard-write-button"/>
         </HBox>
 
