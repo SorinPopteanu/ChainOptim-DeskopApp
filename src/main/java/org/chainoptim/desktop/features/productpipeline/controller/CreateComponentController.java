@@ -1,13 +1,13 @@
-package org.chainoptim.desktop.features.product.controller;
+package org.chainoptim.desktop.features.productpipeline.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.product.dto.CreateProductDTO;
-import org.chainoptim.desktop.features.product.model.Product;
-import org.chainoptim.desktop.features.product.service.ProductWriteService;
+import org.chainoptim.desktop.features.productpipeline.dto.CreateComponentDTO;
+import org.chainoptim.desktop.features.productpipeline.model.Component;
+import org.chainoptim.desktop.features.productpipeline.service.ComponentService;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -25,9 +25,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CreateProductController implements Initializable {
+public class CreateComponentController implements Initializable {
 
-    private final ProductWriteService productWriteService;
+    private final ComponentService componentService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
@@ -46,15 +46,15 @@ public class CreateProductController implements Initializable {
     private TextField descriptionField;
 
     @Inject
-    public CreateProductController(
-            ProductWriteService productWriteService,
+    public CreateComponentController(
+            ComponentService componentService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
             FallbackManager fallbackManager,
             FXMLLoaderService fxmlLoaderService,
             ControllerFactory controllerFactory
     ) {
-        this.productWriteService = productWriteService;
+        this.componentService = componentService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
@@ -103,22 +103,22 @@ public class CreateProductController implements Initializable {
         }
         Integer organizationId = currentUser.getOrganization().getId();
 
-        CreateProductDTO productDTO = getCreateProductDTO(organizationId);
-        System.out.println("CreateProduct: " + productDTO.getUnitDTO());
+        CreateComponentDTO componentDTO = getCreateComponentDTO(organizationId);
+        System.out.println("CreateComponent: " + componentDTO.getUnitDTO());
 
-        productWriteService.createProduct(productDTO)
-                .thenAccept(productOptional ->
-                    // Navigate to product page
-                    Platform.runLater(() -> {
-                        if (productOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create product.");
-                            return;
-                        }
-                        Product product = productOptional.get();
-                        fallbackManager.setLoading(false);
-                        currentSelectionService.setSelectedId(product.getId());
-                        navigationService.switchView("Product?id=" + product.getId());
-                    })
+        componentService.createComponent(componentDTO)
+                .thenAccept(componentOptional ->
+                        // Navigate to component page
+                        Platform.runLater(() -> {
+                            if (componentOptional.isEmpty()) {
+                                fallbackManager.setErrorMessage("Failed to create component.");
+                                return;
+                            }
+                            Component component = componentOptional.get();
+                            fallbackManager.setLoading(false);
+                            currentSelectionService.setSelectedId(component.getId());
+                            navigationService.switchView("Component?id=" + component.getId());
+                        })
                 )
                 .exceptionally(ex -> {
                     ex.printStackTrace();
@@ -126,19 +126,19 @@ public class CreateProductController implements Initializable {
                 });
     }
 
-    private CreateProductDTO getCreateProductDTO(Integer organizationId) {
-        CreateProductDTO productDTO = new CreateProductDTO();
-        productDTO.setOrganizationId(organizationId);
-        productDTO.setName(nameField.getText());
-        productDTO.setDescription(descriptionField.getText());
+    private CreateComponentDTO getCreateComponentDTO(Integer organizationId) {
+        CreateComponentDTO componentDTO = new CreateComponentDTO();
+        componentDTO.setOrganizationId(organizationId);
+        componentDTO.setName(nameField.getText());
+        componentDTO.setDescription(descriptionField.getText());
         if (unitOfMeasurementController.isCreatingNewUnit()) {
-            productDTO.setCreateUnit(true);
-            productDTO.setUnitDTO(unitOfMeasurementController.getNewUnitDTO());
+            componentDTO.setCreateUnit(true);
+            componentDTO.setUnitDTO(unitOfMeasurementController.getNewUnitDTO());
         } else {
-            productDTO.setCreateUnit(false);
-            productDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
+            componentDTO.setCreateUnit(false);
+            componentDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
         }
 
-        return productDTO;
+        return componentDTO;
     }
 }

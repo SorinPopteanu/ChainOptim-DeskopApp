@@ -9,5 +9,7 @@ public class CreateProductDTO {
     private String description;
     private Integer organizationId;
     private Integer unitId;
+    private CreateUnitOfMeasurementDTO unitDTO;
+    private boolean createUnit;
 }
 

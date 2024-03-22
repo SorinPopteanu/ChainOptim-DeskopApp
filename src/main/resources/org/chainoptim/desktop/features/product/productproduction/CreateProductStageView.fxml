@@ -16,10 +16,10 @@
             <Text text="Add Factory Stage" styleClass="form-title"/>
         </HBox>
 
-        <Label text="Product (*):" styleClass="form-label"/>
+        <Label text="Product *:" styleClass="form-label"/>
         <StackPane fx:id="selectProductContainer"/>
 
-        <Label text="Stage Name (*):" styleClass="form-label"/>
+        <Label text="Stage Name *:" styleClass="form-label"/>
         <TextField fx:id="nameField"/>
 
         <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px 0px;">

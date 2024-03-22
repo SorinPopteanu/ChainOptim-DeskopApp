@@ -62,6 +62,7 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.productpipeline.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.productpipeline.service to com.google.guice;
     opens org.chainoptim.desktop.features.productpipeline.dto to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.productpipeline.controller to com.google.guice, javafx.fxml;
 
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;

@@ -16,10 +16,10 @@
             <Text text="Add Factory Stage" styleClass="form-title"/>
         </HBox>
 
-        <Label text="Product Stage (*):" styleClass="form-label"/>
+        <Label text="Product Stage *:" styleClass="form-label"/>
         <StackPane fx:id="selectStageContainer"/>
 
-        <Label text="Factory (*):" styleClass="form-label"/>
+        <Label text="Factory *:" styleClass="form-label"/>
         <StackPane fx:id="selectFactoryContainer"/>
 
         <Label text="Capacity:" styleClass="form-label"/>

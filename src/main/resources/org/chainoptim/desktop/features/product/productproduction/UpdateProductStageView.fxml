@@ -15,7 +15,7 @@
             <Text text="Update Factory Stage" styleClass="form-title"/>
         </HBox>
 
-        <Label text="Stage Name (*):" styleClass="form-label"/>
+        <Label text="Stage Name *:" styleClass="form-label"/>
         <TextField fx:id="stageNameField"/>
 
         <Label text="Stage Description:" styleClass="form-label"/>

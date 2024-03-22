@@ -5,9 +5,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.text.Text?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.product.controller.CreateProductController"
-            prefHeight="400.0" prefWidth="600.0" styleClass="form-container">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.productpipeline.controller.CreateComponentController"
+      prefHeight="400.0" prefWidth="600.0" styleClass="form-container">
 
     <HBox styleClass="title-container">
         <Text text="Create Product" styleClass="form-title"/>

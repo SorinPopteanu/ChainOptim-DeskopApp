@@ -101,7 +101,6 @@ public class CreateSupplierController implements Initializable {
         Integer organizationId = currentUser.getOrganization().getId();
 
         CreateSupplierDTO supplierDTO = getCreateSupplierDTO(organizationId);
-
         System.out.println(supplierDTO);
 
         supplierWriteService.createSupplier(supplierDTO)
@@ -125,8 +124,8 @@ public class CreateSupplierController implements Initializable {
 
     private CreateSupplierDTO getCreateSupplierDTO(Integer organizationId) {
         CreateSupplierDTO supplierDTO = new CreateSupplierDTO();
-        supplierDTO.setName(nameField.getText());
         supplierDTO.setOrganizationId(organizationId);
+        supplierDTO.setName(nameField.getText());
         if (selectOrCreateLocationController.isCreatingNewLocation()) {
             supplierDTO.setCreateLocation(true);
             supplierDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());

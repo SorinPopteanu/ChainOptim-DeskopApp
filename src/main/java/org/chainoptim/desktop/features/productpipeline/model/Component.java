@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.productpipeline.model;
 
 import lombok.Data;
+import org.chainoptim.desktop.features.product.model.UnitOfMeasurement;
 
 import java.time.LocalDateTime;
 
@@ -13,5 +14,5 @@ public class Component {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer organizationId;
-    private Integer unitId;
+    private UnitOfMeasurement unit;
 }
