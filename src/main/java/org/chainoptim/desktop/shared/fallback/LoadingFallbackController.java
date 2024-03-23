@@ -1,28 +1,35 @@
 package org.chainoptim.desktop.shared.fallback;
 
-import javafx.animation.FadeTransition;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+
+import java.util.Objects;
 
 public class LoadingFallbackController {
 
     @FXML
-    private ProgressIndicator loadingSpinner;
+    private ImageView customSpinner;
 
     @FXML
     public void initialize() {
-        loadingSpinner.setVisible(true);
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/spinner-solid.png")));
+        customSpinner.setImage(image);
+        customSpinner.setFitHeight(52);
+        customSpinner.setFitWidth(52);
+        applySpinAnimation(customSpinner);
     }
 
+    public void applySpinAnimation(Node node) {
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(2), node);
+        rotateTransition.setByAngle(360);
+        rotateTransition.setCycleCount(Animation.INDEFINITE);
+        rotateTransition.setInterpolator(Interpolator.LINEAR);
+        rotateTransition.play();
+    }
 }

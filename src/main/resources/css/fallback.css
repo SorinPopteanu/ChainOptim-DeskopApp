@@ -1,0 +1,32 @@
+.fallback-container {
+    -fx-spacing: 10px;
+}
+
+.fallback-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.fallback-text {
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+}
+
+.error-message {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111111;
+}
+
+.spinner-rotate {
+    -fx-animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+    from {
+        -fx-rotate: 0;
+    }
+    to {
+        -fx-rotate: 360;
+    }
+}

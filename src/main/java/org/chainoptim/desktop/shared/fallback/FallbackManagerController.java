@@ -68,13 +68,13 @@ public class FallbackManagerController {
 
         if (!viewPath.isEmpty()) {
             Node view = loadedViews.get(viewPath);
-            fallbackContentHolder.getChildren().setAll(view);
-
             // Set error message in case of error
             Object controller = loadedControllers.get(viewPath);
             if (viewPath.equals("/org/chainoptim/desktop/shared/fallback/ErrorFallbackView.fxml")) {
                 ((ErrorFallbackController)controller).initialize(fallbackManager.getErrorMessage());
             }
+
+            fallbackContentHolder.getChildren().setAll(view);
         } else {
             fallbackContentHolder.getChildren().clear();
             fallbackContentHolder.setPrefSize(0, 0);
