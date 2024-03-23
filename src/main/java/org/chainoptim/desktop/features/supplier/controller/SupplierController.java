@@ -66,13 +66,54 @@ public class SupplierController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        loadFallbackManager();
+        setupListeners();
         Integer supplierId = currentSelectionService.getSelectedId();
-        if (supplier == null) {
+        if (supplierId != null) {
+            loadSupplier(supplierId);
+        } else {
             System.out.println("Missing supplier id.");
             fallbackManager.setErrorMessage("Failed to load supplier.");
         }
-        loadSupplier(supplierId);
-        setupTabListeners();
+    }
+
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
+    }
+
+    private void setupListeners() {
+        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
+                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
+            }
+        });
+        ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
+                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml", this.supplier);
+            }
+        });
+        shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
+                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
+            }
+        });
+        performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
+                loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", this.supplier);
+            }
+        });
+
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadSupplier(Integer supplierId) {
@@ -108,29 +149,6 @@ public class SupplierController implements Initializable {
     private Optional<Supplier> handleSupplierException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supplier."));
         return Optional.empty();
-    }
-
-    private void setupTabListeners() {
-        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
-            }
-        });
-        ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
-                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml", this.supplier);
-            }
-        });
-        shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
-            }
-        });
-        performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
-                loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", this.supplier);
-            }
-        });
     }
 
     private void loadTabContent(Tab tab, String fxmlFilepath, Supplier supplier) {

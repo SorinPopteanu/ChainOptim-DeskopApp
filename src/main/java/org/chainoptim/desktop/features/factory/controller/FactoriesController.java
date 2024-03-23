@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
@@ -44,13 +45,15 @@ public class FactoriesController implements Initializable {
     @FXML
     private PageSelectorController pageSelectorController;
     @FXML
+    private ScrollPane factoriesScrollPane;
+    @FXML
+    private VBox factoriesVBox;
+    @FXML
     private StackPane pageSelectorContainer;
     @FXML
     private StackPane fallbackContainer;
     @FXML
     private StackPane headerContainer;
-    @FXML
-    private VBox factoriesVBox;
 
     private final SearchParams searchParams;
     private final Map<String, String> sortOptions = Map.of(
@@ -81,9 +84,9 @@ public class FactoriesController implements Initializable {
     public void initialize(URL location, ResourceBundle resourceBundle) {
         initializeHeader();
         loadFallbackManager();
+        setUpListeners();
         loadFactories();
         initializePageSelector();
-        setUpListeners();
     }
 
     private void initializeHeader() {
@@ -100,6 +103,15 @@ public class FactoriesController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void initializePageSelector() {
@@ -119,32 +131,32 @@ public class FactoriesController implements Initializable {
         }
     }
 
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
     private void setUpListeners() {
         // Listen to changes in search params
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadFactories());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadFactories());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadFactories());
+
+        // Listen to empty fallback state
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            factoriesScrollPane.setVisible(newValue);
+            factoriesScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadFactories() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
             return;
         }
-
-        fallbackManager.setLoading(true);
-
         Integer organizationId = currentUser.getOrganization().getId();
+
         factoryService.getFactoriesByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleFactoryResponse)
                 .exceptionally(this::handleFactoryException)

@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.features.factory.model.Factory;
@@ -17,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,12 +29,11 @@ public class FactoryController implements Initializable {
 
     private final FactoryService factoryService;
     private final CurrentSelectionService currentSelectionService;
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
     private Factory factory;
-
-    @FXML
-    private FactoryProductionController graphController;
 
     @FXML
     private StackPane fallbackContainer;
@@ -56,25 +57,40 @@ public class FactoryController implements Initializable {
     @Inject
     public FactoryController(FactoryService factoryService,
                              CurrentSelectionService currentSelectionService,
+                             FXMLLoaderService fxmlLoaderService,
+                             ControllerFactory controllerFactory,
                              FallbackManager fallbackManager) {
         this.factoryService = factoryService;
         this.currentSelectionService = currentSelectionService;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        loadFallbackManager();
+        setupTabListeners();
         Integer factoryId = currentSelectionService.getSelectedId();
-        if (factoryId == null) {
+        if (factoryId != null) {
+            loadFactory(factoryId);
+        } else {
             System.out.println("Missing factory id.");
             fallbackManager.setErrorMessage("Failed to load factory.");
         }
+    }
 
-        loadFactory(factoryId);
-        setupTabListeners();
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void loadFactory(Integer factoryId) {
+        fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         factoryService.getFactoryById(factoryId)
@@ -125,6 +141,13 @@ public class FactoryController implements Initializable {
             if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
                 loadTabContent(performanceTab, "/org/chainoptim/desktop/features/factory/FactoryPerformanceView.fxml", this.factory);
             }
+        });
+
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
         });
     }
 

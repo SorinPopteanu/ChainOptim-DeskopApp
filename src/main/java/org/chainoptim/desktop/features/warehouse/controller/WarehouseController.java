@@ -63,14 +63,15 @@ public class WarehouseController implements Initializable {
 
     @Override
     public void initialize (URL location, ResourceBundle resources) {
+        loadFallbackManager();
+        setupListeners();
         Integer warehouseId = currentSelectionService.getSelectedId();
-        if (warehouseId == null) {
+        if (warehouseId != null) {
+            loadWarehouse(warehouseId);
+        } else {
             System.out.println("Missing warehouse id.");
             fallbackManager.setErrorMessage("Failed to load warehouse.");
         }
-        loadFallbackManager();
-        loadWarehouse(warehouseId);
-        setupTabListeners();
     }
 
     private void loadFallbackManager() {
@@ -80,6 +81,26 @@ public class WarehouseController implements Initializable {
                 controllerFactory::createController
         );
         fallbackContainer.getChildren().add(fallbackView);
+    }
+
+    private void setupListeners() {
+        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
+                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
+            }
+        });
+        inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
+                loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", this.warehouse);
+            }
+        });
+
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadWarehouse(Integer warehouseId) {
@@ -113,19 +134,6 @@ public class WarehouseController implements Initializable {
         return Optional.empty();
     }
 
-    private void setupTabListeners() {
-        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
-            }
-        });
-        inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
-                loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", this.warehouse);
-            }
-        });
-    }
-
     private void loadTabContent(Tab tab, String fxmlFilepath, Warehouse warehouse) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
@@ -143,9 +151,5 @@ public class WarehouseController implements Initializable {
     private void handleEditWarehouse() {
         System.out.println("Edit Warehouse Working");
     }
-
-
-
-
 
 }

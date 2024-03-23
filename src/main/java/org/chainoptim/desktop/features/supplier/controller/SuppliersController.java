@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
@@ -43,15 +44,17 @@ public class SuppliersController implements Initializable {
     @FXML
     private HeaderController headerController;
     @FXML
-    private StackPane headerContainer;
-    @FXML
     private PageSelectorController pageSelectorController;
     @FXML
-    private StackPane pageSelectorContainer;
+    private ScrollPane suppliersScrollPane;
+    @FXML
+    private VBox suppliersVBox;
+    @FXML
+    private StackPane headerContainer;
     @FXML
     private StackPane fallbackContainer;
     @FXML
-    private VBox suppliersVBox;
+    private StackPane pageSelectorContainer;
 
     private long totalCount;
 
@@ -82,24 +85,9 @@ public class SuppliersController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeHeader();
         loadFallbackManager();
-        loadSuppliers();
         setUpListeners();
+        loadSuppliers();
         initializePageSelector();
-    }
-
-    private void initializePageSelector() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node pageSelectorView = loader.load();
-            pageSelectorContainer.getChildren().add(pageSelectorView);
-            pageSelectorController = loader.getController();
-            searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSuppliers());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void initializeHeader() {
@@ -125,22 +113,46 @@ public class SuppliersController implements Initializable {
         fallbackContainer.getChildren().add(fallbackView);
     }
 
+    private void initializePageSelector() {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node pageSelectorView = loader.load();
+            pageSelectorContainer.getChildren().add(pageSelectorView);
+            pageSelectorController = loader.getController();
+            searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSuppliers());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setUpListeners() {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSuppliers());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSuppliers());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSuppliers());
+
+        // Listen to empty fallback state
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            suppliersScrollPane.setVisible(newValue);
+            suppliersScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadSuppliers() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
             return;
         }
-
-        fallbackManager.setLoading(true);
-
         Integer organizationId = currentUser.getOrganization().getId();
+
         supplierService.getSuppliersByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleSupplierResponse)
                 .exceptionally(this::handleSupplierException)

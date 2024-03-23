@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-
 public class ProductsController implements Initializable {
 
     private final ProductService productService;
@@ -42,17 +41,17 @@ public class ProductsController implements Initializable {
     @FXML
     private HeaderController headerController;
     @FXML
-    private ScrollPane productsScrollPane;
-    @FXML
     private PageSelectorController pageSelectorController;
     @FXML
-    private StackPane pageSelectorContainer;
+    private ScrollPane productsScrollPane;
     @FXML
-    private StackPane fallbackContainer;
+    private VBox productsVBox;
     @FXML
     private StackPane headerContainer;
     @FXML
-    private VBox productsVBox;
+    private StackPane fallbackContainer;
+    @FXML
+    private StackPane pageSelectorContainer;
 
     private long totalCount;
 
@@ -113,21 +112,20 @@ public class ProductsController implements Initializable {
         fallbackContainer.getChildren().add(fallbackView);
     }
 
-    private void loadProducts() {
-        fallbackManager.reset();
-        fallbackManager.setLoading(true);
-
-        User currentUser = TenantContext.getCurrentUser();
-        if (currentUser == null) {
-            Platform.runLater(() -> fallbackManager.setLoading(false));
-            return;
+    private void initializePageSelector() {
+        // Load view into pageSelectorContainer and initialize it with appropriate values
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node pageSelectorView = loader.load();
+            pageSelectorContainer.getChildren().add(pageSelectorView);
+            pageSelectorController = loader.getController();
+            searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadProducts());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        Integer organizationId = currentUser.getOrganization().getId();
-
-        productService.getProductsByOrganizationIdAdvanced(organizationId, searchParams)
-                .thenApply(this::handleProductResponse)
-                .exceptionally(this::handleProductException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
     private void setUpListeners() {
@@ -145,20 +143,21 @@ public class ProductsController implements Initializable {
         });
     }
 
-    private void initializePageSelector() {
-        // Load view into pageSelectorContainer and initialize it with appropriate values
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node pageSelectorView = loader.load();
-            pageSelectorContainer.getChildren().add(pageSelectorView);
-            pageSelectorController = loader.getController();
-            searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadProducts());
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void loadProducts() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        User currentUser = TenantContext.getCurrentUser();
+        if (currentUser == null) {
+            Platform.runLater(() -> fallbackManager.setLoading(false));
+            return;
         }
+        Integer organizationId = currentUser.getOrganization().getId();
+
+        productService.getProductsByOrganizationIdAdvanced(organizationId, searchParams)
+                .thenApply(this::handleProductResponse)
+                .exceptionally(this::handleProductException)
+                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
     private Optional<PaginatedResults<Product>> handleProductResponse(Optional<PaginatedResults<Product>> productsOptional) {

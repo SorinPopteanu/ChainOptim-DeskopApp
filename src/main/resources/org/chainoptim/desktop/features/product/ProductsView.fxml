@@ -17,7 +17,7 @@
             </VBox>
         </ScrollPane>
 
-        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS" style="-fx-padding: 160px;"/>
+        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS" styleClass="page-fallback-container"/>
     </StackPane>
 
 </VBox>

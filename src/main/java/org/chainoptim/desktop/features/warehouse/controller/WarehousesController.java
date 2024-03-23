@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
@@ -44,15 +45,17 @@ public class WarehousesController implements Initializable {
     @FXML
     private HeaderController headerController;
     @FXML
-    private StackPane headerContainer;
-    @FXML
     private PageSelectorController pageSelectorController;
+    @FXML
+    private ScrollPane warehousesScrollPane;
+    @FXML
+    private VBox warehousesVBox;
+    @FXML
+    private StackPane headerContainer;
     @FXML
     private StackPane pageSelectorContainer;
     @FXML
     private StackPane fallbackContainer;
-    @FXML
-    private VBox warehousesVBox;
 
     private long totalCount;
 
@@ -84,24 +87,9 @@ public class WarehousesController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeHeader();
         loadFallbackManager();
-        loadWarehouses();
         setUpListeners();
+        loadWarehouses();
         initializePageSelector();
-    }
-
-    private void initializePageSelector() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node pageSelectorView = loader.load();
-            pageSelectorContainer.getChildren().add(pageSelectorView);
-            pageSelectorController = loader.getController();
-            searchParams.getPageProperty().addListener((observable, oldValue, newValue) -> loadWarehouses());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void initializeHeader() {
@@ -127,21 +115,46 @@ public class WarehousesController implements Initializable {
         fallbackContainer.getChildren().add(fallbackView);
     }
 
+    private void initializePageSelector() {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node pageSelectorView = loader.load();
+            pageSelectorContainer.getChildren().add(pageSelectorView);
+            pageSelectorController = loader.getController();
+            searchParams.getPageProperty().addListener((observable, oldValue, newValue) -> loadWarehouses());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setUpListeners() {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadWarehouses());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadWarehouses());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadWarehouses());
+
+        // Listen to empty fallback state
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            warehousesScrollPane.setVisible(newValue);
+            warehousesScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadWarehouses() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
             return;
         }
-        fallbackManager.setLoading(true);
-
         Integer organizationId = currentUser.getOrganization().getId();
+
         warehouseService.getWarehousesByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleWarehouseResponse)
                 .exceptionally(this::handleWarehouseException)

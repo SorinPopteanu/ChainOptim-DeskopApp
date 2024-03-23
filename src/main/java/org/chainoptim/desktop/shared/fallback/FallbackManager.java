@@ -23,6 +23,7 @@ public class FallbackManager {
     }
 
     public void setErrorMessage(String errorMessage) {
+        System.out.println("Setting error message: " + errorMessage);
         this.errorMessage.set(errorMessage);
     }
 
