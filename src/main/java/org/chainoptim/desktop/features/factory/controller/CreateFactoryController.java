@@ -115,7 +115,7 @@ public class CreateFactoryController implements Initializable {
                         Factory factory = factoryOptional.get();
                         fallbackManager.setLoading(false);
                         currentSelectionService.setSelectedId(factory.getId());
-                        navigationService.switchView("Factory?id=" + factory.getId());
+                        navigationService.switchView("Factory?id=" + factory.getId(), true);
                     })
                 )
                 .exceptionally(ex -> {

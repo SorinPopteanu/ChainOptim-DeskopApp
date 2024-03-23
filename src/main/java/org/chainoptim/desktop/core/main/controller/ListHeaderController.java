@@ -172,7 +172,7 @@ public class ListHeaderController {
 
     @FXML
     private void handleCreateNewItem() {
-        navigationService.switchView(createNewItem);
+        navigationService.switchView(createNewItem, true);
     }
 
 }

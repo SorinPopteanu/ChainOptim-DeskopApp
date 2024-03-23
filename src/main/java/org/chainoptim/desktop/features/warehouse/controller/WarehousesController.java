@@ -215,7 +215,7 @@ public class WarehousesController implements Initializable {
         currentSelectionService.setSelectedId(warehouseId);
         currentSelectionService.setSelectedPage("Warehouse");
 
-        navigationService.switchView("Warehouse?id=" + warehouseId);
+        navigationService.switchView("Warehouse?id=" + warehouseId, true);
     }
 
 

@@ -11,9 +11,7 @@ import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +42,7 @@ public class NavigationServiceImpl implements NavigationService {
     private StackPane mainContentArea;
 
     private String currentViewKey;
+    private List<String> previousViewKeys;
 
     @Getter
     private static final Map<String, Node> viewCache = new HashMap<>();
@@ -73,7 +72,7 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml")
     );
 
-    public void switchView(String viewKey) {
+    public void switchView(String viewKey, boolean forward) {
         // Skip if already there
         if (Objects.equals(currentViewKey, viewKey)) {
             return;
@@ -88,6 +87,7 @@ public class NavigationServiceImpl implements NavigationService {
         // Display view
         if (view != null) {
             threadRunner.runLater(() -> mainContentArea.getChildren().setAll(view));
+            handleHistory(forward);
             currentViewKey = viewKey;
         }
     }
@@ -123,6 +123,28 @@ public class NavigationServiceImpl implements NavigationService {
         System.out.println("Requested id: " + id);
 
         return baseViewKey;
+    }
+
+    private void handleHistory(boolean forward) {
+        // Add to history if forward and remove last otherwise
+        if (forward) {
+            if (previousViewKeys == null) {
+                previousViewKeys = new ArrayList<>();
+            }
+            if (currentViewKey != null) {
+                previousViewKeys.add(currentViewKey);
+            }
+        } else {
+            if (previousViewKeys != null && !previousViewKeys.isEmpty()) {
+                previousViewKeys.removeLast();
+            }
+        }
+    }
+
+    public void goBack() {
+        if (previousViewKeys != null && !previousViewKeys.isEmpty()) {
+            switchView(previousViewKeys.getLast(), false);
+        }
     }
 
     public static void invalidateViewCache() {

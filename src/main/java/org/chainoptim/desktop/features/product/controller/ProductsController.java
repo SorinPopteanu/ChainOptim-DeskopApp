@@ -209,6 +209,6 @@ public class ProductsController implements Initializable {
         // And also encode it in the viewKey for caching purposes
         currentSelectionService.setSelectedId(productId);
         currentSelectionService.setSelectedPage("Product");
-        navigationService.switchView("Product?id=" + productId);
+        navigationService.switchView("Product?id=" + productId, true);
     }
 }

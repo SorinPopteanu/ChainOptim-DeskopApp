@@ -220,6 +220,6 @@ public class FactoriesController implements Initializable {
         currentSelectionService.setSelectedId(factoryId);
         currentSelectionService.setSelectedPage("Factory");
 
-        navigationService.switchView("Factory?id=" + factoryId);
+        navigationService.switchView("Factory?id=" + factoryId, true);
     }
 }

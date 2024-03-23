@@ -214,7 +214,7 @@ public class ClientsController implements Initializable {
         currentSelectionService.setSelectedId(clientId);
         currentSelectionService.setSelectedPage("Client");
 
-        navigationService.switchView("Client?id=" + clientId);
+        navigationService.switchView("Client?id=" + clientId, true);
     }
 
 

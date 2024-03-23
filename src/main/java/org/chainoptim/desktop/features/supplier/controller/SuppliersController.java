@@ -213,7 +213,7 @@ public class SuppliersController implements Initializable {
         currentSelectionService.setSelectedId(supplierId);
         currentSelectionService.setSelectedPage("Supplier");
 
-        navigationService.switchView("Supplier?id=" + supplierId);
+        navigationService.switchView("Supplier?id=" + supplierId, true);
     }
 
 

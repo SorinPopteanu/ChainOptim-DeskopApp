@@ -46,25 +46,28 @@ public class SidebarController {
     private VBox buttonContainer;
 
     private final List<SidebarButton> navigationButtons = new ArrayList<>();
+    private static final String ICONS_PATH = "/img/";
     @FXML
     public Button toggleButton;
-//    @FXML
-//    public Button accountButton;
+    @FXML
+    public Button backButton;
     @FXML
     public Button logoutButton;
 
     // Configuration
     private final List<String> orderedKeys = List.of("Overview", "Organization", "Products", "Factories", "Warehouses", "Suppliers", "Clients");
-    private final Map<String, String> buttonIconMap = Map.of(
-            "Overview", "globe-solid.png",
-            "Organization", "building-regular.png",
-            "Products", "box-solid.png",
-            "Factories", "industry-solid.png",
-            "Warehouses", "warehouse-solid.png",
-            "Suppliers", "truck-arrow-right-solid.png",
-            "Clients", "universal-access-solid.png",
-            "Account", "user-solid.png",
-            "Toggle", "bars-solid.png"
+    private final Map<String, String> buttonIconMap = Map.ofEntries(
+            Map.entry("Overview", "globe-solid.png"),
+            Map.entry("Organization", "building-regular.png"),
+            Map.entry("Products", "box-solid.png"),
+            Map.entry("Factories", "industry-solid.png"),
+            Map.entry("Warehouses", "warehouse-solid.png"),
+            Map.entry("Suppliers", "truck-arrow-right-solid.png"),
+            Map.entry("Clients", "universal-access-solid.png"),
+            Map.entry("Account", "user-solid.png"),
+            Map.entry("Back", "arrow-left-solid.png"),
+            Map.entry("Toggle", "bars-solid.png"),
+            Map.entry("Logout", "right-from-bracket-solid.png")
     );
     private static final double COLLAPSED_WIDTH = 52;
     private static final double EXPANDED_WIDTH = 256;
@@ -75,20 +78,22 @@ public class SidebarController {
     public void initialize() {
         initializeNavigationButtons();
         createSidebarButtons();
-        setButtonGraphic(logoutButton, "/img/right-from-bracket-solid.png");
 
         // Navigate to Overview
-        navigationService.switchView("Overview");
+        navigationService.switchView("Overview", true);
 
-        // Toggle button
-        setButtonGraphic(toggleButton, "/img/" + buttonIconMap.get("Toggle"));
+        // Back, Toggle and Logout buttons
+        setButtonGraphic(backButton, ICONS_PATH + buttonIconMap.get("Back"));
+        backButton.setOnAction(e -> navigationService.goBack());
+        setButtonGraphic(toggleButton, ICONS_PATH + buttonIconMap.get("Toggle"));
         toggleButton.setOnAction(e -> toggleSidebar());
+        setButtonGraphic(logoutButton, ICONS_PATH + buttonIconMap.get("Logout"));
     }
 
     private void initializeNavigationButtons() {
         orderedKeys.forEach(key -> {
-            String iconPath = "/img/" + buttonIconMap.get(key);
-            Runnable action = () -> navigationService.switchView(key);
+            String iconPath = ICONS_PATH + buttonIconMap.get(key);
+            Runnable action = () -> navigationService.switchView(key, true);
             navigationButtons.add(new SidebarButton(key, iconPath, action));
         });
     }
