@@ -8,11 +8,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.HeaderController;
+import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.model.User;
@@ -41,17 +42,19 @@ public class ClientsController implements Initializable {
     private final SearchParams searchParams;
 
     @FXML
-    private HeaderController headerController;
+    private ListHeaderController headerController;
     @FXML
     private PageSelectorController pageSelectorController;
     @FXML
-    private StackPane pageSelectorContainer;
+    private ScrollPane clientsScrollPane;
     @FXML
-    private StackPane fallbackContainer;
+    private VBox clientsVBox;
     @FXML
     private StackPane headerContainer;
     @FXML
-    private VBox clientsVBox;
+    private StackPane fallbackContainer;
+    @FXML
+    private StackPane pageSelectorContainer;
 
     private long totalCount;
 
@@ -82,9 +85,32 @@ public class ClientsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeHeader();
         loadFallbackManager();
-        loadClients();
         setUpListeners();
+        loadClients();
         initializePageSelector();
+    }
+
+    private void initializeHeader() {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node headerView = loader.load();
+            headerContainer.getChildren().add(headerView);
+            headerController = loader.getController();
+            headerController.initializeHeader("Clients", "/img/truck-arrow-right-solid.png", sortOptions, this::loadClients, "Client", "Create-Client");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadFallbackManager() {
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void initializePageSelector() {
@@ -102,45 +128,31 @@ public class ClientsController implements Initializable {
         }
     }
 
-    private void initializeHeader() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/main/HeaderView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node headerView = loader.load();
-            headerContainer.getChildren().add(headerView);
-            headerController = loader.getController();
-            headerController.initializeHeader("Clients", "/img/truck-arrow-right-solid.png", sortOptions, "Client", "Create-Client");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadFallbackManager() {
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
     private void setUpListeners() {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadClients());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadClients());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadClients());
+
+        // Listen to empty fallback state
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            clientsScrollPane.setVisible(newValue);
+            clientsScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadClients() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
             return;
         }
-
-        fallbackManager.setLoading(true);
-
         Integer organizationId = currentUser.getOrganization().getId();
+
         clientService.getClientsByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleClientResponse)
                 .exceptionally(this::handleClientException)
@@ -202,7 +214,7 @@ public class ClientsController implements Initializable {
         currentSelectionService.setSelectedId(clientId);
         currentSelectionService.setSelectedPage("Client");
 
-        navigationService.switchView("Client?id=" + clientId);
+        navigationService.switchView("Client?id=" + clientId, true);
     }
 
 

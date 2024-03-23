@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.product.controller;
 
 import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
@@ -17,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,6 +29,8 @@ public class ProductController implements Initializable {
 
     private final ProductService productService;
     private final CurrentSelectionService currentSelectionService;
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
     private Product product;
@@ -50,26 +54,67 @@ public class ProductController implements Initializable {
 
     @Inject
     public ProductController(ProductService productService,
-                             FallbackManager fallbackManager,
-                             CurrentSelectionService currentSelectionService) {
+                             FXMLLoaderService fxmlLoaderService,
+                             ControllerFactory controllerFactory,
+                             CurrentSelectionService currentSelectionService,
+                             FallbackManager fallbackManager) {
         this.productService = productService;
-        this.fallbackManager = fallbackManager;
         this.currentSelectionService = currentSelectionService;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
+        this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Integer productId = currentSelectionService.getSelectedId();
-        if (productId == null) {
-            System.out.println("Missing product id.");
-            fallbackManager.setErrorMessage("Failed to load product.");
-        }
+        loadFallbackManager();
+        setupListeners();
 
-        loadProduct(productId);
-        setupTabListeners();
+        Integer productId = currentSelectionService.getSelectedId();
+        if (productId != null) {
+            loadProduct(productId);
+        } else {
+            System.out.println("Missing product id.");
+            fallbackManager.setErrorMessage("Failed to load product: missing product ID.");
+        }
+    }
+
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
+    }
+
+    private void setupListeners() {
+        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
+                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/product/ProductOverviewView.fxml", this.product);
+            }
+        });
+        productionTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && productionTab.getContent() == null) {
+                loadTabContent(productionTab, "/org/chainoptim/desktop/features/product/ProductProductionView.fxml", this.product);
+            }
+        });
+        evaluationTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && evaluationTab.getContent() == null) {
+                loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/product/ProductEvaluationView.fxml", this.product);
+            }
+        });
+
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadProduct(Integer productId) {
+        fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         productService.getProductWithStages(productId)
@@ -99,24 +144,6 @@ public class ProductController implements Initializable {
     private Optional<Product> handleProductException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load product."));
         return Optional.empty();
-    }
-
-    private void setupTabListeners() {
-        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/product/ProductOverviewView.fxml", this.product);
-            }
-        });
-        productionTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && productionTab.getContent() == null) {
-                loadTabContent(productionTab, "/org/chainoptim/desktop/features/product/ProductProductionView.fxml", this.product);
-            }
-        });
-        evaluationTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && evaluationTab.getContent() == null) {
-                loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/product/ProductEvaluationView.fxml", this.product);
-            }
-        });
     }
 
     private void loadTabContent(Tab tab, String fxmlFilepath, Product product) {

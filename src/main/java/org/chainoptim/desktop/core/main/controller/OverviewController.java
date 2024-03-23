@@ -5,9 +5,8 @@ import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.core.user.repository.UserRepository;
+import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 
 import java.io.UnsupportedEncodingException;
@@ -17,12 +16,12 @@ import java.util.ResourceBundle;
 public class OverviewController implements Initializable {
 
     private final AuthenticationService authenticationService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Inject
-    public OverviewController(AuthenticationService authenticationService, UserRepository userRepository) {
+    public OverviewController(AuthenticationService authenticationService, UserService userService) {
         this.authenticationService = authenticationService;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -38,7 +37,7 @@ public class OverviewController implements Initializable {
 
     private void fetchAndSetUser(String username) {
         try {
-            userRepository.getUserByUsername(username)
+            userService.getUserByUsername(username)
                     .thenAcceptAsync(userOptional -> userOptional.ifPresentOrElse(this::updateCurrentUser,
                             () -> Platform.runLater(() -> System.err.println("User not found."))))
                     .exceptionally(ex -> {

@@ -1,4 +1,3 @@
-
 .sidebar {
     -fx-background-color: #000000;
     -fx-border-color: #333;
@@ -16,7 +15,6 @@
     -fx-alignment: center-left;
 }
 
-
 .sidebar-button {
     -fx-background-color: #000000;
     -fx-text-fill: white;
@@ -27,6 +25,7 @@
     -fx-min-height: 40;
     -fx-max-height: 48;
     -fx-alignment: baseline-left;
+    -fx-graphic-text-gap: 16px;
     -fx-cursor: hand;
 }
 

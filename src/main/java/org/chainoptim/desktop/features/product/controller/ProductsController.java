@@ -2,7 +2,7 @@ package org.chainoptim.desktop.features.product.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.HeaderController;
+import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.model.User;
@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-
 public class ProductsController implements Initializable {
 
     private final ProductService productService;
@@ -40,17 +39,19 @@ public class ProductsController implements Initializable {
     private final SearchParams searchParams;
 
     @FXML
-    private HeaderController headerController;
+    private ListHeaderController headerController;
     @FXML
     private PageSelectorController pageSelectorController;
     @FXML
-    private StackPane pageSelectorContainer;
+    private ScrollPane productsScrollPane;
     @FXML
-    private StackPane fallbackContainer;
+    private VBox productsVBox;
     @FXML
     private StackPane headerContainer;
     @FXML
-    private VBox productsVBox;
+    private StackPane fallbackContainer;
+    @FXML
+    private StackPane pageSelectorContainer;
 
     private long totalCount;
 
@@ -81,22 +82,22 @@ public class ProductsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeHeader();
         loadFallbackManager();
-        loadProducts();
         setUpListeners();
+        loadProducts();
         initializePageSelector();
     }
 
     private void initializeHeader() {
         // Load view into headerContainer and initialize it with appropriate values
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/main/HeaderView.fxml",
+                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
                 controllerFactory::createController
         );
         try {
             Node headerView = loader.load();
             headerContainer.getChildren().add(headerView);
             headerController = loader.getController();
-            headerController.initializeHeader("Products", "/img/box-solid.png", sortOptions, "Product", "Create-Product");
+            headerController.initializeHeader("Products", "/img/box-solid.png", sortOptions, this::loadProducts, "Product", "Create-Product");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -109,29 +110,6 @@ public class ProductsController implements Initializable {
                 controllerFactory::createController
         );
         fallbackContainer.getChildren().add(fallbackView);
-    }
-
-    private void loadProducts() {
-        User currentUser = TenantContext.getCurrentUser();
-        if (currentUser == null) {
-            Platform.runLater(() -> fallbackManager.setLoading(false));
-            return;
-        }
-
-        fallbackManager.setLoading(true);
-
-        Integer organizationId = currentUser.getOrganization().getId();
-        productService.getProductsByOrganizationIdAdvanced(organizationId, searchParams)
-                .thenApply(this::handleProductResponse)
-                .exceptionally(this::handleProductException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
-    }
-
-    private void setUpListeners() {
-        // Listen to changes in search params
-        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadProducts());
-        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadProducts());
-        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadProducts());
     }
 
     private void initializePageSelector() {
@@ -148,6 +126,38 @@ public class ProductsController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setUpListeners() {
+        // Listen to changes in search params
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadProducts());
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadProducts());
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadProducts());
+
+        // Listen to empty fallback state
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            productsScrollPane.setVisible(newValue);
+            productsScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
+    }
+
+    private void loadProducts() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        User currentUser = TenantContext.getCurrentUser();
+        if (currentUser == null) {
+            Platform.runLater(() -> fallbackManager.setLoading(false));
+            return;
+        }
+        Integer organizationId = currentUser.getOrganization().getId();
+
+        productService.getProductsByOrganizationIdAdvanced(organizationId, searchParams)
+                .thenApply(this::handleProductResponse)
+                .exceptionally(this::handleProductException)
+                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
     private Optional<PaginatedResults<Product>> handleProductResponse(Optional<PaginatedResults<Product>> productsOptional) {
@@ -199,6 +209,6 @@ public class ProductsController implements Initializable {
         // And also encode it in the viewKey for caching purposes
         currentSelectionService.setSelectedId(productId);
         currentSelectionService.setSelectedPage("Product");
-        navigationService.switchView("Product?id=" + productId);
+        navigationService.switchView("Product?id=" + productId, true);
     }
 }

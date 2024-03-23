@@ -115,7 +115,7 @@ public class CreateWarehouseController implements Initializable {
                         fallbackManager.setLoading(false);
                         currentSelectionService.setSelectedId(warehouse.getId());
                         System.out.println(warehouseDTO);
-                        navigationService.switchView("Warehouse?id=" + warehouse.getId());
+                        navigationService.switchView("Warehouse?id=" + warehouse.getId(), true);
                     })
                 )
                 .exceptionally(ex -> {

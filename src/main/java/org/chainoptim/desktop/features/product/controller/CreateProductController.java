@@ -117,7 +117,7 @@ public class CreateProductController implements Initializable {
                         Product product = productOptional.get();
                         fallbackManager.setLoading(false);
                         currentSelectionService.setSelectedId(product.getId());
-                        navigationService.switchView("Product?id=" + product.getId());
+                        navigationService.switchView("Product?id=" + product.getId(), true);
                     })
                 )
                 .exceptionally(ex -> {

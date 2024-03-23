@@ -1,7 +1,5 @@
 package org.chainoptim.desktop;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Singleton;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.abstraction.GuiceControllerFactory;
 import org.chainoptim.desktop.core.abstraction.JavaFXThreadRunner;
@@ -9,8 +7,10 @@ import org.chainoptim.desktop.core.abstraction.ThreadRunner;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
-import org.chainoptim.desktop.core.user.repository.UserRepository;
-import org.chainoptim.desktop.core.user.repository.UserRepositoryImpl;
+import org.chainoptim.desktop.core.organization.service.OrganizationService;
+import org.chainoptim.desktop.core.organization.service.OrganizationServiceImpl;
+import org.chainoptim.desktop.core.user.service.UserService;
+import org.chainoptim.desktop.core.user.service.UserServiceImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.features.client.service.*;
@@ -38,9 +38,11 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
 import org.chainoptim.desktop.shared.features.location.service.LocationServiceImpl;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
-import org.chainoptim.desktop.shared.util.JsonUtil;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderServiceImpl;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 
 import java.net.http.HttpClient;
 
@@ -66,7 +68,8 @@ public class AppModule extends AbstractModule {
         bind(NavigationService.class).to(NavigationServiceImpl.class);
         bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class);
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
-        bind(UserRepository.class).to(UserRepositoryImpl.class);
+        bind(UserService.class).to(UserServiceImpl.class);
+        bind(OrganizationService.class).to(OrganizationServiceImpl.class);
 
         // Features
         // - Product

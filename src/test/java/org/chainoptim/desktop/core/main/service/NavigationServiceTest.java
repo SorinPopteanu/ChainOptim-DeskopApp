@@ -40,8 +40,8 @@ class NavigationServiceTest {
 
     @Test
     void switchViewCacheWorks() {
-        navigationService.switchView("Products?id=1");
-        navigationService.switchView("Products?id=2");
+        navigationService.switchView("Products?id=1", true);
+        navigationService.switchView("Products?id=2", true);
 
         Assertions.assertTrue(NavigationServiceImpl.getViewCache().containsKey("Products?id=1"));
         Assertions.assertTrue(NavigationServiceImpl.getViewCache().containsKey("Products?id=2"));

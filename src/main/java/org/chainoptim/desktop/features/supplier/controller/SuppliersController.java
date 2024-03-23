@@ -8,11 +8,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.HeaderController;
+import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.model.User;
@@ -41,17 +42,19 @@ public class SuppliersController implements Initializable {
     private final SearchParams searchParams;
 
     @FXML
-    private HeaderController headerController;
-    @FXML
-    private StackPane headerContainer;
+    private ListHeaderController headerController;
     @FXML
     private PageSelectorController pageSelectorController;
     @FXML
-    private StackPane pageSelectorContainer;
+    private ScrollPane suppliersScrollPane;
+    @FXML
+    private VBox suppliersVBox;
+    @FXML
+    private StackPane headerContainer;
     @FXML
     private StackPane fallbackContainer;
     @FXML
-    private VBox suppliersVBox;
+    private StackPane pageSelectorContainer;
 
     private long totalCount;
 
@@ -82,9 +85,32 @@ public class SuppliersController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeHeader();
         loadFallbackManager();
-        loadSuppliers();
         setUpListeners();
+        loadSuppliers();
         initializePageSelector();
+    }
+
+    private void initializeHeader() {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node headerView = loader.load();
+            headerContainer.getChildren().add(headerView);
+            headerController = loader.getController();
+            headerController.initializeHeader("Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, this::loadSuppliers, "Supplier", "Create-Supplier");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadFallbackManager() {
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void initializePageSelector() {
@@ -102,45 +128,31 @@ public class SuppliersController implements Initializable {
         }
     }
 
-    private void initializeHeader() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/main/HeaderView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node headerView = loader.load();
-            headerContainer.getChildren().add(headerView);
-            headerController = loader.getController();
-            headerController.initializeHeader("Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, "Supplier", "Create-Supplier");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadFallbackManager() {
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
     private void setUpListeners() {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSuppliers());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSuppliers());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSuppliers());
+
+        // Listen to empty fallback state
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            suppliersScrollPane.setVisible(newValue);
+            suppliersScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadSuppliers() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
             return;
         }
-
-        fallbackManager.setLoading(true);
-
         Integer organizationId = currentUser.getOrganization().getId();
+
         supplierService.getSuppliersByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleSupplierResponse)
                 .exceptionally(this::handleSupplierException)
@@ -201,7 +213,7 @@ public class SuppliersController implements Initializable {
         currentSelectionService.setSelectedId(supplierId);
         currentSelectionService.setSelectedPage("Supplier");
 
-        navigationService.switchView("Supplier?id=" + supplierId);
+        navigationService.switchView("Supplier?id=" + supplierId, true);
     }
 
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.supplier.controller.UpdateSupplierController"
+      styleClass="form-container">
+
+    <HBox styleClass="title-container">
+        <Text text="Update Supplier" styleClass="form-title"/>
+    </HBox>
+
+    <Label text="Name *:" styleClass="form-label"/>
+    <TextField fx:id="nameField"/>
+
+    <Label text="Location:" styleClass="form-label"/>
+    <StackPane fx:id="selectOrCreateLocationContainer"/>
+
+    <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px 0px;">
+        <Button text="Update" onAction="#handleSubmit" styleClass="standard-write-button"/>
+    </HBox>
+
+    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+
+</VBox>

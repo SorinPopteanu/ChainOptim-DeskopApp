@@ -7,18 +7,18 @@ import lombok.Setter;
 
 public class SearchParams {
 
-    private StringProperty searchQuery;
-    private StringProperty sortOption;
-    private BooleanProperty ascending;
-    private IntegerProperty page;
-    private IntegerProperty itemsPerPage;
+    private final StringProperty searchQuery;
+    private final StringProperty sortOption;
+    private final BooleanProperty ascending;
+    private final IntegerProperty page;
+    private final IntegerProperty itemsPerPage;
 
     public SearchParams() {
         searchQuery = new SimpleStringProperty("");
         sortOption = new SimpleStringProperty("createdAt");
         ascending = new SimpleBooleanProperty(true);
         page = new SimpleIntegerProperty(1);
-        itemsPerPage = new SimpleIntegerProperty(4);
+        itemsPerPage = new SimpleIntegerProperty(10);
     }
 
     public BooleanProperty getAscendingProperty() {

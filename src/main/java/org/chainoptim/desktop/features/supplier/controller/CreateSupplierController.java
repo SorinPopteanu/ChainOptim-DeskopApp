@@ -113,7 +113,7 @@ public class CreateSupplierController implements Initializable {
                         Supplier supplier = supplierOptional.get();
                         fallbackManager.setLoading(false);
                         currentSelectionService.setSelectedId(supplier.getId());
-                        navigationService.switchView("Supplier?id=" + supplier.getId());
+                        navigationService.switchView("Supplier?id=" + supplier.getId(), true);
                     })
                 )
                 .exceptionally(ex -> {
