@@ -100,6 +100,9 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
 
+    // - Settings
+    opens org.chainoptim.desktop.features.settings.controller to javafx.fxml, com.google.guice;
+
     // Shared
     // - Common UI elements
     opens org.chainoptim.desktop.shared.common.uielements to javafx.fxml, com.google.guice;

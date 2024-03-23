@@ -1,15 +1,16 @@
 .standard-write-button {
     -fx-pref-height: 32px;
-    -fx-background-color: #0077dd;
+    -fx-background-color: #006AEE;
     -fx-text-fill: white;
     -fx-font-weight: normal;
-    -fx-font-size: 15px;
+    -fx-font-size: 14px;
     -fx-padding: 4px 12px 4px 12px;
+    -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
 }
 
 .standard-write-button:hover {
-    -fx-background-color: #0066bb;
+    -fx-background-color: #0068C9;
 }
 
 /* Button with default JavaFX styles removed */

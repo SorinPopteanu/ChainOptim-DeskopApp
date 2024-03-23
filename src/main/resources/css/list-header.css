@@ -5,14 +5,15 @@
 
 .toolbar {
     -fx-background-color: #ffffff;
-    -fx-padding: 0px 20px 20px 20px;
+    -fx-padding: 0px 32px 32px 32px;
 }
 
 .list-title {
-    -fx-font-size: 28px;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-padding: 20px 20px 0px 20px;
+    -fx-padding: 20px 32px 0px 32px;
     -fx-spacing: 20px;
+    -fx-graphic-text-gap: 12px;
 }
 
 .search-bar {
@@ -26,7 +27,7 @@
 .search-button {
     -fx-pref-height: 32px;
     -fx-pref-width: 32px;
-    -fx-background-color: #121212;
+    -fx-background-color: #232323;
     -fx-border-radius: 4px;
 }
 
@@ -38,6 +39,7 @@
 .header .combo-box {
     -fx-pref-height: 32px;
     -fx-background-color: #ffffff;
+    -fx-font-weight: bold;
     -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;

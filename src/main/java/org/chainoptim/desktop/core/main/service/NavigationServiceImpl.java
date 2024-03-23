@@ -16,9 +16,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
- * Service responsible for handling app navigation from SidebarController
+ * Service responsible for handling app navigation throughout the app
  * Loads views on demand and caches them, including dynamic routes
- *
+ * Also records navigation history for back navigation
  */
 public class NavigationServiceImpl implements NavigationService {
 
@@ -75,7 +75,9 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml"),
             Map.entry("Update-Client", "/org/chainoptim/desktop/features/client/UpdateClientView.fxml"),
 
-            Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml")
+            Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml"),
+
+            Map.entry("Settings", "/org/chainoptim/desktop/features/settings/SettingsView.fxml")
     );
 
     public void switchView(String viewKey, boolean forward) {
