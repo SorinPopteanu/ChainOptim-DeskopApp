@@ -1,12 +1,12 @@
 package org.chainoptim.desktop.features.factory.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.factory.dto.CreateFactoryDTO;
 import org.chainoptim.desktop.features.factory.dto.UpdateFactoryDTO;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -77,7 +77,7 @@ public class FactoryWriteServiceImpl implements FactoryWriteService {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                 .headers(HEADER_KEY, headerValue)
                 .headers("Content-Type", "application/json")
                 .build();

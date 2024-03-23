@@ -48,27 +48,30 @@ public class NavigationServiceImpl implements NavigationService {
     private static final Map<String, Node> viewCache = new HashMap<>();
 
     private final Map<String, String> viewMap = Map.ofEntries(
-            // Main pages
             Map.entry("Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml"),
             Map.entry("Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml"),
-            Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
-            Map.entry("Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml"),
-            Map.entry("Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml"),
-            Map.entry("Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"),
-            Map.entry("Clients", "/org/chainoptim/desktop/features/client/ClientsView.fxml"),
-            // Dynamic route pages
-            Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
-            Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
-            Map.entry("Warehouse", "/org/chainoptim/desktop/features/warehouse/WarehouseView.fxml"),
-            Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
-            Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),
 
-            // Create forms
+            Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
+            Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
             Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
+
+            Map.entry("Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml"),
+            Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
             Map.entry("Create-Factory", "/org/chainoptim/desktop/features/factory/CreateFactoryView.fxml"),
+            Map.entry("Update-Factory", "/org/chainoptim/desktop/features/factory/UpdateFactoryView.fxml"),
+
+            Map.entry("Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml"),
+            Map.entry("Warehouse", "/org/chainoptim/desktop/features/warehouse/WarehouseView.fxml"),
             Map.entry("Create-Warehouse", "/org/chainoptim/desktop/features/warehouse/CreateWarehouseView.fxml"),
+
+            Map.entry("Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"),
+            Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
             Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"),
+
+            Map.entry("Clients", "/org/chainoptim/desktop/features/client/ClientsView.fxml"),
+            Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),
             Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml"),
+
             Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml")
     );
 
@@ -149,5 +152,9 @@ public class NavigationServiceImpl implements NavigationService {
 
     public static void invalidateViewCache() {
         viewCache.clear();
+    }
+
+    public static void invalidateViewCache(String viewKey) {
+        viewCache.remove(viewKey);
     }
 }

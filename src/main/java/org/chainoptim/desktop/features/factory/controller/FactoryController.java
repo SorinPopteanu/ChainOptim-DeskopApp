@@ -7,6 +7,7 @@ import javafx.scene.control.TabPane;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
@@ -28,6 +29,7 @@ import java.util.ResourceBundle;
 public class FactoryController implements Initializable {
 
     private final FactoryService factoryService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
@@ -56,11 +58,13 @@ public class FactoryController implements Initializable {
 
     @Inject
     public FactoryController(FactoryService factoryService,
+                             NavigationService navigationService,
                              CurrentSelectionService currentSelectionService,
                              FXMLLoaderService fxmlLoaderService,
                              ControllerFactory controllerFactory,
                              FallbackManager fallbackManager) {
         this.factoryService = factoryService;
+        this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
@@ -166,7 +170,8 @@ public class FactoryController implements Initializable {
 
     @FXML
     private void handleEditFactory() {
-        System.out.println("Edit Factory Working");
+        currentSelectionService.setSelectedId(factory.getId());
+        navigationService.switchView("Update-Factory?id=" + factory.getId(), true);
     }
 
 }
