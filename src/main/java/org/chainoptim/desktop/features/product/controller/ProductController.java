@@ -69,6 +69,7 @@ public class ProductController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         loadFallbackManager();
         setupListeners();
+
         Integer productId = currentSelectionService.getSelectedId();
         if (productId != null) {
             loadProduct(productId);

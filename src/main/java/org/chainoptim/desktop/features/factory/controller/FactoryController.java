@@ -75,6 +75,7 @@ public class FactoryController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         loadFallbackManager();
         setupTabListeners();
+
         Integer factoryId = currentSelectionService.getSelectedId();
         if (factoryId != null) {
             loadFactory(factoryId);

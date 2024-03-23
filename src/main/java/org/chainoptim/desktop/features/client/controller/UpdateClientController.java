@@ -1,22 +1,22 @@
-package org.chainoptim.desktop.features.factory.controller;
+package org.chainoptim.desktop.features.client.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
-import org.chainoptim.desktop.features.factory.dto.UpdateFactoryDTO;
-import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.factory.service.FactoryService;
-import org.chainoptim.desktop.features.factory.service.FactoryWriteService;
+import org.chainoptim.desktop.features.client.dto.UpdateClientDTO;
+import org.chainoptim.desktop.features.client.model.Client;
+import org.chainoptim.desktop.features.client.service.ClientService;
+import org.chainoptim.desktop.features.client.service.ClientWriteService;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
-import javafx.fxml.Initializable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
@@ -26,17 +26,17 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class UpdateFactoryController implements Initializable {
+public class UpdateClientController implements Initializable {
 
-    private final FactoryService factoryService;
-    private final FactoryWriteService factoryWriteService;
+    private final ClientService clientService;
+    private final ClientWriteService clientWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
-    private Factory factory;
+    private Client client;
 
     private SelectOrCreateLocationController selectOrCreateLocationController;
 
@@ -48,17 +48,17 @@ public class UpdateFactoryController implements Initializable {
     private TextField nameField;
 
     @Inject
-    public UpdateFactoryController(
-            FactoryService factoryService,
-            FactoryWriteService factoryWriteService,
+    public UpdateClientController(
+            ClientService clientService,
+            ClientWriteService clientWriteService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
             FallbackManager fallbackManager,
             FXMLLoaderService fxmlLoaderService,
             ControllerFactory controllerFactory
     ) {
-        this.factoryService = factoryService;
-        this.factoryWriteService = factoryWriteService;
+        this.clientService = clientService;
+        this.clientWriteService = clientWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
@@ -70,7 +70,7 @@ public class UpdateFactoryController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         loadFallbackManager();
         loadSelectOrCreateLocation();
-        loadFactory(currentSelectionService.getSelectedId());
+        loadClient(currentSelectionService.getSelectedId());
     }
 
     private void loadFallbackManager() {
@@ -96,33 +96,33 @@ public class UpdateFactoryController implements Initializable {
         }
     }
 
-    private void loadFactory(Integer factoryId) {
+    private void loadClient(Integer clientId) {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        factoryService.getFactoryById(factoryId)
-                .thenApply(this::handleFactoryResponse)
-                .exceptionally(this::handleFactoryException)
+        clientService.getClientById(clientId)
+                .thenApply(this::handleClientResponse)
+                .exceptionally(this::handleClientException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Factory> handleFactoryResponse(Optional<Factory> factoryOptional) {
+    private Optional<Client> handleClientResponse(Optional<Client> clientOptional) {
         Platform.runLater(() -> {
-            if (factoryOptional.isEmpty()) {
-                fallbackManager.setErrorMessage("Failed to load factory.");
+            if (clientOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to load client.");
                 return;
             }
-            factory = factoryOptional.get();
+            client = clientOptional.get();
 
-            nameField.setText(factory.getName());
-            selectOrCreateLocationController.setSelectedLocation(factory.getLocation());
+            nameField.setText(client.getName());
+            selectOrCreateLocationController.setSelectedLocation(client.getLocation());
         });
 
-        return factoryOptional;
+        return clientOptional;
     }
 
-    private Optional<Factory> handleFactoryException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factory."));
+    private Optional<Client> handleClientException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load client."));
         return Optional.empty();
     }
 
@@ -131,24 +131,24 @@ public class UpdateFactoryController implements Initializable {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        UpdateFactoryDTO factoryDTO = getUpdateFactoryDTO();
-        System.out.println(factoryDTO);
+        UpdateClientDTO clientDTO = getUpdateClientDTO();
+        System.out.println(clientDTO);
 
-        factoryWriteService.updateFactory(factoryDTO)
-                .thenAccept(factoryOptional ->
+        clientWriteService.updateClient(clientDTO)
+                .thenAccept(clientOptional ->
                     Platform.runLater(() -> {
-                        if (factoryOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create factory.");
+                        if (clientOptional.isEmpty()) {
+                            fallbackManager.setErrorMessage("Failed to create client.");
                             return;
                         }
                         fallbackManager.setLoading(false);
 
-                        // Manage navigation, invalidating previous factory cache
-                        Factory updatedFactory = factoryOptional.get();
-                        String factoryPage = "Factory?id=" + updatedFactory.getId();
-                        NavigationServiceImpl.invalidateViewCache(factoryPage);
-                        currentSelectionService.setSelectedId(updatedFactory.getId());
-                        navigationService.switchView(factoryPage, true);
+                        // Manage navigation, invalidating previous client cache
+                        Client updatedClient = clientOptional.get();
+                        String clientPage = "Client?id=" + updatedClient.getId();
+                        NavigationServiceImpl.invalidateViewCache(clientPage);
+                        currentSelectionService.setSelectedId(updatedClient.getId());
+                        navigationService.switchView(clientPage, true);
                     })
                 )
                 .exceptionally(ex -> {
@@ -157,20 +157,20 @@ public class UpdateFactoryController implements Initializable {
                 });
     }
 
-    private UpdateFactoryDTO getUpdateFactoryDTO() {
-        UpdateFactoryDTO factoryDTO = new UpdateFactoryDTO();
-        factoryDTO.setId(factory.getId());
-        factoryDTO.setName(nameField.getText());
+    private UpdateClientDTO getUpdateClientDTO() {
+        UpdateClientDTO clientDTO = new UpdateClientDTO();
+        clientDTO.setId(client.getId());
+        clientDTO.setName(nameField.getText());
 
         if (selectOrCreateLocationController.isCreatingNewLocation()) {
-            factoryDTO.setCreateLocation(true);
-            factoryDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
+            clientDTO.setCreateLocation(true);
+            clientDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
         } else {
-            factoryDTO.setCreateLocation(false);
-            factoryDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
+            clientDTO.setCreateLocation(false);
+            clientDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
         }
 
-        return factoryDTO;
+        return clientDTO;
     }
 }
 

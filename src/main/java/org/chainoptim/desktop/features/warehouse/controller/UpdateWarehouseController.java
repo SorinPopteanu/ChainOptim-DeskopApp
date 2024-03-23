@@ -1,22 +1,22 @@
-package org.chainoptim.desktop.features.factory.controller;
+package org.chainoptim.desktop.features.warehouse.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
-import org.chainoptim.desktop.features.factory.dto.UpdateFactoryDTO;
-import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.factory.service.FactoryService;
-import org.chainoptim.desktop.features.factory.service.FactoryWriteService;
+import org.chainoptim.desktop.features.warehouse.dto.UpdateWarehouseDTO;
+import org.chainoptim.desktop.features.warehouse.model.Warehouse;
+import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
+import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
-import javafx.fxml.Initializable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
@@ -26,17 +26,17 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class UpdateFactoryController implements Initializable {
+public class UpdateWarehouseController implements Initializable {
 
-    private final FactoryService factoryService;
-    private final FactoryWriteService factoryWriteService;
+    private final WarehouseService warehouseService;
+    private final WarehouseWriteService warehouseWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
-    private Factory factory;
+    private Warehouse warehouse;
 
     private SelectOrCreateLocationController selectOrCreateLocationController;
 
@@ -48,17 +48,17 @@ public class UpdateFactoryController implements Initializable {
     private TextField nameField;
 
     @Inject
-    public UpdateFactoryController(
-            FactoryService factoryService,
-            FactoryWriteService factoryWriteService,
+    public UpdateWarehouseController(
+            WarehouseService warehouseService,
+            WarehouseWriteService warehouseWriteService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
             FallbackManager fallbackManager,
             FXMLLoaderService fxmlLoaderService,
             ControllerFactory controllerFactory
     ) {
-        this.factoryService = factoryService;
-        this.factoryWriteService = factoryWriteService;
+        this.warehouseService = warehouseService;
+        this.warehouseWriteService = warehouseWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
@@ -70,7 +70,7 @@ public class UpdateFactoryController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         loadFallbackManager();
         loadSelectOrCreateLocation();
-        loadFactory(currentSelectionService.getSelectedId());
+        loadWarehouse(currentSelectionService.getSelectedId());
     }
 
     private void loadFallbackManager() {
@@ -96,33 +96,33 @@ public class UpdateFactoryController implements Initializable {
         }
     }
 
-    private void loadFactory(Integer factoryId) {
+    private void loadWarehouse(Integer warehouseId) {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        factoryService.getFactoryById(factoryId)
-                .thenApply(this::handleFactoryResponse)
-                .exceptionally(this::handleFactoryException)
+        warehouseService.getWarehouseById(warehouseId)
+                .thenApply(this::handleWarehouseResponse)
+                .exceptionally(this::handleWarehouseException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Factory> handleFactoryResponse(Optional<Factory> factoryOptional) {
+    private Optional<Warehouse> handleWarehouseResponse(Optional<Warehouse> warehouseOptional) {
         Platform.runLater(() -> {
-            if (factoryOptional.isEmpty()) {
-                fallbackManager.setErrorMessage("Failed to load factory.");
+            if (warehouseOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to load warehouse.");
                 return;
             }
-            factory = factoryOptional.get();
+            warehouse = warehouseOptional.get();
 
-            nameField.setText(factory.getName());
-            selectOrCreateLocationController.setSelectedLocation(factory.getLocation());
+            nameField.setText(warehouse.getName());
+            selectOrCreateLocationController.setSelectedLocation(warehouse.getLocation());
         });
 
-        return factoryOptional;
+        return warehouseOptional;
     }
 
-    private Optional<Factory> handleFactoryException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factory."));
+    private Optional<Warehouse> handleWarehouseException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load warehouse."));
         return Optional.empty();
     }
 
@@ -131,24 +131,24 @@ public class UpdateFactoryController implements Initializable {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        UpdateFactoryDTO factoryDTO = getUpdateFactoryDTO();
-        System.out.println(factoryDTO);
+        UpdateWarehouseDTO warehouseDTO = getUpdateWarehouseDTO();
+        System.out.println(warehouseDTO);
 
-        factoryWriteService.updateFactory(factoryDTO)
-                .thenAccept(factoryOptional ->
+        warehouseWriteService.updateWarehouse(warehouseDTO)
+                .thenAccept(warehouseOptional ->
                     Platform.runLater(() -> {
-                        if (factoryOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create factory.");
+                        if (warehouseOptional.isEmpty()) {
+                            fallbackManager.setErrorMessage("Failed to create warehouse.");
                             return;
                         }
                         fallbackManager.setLoading(false);
 
-                        // Manage navigation, invalidating previous factory cache
-                        Factory updatedFactory = factoryOptional.get();
-                        String factoryPage = "Factory?id=" + updatedFactory.getId();
-                        NavigationServiceImpl.invalidateViewCache(factoryPage);
-                        currentSelectionService.setSelectedId(updatedFactory.getId());
-                        navigationService.switchView(factoryPage, true);
+                        // Manage navigation, invalidating previous warehouse cache
+                        Warehouse updatedWarehouse = warehouseOptional.get();
+                        String warehousePage = "Warehouse?id=" + updatedWarehouse.getId();
+                        NavigationServiceImpl.invalidateViewCache(warehousePage);
+                        currentSelectionService.setSelectedId(updatedWarehouse.getId());
+                        navigationService.switchView(warehousePage, true);
                     })
                 )
                 .exceptionally(ex -> {
@@ -157,20 +157,20 @@ public class UpdateFactoryController implements Initializable {
                 });
     }
 
-    private UpdateFactoryDTO getUpdateFactoryDTO() {
-        UpdateFactoryDTO factoryDTO = new UpdateFactoryDTO();
-        factoryDTO.setId(factory.getId());
-        factoryDTO.setName(nameField.getText());
+    private UpdateWarehouseDTO getUpdateWarehouseDTO() {
+        UpdateWarehouseDTO warehouseDTO = new UpdateWarehouseDTO();
+        warehouseDTO.setId(warehouse.getId());
+        warehouseDTO.setName(nameField.getText());
 
         if (selectOrCreateLocationController.isCreatingNewLocation()) {
-            factoryDTO.setCreateLocation(true);
-            factoryDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
+            warehouseDTO.setCreateLocation(true);
+            warehouseDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
         } else {
-            factoryDTO.setCreateLocation(false);
-            factoryDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
+            warehouseDTO.setCreateLocation(false);
+            warehouseDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
         }
 
-        return factoryDTO;
+        return warehouseDTO;
     }
 }
 

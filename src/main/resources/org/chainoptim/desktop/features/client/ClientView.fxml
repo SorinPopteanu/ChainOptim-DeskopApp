@@ -2,24 +2,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.client.controller.ClientController">
 
-        <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0">
-            <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
-                <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                    <Label fx:id="clientName" styleClass="entity-page-title"/>
-                    <Label fx:id="clientLocation" styleClass="entity-page-description"/>
-                </VBox>
-                <Button text="Edit Client" onAction="#handleEditClient" styleClass="standard-write-button"/>
-            </HBox>
-            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
-                <Tab fx:id="overviewTab" text="Overview"/>
-                <Tab fx:id="ordersTab" text="Orders"/>
-                <Tab fx:id="shipmentsTab" text="Shipments"/>
-                <Tab fx:id="evaluationTab" text="Evaluation"/>
-            </TabPane>
-        </VBox>
+    <!-- Header -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0">
+        <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <Label fx:id="clientName" styleClass="entity-page-title"/>
+                <Label fx:id="clientLocation" styleClass="entity-page-description"/>
+            </VBox>
+            <Button text="Edit Client" onAction="#handleEditClient" styleClass="standard-write-button"/>
+        </HBox>
+    </VBox>
 
-</AnchorPane>
+    <!-- Content -->
+    <StackPane>
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+            <Tab fx:id="overviewTab" text="Overview"/>
+            <Tab fx:id="ordersTab" text="Orders"/>
+            <Tab fx:id="shipmentsTab" text="Shipments"/>
+            <Tab fx:id="evaluationTab" text="Evaluation"/>
+        </TabPane>
+
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
+    </StackPane>
+</VBox>

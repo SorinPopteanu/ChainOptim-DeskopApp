@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -27,6 +28,7 @@ import java.util.ResourceBundle;
 public class SupplierController implements Initializable {
 
     private final SupplierService supplierService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
@@ -53,11 +55,13 @@ public class SupplierController implements Initializable {
 
     @Inject
     public SupplierController(SupplierService supplierService,
+                                NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
                               FallbackManager fallbackManager) {
         this.supplierService = supplierService;
+        this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
@@ -68,6 +72,7 @@ public class SupplierController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         loadFallbackManager();
         setupListeners();
+
         Integer supplierId = currentSelectionService.getSelectedId();
         if (supplierId != null) {
             loadSupplier(supplierId);
@@ -165,6 +170,8 @@ public class SupplierController implements Initializable {
     }
 
     @FXML
-    private void handleEditSupplier() {System.out.println("Edit Supplier Working");}
-
+    private void handleEditSupplier() {
+        currentSelectionService.setSelectedId(supplier.getId());
+        navigationService.switchView("Update-Supplier?id=" + supplier.getId(), true);
+    }
 }
