@@ -100,7 +100,7 @@ public class WarehousesController implements Initializable {
             Node headerView = loader.load();
             headerContainer.getChildren().add(headerView);
             headerController = loader.getController();
-            headerController.initializeHeader("Warehouses", "/img/warehouse-solid.png", sortOptions, "Warehouse", "Create-Warehouse");
+            headerController.initializeHeader("Warehouses", "/img/warehouse-solid.png", sortOptions, this::loadWarehouses, "Warehouse", "Create-Warehouse");
         } catch (IOException e) {
             e.printStackTrace();
         }

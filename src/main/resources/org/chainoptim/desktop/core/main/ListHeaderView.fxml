@@ -19,6 +19,8 @@
             <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption"/>
             <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
             <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="refreshButton" styleClass="refresh-button"/>
+            <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="createNewItemButton" onAction="#handleCreateNewItem" styleClass="standard-write-button"/>
         </HBox>
     </ToolBar>

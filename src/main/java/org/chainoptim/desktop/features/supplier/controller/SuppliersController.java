@@ -99,7 +99,7 @@ public class SuppliersController implements Initializable {
             Node headerView = loader.load();
             headerContainer.getChildren().add(headerView);
             headerController = loader.getController();
-            headerController.initializeHeader("Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, "Supplier", "Create-Supplier");
+            headerController.initializeHeader("Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, this::loadSuppliers, "Supplier", "Create-Supplier");
         } catch (IOException e) {
             e.printStackTrace();
         }

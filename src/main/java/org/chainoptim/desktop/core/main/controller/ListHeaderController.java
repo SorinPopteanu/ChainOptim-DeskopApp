@@ -1,11 +1,15 @@
 package org.chainoptim.desktop.core.main.controller;
 
 import com.google.inject.Inject;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
@@ -25,13 +29,15 @@ public class ListHeaderController {
     @FXML
     private TextField searchBar;
     @FXML
+    private Button searchButton;
+    @FXML
     private ComboBox<String> sortOptions;
     @FXML
     private Button orderingButton;
     @FXML
-    private Button createNewItemButton;
+    private Button refreshButton;
     @FXML
-    private Button searchButton;
+    private Button createNewItemButton;
 
     private Map<String,String> sortOptionsMap;
 
@@ -49,12 +55,16 @@ public class ListHeaderController {
         this.navigationService = navigationService;
     }
 
-    public void initializeHeader(String titleText, String titleIconPath, Map<String, String> sortOptionsMap, String createNewItemButtonText, String createNewItem) {
+    public void initializeHeader(String titleText, String titleIconPath,
+                                 Map<String, String> sortOptionsMap,
+                                 Runnable refreshAction,
+                                 String createNewItemButtonText, String createNewItem) {
         this.sortOptionsMap = sortOptionsMap;
         setTitle(titleText, titleIconPath);
         setSearchButton();
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
+        setRefreshButton(refreshAction);
         setCreateNewItemButton(createNewItemButtonText);
         setNewItemKey(createNewItem);
     }
@@ -95,6 +105,28 @@ public class ListHeaderController {
             orderingButton.setGraphic(sortUpImageView);
     }
 
+    public void setRefreshButton(Runnable refreshAction) {
+        Image refreshIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/rotate-right-solid.png")));
+        ImageView refreshIconView = new ImageView(refreshIcon);
+        refreshIconView.setFitWidth(14);
+        refreshIconView.setFitHeight(14);
+
+        // Apply rotation on click
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), refreshIconView);
+        rotateTransition.setByAngle(360);
+        rotateTransition.setCycleCount(1);
+        rotateTransition.setInterpolator(Interpolator.LINEAR);
+
+        refreshButton.setGraphic(refreshIconView);
+
+        refreshButton.setOnAction(e -> {
+            rotateTransition.stop();
+            rotateTransition.playFromStart();
+            // Run refresh action
+            refreshAction.run();
+        });
+    }
+
     private void setCreateNewItemButton(String text) {
         createNewItemButton.setText("Create New " + text);
         Image plusIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
@@ -125,13 +157,13 @@ public class ListHeaderController {
 
     @FXML
     private void handleSortOption() {
-        String selectedFilter = sortOptions.getValue();
-        String backendFilter = sortOptionsMap.entrySet().stream()
-            .filter(entry -> Objects.equals(entry.getValue(), selectedFilter))
+        String selectedSortOption = sortOptions.getValue();
+        String backendSortOption = sortOptionsMap.entrySet().stream()
+            .filter(entry -> Objects.equals(entry.getValue(), selectedSortOption))
             .map(Map.Entry::getKey)
             .findFirst()
-            .orElse(selectedFilter);
-        searchParams.setSortOption(backendFilter);
+            .orElse(selectedSortOption);
+        searchParams.setSortOption(backendSortOption);
     }
 
     private void setNewItemKey(String createNewItem) {

@@ -99,7 +99,7 @@ public class FactoriesController implements Initializable {
             Node headerView = loader.load();
             headerContainer.getChildren().add(headerView);
             headerController = loader.getController();
-            headerController.initializeHeader("Factories", "/img/industry-solid.png", sortOptions, "Factory", "Create-Factory");
+            headerController.initializeHeader("Factories", "/img/industry-solid.png", sortOptions, this::loadFactories, "Factory", "Create-Factory");
         } catch (IOException e) {
             e.printStackTrace();
         }
