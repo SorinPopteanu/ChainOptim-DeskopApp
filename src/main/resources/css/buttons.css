@@ -1,4 +1,5 @@
 .standard-write-button {
+    -fx-pref-height: 32px;
     -fx-background-color: #0077dd;
     -fx-text-fill: white;
     -fx-font-weight: normal;

@@ -13,7 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.HeaderController;
+import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.model.User;
@@ -42,7 +42,7 @@ public class SuppliersController implements Initializable {
     private final SearchParams searchParams;
 
     @FXML
-    private HeaderController headerController;
+    private ListHeaderController headerController;
     @FXML
     private PageSelectorController pageSelectorController;
     @FXML
@@ -92,7 +92,7 @@ public class SuppliersController implements Initializable {
 
     private void initializeHeader() {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/main/HeaderView.fxml",
+                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
                 controllerFactory::createController
         );
         try {
