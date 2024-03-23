@@ -1,0 +1,16 @@
+.plan-label {
+    -fx-alignment: top-right;
+    -fx-text-alignment: right;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.organization-content-container {
+    -fx-padding: 20px;
+
+}
+
+.organization-common-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
