@@ -1,12 +1,8 @@
 package org.chainoptim.desktop.features.factory.controller;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.features.factory.model.Factory;
@@ -14,12 +10,15 @@ import org.chainoptim.desktop.features.factory.service.FactoryService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
 import com.google.inject.Inject;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -74,7 +73,7 @@ public class FactoryController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadFallbackManager();
-        setupTabListeners();
+        setupListeners();
 
         Integer factoryId = currentSelectionService.getSelectedId();
         if (factoryId != null) {
@@ -126,7 +125,7 @@ public class FactoryController implements Initializable {
         return Optional.empty();
     }
 
-    private void setupTabListeners() {
+    private void setupListeners() {
         overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
                 loadTabContent(overviewTab, "/org/chainoptim/desktop/features/factory/FactoryOverviewView.fxml", this.factory);
@@ -159,7 +158,7 @@ public class FactoryController implements Initializable {
     private void loadTabContent(Tab tab, String fxmlFilepath, Factory factory) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
-            loader.setControllerFactory(MainApplication.injector::getInstance);
+            loader.setControllerFactory(controllerFactory::createController);
             Node content = loader.load();
             DataReceiver<Factory> controller = loader.getController();
             controller.setData(factory);
