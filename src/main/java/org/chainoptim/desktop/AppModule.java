@@ -7,6 +7,8 @@ import org.chainoptim.desktop.core.abstraction.ThreadRunner;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.organization.service.CustomRoleService;
+import org.chainoptim.desktop.core.organization.service.CustomRoleServiceImpl;
 import org.chainoptim.desktop.core.organization.service.OrganizationService;
 import org.chainoptim.desktop.core.organization.service.OrganizationServiceImpl;
 import org.chainoptim.desktop.core.user.service.UserService;
@@ -63,13 +65,21 @@ public class AppModule extends AbstractModule {
 
         // Bind interfaces to implementations
         // Core
+        // - Main
+        bind(NavigationService.class).to(NavigationServiceImpl.class);
+
+        // - Abstraction
         bind(ControllerFactory.class).to(GuiceControllerFactory.class);
         bind(ThreadRunner.class).to(JavaFXThreadRunner.class);
-        bind(NavigationService.class).to(NavigationServiceImpl.class);
         bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class);
+
+        // - User
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(UserService.class).to(UserServiceImpl.class);
+
+        // - Organization
         bind(OrganizationService.class).to(OrganizationServiceImpl.class);
+        bind(CustomRoleService.class).to(CustomRoleServiceImpl.class);
 
         // Features
         // - Product

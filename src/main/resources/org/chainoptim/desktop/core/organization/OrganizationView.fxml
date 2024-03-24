@@ -24,6 +24,10 @@
     <VBox styleClass="organization-content-container">
         <Label text="Members:" styleClass="organization-common-label"/>
         <!-- Members list -->
-        <VBox fx:id="usersVBox" spacing="10"/>
+        <VBox fx:id="usersVBox" spacing="20"/>
+
+        <!-- Custom Roles List -->
+        <Label text="Custom Roles:" styleClass="organization-common-label"/>
+        <VBox fx:id="customRolesVBox" spacing="20"/>
     </VBox>
 </VBox>

@@ -4,28 +4,25 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.Organization;
+import org.chainoptim.desktop.core.organization.service.CustomRoleService;
 import org.chainoptim.desktop.core.organization.service.OrganizationService;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
-import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 
 import java.net.URL;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class OrganizationController implements Initializable {
 
     private final OrganizationService organizationService;
+    private final CustomRoleService customRoleService;
 
     private final FallbackManager fallbackManager;
 
@@ -39,11 +36,15 @@ public class OrganizationController implements Initializable {
     private Label planLabel;
     @FXML
     private VBox usersVBox;
+    @FXML
+    private VBox customRolesVBox;
 
     @Inject
     public OrganizationController(OrganizationService organizationService,
+                                  CustomRoleService customRoleService,
                                   FallbackManager fallbackManager) {
         this.organizationService = organizationService;
+        this.customRoleService = customRoleService;
         this.fallbackManager = fallbackManager;
     }
 
@@ -57,7 +58,11 @@ public class OrganizationController implements Initializable {
 
         organizationService.getOrganizationById(currentUser.getOrganization().getId(), true)
                 .thenApply(this::handleOrganizationResponse)
-                .exceptionally(this::handleOrganizationException)
+                .exceptionally(this::handleOrganizationException);
+
+        customRoleService.getCustomRolesByOrganizationId(currentUser.getOrganization().getId())
+                .thenApply(this::handleCustomRolesResponse)
+                .exceptionally(this::handleCustomRolesException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
@@ -87,11 +92,37 @@ public class OrganizationController implements Initializable {
         for (User user : organization.getUsers()) {
             Label usernameLabel = new Label(user.getUsername());
             usersVBox.getChildren().add(usernameLabel);
+            if (user.getCustomRole() != null) {
+                Label customRoleLabel = new Label(user.getCustomRole().getName());
+                usersVBox.getChildren().add(customRoleLabel);
+            }
         }
     }
 
     private Optional<Organization> handleOrganizationException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load organization."));
+        return Optional.empty();
+    }
+
+    private Optional<List<CustomRole>> handleCustomRolesResponse(Optional<List<CustomRole>> customRolesOptional) {
+        Platform.runLater(() -> {
+            if (customRolesOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to load custom roles.");
+                return;
+            }
+            customRolesVBox.getChildren().clear();
+            List<CustomRole> customRoles = customRolesOptional.get();
+
+            for (CustomRole customRole : customRoles) {
+                Label customRoleLabel = new Label(customRole.getName());
+                customRolesVBox.getChildren().add(customRoleLabel);
+            }
+        });
+        return customRolesOptional;
+    }
+
+    private Optional<List<CustomRole>> handleCustomRolesException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load custom roles."));
         return Optional.empty();
     }
 
