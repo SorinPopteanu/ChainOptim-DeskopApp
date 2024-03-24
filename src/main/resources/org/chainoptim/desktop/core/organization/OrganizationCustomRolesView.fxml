@@ -8,7 +8,7 @@
       styleClass="organization-content-container"
       prefHeight="600" prefWidth="800">
 
-    <ScrollPane VBox.vgrow="ALWAYS" style="-fx-background-color: white;">
-        <GridPane fx:id="customRolesPane" VBox.vgrow="ALWAYS" style="-fx-background-color: white;"/>
+    <ScrollPane VBox.vgrow="ALWAYS" style="-fx-background-color: white">
+        <GridPane fx:id="customRolesPane" VBox.vgrow="ALWAYS" style="-fx-background-color: white"/>
     </ScrollPane>
 </VBox>
