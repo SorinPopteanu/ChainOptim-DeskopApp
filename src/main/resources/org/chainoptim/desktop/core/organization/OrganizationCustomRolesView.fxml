@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.core.organization.controller.OrganizationCustomRolesController"
-            styleClass="organization-content-container">
+            styleClass="organization-content-container"
+            prefHeight="600" prefWidth="800">
 
-    <Label text="Custom Roles:" styleClass="organization-common-label"/>
-    <VBox fx:id="customRolesVBox" spacing="20"/>
+    <GridPane fx:id="customRolesPane" VBox.vgrow="ALWAYS"/>
 </VBox>

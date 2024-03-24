@@ -14,3 +14,11 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
+
+/* Custom Roles */
+.parent-row {
+    -fx-background-color: #f0f0f0; /* Light gray background */
+    -fx-border-color: transparent transparent #d0d0d0 transparent; /* Border at the bottom */
+    -fx-border-width: 1;
+    -fx-padding: 5px; /* Add padding for visual comfort */
+}
