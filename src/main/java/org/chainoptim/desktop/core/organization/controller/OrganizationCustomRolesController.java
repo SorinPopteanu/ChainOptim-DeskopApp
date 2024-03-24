@@ -12,13 +12,18 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +37,12 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private final FallbackManager fallbackManager;
 
     private Organization organization;
+    private List<CustomRole> customRoles;
 
     @FXML
     private GridPane customRolesPane;
     @FXML
-    private List<Button> expandRoleButtons;
+    private List<Button> expandRoleButtons = new ArrayList<>();
     @FXML
     private List<Boolean> expandedRoles = new ArrayList<>();
 
@@ -76,9 +82,10 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 fallbackManager.setErrorMessage("Failed to load custom roles.");
                 return;
             }
-            List<CustomRole> customRoles = customRolesOptional.get();
+            customRoles = customRolesOptional.get();
 
-            renderGridPane(customRoles);
+            // Render the grid
+            renderGridPane();
         });
         return customRolesOptional;
     }
@@ -88,10 +95,8 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         return Optional.empty();
     }
 
-    private void renderGridPane(List<CustomRole> customRoles) {
+    private void renderGridPane() {
         customRolesPane.getChildren().clear();
-        customRolesPane.setHgap(40);
-        customRolesPane.setVgap(40);
 
         customRolesPane.add(new Label("Custom Role"), 0, 0);
 
@@ -103,37 +108,93 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         }
 
         // Rows
-        for (int row = 0; row < customRoles.size(); row++) {
-            CustomRole role = customRoles.get(row);
-            Label roleNameLabel = new Label(role.getName());
-            roleNameLabel.getStyleClass().add("parent-row");
-            customRolesPane.add(roleNameLabel, 0, row + 1);
+        int rowIndex = 1; // Start from 1 to account for header row
+        for (CustomRole role : customRoles) {
+            // Render role row
+            addRoleRow(role, rowIndex++);
 
-            // Column values
-            for (int col = 0; col < operations.length; col++) {
+            // Pre-allocate and hide feature permission rows
+            for (String feature : features) {
+                addFeaturePermissionRow(feature, role, rowIndex++);
+            }
+        }
+    }
+
+    private void addRoleRow(CustomRole role, int rowIndex) {
+        Label roleNameLabel = new Label(role.getName());
+        roleNameLabel.getStyleClass().add("parent-row");
+        customRolesPane.add(roleNameLabel, 0, rowIndex);
+
+        addExpandButton(role, rowIndex);
+
+        // Add aggregate checkboxes
+        for (int col = 0; col < operations.length; col++) {
+            CheckBox checkBox = new CheckBox();
+            checkBox.setSelected(aggregatePermissionsByIndex(role.getPermissions(), col)); // Select if all underlying permissions are true
+            checkBox.setDisable(true);
+            GridPane.setMargin(checkBox, new Insets(10, 40, 10, 40));
+            customRolesPane.add(checkBox, col + 1, rowIndex);
+        }
+    }
+
+    private void addExpandButton(CustomRole role, int rowIndex) {
+        Button expandButton = new Button();
+        expandButton.setGraphic(createImageView(angleDownImage));
+        expandButton.getStyleClass().add("no-style-button");
+
+        expandButton.setOnAction(event -> toggleFeaturePermissions(role, rowIndex));
+
+        expandRoleButtons.add(expandButton);
+        expandedRoles.add(false); // Start from collapsed state
+        customRolesPane.add(expandButton, operations.length + 1, rowIndex);
+    }
+
+    private void addFeaturePermissionRow(String feature, CustomRole role, int rowIndex) {
+        FeaturePermissions featurePermissions = getFeaturePermissionsByFeatureName(role.getPermissions(), feature);
+
+        for (int col = 0; col <= operations.length; col++) {
+            Node node;
+            if (col == 0) {
+                node = new Label(feature);
+            } else {
+                boolean hasPermission = getPermissionByIndex(featurePermissions, col - 1);
                 CheckBox checkBox = new CheckBox();
-                boolean hasPermission = aggregatePermissionsByIndex(role.getPermissions(), col);
                 checkBox.setSelected(hasPermission);
-                customRolesPane.add(checkBox, col + 1, row + 1);
-                GridPane.setHalignment(checkBox, HPos.CENTER);
+                checkBox.setDisable(true);
+                GridPane.setMargin(checkBox, new Insets(10, 40, 10, 40));
+                node = checkBox;
             }
 
-            // Expand button
-            expandedRoles.add(false);
-            Button expandButton = new Button();
-            expandButton.setGraphic(createImageView(angleDownImage));
-            int finalRow = row;
-            expandButton.setOnAction(event -> {
-                if (Boolean.TRUE.equals(expandedRoles.get(finalRow))) {
-                    expandedRoles.set(finalRow, false);
-                    expandButton.setGraphic(createImageView(angleDownImage));
-                } else {
-                    expandedRoles.set(finalRow, true);
-                    expandButton.setGraphic(createImageView(angleUpImage));
-                }
-            });
-            customRolesPane.add(expandButton, operations.length + 1, row + 1);
+            node.setVisible(false);
+            node.setManaged(false);
+            customRolesPane.add(node, col, rowIndex);
+            GridPane.setHalignment(node, HPos.CENTER);
         }
+    }
+
+    private void toggleFeaturePermissions(CustomRole role, int roleVisualRowIndex) {
+        int roleIndex = customRoles.indexOf(role);
+        boolean isExpanded = expandedRoles.get(roleIndex);
+
+        int rowIndex = roleVisualRowIndex + 1;
+        int featureRowsCount = features.length;
+
+        for (int i = 0; i < featureRowsCount; i++, rowIndex++) {
+            // Toggle visibility of each child in the feature permission rows
+            toggleSubrowVisibility(rowIndex, !isExpanded);
+        }
+        // Toggle the expanded state
+        expandedRoles.set(roleIndex, !isExpanded);
+        expandRoleButtons.get(roleIndex).setGraphic(createImageView(isExpanded ? angleDownImage : angleUpImage));
+    }
+
+    private void toggleSubrowVisibility(int rowIndex, boolean isVisible) {
+        customRolesPane.getChildren().stream()
+                .filter(node -> GridPane.getRowIndex(node) != null && GridPane.getRowIndex(node) == rowIndex)
+                .forEach(node -> {
+                    node.setVisible(isVisible);
+                    node.setManaged(isVisible);
+                });
     }
 
     private boolean aggregatePermissionsByIndex(Permissions permissions, int index) {
@@ -158,8 +219,15 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         };
     }
 
-    private void renderRolePermissions(CustomRole role) {
-
+    private FeaturePermissions getFeaturePermissionsByFeatureName(Permissions permissions, String featureName) {
+        return switch (featureName) {
+            case "Products" -> permissions.getProducts();
+            case "Factories" -> permissions.getFactories();
+            case "Warehouses" -> permissions.getWarehouses();
+            case "Suppliers" -> permissions.getSuppliers();
+            case "Clients" -> permissions.getClients();
+            default -> null;
+        };
     }
 
     private ImageView createImageView(Image image) {
