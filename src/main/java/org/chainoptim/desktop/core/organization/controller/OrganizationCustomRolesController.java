@@ -1,49 +1,53 @@
 package org.chainoptim.desktop.core.organization.controller;
 
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.organization.dto.UpdateCustomRoleDTO;
-import org.chainoptim.desktop.core.organization.model.CustomRole;
-import org.chainoptim.desktop.core.organization.model.FeaturePermissions;
-import org.chainoptim.desktop.core.organization.model.Organization;
-import org.chainoptim.desktop.core.organization.model.Permissions;
+import org.chainoptim.desktop.core.organization.model.*;
 import org.chainoptim.desktop.core.organization.service.CustomRoleService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class OrganizationCustomRolesController implements DataReceiver<Organization> {
+public class OrganizationCustomRolesController implements DataReceiver<Organization>, ConfirmDialogActionListener {
 
     private final CustomRoleService customRoleService;
-
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
     private Organization organization;
     private List<CustomRole> customRoles;
 
+    private ConfirmCustomRoleUpdateController confirmCustomRoleUpdateController;
+
     @FXML
     private GridPane customRolesPane;
     @FXML
     private List<Button> expandRoleButtons = new ArrayList<>();
+    @FXML
+    private StackPane confirmDialogContainer;
 
     private final List<Boolean> expandedRoleStates = new ArrayList<>();
-    private boolean editRoleState = false;
+    private int currentEditedRowIndex = -1; // No edit marker
 
     private static final String[] operations = {"Read", "Create", "Update", "Delete"};
     private static final String[] features = {"Products", "Factories", "Warehouses", "Suppliers", "Clients"};
@@ -56,31 +60,61 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
 
     @Inject
     public OrganizationCustomRolesController(CustomRoleService customRoleService,
+                                             FXMLLoaderService fxmlLoaderService,
+                                             ControllerFactory controllerFactory,
                                              FallbackManager fallbackManager) {
         this.customRoleService = customRoleService;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void setData(Organization data) {
         this.organization = data;
+
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         initializeIcons();
+        loadConfirmDialog();
 
-        customRoleService.getCustomRolesByOrganizationId(organization.getId())
-                .thenApply(this::handleCustomRolesResponse)
-                .exceptionally(this::handleCustomRolesException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+        loadCustomRoles();
     }
 
+    // Initialize UI
     private void initializeIcons() {
         angleUpImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
         angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
         editImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
         saveImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
         cancelImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
+    }
+
+    private void loadConfirmDialog() {
+        // Load view into fallbackContainer
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/organization/ConfirmCustomRoleUpdateView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node confirmDialogView = loader.load();
+            confirmCustomRoleUpdateController = loader.getController();
+            confirmCustomRoleUpdateController.setConfirmDialogActionListener(this); // Listen to confirm dialog actions
+            confirmDialogContainer.getChildren().add(confirmDialogView);
+            confirmDialogContainer.setVisible(false);
+            confirmDialogContainer.setManaged(false);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    // Load roles
+    private void loadCustomRoles() {
+        customRoleService.getCustomRolesByOrganizationId(organization.getId())
+                .thenApply(this::handleCustomRolesResponse)
+                .exceptionally(this::handleCustomRolesException)
+                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
     private Optional<List<CustomRole>> handleCustomRolesResponse(Optional<List<CustomRole>> customRolesOptional) {
@@ -225,7 +259,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     }
 
     private void toggleEditingRow(int rowIndex, boolean isEdit) {
-        editRoleState = isEdit;
+        currentEditedRowIndex = isEdit ? rowIndex : -1;
 
         // Enable row checkboxes
         toggleRowEdit(rowIndex, isEdit);
@@ -277,7 +311,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             styleCancelButton(button);
             button.setOnAction(event -> {
                 toggleEditingRow(rowIndex, false);
-                cancelCheckboxSelections(rowIndex);
+                refreshCheckboxSelections(rowIndex);
             });
         } else {
             styleEditButton(button);
@@ -285,7 +319,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         }
     }
 
-    private void cancelCheckboxSelections(int rowIndex) {
+    private void refreshCheckboxSelections(int rowIndex) {
         // Reselect based on the original permissions
         int startingFeatureIndex = rowIndex + 1;
         Permissions permissions = customRoles.get(getRoleIndexByRowIndex(rowIndex)).getPermissions();
@@ -322,10 +356,25 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         Button saveButton = new Button();
         styleSaveButton(saveButton);
 
-        saveButton.setOnAction(event -> saveRoleChanges(customRole, rowIndex));
+        saveButton.setOnAction(event -> openConfirmDialog(customRole));
 
         saveButton.setVisible(false); // Start hidden since edit is false
         customRolesPane.add(saveButton, operations.length + 3, rowIndex);
+    }
+
+    @Override
+    public void onConfirmCustomRoleUpdate(CustomRole customRole) {
+        if (currentEditedRowIndex != -1) {
+            saveRoleChanges(customRole, currentEditedRowIndex);
+        } else {
+            fallbackManager.setErrorMessage("No changes have been detected.");
+            closeConfirmDialog();
+        }
+    }
+
+    @Override
+    public void onCancelCustomRoleUpdate() {
+        closeConfirmDialog();
     }
 
     private void saveRoleChanges(CustomRole customRole, int rowIndex) {
@@ -373,8 +422,15 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 fallbackManager.setErrorMessage("Failed to update custom role.");
                 return;
             }
+            CustomRole updatedRole = updatedRoleOptional.get();
 
+            // Update customRoles
+            customRoles.set(getRoleIndexByRowIndex(rowIndex), updatedRole);
+
+            // Update UI
             fallbackManager.setLoading(false);
+            closeConfirmDialog();
+            refreshCheckboxSelections(rowIndex);
 
             // Disable editing row
             toggleEditingRow(rowIndex, false);
@@ -385,6 +441,17 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 saveButton.setVisible(false);
             }
         });
+    }
+
+    private void openConfirmDialog(CustomRole customRole) {
+        confirmCustomRoleUpdateController.setData(customRole);
+        confirmDialogContainer.setVisible(true);
+        confirmDialogContainer.setManaged(true);
+    }
+
+    private void closeConfirmDialog() {
+        confirmDialogContainer.setVisible(false);
+        confirmDialogContainer.setManaged(false);
     }
 
     // Utils

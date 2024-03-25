@@ -36,17 +36,13 @@ public class OverviewController implements Initializable {
     }
 
     private void fetchAndSetUser(String username) {
-        try {
-            userService.getUserByUsername(username)
-                    .thenAcceptAsync(userOptional -> userOptional.ifPresentOrElse(this::updateCurrentUser,
-                            () -> Platform.runLater(() -> System.err.println("User not found."))))
-                    .exceptionally(ex -> {
-                        Platform.runLater(() -> System.err.println("Failed to load user: " + ex.getMessage()));
-                        return null;
-                    });
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Error encoding username: " + e.getMessage());
-        }
+        userService.getUserByUsername(username)
+                .thenAcceptAsync(userOptional -> userOptional.ifPresentOrElse(this::updateCurrentUser,
+                        () -> Platform.runLater(() -> System.err.println("User not found."))))
+                .exceptionally(ex -> {
+                    Platform.runLater(() -> System.err.println("Failed to load user: " + ex.getMessage()));
+                    return null;
+                });
     }
 
     private void updateCurrentUser(User user) {

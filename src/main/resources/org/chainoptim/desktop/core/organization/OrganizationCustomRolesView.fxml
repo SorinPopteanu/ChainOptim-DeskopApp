@@ -2,7 +2,7 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.ScrollPane?>
-<VBox xmlns="http://javafx.com/javafx"
+<StackPane xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.core.organization.controller.OrganizationCustomRolesController"
       styleClass="organization-content-container"
@@ -11,4 +11,6 @@
     <ScrollPane VBox.vgrow="ALWAYS" style="-fx-background-color: white">
         <GridPane fx:id="customRolesPane" VBox.vgrow="ALWAYS" style="-fx-background-color: white"/>
     </ScrollPane>
-</VBox>
+
+    <StackPane fx:id="confirmDialogContainer" style="-fx-padding: 64px"/>
+</StackPane>
