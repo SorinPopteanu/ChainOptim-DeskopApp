@@ -10,10 +10,13 @@
 
 .table-view .column-header,
 .table-view .table-cell {
-    -fx-padding: 10px;
     -fx-border-color: #d0d0d0;
     -fx-background-color: transparent;
     -fx-alignment: CENTER;
+}
+
+.table-view .table-row-cell {
+    -fx-cell-size: 40px;
 }
 
 .table-view .column-header .label {
@@ -38,4 +41,46 @@
 
 .table-view .table-row-cell:selected {
     -fx-background-color: #cce0ff;
+    -fx-text-fill: black;
 }
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: black;
+}
+
+.scroll-bar {
+    -fx-opacity: 0;
+}
+
+.scroll-bar:hover
+.scroll-bar:pressed {
+    -fx-opacity: 1;
+}
+
+/*.scroll-pane .scroll-bar:vertical {*/
+/*    -fx-opacity: 0;*/
+/*}*/
+
+/*.scroll-pane scroll.bar:vertical:hover*/
+/*.scroll-pane .scroll-bar:vertical:pressed {*/
+/*    -fx-opacity: 1;*/
+/*}*/
+
+/*.scroll-pane .scroll-bar:horizontal {*/
+/*    -fx-opacity: 0;*/
+/*}*/
+
+/*.scroll-pane .scroll-bar:horizontal:hover,*/
+/*.scroll-pane .scroll-bar:horizontal:pressed {*/
+/*    -fx-opacity: 1;*/
+/*}*/
+
+/*.table-view .scroll-bar:horizontal {*/
+/*    -fx-opacity: 0;*/
+/*}*/
+
+/*.table-view .scroll-bar:horizontal:hover,*/
+/*.table-view .scroll-bar:horizontal:pressed {*/
+/*    -fx-opacity: 1;*/
+/*}*/
+

@@ -4,23 +4,24 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.ScrollPane?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOrdersController"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOrdersController">
 
     <Label fx:id="clientName" />
-    <TableView fx:id="tableView" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" styleClass="table-view">
-        <columns>
-        <TableColumn text="Order ID" fx:id="orderIdColumn"/>
-        <TableColumn text="Client ID" fx:id="clientIdColumn"/>
-        <TableColumn text="Product ID" fx:id="productIdColumn"/>
-        <TableColumn text="Quantity" fx:id="quantityColumn"/>
-        <TableColumn text="Status" fx:id="statusColumn"/>
-        <TableColumn text="Order Date" fx:id="orderDateColumn"/>
-        <TableColumn text="Estimated Delivery Date" fx:id="estimatedDeliveryDateColumn"/>
-        <TableColumn text="Delivery Date" fx:id="deliveryDateColumn"/>
-
-        </columns>
-    </TableView>
+    <ScrollPane fx:id="scrollPane" styleClass="scroll-pane" fitToHeight="true" fitToWidth="true" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+        <TableView fx:id="tableView" styleClass="table-view">
+            <columns>
+            <TableColumn text="Order ID" fx:id="orderIdColumn" minWidth="150"/>
+            <TableColumn text="Client ID" fx:id="clientIdColumn" minWidth="150"/>
+            <TableColumn text="Product ID" fx:id="productIdColumn" minWidth="150"/>
+            <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
+            <TableColumn text="Status" fx:id="statusColumn" minWidth="150"/>
+            <TableColumn text="Order Date" fx:id="orderDateColumn" minWidth="150"/>
+            <TableColumn text="Estimated Delivery Date" fx:id="estimatedDeliveryDateColumn" minWidth="200"/>
+            <TableColumn text="Delivery Date" fx:id="deliveryDateColumn" minWidth="150"/>
+            </columns>
+        </TableView>
+    </ScrollPane>
 </AnchorPane>
