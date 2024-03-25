@@ -7,10 +7,29 @@
 
 .organization-content-container {
     -fx-padding: 20px;
-
+    -fx-background-color: white;
 }
 
 .organization-common-label {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+}
+
+/* Custom Roles */
+.column-header {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.parent-row {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+scroll-pane {
+    -fx-background-color: white;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: white;
 }

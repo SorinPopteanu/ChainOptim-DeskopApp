@@ -21,9 +21,13 @@
     </VBox>
 
     <!-- Content -->
-    <VBox styleClass="organization-content-container">
-        <Label text="Members:" styleClass="organization-common-label"/>
-        <!-- Members list -->
-        <VBox fx:id="usersVBox" spacing="10"/>
-    </VBox>
+    <StackPane>
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+            <Tab fx:id="overviewTab" text="Overview"/>
+            <Tab fx:id="customRolesTab" text="Custom Roles"/>
+            <Tab fx:id="subscriptionPlanTab" text="Subscription Plan"/>
+        </TabPane>
+
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
+    </StackPane>
 </VBox>
