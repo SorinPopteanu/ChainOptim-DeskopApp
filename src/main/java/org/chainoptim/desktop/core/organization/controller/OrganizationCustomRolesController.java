@@ -105,12 +105,12 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     // Initialize UI
     private void initializeIcons() {
         plusImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
+        trashImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
         angleUpImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
         angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
         editImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
         saveImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
         cancelImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
-        trashImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
     }
 
     private void loadConfirmUpdateDialog() {
@@ -752,6 +752,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         button.setTooltip(new Tooltip("Delete Role"));
         GridPane.setMargin(button, new Insets(12));
     }
+
     private void styleExpandButton(Button button) {
         button.getStyleClass().add("no-style-button");
         button.setGraphic(createImageView(angleDownImage));
