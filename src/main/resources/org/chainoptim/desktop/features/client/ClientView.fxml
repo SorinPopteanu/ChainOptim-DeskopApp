@@ -6,7 +6,7 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.client.controller.ClientController">
 
-        <VBox AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0">
             <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
                 <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                     <Label fx:id="clientName" styleClass="entity-page-title"/>
@@ -14,7 +14,7 @@
                 </VBox>
                 <Button text="Edit Client" onAction="#handleEditClient" styleClass="standard-write-button"/>
             </HBox>
-            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
                 <Tab fx:id="overviewTab" text="Overview"/>
                 <Tab fx:id="ordersTab" text="Orders"/>
                 <Tab fx:id="shipmentsTab" text="Shipments"/>
