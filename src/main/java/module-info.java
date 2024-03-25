@@ -48,6 +48,7 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.organization.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.core.organization.service to com.google.guice;
     opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.organization.dto to com.fasterxml.jackson.databind;
 
     // Features
     // - Product

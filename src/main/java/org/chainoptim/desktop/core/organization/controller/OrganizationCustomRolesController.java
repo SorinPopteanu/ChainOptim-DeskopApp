@@ -17,14 +17,11 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.RowConstraints;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +43,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private List<Button> expandRoleButtons = new ArrayList<>();
 
     private final List<Boolean> expandedRoleStates = new ArrayList<>();
-    private final boolean editRoleState = false;
+    private boolean editRoleState = false;
 
     private static final String[] operations = {"Read", "Create", "Update", "Delete"};
     private static final String[] features = {"Products", "Factories", "Warehouses", "Suppliers", "Clients"};
@@ -55,6 +52,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private Image angleDownImage;
     private Image editImage;
     private Image saveImage;
+    private Image cancelImage;
 
     @Inject
     public OrganizationCustomRolesController(CustomRoleService customRoleService,
@@ -82,6 +80,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
         editImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
         saveImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
+        cancelImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
     }
 
     private Optional<List<CustomRole>> handleCustomRolesResponse(Optional<List<CustomRole>> customRolesOptional) {
@@ -132,10 +131,12 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     }
 
     private void addRoleRow(CustomRole role, int rowIndex) {
+        // Add row name label
         Label roleNameLabel = new Label(role.getName());
         roleNameLabel.getStyleClass().add("parent-row");
         customRolesPane.add(roleNameLabel, 0, rowIndex);
 
+        // Add row buttons
         addExpandButton(role, rowIndex);
         addEditButton(rowIndex);
         addSaveButton(role, rowIndex);
@@ -151,19 +152,6 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         }
     }
 
-    private void addExpandButton(CustomRole role, int rowIndex) {
-        Button expandButton = new Button();
-        expandButton.setGraphic(createImageView(angleDownImage));
-        expandButton.getStyleClass().add("no-style-button");
-        applyStandardMargin(expandButton);
-
-        expandButton.setOnAction(event -> toggleFeaturePermissions(role, rowIndex));
-
-        expandRoleButtons.add(expandButton);
-        expandedRoleStates.add(false); // Start from collapsed state
-        customRolesPane.add(expandButton, operations.length + 1, rowIndex);
-    }
-
     private void addFeaturePermissionRow(String feature, CustomRole role, int rowIndex) {
         FeaturePermissions featurePermissions = getFeaturePermissionsByFeatureName(role.getPermissions(), feature);
 
@@ -172,7 +160,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             if (col == 0) {
                 node = new Label(feature);
             } else {
-                boolean hasPermission = getPermissionByIndex(featurePermissions, col - 1);
+                boolean hasPermission = getPermissionByColumnIndex(featurePermissions, col - 1);
                 CheckBox checkBox = new CheckBox();
                 checkBox.setSelected(hasPermission);
                 checkBox.setMouseTransparent(true);
@@ -186,6 +174,19 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             customRolesPane.add(node, col, rowIndex);
             GridPane.setHalignment(node, HPos.CENTER);
         }
+    }
+
+    // Buttons and their actions
+    // - Expand
+    private void addExpandButton(CustomRole role, int rowIndex) {
+        Button expandButton = new Button();
+        styleExpandButton(expandButton);
+
+        expandButton.setOnAction(event -> toggleFeaturePermissions(role, rowIndex));
+
+        expandRoleButtons.add(expandButton);
+        expandedRoleStates.add(false); // Start from collapsed state
+        customRolesPane.add(expandButton, operations.length + 1, rowIndex);
     }
 
     private void toggleFeaturePermissions(CustomRole role, int roleVisualRowIndex) {
@@ -213,28 +214,48 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 });
     }
 
+    // - Edit
     private void addEditButton(int rowIndex) {
         Button editButton = new Button();
-        editButton.setGraphic(createImageView(editImage));
-        editButton.getStyleClass().add("standard-write-button");
+        styleEditButton(editButton);
 
         editButton.setOnAction(event -> toggleEditingRow(rowIndex, true));
 
         customRolesPane.add(editButton, operations.length + 2, rowIndex);
     }
 
-    private void toggleEditingRow(int roleVisualRowIndex, boolean isEdit) {
-        if (editRoleState) return; // Only allow one row to be edited at a time
+    private void toggleEditingRow(int rowIndex, boolean isEdit) {
+        editRoleState = isEdit;
 
         // Enable row checkboxes
-        toggleRowEdit(roleVisualRowIndex, isEdit);
+        toggleRowEdit(rowIndex, isEdit);
 
         // Enable subrow checkboxes
-        int rowIndex = roleVisualRowIndex + 1;
+        int featureRowIndex = rowIndex + 1;
         int featureRowsCount = features.length;
 
-        for (int i = 0; i < featureRowsCount; i++, rowIndex++) {
-            toggleRowEdit(rowIndex, isEdit);
+        for (int i = 0; i < featureRowsCount; i++, featureRowIndex++) {
+            toggleRowEdit(featureRowIndex, isEdit);
+        }
+
+        // Hide all edit buttons except the one being edited, show cancel button
+        for (int row = 0; row < customRoles.size(); row++) {
+            int realIndex = row * (featureRowsCount + 1) + 1;
+            Node editButtonNode = getNodeByRowColumnIndex(realIndex, operations.length + 2);
+
+            if (editButtonNode instanceof Button editButton) {
+                if (realIndex == rowIndex) {
+                    toggleEditCancelButton(editButton, rowIndex, isEdit);
+                } else {
+                    editButton.setVisible(!isEdit);
+                }
+            }
+        }
+
+        // Show save button in edit mode
+        Node saveButtonNode = getNodeByRowColumnIndex(rowIndex, operations.length + 3);
+        if (saveButtonNode instanceof Button saveButton) {
+            saveButton.setVisible(isEdit);
         }
     }
 
@@ -246,16 +267,60 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                         checkBox.setMouseTransparent(!isEdit);
                         checkBox.setFocusTraversable(isEdit);
                     }
-                    if (node instanceof Button button) {
-                        button.setVisible(isEdit); // Show save button
-                    }
                 });
     }
 
+    private void toggleEditCancelButton(Button button, int rowIndex, boolean isEdit) {
+        button.getStyleClass().clear();
+
+        if (isEdit) {
+            styleCancelButton(button);
+            button.setOnAction(event -> {
+                toggleEditingRow(rowIndex, false);
+                cancelCheckboxSelections(rowIndex);
+            });
+        } else {
+            styleEditButton(button);
+            button.setOnAction(event -> toggleEditingRow(rowIndex, true));
+        }
+    }
+
+    private void cancelCheckboxSelections(int rowIndex) {
+        // Reselect based on the original permissions
+        int startingFeatureIndex = rowIndex + 1;
+        Permissions permissions = customRoles.get(getRoleIndexByRowIndex(rowIndex)).getPermissions();
+
+        // Row checkboxes
+        for (int col = 1; col <= operations.length; col++) {
+            Node node = getNodeByRowColumnIndex(rowIndex, col);
+            if (!(node instanceof CheckBox checkBox)) {
+                continue;
+            }
+            checkBox.setSelected(aggregatePermissionsByIndex(permissions, col - 1));
+        }
+
+        // Feature checkboxes
+        for (int i = 0; i < features.length; i++) {
+            int currentRowIndex = startingFeatureIndex + i;
+            FeaturePermissions featurePermissions = getFeaturePermissionsByFeatureName(permissions, features[i]);
+
+            for (int col = 1; col <= operations.length; col++) {
+                Node node = getNodeByRowColumnIndex(currentRowIndex, col);
+
+                if (!(node instanceof CheckBox checkBox)) {
+                    continue;
+                }
+
+                boolean hasPermission = getPermissionByColumnIndex(featurePermissions, col - 1);
+                checkBox.setSelected(hasPermission);
+            }
+        }
+    }
+
+    // - Save
     private void addSaveButton(CustomRole customRole, int rowIndex) {
         Button saveButton = new Button();
-        saveButton.setGraphic(createImageView(saveImage));
-        saveButton.getStyleClass().add("standard-write-button");
+        styleSaveButton(saveButton);
 
         saveButton.setOnAction(event -> saveRoleChanges(customRole, rowIndex));
 
@@ -266,10 +331,15 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private void saveRoleChanges(CustomRole customRole, int rowIndex) {
         UpdateCustomRoleDTO updateCustomRoleDTO = gatherRolePermissions(customRole, rowIndex);
         System.out.println(updateCustomRoleDTO);
+
+        // Save changes
+        fallbackManager.setLoading(true);
+
+        customRoleService.updateCustomRole(updateCustomRoleDTO)
+                .thenAccept(updatedRole -> handleSuccessfulUpdate(updatedRole, rowIndex));
     }
 
     private UpdateCustomRoleDTO gatherRolePermissions(CustomRole customRole, int startingRowIndex) {
-        // Initialize a new Permissions object to hold the aggregated permissions.
         Permissions permissions = new Permissions();
 
         int startingFeatureIndex = startingRowIndex + 1;
@@ -280,7 +350,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             FeaturePermissions featurePermissions = new FeaturePermissions();
 
             for (int col = 1; col <= operations.length; col++) {
-                Node node = getNodeByRowColumnIndex(currentRowIndex, col, customRolesPane);
+                Node node = getNodeByRowColumnIndex(currentRowIndex, col);
 
                 if (!(node instanceof CheckBox checkBox)) {
                     continue;
@@ -288,13 +358,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 boolean isSelected = checkBox.isSelected();
 
                 // Assign permissions based on the column (operation)
-                switch (col) {
-                    case 1 -> featurePermissions.setCanRead(isSelected);
-                    case 2 -> featurePermissions.setCanCreate(isSelected);
-                    case 3 -> featurePermissions.setCanUpdate(isSelected);
-                    case 4 -> featurePermissions.setCanDelete(isSelected);
-                    default -> { break; }
-                }
+                setPermissionsByIndex(featurePermissions, col - 1, isSelected);
             }
 
             setFeaturePermissionsByFeatureName(permissions, features[i], featurePermissions);
@@ -303,27 +367,61 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         return new UpdateCustomRoleDTO(customRole.getId(), customRole.getName(), permissions);
     }
 
-    // Utils
-    private boolean aggregatePermissionsByIndex(Permissions permissions, int index) {
-        return getPermissionByIndex(permissions.getProducts(), index) &&
-                getPermissionByIndex(permissions.getFactories(), index) &&
-                getPermissionByIndex(permissions.getWarehouses(), index) &&
-                getPermissionByIndex(permissions.getSuppliers(), index) &&
-                getPermissionByIndex(permissions.getClients(), index);
+    private void handleSuccessfulUpdate(Optional<CustomRole> updatedRoleOptional, int rowIndex) {
+        Platform.runLater(() -> {
+            if (updatedRoleOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to update custom role.");
+                return;
+            }
+
+            fallbackManager.setLoading(false);
+
+            // Disable editing row
+            toggleEditingRow(rowIndex, false);
+
+            // Hide save button
+            Node node = getNodeByRowColumnIndex(rowIndex, operations.length + 3);
+            if (node instanceof Button saveButton) {
+                saveButton.setVisible(false);
+            }
+        });
     }
 
-    private boolean getPermissionByIndex(FeaturePermissions featurePermissions, int index) {
+    // Utils
+    private boolean aggregatePermissionsByIndex(Permissions permissions, int index) {
+        return getPermissionByColumnIndex(permissions.getProducts(), index) &&
+                getPermissionByColumnIndex(permissions.getFactories(), index) &&
+                getPermissionByColumnIndex(permissions.getWarehouses(), index) &&
+                getPermissionByColumnIndex(permissions.getSuppliers(), index) &&
+                getPermissionByColumnIndex(permissions.getClients(), index);
+    }
+
+    private boolean getPermissionByColumnIndex(FeaturePermissions featurePermissions, int columnIndex) {
         if (featurePermissions == null) {
             return false;
         }
 
-        return switch (index) {
+        return switch (columnIndex) {
             case 0 -> Optional.ofNullable(featurePermissions.getCanRead()).orElse(false);
             case 1 -> Optional.ofNullable(featurePermissions.getCanCreate()).orElse(false);
             case 2 -> Optional.ofNullable(featurePermissions.getCanUpdate()).orElse(false);
             case 3 -> Optional.ofNullable(featurePermissions.getCanDelete()).orElse(false);
             default -> false;
         };
+    }
+
+    private int getRoleIndexByRowIndex(int rowIndex) {
+        return rowIndex / (features.length + 1);
+    }
+
+    private void setPermissionsByIndex(FeaturePermissions featurePermissions, int index, boolean value) {
+        switch (index) {
+            case 0 -> featurePermissions.setCanRead(value);
+            case 1 -> featurePermissions.setCanCreate(value);
+            case 2 -> featurePermissions.setCanUpdate(value);
+            case 3 -> featurePermissions.setCanDelete(value);
+            default -> { break; }
+        }
     }
 
     private FeaturePermissions getFeaturePermissionsByFeatureName(Permissions permissions, String featureName) {
@@ -348,15 +446,41 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         }
     }
 
-    private Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
+    private Node getNodeByRowColumnIndex(final int row, final int column) {
         Node result = null;
-        for (Node node : gridPane.getChildren()) {
+        for (Node node : customRolesPane.getChildren()) {
             if(GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
                 result = node;
                 break;
             }
         }
         return result;
+    }
+
+    // Button styling
+    private void styleExpandButton(Button button) {
+        button.getStyleClass().add("no-style-button");
+        button.setGraphic(createImageView(angleDownImage));
+        button.setTooltip(new Tooltip("Expand"));
+        applyStandardMargin(button);
+    }
+
+    private void styleEditButton(Button button) {
+        button.getStyleClass().add("standard-write-button");
+        button.setGraphic(createImageView(editImage));
+        button.setTooltip(new Tooltip("Edit Role"));
+    }
+
+    private void styleSaveButton(Button button) {
+        button.getStyleClass().add("standard-write-button");
+        button.setGraphic(createImageView(saveImage));
+        button.setTooltip(new Tooltip("Save Changes"));
+        GridPane.setMargin(button, new Insets(10));
+    }
+
+    private void styleCancelButton(Button button) {
+        button.getStyleClass().add("cancel-edit-button");
+        button.setGraphic(createImageView(cancelImage));
     }
 
     private ImageView createImageView(Image image) {
