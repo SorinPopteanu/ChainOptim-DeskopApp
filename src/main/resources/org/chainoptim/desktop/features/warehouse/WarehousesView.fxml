@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ScrollPane?>
 
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            styleClass="main-container"
-            fx:controller="org.chainoptim.desktop.features.warehouse.controller.WarehousesController">
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="main-container"
+      fx:controller="org.chainoptim.desktop.features.warehouse.controller.WarehousesController">
 
     <StackPane fx:id="headerContainer"/>
 
-    <VBox fx:id="warehousesVBox" styleClass="items-list"/>
+    <StackPane VBox.vgrow="ALWAYS">
+        <ScrollPane fx:id="warehousesScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
+            <VBox>
+                <VBox fx:id="warehousesVBox" styleClass="items-list"/>
+                <StackPane fx:id="pageSelectorContainer"/>
+            </VBox>
+        </ScrollPane>
 
-    <StackPane fx:id="pageSelectorContainer"/>
-
-    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS" styleClass="page-fallback-container"/>
+    </StackPane>
 
 </VBox>

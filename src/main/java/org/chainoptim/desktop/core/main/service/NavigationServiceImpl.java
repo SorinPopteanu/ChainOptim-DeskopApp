@@ -11,16 +11,14 @@ import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
- * Service responsible for handling app navigation from SidebarController
+ * Service responsible for handling app navigation throughout the app
  * Loads views on demand and caches them, including dynamic routes
- *
+ * Also records navigation history for back navigation
  */
 public class NavigationServiceImpl implements NavigationService {
 
@@ -44,51 +42,60 @@ public class NavigationServiceImpl implements NavigationService {
     private StackPane mainContentArea;
 
     private String currentViewKey;
+    private List<String> previousViewKeys;
 
     @Getter
     private static final Map<String, Node> viewCache = new HashMap<>();
 
     private final Map<String, String> viewMap = Map.ofEntries(
-            // Main pages
             Map.entry("Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml"),
             Map.entry("Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml"),
-            Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
-            Map.entry("Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml"),
-            Map.entry("Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml"),
-            Map.entry("Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"),
-            Map.entry("Clients", "/org/chainoptim/desktop/features/client/ClientsView.fxml"),
-            // Dynamic route pages
-            Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
-            Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
-            Map.entry("Warehouse", "/org/chainoptim/desktop/features/warehouse/WarehouseView.fxml"),
-            Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
-            Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),
 
-            // Create forms
+            Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
+            Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
             Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
+
+            Map.entry("Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml"),
+            Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
             Map.entry("Create-Factory", "/org/chainoptim/desktop/features/factory/CreateFactoryView.fxml"),
+            Map.entry("Update-Factory", "/org/chainoptim/desktop/features/factory/UpdateFactoryView.fxml"),
+
+            Map.entry("Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml"),
+            Map.entry("Warehouse", "/org/chainoptim/desktop/features/warehouse/WarehouseView.fxml"),
             Map.entry("Create-Warehouse", "/org/chainoptim/desktop/features/warehouse/CreateWarehouseView.fxml"),
+            Map.entry("Update-Warehouse", "/org/chainoptim/desktop/features/warehouse/UpdateWarehouseView.fxml"),
+
+            Map.entry("Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"),
+            Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
             Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"),
+            Map.entry("Update-Supplier", "/org/chainoptim/desktop/features/supplier/UpdateSupplierView.fxml"),
+
+            Map.entry("Clients", "/org/chainoptim/desktop/features/client/ClientsView.fxml"),
+            Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),
             Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml"),
-            Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml")
+            Map.entry("Update-Client", "/org/chainoptim/desktop/features/client/UpdateClientView.fxml"),
+
+            Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml"),
+
+            Map.entry("Settings", "/org/chainoptim/desktop/features/settings/SettingsView.fxml")
     );
 
-    public void switchView(String viewKey) {
+    public void switchView(String viewKey, boolean forward) {
         // Skip if already there
         if (Objects.equals(currentViewKey, viewKey)) {
             return;
         }
-        System.out.println(viewCache);
+
+        // Reset fallback state between pages
+        fallbackManager.reset();
 
         // Get view from cache or load it
         Node view = viewCache.computeIfAbsent(viewKey, this::loadView);
 
         // Display view
         if (view != null) {
-            threadRunner.runLater(() -> {
-                mainContentArea.getChildren().setAll(view);
-                fallbackManager.reset();
-            });
+            threadRunner.runLater(() -> mainContentArea.getChildren().setAll(view));
+            handleHistory(forward);
             currentViewKey = viewKey;
         }
     }
@@ -126,7 +133,33 @@ public class NavigationServiceImpl implements NavigationService {
         return baseViewKey;
     }
 
+    private void handleHistory(boolean forward) {
+        // Add to history if forward and remove last otherwise
+        if (forward) {
+            if (previousViewKeys == null) {
+                previousViewKeys = new ArrayList<>();
+            }
+            if (currentViewKey != null) {
+                previousViewKeys.add(currentViewKey);
+            }
+        } else {
+            if (previousViewKeys != null && !previousViewKeys.isEmpty()) {
+                previousViewKeys.removeLast();
+            }
+        }
+    }
+
+    public void goBack() {
+        if (previousViewKeys != null && !previousViewKeys.isEmpty()) {
+            switchView(previousViewKeys.getLast(), false);
+        }
+    }
+
     public static void invalidateViewCache() {
         viewCache.clear();
+    }
+
+    public static void invalidateViewCache(String viewKey) {
+        viewCache.remove(viewKey);
     }
 }

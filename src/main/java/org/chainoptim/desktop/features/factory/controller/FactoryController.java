@@ -1,17 +1,19 @@
 package org.chainoptim.desktop.features.factory.controller;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
 import com.google.inject.Inject;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,13 +28,13 @@ import java.util.ResourceBundle;
 public class FactoryController implements Initializable {
 
     private final FactoryService factoryService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
     private Factory factory;
-
-    @FXML
-    private FactoryProductionController graphController;
 
     @FXML
     private StackPane fallbackContainer;
@@ -55,26 +57,44 @@ public class FactoryController implements Initializable {
 
     @Inject
     public FactoryController(FactoryService factoryService,
+                             NavigationService navigationService,
                              CurrentSelectionService currentSelectionService,
+                             FXMLLoaderService fxmlLoaderService,
+                             ControllerFactory controllerFactory,
                              FallbackManager fallbackManager) {
         this.factoryService = factoryService;
+        this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        loadFallbackManager();
+        setupListeners();
+
         Integer factoryId = currentSelectionService.getSelectedId();
-        if (factoryId == null) {
+        if (factoryId != null) {
+            loadFactory(factoryId);
+        } else {
             System.out.println("Missing factory id.");
             fallbackManager.setErrorMessage("Failed to load factory.");
         }
+    }
 
-        loadFactory(factoryId);
-        setupTabListeners();
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void loadFactory(Integer factoryId) {
+        fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         factoryService.getFactoryById(factoryId)
@@ -105,7 +125,7 @@ public class FactoryController implements Initializable {
         return Optional.empty();
     }
 
-    private void setupTabListeners() {
+    private void setupListeners() {
         overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
                 loadTabContent(overviewTab, "/org/chainoptim/desktop/features/factory/FactoryOverviewView.fxml", this.factory);
@@ -126,12 +146,19 @@ public class FactoryController implements Initializable {
                 loadTabContent(performanceTab, "/org/chainoptim/desktop/features/factory/FactoryPerformanceView.fxml", this.factory);
             }
         });
+
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadTabContent(Tab tab, String fxmlFilepath, Factory factory) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
-            loader.setControllerFactory(MainApplication.injector::getInstance);
+            loader.setControllerFactory(controllerFactory::createController);
             Node content = loader.load();
             DataReceiver<Factory> controller = loader.getController();
             controller.setData(factory);
@@ -143,7 +170,8 @@ public class FactoryController implements Initializable {
 
     @FXML
     private void handleEditFactory() {
-        System.out.println("Edit Factory Working");
+        currentSelectionService.setSelectedId(factory.getId());
+        navigationService.switchView("Update-Factory?id=" + factory.getId(), true);
     }
 
 }

@@ -117,7 +117,7 @@ public class CreateComponentController implements Initializable {
                             Component component = componentOptional.get();
                             fallbackManager.setLoading(false);
                             currentSelectionService.setSelectedId(component.getId());
-                            navigationService.switchView("Component?id=" + component.getId());
+                            navigationService.switchView("Component?id=" + component.getId(), true);
                         })
                 )
                 .exceptionally(ex -> {

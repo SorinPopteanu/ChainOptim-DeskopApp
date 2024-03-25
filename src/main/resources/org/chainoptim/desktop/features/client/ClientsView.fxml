@@ -2,17 +2,23 @@
 
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.control.ScrollPane?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            styleClass="main-container"
-            fx:controller="org.chainoptim.desktop.features.client.controller.ClientsController">
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="main-container"
+      fx:controller="org.chainoptim.desktop.features.client.controller.ClientsController">
 
     <StackPane fx:id="headerContainer"/>
 
-    <VBox fx:id="clientsVBox" styleClass="items-list"/>
+    <StackPane VBox.vgrow="ALWAYS">
+        <ScrollPane fx:id="clientsScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
+            <VBox>
+                <VBox fx:id="clientsVBox" styleClass="items-list"/>
+                <StackPane fx:id="pageSelectorContainer"/>
+            </VBox>
+        </ScrollPane>
 
-    <StackPane fx:id="pageSelectorContainer"/>
-
-    <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS" styleClass="page-fallback-container"/>
+    </StackPane>
 
 </VBox>

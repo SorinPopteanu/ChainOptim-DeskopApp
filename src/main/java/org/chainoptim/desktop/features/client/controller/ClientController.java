@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -27,6 +28,7 @@ import java.util.ResourceBundle;
 public class ClientController implements Initializable {
 
     private final ClientService clientService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
@@ -53,11 +55,13 @@ public class ClientController implements Initializable {
 
     @Inject
     public ClientController(ClientService clientService,
+                            NavigationService navigationService,
                             CurrentSelectionService currentSelectionService,
                             FXMLLoaderService fxmlLoaderService,
                             ControllerFactory controllerFactory,
                             FallbackManager fallbackManager) {
         this.clientService = clientService;
+        this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
@@ -66,14 +70,55 @@ public class ClientController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        loadFallbackManager();
+        setupListeners();
+
         Integer clientId = currentSelectionService.getSelectedId();
-        if (clientId == null) {
+        if (clientId != null) {
+            loadClient(clientId);
+        } else {
             System.out.println("Missing client id.");
             fallbackManager.setErrorMessage("Failed to load client.");
         }
-        loadClient(clientId);
-        System.out.println("Client initialized");
-        setupTabListeners();
+    }
+
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
+    }
+
+    private void setupListeners() {
+        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
+                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
+            }
+        });
+        ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
+                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/client/ClientOrdersView.fxml", this.client);
+            }
+        });
+        shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
+                loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/client/ClientShipmentsView.fxml", this.client);
+            }
+        });
+        evaluationTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && evaluationTab.getContent() == null) {
+                loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/client/ClientEvaluationView.fxml", this.client);
+            }
+        });
+
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadClient(Integer clientId) {
@@ -111,29 +156,6 @@ public class ClientController implements Initializable {
         return Optional.empty();
     }
 
-    private void setupTabListeners() {
-        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
-            }
-        });
-        ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
-                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/client/ClientOrdersView.fxml", this.client);
-            }
-        });
-        shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/client/ClientShipmentsView.fxml", this.client);
-            }
-        });
-        evaluationTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && evaluationTab.getContent() == null) {
-                loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/client/ClientEvaluationView.fxml", this.client);
-            }
-        });
-    }
-
     private void loadTabContent(Tab tab, String fxmlFilepath, Client client) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
@@ -148,6 +170,9 @@ public class ClientController implements Initializable {
     }
 
     @FXML
-    private void handleEditClient() {System.out.println("Edit Client Working");}
+    private void handleEditClient() {
+        currentSelectionService.setSelectedId(client.getId());
+        navigationService.switchView("Update-Client?id=" + client.getId(), true);
+    }
 
 }

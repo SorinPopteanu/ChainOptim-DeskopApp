@@ -23,4 +23,9 @@ public class Location {
         return formattedCity + formattedState + formattedCountry;
     }
 
+    @Override
+    public String toString() {
+        return getFormattedLocation();
+    }
+
 }

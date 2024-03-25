@@ -12,6 +12,11 @@ public class FallbackManager {
     private final BooleanProperty isLoading = new SimpleBooleanProperty(false);
     private final BooleanProperty noOrganization = new SimpleBooleanProperty(false);
     private final BooleanProperty noResults = new SimpleBooleanProperty(false);
+    private final BooleanProperty isEmpty = new SimpleBooleanProperty(true);
+
+    public FallbackManager() {
+        isEmpty.bind(isLoadingProperty().not().and(noOrganizationProperty().not().and(noResultsProperty().not().and(errorMessageProperty().isEmpty()))));
+    }
 
     public String getErrorMessage() {
         return errorMessage.get();
@@ -66,5 +71,13 @@ public class FallbackManager {
         setLoading(false);
         setNoOrganization(false);
         setNoResults(false);
+    }
+
+    public BooleanProperty isEmptyProperty() {
+        return isEmpty;
+    }
+
+    public boolean isEmpty() {
+        return isEmpty.get();
     }
 }

@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.core.user.repository;
+package org.chainoptim.desktop.core.user.service;
 
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.util.JsonUtil;
@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class UserRepositoryImpl implements UserRepository {
+public class UserServiceImpl implements UserService {
 
     private final HttpClient client = HttpClient.newHttpClient();
 

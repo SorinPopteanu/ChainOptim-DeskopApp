@@ -2,25 +2,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierController">
 
-        <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" style="-fx-background-color: #ffffff;">
-            <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
-                <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                    <Label fx:id="supplierName" styleClass="entity-page-title"/>
-                    <Label fx:id="supplierLocation" styleClass="entity-page-description"/>
-                </VBox>
-                <Button text="Edit Supplier" onAction="#handleEditSupplier" styleClass="standard-write-button"/>
-            </HBox>
-            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
-                <Tab fx:id="overviewTab" text="Overview"/>
-                <Tab fx:id="ordersTab" text="Orders"/>
-                <Tab fx:id="shipmentsTab" text="Shipments"/>
-                <Tab fx:id="performanceTab" text="Performance"/>
-            </TabPane>
-        </VBox>
+    <!-- Header -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" style="-fx-background-color: #ffffff;">
+        <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <Label fx:id="supplierName" styleClass="entity-page-title"/>
+                <Label fx:id="supplierLocation" styleClass="entity-page-description"/>
+            </VBox>
+            <Button text="Edit Supplier" onAction="#handleEditSupplier" styleClass="standard-write-button"/>
+        </HBox>
+    </VBox>
 
-    <StackPane fx:id="fallbackContainer"/>
-</AnchorPane>
+    <!-- Content -->
+    <StackPane>
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+            <Tab fx:id="overviewTab" text="Overview"/>
+            <Tab fx:id="ordersTab" text="Orders"/>
+            <Tab fx:id="shipmentsTab" text="Shipments"/>
+            <Tab fx:id="performanceTab" text="Performance"/>
+        </TabPane>
+
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
+    </StackPane>
+</VBox>

@@ -8,15 +8,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.HeaderController;
+import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -42,17 +42,19 @@ public class WarehousesController implements Initializable {
     private final SearchParams searchParams;
 
     @FXML
-    private HeaderController headerController;
-    @FXML
-    private StackPane headerContainer;
+    private ListHeaderController headerController;
     @FXML
     private PageSelectorController pageSelectorController;
+    @FXML
+    private ScrollPane warehousesScrollPane;
+    @FXML
+    private VBox warehousesVBox;
+    @FXML
+    private StackPane headerContainer;
     @FXML
     private StackPane pageSelectorContainer;
     @FXML
     private StackPane fallbackContainer;
-    @FXML
-    private VBox warehousesVBox;
 
     private long totalCount;
 
@@ -84,9 +86,32 @@ public class WarehousesController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeHeader();
         loadFallbackManager();
-        loadWarehouses();
         setUpListeners();
+        loadWarehouses();
         initializePageSelector();
+    }
+
+    private void initializeHeader() {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
+          controllerFactory::createController
+        );
+        try {
+            Node headerView = loader.load();
+            headerContainer.getChildren().add(headerView);
+            headerController = loader.getController();
+            headerController.initializeHeader("Warehouses", "/img/warehouse-solid.png", sortOptions, this::loadWarehouses, "Warehouse", "Create-Warehouse");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadFallbackManager() {
+        Node fallbackView = fxmlLoaderService.loadView(
+          "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+          controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void initializePageSelector() {
@@ -104,44 +129,31 @@ public class WarehousesController implements Initializable {
         }
     }
 
-    private void initializeHeader() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-          "/org/chainoptim/desktop/core/main/HeaderView.fxml",
-          controllerFactory::createController
-        );
-        try {
-            Node headerView = loader.load();
-            headerContainer.getChildren().add(headerView);
-            headerController = loader.getController();
-            headerController.initializeHeader("Warehouses", "/img/warehouse-solid.png", sortOptions, "Warehouse", "Create-Warehouse");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadFallbackManager() {
-        Node fallbackView = fxmlLoaderService.loadView(
-          "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-          controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
     private void setUpListeners() {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadWarehouses());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadWarehouses());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadWarehouses());
+
+        // Listen to empty fallback state
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            warehousesScrollPane.setVisible(newValue);
+            warehousesScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadWarehouses() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
             return;
         }
-        fallbackManager.setLoading(true);
-
         Integer organizationId = currentUser.getOrganization().getId();
+
         warehouseService.getWarehousesByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleWarehouseResponse)
                 .exceptionally(this::handleWarehouseException)
@@ -203,7 +215,7 @@ public class WarehousesController implements Initializable {
         currentSelectionService.setSelectedId(warehouseId);
         currentSelectionService.setSelectedPage("Warehouse");
 
-        navigationService.switchView("Warehouse?id=" + warehouseId);
+        navigationService.switchView("Warehouse?id=" + warehouseId, true);
     }
 
 

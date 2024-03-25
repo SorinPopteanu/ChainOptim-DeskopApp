@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
@@ -28,6 +29,7 @@ import java.util.ResourceBundle;
 
 public class WarehouseController implements Initializable {
     private final WarehouseService warehouseService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
@@ -50,11 +52,13 @@ public class WarehouseController implements Initializable {
 
     @Inject
     public WarehouseController(WarehouseService warehouseService,
+                              NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
                               FallbackManager fallbackManager) {
         this.warehouseService = warehouseService;
+        this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
@@ -62,15 +66,17 @@ public class WarehouseController implements Initializable {
     }
 
     @Override
-    public void initialize (URL location, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resources) {
+        loadFallbackManager();
+        setupListeners();
+
         Integer warehouseId = currentSelectionService.getSelectedId();
-        if (warehouseId == null) {
+        if (warehouseId != null) {
+            loadWarehouse(warehouseId);
+        } else {
             System.out.println("Missing warehouse id.");
             fallbackManager.setErrorMessage("Failed to load warehouse.");
         }
-        loadFallbackManager();
-        loadWarehouse(warehouseId);
-        setupTabListeners();
     }
 
     private void loadFallbackManager() {
@@ -80,6 +86,26 @@ public class WarehouseController implements Initializable {
                 controllerFactory::createController
         );
         fallbackContainer.getChildren().add(fallbackView);
+    }
+
+    private void setupListeners() {
+        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
+                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
+            }
+        });
+        inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
+                loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", this.warehouse);
+            }
+        });
+
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadWarehouse(Integer warehouseId) {
@@ -113,19 +139,6 @@ public class WarehouseController implements Initializable {
         return Optional.empty();
     }
 
-    private void setupTabListeners() {
-        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
-            }
-        });
-        inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
-                loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", this.warehouse);
-            }
-        });
-    }
-
     private void loadTabContent(Tab tab, String fxmlFilepath, Warehouse warehouse) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
@@ -141,11 +154,7 @@ public class WarehouseController implements Initializable {
 
     @FXML
     private void handleEditWarehouse() {
-        System.out.println("Edit Warehouse Working");
+        currentSelectionService.setSelectedId(warehouse.getId());
+        navigationService.switchView("Update-Warehouse?id=" + warehouse.getId(), true);
     }
-
-
-
-
-
 }

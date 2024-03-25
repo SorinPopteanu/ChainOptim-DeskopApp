@@ -1,20 +1,23 @@
 .header {
     -fx-background-color: #ffffff;
-    -fx-padding: 20px;
     -fx-spacing: 20px;
 }
 
 .toolbar {
     -fx-background-color: #ffffff;
+    -fx-padding: 0px 32px 32px 32px;
 }
 
 .list-title {
-    -fx-font-size: 30px;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
+    -fx-padding: 20px 32px 0px 32px;
     -fx-spacing: 20px;
+    -fx-graphic-text-gap: 12px;
 }
 
 .search-bar {
+    -fx-pref-height: 32px;
     -fx-background-color: #ffffff;
     -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
@@ -22,16 +25,62 @@
 }
 
 .search-button {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #c0c0c0;
-    -fx-border-width: 1px;
+    -fx-pref-height: 32px;
+    -fx-pref-width: 32px;
+    -fx-background-color: #232323;
     -fx-border-radius: 4px;
-
 }
 
 .search-button:hover {
     -fx-cursor: hand;
+    -fx-background-color: #000000;
+}
+
+.header .combo-box {
+    -fx-pref-height: 32px;
+    -fx-background-color: #ffffff;
+    -fx-font-weight: bold;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.header .combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.header .combo-box .arrow {
+    -fx-background-color: #c0c0c0;
+}
+
+.ordering-button {
+    -fx-pref-height: 32px;
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.ordering-button:hover {
     -fx-background-color: #f0f0f0;
 }
 
+.refresh-button {
+    -fx-pref-height: 32px;
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
 
+.refresh-button:hover {
+    -fx-background-color: #f0f0f0;
+}

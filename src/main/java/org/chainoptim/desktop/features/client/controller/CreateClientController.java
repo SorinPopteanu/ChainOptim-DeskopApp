@@ -115,7 +115,7 @@ public class CreateClientController implements Initializable {
                         Client client = clientOptional.get();
                         fallbackManager.setLoading(false);
                         currentSelectionService.setSelectedId(client.getId());
-                        navigationService.switchView("Client?id=" + client.getId());
+                        navigationService.switchView("Client?id=" + client.getId(), true);
                     })
                 )
                 .exceptionally(ex -> {

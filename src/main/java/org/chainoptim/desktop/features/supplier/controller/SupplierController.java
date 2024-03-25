@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -27,6 +28,7 @@ import java.util.ResourceBundle;
 public class SupplierController implements Initializable {
 
     private final SupplierService supplierService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
@@ -53,11 +55,13 @@ public class SupplierController implements Initializable {
 
     @Inject
     public SupplierController(SupplierService supplierService,
+                                NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
                               FallbackManager fallbackManager) {
         this.supplierService = supplierService;
+        this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
@@ -66,13 +70,55 @@ public class SupplierController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        loadFallbackManager();
+        setupListeners();
+
         Integer supplierId = currentSelectionService.getSelectedId();
-        if (supplier == null) {
+        if (supplierId != null) {
+            loadSupplier(supplierId);
+        } else {
             System.out.println("Missing supplier id.");
             fallbackManager.setErrorMessage("Failed to load supplier.");
         }
-        loadSupplier(supplierId);
-        setupTabListeners();
+    }
+
+    private void loadFallbackManager() {
+        // Load view into fallbackContainer
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
+    }
+
+    private void setupListeners() {
+        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
+                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
+            }
+        });
+        ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
+                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml", this.supplier);
+            }
+        });
+        shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
+                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
+            }
+        });
+        performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
+                loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", this.supplier);
+            }
+        });
+
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
     }
 
     private void loadSupplier(Integer supplierId) {
@@ -110,29 +156,6 @@ public class SupplierController implements Initializable {
         return Optional.empty();
     }
 
-    private void setupTabListeners() {
-        overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
-            }
-        });
-        ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
-                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml", this.supplier);
-            }
-        });
-        shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
-            }
-        });
-        performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-            if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
-                loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", this.supplier);
-            }
-        });
-    }
-
     private void loadTabContent(Tab tab, String fxmlFilepath, Supplier supplier) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
@@ -147,6 +170,8 @@ public class SupplierController implements Initializable {
     }
 
     @FXML
-    private void handleEditSupplier() {System.out.println("Edit Supplier Working");}
-
+    private void handleEditSupplier() {
+        currentSelectionService.setSelectedId(supplier.getId());
+        navigationService.switchView("Update-Supplier?id=" + supplier.getId(), true);
+    }
 }

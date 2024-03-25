@@ -8,17 +8,18 @@
             styleClass="sidebar">
 
     <VBox fx:id="buttonContainer" styleClass="sidebar-inner-container" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" spacing="8">
-        <HBox fx:id="dashboardHBox" alignment="CENTER_LEFT" spacing="10">
-            <Pane HBox.hgrow="ALWAYS" minWidth="52"/>
+        <HBox fx:id="dashboardHBox" alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 0 4 0">
+            <Button fx:id="backButton" styleClass="sidebar-button"/>
+            <Pane HBox.hgrow="ALWAYS" minWidth="12"/>
             <Label text="Dashboard" styleClass="sidebar-title" HBox.hgrow="ALWAYS"/>
-            <Pane HBox.hgrow="ALWAYS" minWidth="20"/>
-            <Button fx:id="toggleButton" styleClass="sidebar-button" />
+            <Pane HBox.hgrow="ALWAYS" minWidth="16"/>
+            <Button fx:id="toggleButton" styleClass="sidebar-button"/>
         </HBox>
         <!-- Navigation buttons -->
     </VBox>
 
-    <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" style="-fx-padding: 12;">
-        <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="sidebar-button" style="-fx-padding: 12;">
+    <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" styleClass="sidebar-inner-container">
+        <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="sidebar-button">
         </Button>
     </VBox>
 

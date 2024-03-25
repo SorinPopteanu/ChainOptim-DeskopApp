@@ -123,6 +123,11 @@ public class SelectOrCreateLocationController {
         return locationComboBox.getSelectionModel().getSelectedItem();
     }
 
+    public void setSelectedLocation(Location location) {
+        locationComboBox.getSelectionModel().select(location);
+
+    }
+
     public CreateLocationDTO getNewLocationDTO() {
         CreateLocationDTO locationDTO = new CreateLocationDTO();
         locationDTO.setOrganizationId(organizationId);
