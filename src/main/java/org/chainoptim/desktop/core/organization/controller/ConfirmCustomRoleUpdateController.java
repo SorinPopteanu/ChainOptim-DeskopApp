@@ -56,10 +56,8 @@ public class ConfirmCustomRoleUpdateController implements DataReceiver<CustomRol
             List<User> userList = users.get();
             for (User user : userList) {
                 // Put names into VBox
-                for (int i = 0; i < 40; i++) {
-                    Label usernameLabel = new Label(user.getUsername());
-                    usersVBox.getChildren().add(usernameLabel);
-                }
+                Label usernameLabel = new Label(user.getUsername());
+                usersVBox.getChildren().add(usernameLabel);
             }
         });
         return users;
