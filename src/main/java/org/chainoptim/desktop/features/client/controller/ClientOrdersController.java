@@ -58,9 +58,6 @@ public class ClientOrdersController implements DataReceiver<Client> {
     @FXML
     private TableColumn<ClientOrder, LocalDateTime> deliveryDateColumn;
 
-    @FXML
-    private Label clientName;
-
     @Inject
     public ClientOrdersController(FallbackManager fallbackManager,
                                   ClientOrdersService clientOrdersService) {
@@ -71,9 +68,6 @@ public class ClientOrdersController implements DataReceiver<Client> {
     @Override
     public void setData(Client client) {
         this.client = client;
-        this.clientName.setText(client.getName());
-        System.out.println("Client received in orders: " + client.getName());
-
         loadClientOrders(client.getId());
     }
 
@@ -94,10 +88,47 @@ public class ClientOrdersController implements DataReceiver<Client> {
             this.clientOrders = orders.get();
             fallbackManager.setLoading(false);
             System.out.println("Orders received: " + clientOrders);
+            setTableView();
             bindDataToTableView();
+            setEditEvents();
         });
 
         return clientOrders;
+    }
+
+    private void setTableView() {
+        tableView.setEditable(true);
+        clientIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        productIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        quantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
+        statusColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+        tableView.setMaxHeight(Double.MAX_VALUE);
+        scrollPane.setFitToHeight(true);
+
+        // Set the column resize policy and their minimum width
+        tableView.setColumnResizePolicy(new Callback<TableView.ResizeFeatures, Boolean>() {
+            @Override
+            public Boolean call(TableView.ResizeFeatures param) {
+                return TableView.CONSTRAINED_RESIZE_POLICY.call(param) || Boolean.TRUE;
+            }
+        });
+
+//        tableView.addEventFilter(ScrollEvent.SCROLL, event -> {
+//            if (event.getDeltaY() != 0) {
+//                scrollPane.lookup(".scroll-bar:vertical").setOpacity(1);
+//                PauseTransition pause = new PauseTransition(Duration.seconds(3));
+//                pause.setOnFinished(e -> scrollPane.lookup(".scroll-bar:vertical").setOpacity(0));
+//                pause.play();
+//            }
+//
+//            if (event.getDeltaX() != 0) {
+//                scrollPane.lookup(".scroll-bar:horizontal").setOpacity(1);
+//                PauseTransition pause = new PauseTransition(Duration.seconds(3));
+//                pause.setOnFinished(e -> scrollPane.lookup(".scroll-bar:horizontal").setOpacity(0));
+//                pause.play();
+//            }
+//        });
     }
 
     private void bindDataToTableView() {
@@ -110,49 +141,10 @@ public class ClientOrdersController implements DataReceiver<Client> {
         estimatedDeliveryDateColumn.setCellValueFactory(new PropertyValueFactory<>("estimatedDeliveryDate"));
         deliveryDateColumn.setCellValueFactory(new PropertyValueFactory<>("deliveryDate"));
 
-        tableView.setEditable(true);
-        orderIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        clientIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        productIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        quantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
-        statusColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-
-        tableView.setMaxHeight(Double.MAX_VALUE);
-
-        // Set the items in the table
         tableView.getItems().setAll(clientOrders);
+    }
 
-        // Set the column resize policy and their minimum width
-        tableView.setColumnResizePolicy(new Callback<TableView.ResizeFeatures, Boolean>() {
-            @Override
-            public Boolean call(TableView.ResizeFeatures param) {
-                return TableView.CONSTRAINED_RESIZE_POLICY.call(param) || Boolean.TRUE;
-            }
-        });
-
-        tableView.addEventFilter(ScrollEvent.SCROLL, event -> {
-            if (event.getDeltaY() != 0) {
-                scrollPane.lookup(".scroll-bar:vertical").setOpacity(1);
-                PauseTransition pause = new PauseTransition(Duration.seconds(3));
-                pause.setOnFinished(e -> scrollPane.lookup(".scroll-bar:vertical").setOpacity(0));
-                pause.play();
-            }
-
-            if (event.getDeltaX() != 0) {
-                scrollPane.lookup(".scroll-bar:horizontal").setOpacity(1);
-                PauseTransition pause = new PauseTransition(Duration.seconds(3));
-                pause.setOnFinished(e -> scrollPane.lookup(".scroll-bar:horizontal").setOpacity(0));
-                pause.play();
-            }
-        });
-
-        //Handle the edit event for each column
-        orderIdColumn.setOnEditCommit(event -> {
-            ClientOrder order = event.getRowValue();
-            order.setClientId(event.getNewValue());
-            updateInDatabase(order);
-        });
-
+    private void setEditEvents() {
         clientIdColumn.setOnEditCommit(event -> {
             ClientOrder order = event.getRowValue();
             order.setClientId(event.getNewValue());
@@ -161,7 +153,7 @@ public class ClientOrdersController implements DataReceiver<Client> {
 
         productIdColumn.setOnEditCommit(event -> {
             ClientOrder order = event.getRowValue();
-            order.setClientId(event.getNewValue());
+            order.setProductId(event.getNewValue());
             updateInDatabase(order);
         });
 

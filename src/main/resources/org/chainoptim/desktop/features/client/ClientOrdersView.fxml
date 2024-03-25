@@ -9,8 +9,7 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.client.controller.ClientOrdersController">
 
-    <Label fx:id="clientName" />
-    <ScrollPane fx:id="scrollPane" styleClass="scroll-pane" fitToHeight="true" fitToWidth="true" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+    <ScrollPane fx:id="scrollPane" styleClass="scroll-pane" fitToWidth="true" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="40.0">
         <TableView fx:id="tableView" styleClass="table-view">
             <columns>
             <TableColumn text="Order ID" fx:id="orderIdColumn" minWidth="150"/>

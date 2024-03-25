@@ -79,7 +79,7 @@ module org.chainoptim.desktop {
     // - Supplier
     opens org.chainoptim.desktop.features.supplier.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.supplier.service to com.google.guice;
-    opens org.chainoptim.desktop.features.supplier.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.supplier.model to com.fasterxml.jackson.databind, javafx.base;
     opens org.chainoptim.desktop.features.supplier.dto to com.fasterxml.jackson.databind;
 
     // - Client
