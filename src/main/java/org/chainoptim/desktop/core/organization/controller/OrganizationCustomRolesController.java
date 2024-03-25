@@ -72,9 +72,10 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     @Override
     public void setData(Organization data) {
         this.organization = data;
-
-        fallbackManager.reset();
-        fallbackManager.setLoading(true);
+        if (organization == null) {
+            fallbackManager.setNoOrganization(true);
+            return;
+        }
 
         initializeIcons();
         loadConfirmDialog();
@@ -111,6 +112,9 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
 
     // Load roles
     private void loadCustomRoles() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         customRoleService.getCustomRolesByOrganizationId(organization.getId())
                 .thenApply(this::handleCustomRolesResponse)
                 .exceptionally(this::handleCustomRolesException)
