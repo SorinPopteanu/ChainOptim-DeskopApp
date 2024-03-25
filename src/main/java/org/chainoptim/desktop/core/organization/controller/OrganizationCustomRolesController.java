@@ -28,36 +28,48 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class OrganizationCustomRolesController implements DataReceiver<Organization>, ConfirmDialogActionListener {
+public class OrganizationCustomRolesController implements DataReceiver<Organization>, ConfirmUpdateDialogActionListener, ConfirmDeleteDialogActionListener {
 
+    // Injected services and controllers
     private final CustomRoleService customRoleService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
-    private Organization organization;
-    private List<CustomRole> customRoles;
-
     private ConfirmCustomRoleUpdateController confirmCustomRoleUpdateController;
+    private ConfirmCustomRoleDeleteController confirmCustomRoleDeleteController;
 
+    // FXML
     @FXML
     private Label tabTitle;
     @FXML
     private Button addNewRoleButton;
     @FXML
+    private Button deleteRoleButton;
+    @FXML
     private GridPane customRolesPane;
     @FXML
     private List<Button> expandRoleButtons = new ArrayList<>();
     @FXML
-    private StackPane confirmDialogContainer;
+    private StackPane confirmUpdateDialogContainer;
+    @FXML
+    private StackPane confirmDeleteDialogContainer;
 
+    // State
+    private Organization organization;
+    private List<CustomRole> customRoles;
     private final List<Boolean> expandedRoleStates = new ArrayList<>();
     private int currentEditedRowIndex = -1; // No edit marker
+    private boolean isDeleteMode = false;
+    private int currentToBeDeletedRowIndex = -1;
 
+    // Constants
     private static final String[] operations = {"Read", "Create", "Update", "Delete"};
     private static final String[] features = {"Products", "Factories", "Warehouses", "Suppliers", "Clients"};
 
+    // Icons
     private Image plusImage;
+    private Image trashImage;
     private Image angleUpImage;
     private Image angleDownImage;
     private Image editImage;
@@ -84,7 +96,8 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         }
 
         initializeIcons();
-        loadConfirmDialog();
+        loadConfirmUpdateDialog();
+        loadConfirmDeleteDialog();
 
         loadCustomRoles();
     }
@@ -97,9 +110,10 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         editImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
         saveImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
         cancelImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
+        trashImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
     }
 
-    private void loadConfirmDialog() {
+    private void loadConfirmUpdateDialog() {
         // Load view into fallbackContainer
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
                 "/org/chainoptim/desktop/core/organization/ConfirmCustomRoleUpdateView.fxml",
@@ -108,9 +122,25 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         try {
             Node confirmDialogView = loader.load();
             confirmCustomRoleUpdateController = loader.getController();
-            confirmCustomRoleUpdateController.setConfirmDialogActionListener(this); // Listen to confirm dialog actions
-            confirmDialogContainer.getChildren().add(confirmDialogView);
-            closeConfirmDialog(); // Start hidden
+            confirmCustomRoleUpdateController.setConfirmUpdateDialogActionListener(this); // Listen to confirm dialog actions
+            confirmUpdateDialogContainer.getChildren().add(confirmDialogView);
+            closeConfirmUpdateDialog(); // Start hidden
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    private void loadConfirmDeleteDialog() {
+        // Load view into fallbackContainer
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/organization/ConfirmCustomRoleDeleteView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node confirmDialogView = loader.load();
+            confirmCustomRoleDeleteController = loader.getController();
+            confirmCustomRoleDeleteController.setActionListener(this); // Listen to confirm dialog actions
+            confirmDeleteDialogContainer.getChildren().add(confirmDialogView);
+            closeConfirmDeleteDialog(); // Start hidden
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -136,6 +166,8 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             customRoles = customRolesOptional.get();
 
             tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
+            styleDeleteRoleButton(deleteRoleButton);
+            deleteRoleButton.setOnAction(event -> toggleDeleteMode());
             styleAddNewRoleButton(addNewRoleButton);
             addNewRoleButton.setOnAction(event -> handleAddNewRole());
 
@@ -152,7 +184,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
 
     /*
      * Grid Layout:
-     * C. Role 1 | Read | Create | Update | Delete | Expand | Edit/Cancel | Save
+     * C. Role 1 | Read | Create | Update | Delete | Expand | Edit/Cancel | Save | Delete
      * Feature 1 | Read | Create | Update | Delete
      * Feature 2 | Read | Create | Update | Delete
      * ...
@@ -195,6 +227,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         addExpandButton(role, rowIndex);
         addEditButton(rowIndex);
         addSaveButton(rowIndex);
+        addDeleteButton(role, rowIndex);
 
         // Add aggregate checkboxes
         for (int col = 0; col < operations.length; col++) {
@@ -415,7 +448,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         saveButton.setOnAction(event -> {
             if (currentEditedRowIndex == -1) return;
             CustomRole role = customRoles.get(getRoleIndexByRowIndex(currentEditedRowIndex));
-            openConfirmDialog(role);
+            openConfirmUpdateDialog(role);
         });
 
         customRolesPane.add(saveButton, operations.length + 3, rowIndex);
@@ -427,13 +460,13 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             saveRoleChanges(customRole, currentEditedRowIndex);
         } else {
             fallbackManager.setErrorMessage("No changes have been detected.");
-            closeConfirmDialog();
+            closeConfirmUpdateDialog();
         }
     }
 
     @Override
     public void onCancelCustomRoleUpdate() {
-        closeConfirmDialog();
+        closeConfirmUpdateDialog();
     }
 
     private void saveRoleChanges(CustomRole customRole, int rowIndex) {
@@ -487,13 +520,12 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 return;
             }
             CustomRole updatedRole = updatedRoleOptional.get();
+            closeConfirmUpdateDialog();
 
             // Update customRoles
             customRoles.set(getRoleIndexByRowIndex(rowIndex), updatedRole);
 
             // Update UI
-            fallbackManager.setLoading(false);
-            closeConfirmDialog();
             refreshCheckboxSelections(rowIndex);
 
             // Disable editing row
@@ -504,10 +536,82 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             if (node instanceof Button saveButton) {
                 saveButton.setVisible(false);
             }
+
+            fallbackManager.setLoading(false);
         });
     }
 
-    // Add new role
+    // Delete
+    private void toggleDeleteMode() {
+        isDeleteMode = !isDeleteMode;
+
+        for (int row = 1; row < customRoles.size() * (features.length + 1) + 1; row++) {
+            Node node = getNodeByRowColumnIndex(row, operations.length + 4);
+            if (node instanceof Button deleteButton) {
+                deleteButton.setVisible(isDeleteMode);
+            }
+        }
+    }
+
+    private void addDeleteButton(CustomRole role, int rowIndex) {
+        Button deleteButton = new Button();
+        styleDeleteRoleButton(deleteButton);
+        deleteButton.setOnAction(event -> {
+            currentToBeDeletedRowIndex = rowIndex;
+            openConfirmDeleteDialog(role.getId());
+        });
+        applyStandardMargin(deleteButton);
+        deleteButton.setVisible(false);
+
+        customRolesPane.add(deleteButton, operations.length + 4, rowIndex);
+    }
+
+    @Override
+    public void onConfirmCustomRoleDelete(Integer customRoleId) {
+        if (currentToBeDeletedRowIndex != -1) {
+            handleDeleteRole(customRoleId, currentToBeDeletedRowIndex);
+        } else {
+            fallbackManager.setErrorMessage("No changes have been detected.");
+            closeConfirmUpdateDialog();
+        }
+    }
+
+    @Override
+    public void onCancelCustomRoleDelete() {
+        closeConfirmDeleteDialog();
+    }
+
+    private void handleDeleteRole(Integer customRoleId, int rowIndex) {
+        fallbackManager.setLoading(true);
+
+        customRoleService.deleteCustomRole(customRoleId)
+                .thenAccept(deletedRoleIdOptional -> handleSuccessfulDelete(deletedRoleIdOptional, rowIndex));
+    }
+
+    private void handleSuccessfulDelete(Optional<Integer> deletedRoleIdOptional, int rowIndex) {
+        Platform.runLater(() -> {
+            if (deletedRoleIdOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to delete custom role.");
+                return;
+            }
+            closeConfirmDeleteDialog();
+
+            // Update customRoles
+            customRoles.remove(getRoleIndexByRowIndex(rowIndex));
+
+            // Update UI
+            tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
+
+            // Rerender whole grid pane - necessary here, at least for rows after the deleted one
+            customRolesPane.getChildren().clear();
+            renderGridPane();
+
+            fallbackManager.setLoading(false);
+            toggleDeleteMode();
+        });
+    }
+
+    // Create
     private void handleAddNewRole() {
         // Add new role
         String newRoleName = "New Role";
@@ -529,6 +633,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             }
             CustomRole newRole = newRoleOptional.get();
             customRoles.add(newRole);
+            tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
 
             // Render new role row and feature rows
             int newRowIndex = (customRoles.size() - 1) * (features.length + 1) + 1;
@@ -542,15 +647,26 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     }
 
     // Utils
-    private void openConfirmDialog(CustomRole customRole) {
+    private void openConfirmUpdateDialog(CustomRole customRole) {
         confirmCustomRoleUpdateController.setData(customRole);
-        confirmDialogContainer.setVisible(true);
-        confirmDialogContainer.setManaged(true);
+        confirmUpdateDialogContainer.setVisible(true);
+        confirmUpdateDialogContainer.setManaged(true);
     }
 
-    private void closeConfirmDialog() {
-        confirmDialogContainer.setVisible(false);
-        confirmDialogContainer.setManaged(false);
+    private void closeConfirmUpdateDialog() {
+        confirmUpdateDialogContainer.setVisible(false);
+        confirmUpdateDialogContainer.setManaged(false);
+    }
+
+    private void openConfirmDeleteDialog(Integer customRoleId) {
+        confirmCustomRoleDeleteController.setData(customRoleId);
+        confirmDeleteDialogContainer.setVisible(true);
+        confirmDeleteDialogContainer.setManaged(true);
+    }
+
+    private void closeConfirmDeleteDialog() {
+        confirmDeleteDialogContainer.setVisible(false);
+        confirmDeleteDialogContainer.setManaged(false);
     }
 
     private boolean aggregatePermissionsByIndex(Permissions permissions, int index) {
@@ -628,6 +744,13 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         button.setGraphic(createImageView(plusImage));
         button.setText("Add New Role");
         applyStandardMargin(button);
+    }
+
+    private void styleDeleteRoleButton(Button button) {
+        button.getStyleClass().add("standard-delete-button");
+        button.setGraphic(createImageView(trashImage));
+        button.setTooltip(new Tooltip("Delete Role"));
+        GridPane.setMargin(button, new Insets(12));
     }
     private void styleExpandButton(Button button) {
         button.getStyleClass().add("no-style-button");

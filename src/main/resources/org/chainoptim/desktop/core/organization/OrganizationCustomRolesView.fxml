@@ -7,20 +7,22 @@
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="org.chainoptim.desktop.core.organization.controller.OrganizationCustomRolesController"
-           styleClass="organization-content-container"
-           prefHeight="600" prefWidth="800">
+            prefHeight="800">
 
     <VBox spacing="10">
-        <HBox style="-fx-padding: 10px;">
+        <HBox styleClass="tab-title-container" spacing="10">
             <Label fx:id="tabTitle" styleClass="tab-title"/>
             <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="deleteRoleButton"/>
             <Button fx:id="addNewRoleButton"/>
         </HBox>
 
         <ScrollPane VBox.vgrow="ALWAYS" style="-fx-background-color: white">
-            <GridPane fx:id="customRolesPane" VBox.vgrow="ALWAYS" style="-fx-background-color: white"/>
+            <GridPane fx:id="customRolesPane" VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-padding: 0px 20px;"/>
         </ScrollPane>
     </VBox>
 
-    <StackPane fx:id="confirmDialogContainer" style="-fx-padding: 64px"/>
+    <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px"/>
+    <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px"/>
 </StackPane>

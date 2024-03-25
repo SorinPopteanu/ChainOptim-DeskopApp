@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.organization.controller;
 
+import org.chainoptim.desktop.core.organization.model.ConfirmDeleteDialogActionListener;
 import org.chainoptim.desktop.core.organization.model.ConfirmUpdateDialogActionListener;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.user.model.User;
@@ -16,14 +17,14 @@ import lombok.Setter;
 import java.util.List;
 import java.util.Optional;
 
-public class ConfirmCustomRoleUpdateController implements DataReceiver<CustomRole> {
+public class ConfirmCustomRoleDeleteController implements DataReceiver<Integer> {
 
     private final UserService userService;
 
-    private CustomRole customRole;
+    private Integer customRoleId;
 
     @Setter
-    private ConfirmUpdateDialogActionListener confirmUpdateDialogActionListener;
+    private ConfirmDeleteDialogActionListener actionListener;
 
     @FXML
     private VBox usersVBox;
@@ -33,27 +34,27 @@ public class ConfirmCustomRoleUpdateController implements DataReceiver<CustomRol
     private Button cancelButton;
 
     @Inject
-    public ConfirmCustomRoleUpdateController(UserService userService) {
+    public ConfirmCustomRoleDeleteController(UserService userService) {
         this.userService = userService;
     }
 
     @Override
-    public void setData(CustomRole data) {
-        this.customRole = data;
-        System.out.println("Custom role: " + customRole.getName());
+    public void setData(Integer customRoleId) {
+        this.customRoleId = customRoleId;
 
-        userService.getUsersByCustomRoleId(customRole.getId())
+        userService.getUsersByCustomRoleId(customRoleId)
                 .thenApply(this::handleUsersResponse)
                 .exceptionally(this::handleUsersException);
     }
 
     private Optional<List<User>> handleUsersResponse(Optional<List<User>> users) {
         if (users.isEmpty()) {
-            System.out.println("No users found for custom role: " + customRole.getName());
             return Optional.empty();
         }
         Platform.runLater(() -> {
             List<User> userList = users.get();
+            usersVBox.getChildren().clear();
+
             for (User user : userList) {
                 // Put names into VBox
                 Label usernameLabel = new Label(user.getUsername());
@@ -70,11 +71,11 @@ public class ConfirmCustomRoleUpdateController implements DataReceiver<CustomRol
 
     @FXML
     private void onConfirmButtonClicked() {
-        confirmUpdateDialogActionListener.onConfirmCustomRoleUpdate(customRole);
+        actionListener.onConfirmCustomRoleDelete(customRoleId);
     }
 
     @FXML
     private void onCancelButtonClicked() {
-        confirmUpdateDialogActionListener.onCancelCustomRoleUpdate();
+        actionListener.onCancelCustomRoleDelete();
     }
 }
