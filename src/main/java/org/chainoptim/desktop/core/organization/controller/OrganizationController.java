@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 
 public class OrganizationController implements Initializable {
 
+    // Services
     private final OrganizationService organizationService;
     private final CustomRoleService customRoleService;
     private final FXMLLoaderService fxmlLoaderService;
@@ -38,9 +39,14 @@ public class OrganizationController implements Initializable {
 
     private final FallbackManager fallbackManager;
 
+    // Controllers
+    private OrganizationOverviewController organizationOverviewController;
+
+    // State
     private Integer organizationId;
     private OrganizationViewData organizationViewData;
 
+    // FXML
     @FXML
     private StackPane fallbackContainer;
 
@@ -89,7 +95,7 @@ public class OrganizationController implements Initializable {
 
         organizationViewData = new OrganizationViewData();
         loadOrganization();
-        loadCustomRoles();
+        loadCustomRoles(); // Multi-thread this as custom roles are not immediately needed
     }
 
     private void loadFallbackManager() {
@@ -132,6 +138,9 @@ public class OrganizationController implements Initializable {
             loader.setControllerFactory(controllerFactory::createController);
             Node content = loader.load();
             DataReceiver<OrganizationViewData> controller = loader.getController();
+            if (tab == overviewTab) {
+                organizationOverviewController = (OrganizationOverviewController) controller;
+            }
             controller.setData(organizationViewData);
             tab.setContent(content);
         } catch (IOException e) {
@@ -182,6 +191,7 @@ public class OrganizationController implements Initializable {
                 return;
             }
             organizationViewData.setCustomRoles(customRolesOptional.get());
+            organizationOverviewController.setData(organizationViewData);
             System.out.println("Custom Roles: " + organizationViewData.getCustomRoles());
         });
         return customRolesOptional;

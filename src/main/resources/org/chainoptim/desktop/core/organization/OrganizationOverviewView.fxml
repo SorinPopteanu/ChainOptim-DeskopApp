@@ -23,4 +23,6 @@
         </ScrollPane>
     </VBox>
 
+<!--    <StackPane fx:id="assignRoleDialogContainer" visible="false" managed="false"/>-->
+
 </StackPane>

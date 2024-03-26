@@ -108,12 +108,15 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             return;
         }
 
+        initializeUI();
+    }
+
+    private void initializeUI() {
         initializeIcons();
         setupListeners();
         loadConfirmUpdateDialog();
         loadConfirmDeleteDialog();
 
-//        loadCustomRoles();
         tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
         styleDeleteRoleButton(deleteRoleButton);
         deleteRoleButton.setOnAction(event -> toggleDeleteMode());
@@ -179,42 +182,6 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             ex.printStackTrace();
         }
     }
-
-    // Load roles
-//    private void loadCustomRoles() {
-//        fallbackManager.reset();
-//        fallbackManager.setLoading(true);
-//
-//        customRoleService.getCustomRolesByOrganizationId(organizationViewData.getOrganization().getId())
-//                .thenApply(this::handleCustomRolesResponse)
-//                .exceptionally(this::handleCustomRolesException)
-//                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
-//    }
-//
-//    private Optional<List<CustomRole>> handleCustomRolesResponse(Optional<List<CustomRole>> customRolesOptional) {
-//        Platform.runLater(() -> {
-//            if (customRolesOptional.isEmpty()) {
-//                fallbackManager.setErrorMessage("Failed to load custom roles.");
-//                return;
-//            }
-//            customRoles = customRolesOptional.get();
-//
-//            tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
-//            styleDeleteRoleButton(deleteRoleButton);
-//            deleteRoleButton.setOnAction(event -> toggleDeleteMode());
-//            styleAddNewRoleButton(addNewRoleButton);
-//            addNewRoleButton.setOnAction(event -> handleAddNewRole());
-//
-//            // Render the grid
-//            renderGridPane();
-//        });
-//        return customRolesOptional;
-//    }
-//
-//    private Optional<List<CustomRole>> handleCustomRolesException(Throwable ex) {
-//        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load custom roles."));
-//        return Optional.empty();
-//    }
 
     /*
      * Grid Layout:

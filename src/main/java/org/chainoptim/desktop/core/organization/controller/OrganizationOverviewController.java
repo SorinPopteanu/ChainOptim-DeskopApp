@@ -1,30 +1,41 @@
 package org.chainoptim.desktop.core.organization.controller;
 
-import org.chainoptim.desktop.core.organization.model.Organization;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
+import com.google.inject.Inject;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Popup;
+import javafx.util.Pair;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
 public class OrganizationOverviewController implements DataReceiver<OrganizationViewData> {
 
+    // Services
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
+
     // State
     private OrganizationViewData organizationViewData;
     private boolean isDeleteMode = false;
+    private final FallbackManager fallbackManager;
 
     // FXML
     @FXML
@@ -35,6 +46,8 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private Button addNewMemberButton;
     @FXML
     private GridPane membersGridPane;
+//    @FXML
+//    private StackPane assignRoleDialogContainer;
 
     // Constants
     String[] headers = {"Username", "Role", "Custom Role", "Joined At", "Email"};
@@ -43,16 +56,26 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private Image plusImage;
     private Image trashImage;
 
+    @Inject
+    public OrganizationOverviewController(FXMLLoaderService fxmlLoaderService,
+                                          ControllerFactory controllerFactory,
+                                          FallbackManager fallbackManager) {
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
+        this.fallbackManager = fallbackManager;
+    }
+
     @Override
     public void setData(OrganizationViewData data) {
         this.organizationViewData = data;
 
-        initializeUI();
+        initializeOrganizationUI();
     }
 
-    private void initializeUI() {
+    private void initializeOrganizationUI() {
         Set<User> users = organizationViewData.getOrganization().getUsers();
         if (users == null) {
+            fallbackManager.setErrorMessage("Failed to load organization members");
             return;
         }
 
@@ -105,9 +128,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
             }
             Button button = new Button("Assign");
             button.getStyleClass().add("pseudo-link");
-            button.setOnAction(event -> {
-                System.out.println("Assign custom role");
-            });
+            button.setOnAction(event -> loadAssignRoleDialog(user, event));
             return button;
         }
         return switch (header) {
@@ -117,6 +138,34 @@ public class OrganizationOverviewController implements DataReceiver<Organization
             case "Email" -> new Label(user.getEmail());
             default -> null;
         };
+    }
+
+    private void loadAssignRoleDialog(User user, ActionEvent event) {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/organization/OrganizationAssignRoleView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node content = loader.load();
+            OrganizationAssignRoleController controller = loader.getController();
+            controller.setData(new Pair<>(user, organizationViewData.getCustomRoles()));
+
+            Popup popup = new Popup();
+            popup.getContent().add(content);
+            popup.setAutoHide(true);
+
+            Button sourceButton = (Button) event.getSource(); // Cast is safe here since we know the source is a Button
+            double x = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMinX();
+            double y = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMaxY();
+            popup.show(sourceButton, x, y);
+            // What here instead of this??
+//            assignRoleDialogContainer.getChildren().add(content);
+//            assignRoleDialogContainer.setVisible(true);
+//            assignRoleDialogContainer.setManaged(true);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
     }
 
     private void toggleDeleteMode() {
