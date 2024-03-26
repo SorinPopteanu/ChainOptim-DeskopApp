@@ -669,6 +669,21 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         confirmDeleteDialogContainer.setManaged(false);
     }
 
+    private int getRoleIndexByRowIndex(int rowIndex) {
+        return rowIndex / (features.length + 1);
+    }
+
+    private Node getNodeByRowColumnIndex(final int row, final int column) {
+        Node result = null;
+        for (Node node : customRolesPane.getChildren()) {
+            if(GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
+                result = node;
+                break;
+            }
+        }
+        return result;
+    }
+
     private boolean aggregatePermissionsByIndex(Permissions permissions, int index) {
         return getPermissionByColumnIndex(permissions.getProducts(), index) &&
                 getPermissionByColumnIndex(permissions.getFactories(), index) &&
@@ -689,10 +704,6 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             case 3 -> Optional.ofNullable(featurePermissions.getCanDelete()).orElse(false);
             default -> false;
         };
-    }
-
-    private int getRoleIndexByRowIndex(int rowIndex) {
-        return rowIndex / (features.length + 1);
     }
 
     private void setPermissionsByIndex(FeaturePermissions featurePermissions, int index, boolean value) {
@@ -725,17 +736,6 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             case "Clients" -> permissions.setClients(featurePermissions);
             default -> { break; }
         }
-    }
-
-    private Node getNodeByRowColumnIndex(final int row, final int column) {
-        Node result = null;
-        for (Node node : customRolesPane.getChildren()) {
-            if(GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
-                result = node;
-                break;
-            }
-        }
-        return result;
     }
 
     // Button styling

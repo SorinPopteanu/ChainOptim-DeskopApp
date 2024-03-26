@@ -10,7 +10,7 @@
         prefHeight="800">
 
     <VBox spacing="10">
-        <HBox styleClass="tab-title-container" spacing="10">
+        <HBox styleClass="tab-title-container" spacing="10" alignment="CENTER">
             <Label fx:id="tabTitle" styleClass="tab-title"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="removeMemberButton"/>

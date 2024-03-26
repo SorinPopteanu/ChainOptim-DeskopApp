@@ -45,7 +45,6 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.user.model to com.fasterxml.jackson.databind;
 
     // - Organization
-    opens org.chainoptim.desktop.core.organization.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.core.organization.service to com.google.guice;
     opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.organization.dto to com.fasterxml.jackson.databind;
@@ -115,6 +114,9 @@ module org.chainoptim.desktop {
     // -  Fallback Manager
     opens org.chainoptim.desktop.shared.fallback to javafx.fxml, com.google.guice;
 
+    // - Confirm Dialogs
+    opens org.chainoptim.desktop.shared.confirmdialog.model to com.fasterxml.jackson.databind;
+
     // - Utils
     opens org.chainoptim.desktop.shared.util.resourceloader to com.google.guice;
 
@@ -123,5 +125,7 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.shared.search.controller to com.google.guice, javafx.fxml;
 
     exports org.chainoptim.desktop;
+    opens org.chainoptim.desktop.core.organization.controller to com.fasterxml.jackson.databind, com.google.guice, javafx.fxml;
+    opens org.chainoptim.desktop.shared.confirmdialog.controller to com.fasterxml.jackson.databind, com.google.guice, javafx.fxml;
 
 }

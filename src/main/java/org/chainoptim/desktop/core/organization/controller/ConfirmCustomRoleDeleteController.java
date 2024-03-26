@@ -1,8 +1,5 @@
 package org.chainoptim.desktop.core.organization.controller;
 
-import org.chainoptim.desktop.core.organization.model.ConfirmDeleteDialogActionListener;
-import org.chainoptim.desktop.core.organization.model.ConfirmUpdateDialogActionListener;
-import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.shared.util.DataReceiver;

@@ -14,7 +14,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 
 import java.util.Objects;
 
@@ -35,7 +34,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private GridPane membersGridPane;
 
     // Constants
-    String[] headers = {"Username", "Role", "Custom Role"};
+    String[] headers = {"Username", "Role", "Custom Role", "Joined At", "Email"};
 
     // Icons
     private Image plusImage;
@@ -101,6 +100,8 @@ public class OrganizationOverviewController implements DataReceiver<Organization
             case "Username" -> user.getUsername();
             case "Role" -> user.getRole().toString();
             case "Custom Role" -> user.getCustomRole() != null ? user.getCustomRole().getName() : "Not assigned";
+            case "Joined At" -> user.getCreatedAt().toString();
+            case "Email" -> user.getEmail();
             default -> null;
         };
     }

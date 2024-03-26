@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.core.organization.model;
+package org.chainoptim.desktop.core.organization.controller;
 
 public interface ConfirmDeleteDialogActionListener {
 

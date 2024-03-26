@@ -1,4 +1,6 @@
-package org.chainoptim.desktop.core.organization.model;
+package org.chainoptim.desktop.core.organization.controller;
+
+import org.chainoptim.desktop.core.organization.model.CustomRole;
 
 public interface ConfirmUpdateDialogActionListener {
 
