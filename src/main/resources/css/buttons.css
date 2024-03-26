@@ -13,6 +13,22 @@
     -fx-background-color: #0068C9;
 }
 
+.standard-delete-button {
+    -fx-pref-height: 32px;
+    /* Find more professional red*/
+    -fx-background-color: #B22222;
+    -fx-text-fill: white;
+    -fx-font-weight: normal;
+    -fx-font-size: 14px;
+    -fx-padding: 4px 12px 4px 12px;
+    -fx-graphic-text-gap: 8px;
+    -fx-cursor: hand;
+}
+
+.standard-delete-button:hover {
+    -fx-background-color: #A52A2A;
+}
+
 /* Button with default JavaFX styles removed */
 .no-style-button {
     -fx-background-color: transparent;

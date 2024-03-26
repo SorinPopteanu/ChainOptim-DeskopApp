@@ -15,7 +15,7 @@
             </VBox>
             <VBox HBox.hgrow="ALWAYS" alignment="TOP_RIGHT" spacing="10">
                 <Label fx:id="planLabel" styleClass="plan-label"/>
-                <Button text="Change Plan" onAction="#handleChangePlan" styleClass="standard-write-button"/>
+                <Button text="Edit Organization" onAction="#handleEditOrganization" styleClass="standard-write-button"/>
             </VBox>
         </HBox>
     </VBox>

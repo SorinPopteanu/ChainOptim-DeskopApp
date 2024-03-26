@@ -29,31 +29,8 @@ public class FallbackManagerController {
 
     @FXML
     public void initialize() {
-        loadFallbackViews();
         setupChangeListeners();
         updateView();
-    }
-
-    private void loadFallbackViews() {
-        String[] viewPaths = {
-                "/org/chainoptim/desktop/shared/fallback/ErrorFallbackView.fxml",
-                "/org/chainoptim/desktop/shared/fallback/LoadingFallbackView.fxml",
-                "/org/chainoptim/desktop/shared/fallback/NoOrganizationFallbackView.fxml",
-                "/org/chainoptim/desktop/shared/fallback/NoResultsFallbackView.fxml"
-        };
-
-        for (String path : viewPaths) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
-                Node view = loader.load();
-                Object controller = loader.getController();
-
-                loadedViews.put(path, view);
-                loadedControllers.put(path, controller);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void setupChangeListeners() {
@@ -66,19 +43,25 @@ public class FallbackManagerController {
     private void updateView() {
         String viewPath = determineViewPathBasedOnState();
 
-        if (!viewPath.isEmpty()) {
-            Node view = loadedViews.get(viewPath);
-            // Set error message in case of error
-            Object controller = loadedControllers.get(viewPath);
-            if (viewPath.equals("/org/chainoptim/desktop/shared/fallback/ErrorFallbackView.fxml")) {
-                ((ErrorFallbackController)controller).initialize(fallbackManager.getErrorMessage());
-            }
-
-            fallbackContentHolder.getChildren().setAll(view);
-        } else {
+        if (viewPath.isEmpty()) { // No fallback
             fallbackContentHolder.getChildren().clear();
             fallbackContentHolder.setPrefSize(0, 0);
+            return;
         }
+
+        // Look in cache or load
+        if (!loadedViews.containsKey(viewPath)) {
+            loadFallbackView(viewPath);
+        }
+        Node view = loadedViews.get(viewPath);
+
+        // Set error message in case of error
+        Object controller = loadedControllers.get(viewPath);
+        if (viewPath.equals("/org/chainoptim/desktop/shared/fallback/ErrorFallbackView.fxml")) {
+            ((ErrorFallbackController)controller).initialize(fallbackManager.getErrorMessage());
+        }
+
+        fallbackContentHolder.getChildren().setAll(view);
     }
 
     private String determineViewPathBasedOnState() {
@@ -92,6 +75,19 @@ public class FallbackManagerController {
             return "/org/chainoptim/desktop/shared/fallback/NoResultsFallbackView.fxml";
         }
         return "";
+    }
+
+    private void loadFallbackView(String viewPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
+            Node view = loader.load();
+            Object controller = loader.getController();
+
+            loadedViews.put(viewPath, view);
+            loadedControllers.put(viewPath, controller);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
