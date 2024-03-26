@@ -1,44 +1,44 @@
 package org.chainoptim.desktop.features.client.controller;
 
-import com.google.inject.Inject;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
-
-import javafx.animation.PauseTransition;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.ScrollEvent;
-import javafx.util.Callback;
-import javafx.util.Duration;
-import javafx.util.converter.FloatStringConverter;
-import javafx.util.converter.IntegerStringConverter;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.model.ClientOrder;
 import org.chainoptim.desktop.features.client.service.ClientOrdersService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+import com.google.inject.Inject;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.StackPane;
+import javafx.util.Callback;
+import javafx.util.converter.FloatStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 public class ClientOrdersController implements DataReceiver<Client> {
 
     private final ClientOrdersService clientOrdersService;
     private final FallbackManager fallbackManager;
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
 
     private Client client;
     private List<ClientOrder> clientOrders;
 
     @FXML
-    private ScrollPane scrollPane;
+    private StackPane stackPane;
     @FXML
     private TableView<ClientOrder> tableView;
     @FXML
@@ -57,21 +57,37 @@ public class ClientOrdersController implements DataReceiver<Client> {
     private TableColumn<ClientOrder, LocalDateTime> estimatedDeliveryDateColumn;
     @FXML
     private TableColumn<ClientOrder, LocalDateTime> deliveryDateColumn;
+    @FXML
+    private StackPane fallbackContainer;
 
     @Inject
     public ClientOrdersController(FallbackManager fallbackManager,
-                                  ClientOrdersService clientOrdersService) {
+                                  ClientOrdersService clientOrdersService,
+                                  FXMLLoaderService fxmlLoaderService,
+                                  ControllerFactory controllerFactory) {
         this.fallbackManager = fallbackManager;
         this.clientOrdersService = clientOrdersService;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
     }
 
     @Override
     public void setData(Client client) {
+        loadFallbackManager();
         this.client = client;
         loadClientOrders(client.getId());
     }
 
+    private void loadFallbackManager() {
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
+    }
+
     private void loadClientOrders(Integer clientId) {
+        fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         clientOrdersService.getClientOrdersByOrganizationId(clientId)
@@ -88,7 +104,7 @@ public class ClientOrdersController implements DataReceiver<Client> {
             this.clientOrders = orders.get();
             fallbackManager.setLoading(false);
             System.out.println("Orders received: " + clientOrders);
-            setTableView();
+            configureTableView();
             bindDataToTableView();
             setEditEvents();
         });
@@ -96,7 +112,7 @@ public class ClientOrdersController implements DataReceiver<Client> {
         return clientOrders;
     }
 
-    private void setTableView() {
+    private void configureTableView() {
         tableView.setEditable(true);
         clientIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         productIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -104,7 +120,6 @@ public class ClientOrdersController implements DataReceiver<Client> {
         statusColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
         tableView.setMaxHeight(Double.MAX_VALUE);
-        scrollPane.setFitToHeight(true);
 
         // Set the column resize policy and their minimum width
         tableView.setColumnResizePolicy(new Callback<TableView.ResizeFeatures, Boolean>() {
@@ -113,22 +128,6 @@ public class ClientOrdersController implements DataReceiver<Client> {
                 return TableView.CONSTRAINED_RESIZE_POLICY.call(param) || Boolean.TRUE;
             }
         });
-
-//        tableView.addEventFilter(ScrollEvent.SCROLL, event -> {
-//            if (event.getDeltaY() != 0) {
-//                scrollPane.lookup(".scroll-bar:vertical").setOpacity(1);
-//                PauseTransition pause = new PauseTransition(Duration.seconds(3));
-//                pause.setOnFinished(e -> scrollPane.lookup(".scroll-bar:vertical").setOpacity(0));
-//                pause.play();
-//            }
-//
-//            if (event.getDeltaX() != 0) {
-//                scrollPane.lookup(".scroll-bar:horizontal").setOpacity(1);
-//                PauseTransition pause = new PauseTransition(Duration.seconds(3));
-//                pause.setOnFinished(e -> scrollPane.lookup(".scroll-bar:horizontal").setOpacity(0));
-//                pause.play();
-//            }
-//        });
     }
 
     private void bindDataToTableView() {

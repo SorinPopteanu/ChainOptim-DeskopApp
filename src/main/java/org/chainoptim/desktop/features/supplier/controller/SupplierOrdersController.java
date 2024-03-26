@@ -1,8 +1,17 @@
 package org.chainoptim.desktop.features.supplier.controller;
 
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
+import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
+import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -11,12 +20,6 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
-import org.chainoptim.desktop.features.client.model.ClientOrder;
-import org.chainoptim.desktop.features.supplier.model.Supplier;
-import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
-import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
-import org.chainoptim.desktop.shared.fallback.FallbackManager;
-import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -27,6 +30,9 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private final SupplierOrdersService supplierOrdersService;
     private final FallbackManager fallbackManager;
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
+
     private List<SupplierOrder> supplierOrders;
     private Supplier supplier;
 
@@ -50,21 +56,37 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private TableColumn<SupplierOrder, LocalDateTime> estimatedDeliveryDateColumn;
     @FXML
     private TableColumn<SupplierOrder, LocalDateTime> deliveryDateColumn;
+    @FXML
+    private StackPane fallbackContainer;
 
     @Inject
     public SupplierOrdersController(SupplierOrdersService supplierOrdersService,
-                                    FallbackManager fallbackManager) {
+                                    FallbackManager fallbackManager,
+                                    FXMLLoaderService fxmlLoaderService,
+                                    ControllerFactory controllerFactory) {
         this.supplierOrdersService = supplierOrdersService;
         this.fallbackManager = fallbackManager;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
     }
 
     @Override
     public void setData(Supplier supplier) {
+        loadFallbackManager();
         this.supplier = supplier;
         loadSupplierOrders(supplier.getId());
     }
 
+    private void loadFallbackManager() {
+        Node fallbackView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
+                controllerFactory::createController
+        );
+        fallbackContainer.getChildren().add(fallbackView);
+    }
+
     private void loadSupplierOrders(Integer supplierId) {
+        fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         supplierOrdersService.getSupplierOrdersByOrganizationId(supplierId)
@@ -81,7 +103,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             this.supplierOrders = orders.get();
             fallbackManager.setLoading(false);
             System.out.println("Orders received: " + supplierOrders);
-            setTableView();
+            configureTableView();
             bindDataToTableView();
             setEditEvents();
         });
@@ -89,7 +111,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         return supplierOrders;
     }
 
-    private void setTableView() {
+    private void configureTableView() {
         tableView.setEditable(true);
         supplierIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         componentIdColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));

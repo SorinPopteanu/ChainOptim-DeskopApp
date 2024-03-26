@@ -5,11 +5,11 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.ScrollPane?>
-<AnchorPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.client.controller.ClientOrdersController">
 
-    <ScrollPane fx:id="scrollPane" styleClass="scroll-pane" fitToWidth="true" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="40.0">
+    <StackPane fx:id="stackPane" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
         <TableView fx:id="tableView" styleClass="table-view">
             <columns>
             <TableColumn text="Order ID" fx:id="orderIdColumn" minWidth="150"/>
@@ -22,5 +22,6 @@
             <TableColumn text="Delivery Date" fx:id="deliveryDateColumn" minWidth="150"/>
             </columns>
         </TableView>
-    </ScrollPane>
-</AnchorPane>
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
+    </StackPane>
+</VBox>
