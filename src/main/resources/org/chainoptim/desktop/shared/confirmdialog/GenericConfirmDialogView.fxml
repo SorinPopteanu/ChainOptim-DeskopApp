@@ -14,7 +14,7 @@
 
     <VBox spacing="8">
         <TextFlow fx:id="messageTextFlowContainer" styleClass="dialog-message" VBox.vgrow="ALWAYS">
-
+            <!-- Message -->
         </TextFlow>
 
         <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">

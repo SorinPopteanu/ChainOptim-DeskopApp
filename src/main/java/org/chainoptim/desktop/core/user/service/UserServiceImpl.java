@@ -81,5 +81,31 @@ public class UserServiceImpl implements UserService {
                     return Optional.<List<User>>empty();
                 });
     }
+
+    public CompletableFuture<Optional<User>> assignCustomRoleToUser(String userId, Integer roleId) {
+        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/assign-role/" + roleId;
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .headers(HEADER_KEY, headerValue)
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
+                    try {
+                        User user = JsonUtil.getObjectMapper().readValue(response.body(), User.class);
+                        return Optional.of(user);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return Optional.empty();
+                });
+    }
 }
 

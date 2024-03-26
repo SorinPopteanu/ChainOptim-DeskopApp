@@ -94,6 +94,8 @@ public class OrganizationController implements Initializable {
         organizationId = currentUser.getOrganization().getId();
 
         organizationViewData = new OrganizationViewData();
+        loadTabContent(overviewTab, "/org/chainoptim/desktop/core/organization/OrganizationOverviewView.fxml", this.organizationViewData);
+
         loadOrganization();
         loadCustomRoles(); // Multi-thread this as custom roles are not immediately needed
     }
@@ -168,7 +170,8 @@ public class OrganizationController implements Initializable {
 
             initializeUI();
 
-            loadTabContent(overviewTab, "/org/chainoptim/desktop/core/organization/OrganizationOverviewView.fxml", this.organizationViewData);
+            organizationOverviewController.setData(organizationViewData); // Feed organization data to overview tab
+
             // Hide loading screen even if custom roles are not loaded yet,
             // as they are not immediately needed
             fallbackManager.setLoading(false);
@@ -191,7 +194,9 @@ public class OrganizationController implements Initializable {
                 return;
             }
             organizationViewData.setCustomRoles(customRolesOptional.get());
-            organizationOverviewController.setData(organizationViewData);
+            if (organizationOverviewController != null) {
+                organizationOverviewController.setData(organizationViewData);
+            }
             System.out.println("Custom Roles: " + organizationViewData.getCustomRoles());
         });
         return customRolesOptional;
@@ -206,7 +211,6 @@ public class OrganizationController implements Initializable {
         organizationName.setText("Organization: " + organizationViewData.getOrganization().getName());
         organizationAddress.setText("Address: " + organizationViewData.getOrganization().getAddress());
         planLabel.setText("Subscription Plan: " + organizationViewData.getOrganization().getSubscriptionPlan().name());
-        System.out.println("Organization: " + organizationViewData.getOrganization());
     }
 
     private Optional<Organization> handleOrganizationException(Throwable ex) {

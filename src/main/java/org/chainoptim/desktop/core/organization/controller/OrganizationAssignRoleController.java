@@ -4,6 +4,8 @@ import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.FeaturePermissions;
 import org.chainoptim.desktop.core.organization.model.Permissions;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.user.service.UserService;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import javafx.event.ActionEvent;
@@ -14,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.Pair;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -24,6 +27,10 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
     private List<CustomRole> customRoles;
     private CustomRole selectedRole;
     private boolean hasRenderedWarning;
+
+    // Listeners
+    @Setter
+    private GenericConfirmDialogActionListener<Pair<String, Integer>> actionListener; // userId, customRoleId
 
     // FXML
     @FXML
@@ -65,9 +72,10 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
     private void selectRole(ActionEvent event) {
         Button source = (Button) event.getSource();
         selectedRole = customRoles.get(rolesVBox.getChildren().indexOf(source));
-        System.out.println("Role selected: " + selectedRole);
         source.getStyleClass().clear();
         source.getStyleClass().add("assign-role-selected-element");
+
+        // Deselect other roles
         for (int i = 0; i < rolesVBox.getChildren().size(); i++) {
             if (i != rolesVBox.getChildren().indexOf(source)) {
                 rolesVBox.getChildren().get(i).getStyleClass().clear();
@@ -75,20 +83,23 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
             }
         }
 
-        // On first selection, render warning message and permissions to be granted
+        // Render permissions to be granted
+        renderPermissionsVBox();
+
+        // On first selection, render warning message
         if (hasRenderedWarning) return;
         String message = "Are you sure you want to assign this role to " + user.getUsername() + "?"
                 + " This will override the basic role " + user.getRole().toString()
                 + " and grant them the following permissions:";
         messageTextFlowContainer.getChildren().clear();
         messageTextFlowContainer.getChildren().add(new Text(message));
-
-        renderPermissionsVBox();
         hasRenderedWarning = true;
     }
 
     private void renderPermissionsVBox() {
         if (selectedRole == null || selectedRole.getPermissions() == null) return;
+
+        permissionsVBox.getChildren().clear();
 
         renderFeaturePermissions(selectedRole.getPermissions().getProducts(), "products");
         renderFeaturePermissions(selectedRole.getPermissions().getFactories(), "factories");
@@ -100,32 +111,40 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
     private void renderFeaturePermissions(FeaturePermissions featurePermissions, String featureName) {
         if (featurePermissions == null) return;
 
+        String permissionText = "To ";
         if (Boolean.TRUE.equals(featurePermissions.getCanRead())) {
-            formatOperationPermissions("read", featureName);
+            permissionText += "Read, ";
         }
         if (Boolean.TRUE.equals(featurePermissions.getCanCreate())) {
-            formatOperationPermissions("create", featureName);
+            permissionText += "Create, ";
         }
         if (Boolean.TRUE.equals(featurePermissions.getCanUpdate())) {
-            formatOperationPermissions("update", featureName);
+            permissionText += "Update, ";
         }
         if (Boolean.TRUE.equals(featurePermissions.getCanDelete())) {
-            formatOperationPermissions("delete", featureName);
+            permissionText += "Delete, ";
         }
-    }
+        permissionText = permissionText.substring(0, permissionText.length() - 2); // Remove trailing comma and space
 
-    private void formatOperationPermissions(String operationName, String featureName) {
-        Label permissionLabel = new Label("To " + operationName + " " + featureName);
-        permissionsVBox.getChildren().add(permissionLabel);
+        if (permissionText.length() > 1) {
+            permissionText += " " + featureName;
+
+            Label featureLabel = new Label(permissionText);
+            featureLabel.getStyleClass().add("general-label");
+            permissionsVBox.getChildren().add(featureLabel);
+        }
     }
 
     @FXML
     private void onConfirmButtonClicked() {
-        System.out.println("Confirm button clicked");
+        if (selectedRole == null) return;
+
+        Pair<String, Integer> data = new Pair<>(user.getId(), selectedRole.getId());
+        actionListener.onConfirmAction(data);
     }
 
     @FXML
     private void onCancelButtonClicked() {
-        System.out.println("Cancel button clicked");
+        actionListener.onCancelAction();
     }
 }
