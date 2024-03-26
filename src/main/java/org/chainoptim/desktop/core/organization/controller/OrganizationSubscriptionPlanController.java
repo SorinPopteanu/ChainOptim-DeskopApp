@@ -3,6 +3,7 @@ package org.chainoptim.desktop.core.organization.controller;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.Organization;
+import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
@@ -22,12 +23,12 @@ import java.util.function.Consumer;
  * Controller for the organization subscription plan view.
  * Currently only exemplifies the Generic Confirm Dialog implementation pattern.
  */
-public class OrganizationSubscriptionPlanController implements DataReceiver<Organization> {
+public class OrganizationSubscriptionPlanController implements DataReceiver<OrganizationViewData> {
 
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
 
-    private Organization organization;
+    private OrganizationViewData organizationViewData;
 
     // Listeners
     private RunnableConfirmDialogActionListener<CustomRole> confirmDialogUpdateListener;
@@ -47,8 +48,8 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
     }
 
     @Override
-    public void setData(Organization data) {
-        this.organization = data;
+    public void setData(OrganizationViewData data) {
+        this.organizationViewData = data;
 
         setupListeners();
         loadUpdateConfirmDialog();

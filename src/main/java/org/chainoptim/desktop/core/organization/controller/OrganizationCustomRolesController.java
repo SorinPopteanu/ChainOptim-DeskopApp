@@ -32,7 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class OrganizationCustomRolesController implements DataReceiver<Organization> {
+public class OrganizationCustomRolesController implements DataReceiver<OrganizationViewData> {
 
     // Injected services and controllers
     private final CustomRoleService customRoleService;
@@ -64,7 +64,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private StackPane confirmDeleteDialogContainer;
 
     // State
-    private Organization organization;
+    private OrganizationViewData organizationViewData;
     private List<CustomRole> customRoles;
     private final List<Boolean> expandedRoleStates = new ArrayList<>();
     private int currentEditedRowIndex = -1; // No edit marker
@@ -96,10 +96,15 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     }
 
     @Override
-    public void setData(Organization data) {
-        this.organization = data;
-        if (organization == null) {
+    public void setData(OrganizationViewData data) {
+        this.organizationViewData = data;
+        if (organizationViewData.getOrganization() == null) {
             fallbackManager.setNoOrganization(true);
+            return;
+        }
+        customRoles = organizationViewData.getCustomRoles();
+        if (customRoles == null) {
+            fallbackManager.setErrorMessage("Failed to load custom roles.");
             return;
         }
 
@@ -108,7 +113,15 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         loadConfirmUpdateDialog();
         loadConfirmDeleteDialog();
 
-        loadCustomRoles();
+//        loadCustomRoles();
+        tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
+        styleDeleteRoleButton(deleteRoleButton);
+        deleteRoleButton.setOnAction(event -> toggleDeleteMode());
+        styleAddNewRoleButton(addNewRoleButton);
+        addNewRoleButton.setOnAction(event -> handleAddNewRole());
+
+        // Render the grid
+        renderGridPane();
     }
 
     // Initialize UI
@@ -168,40 +181,40 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     }
 
     // Load roles
-    private void loadCustomRoles() {
-        fallbackManager.reset();
-        fallbackManager.setLoading(true);
-
-        customRoleService.getCustomRolesByOrganizationId(organization.getId())
-                .thenApply(this::handleCustomRolesResponse)
-                .exceptionally(this::handleCustomRolesException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
-    }
-
-    private Optional<List<CustomRole>> handleCustomRolesResponse(Optional<List<CustomRole>> customRolesOptional) {
-        Platform.runLater(() -> {
-            if (customRolesOptional.isEmpty()) {
-                fallbackManager.setErrorMessage("Failed to load custom roles.");
-                return;
-            }
-            customRoles = customRolesOptional.get();
-
-            tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
-            styleDeleteRoleButton(deleteRoleButton);
-            deleteRoleButton.setOnAction(event -> toggleDeleteMode());
-            styleAddNewRoleButton(addNewRoleButton);
-            addNewRoleButton.setOnAction(event -> handleAddNewRole());
-
-            // Render the grid
-            renderGridPane();
-        });
-        return customRolesOptional;
-    }
-
-    private Optional<List<CustomRole>> handleCustomRolesException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load custom roles."));
-        return Optional.empty();
-    }
+//    private void loadCustomRoles() {
+//        fallbackManager.reset();
+//        fallbackManager.setLoading(true);
+//
+//        customRoleService.getCustomRolesByOrganizationId(organizationViewData.getOrganization().getId())
+//                .thenApply(this::handleCustomRolesResponse)
+//                .exceptionally(this::handleCustomRolesException)
+//                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+//    }
+//
+//    private Optional<List<CustomRole>> handleCustomRolesResponse(Optional<List<CustomRole>> customRolesOptional) {
+//        Platform.runLater(() -> {
+//            if (customRolesOptional.isEmpty()) {
+//                fallbackManager.setErrorMessage("Failed to load custom roles.");
+//                return;
+//            }
+//            customRoles = customRolesOptional.get();
+//
+//            tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
+//            styleDeleteRoleButton(deleteRoleButton);
+//            deleteRoleButton.setOnAction(event -> toggleDeleteMode());
+//            styleAddNewRoleButton(addNewRoleButton);
+//            addNewRoleButton.setOnAction(event -> handleAddNewRole());
+//
+//            // Render the grid
+//            renderGridPane();
+//        });
+//        return customRolesOptional;
+//    }
+//
+//    private Optional<List<CustomRole>> handleCustomRolesException(Throwable ex) {
+//        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load custom roles."));
+//        return Optional.empty();
+//    }
 
     /*
      * Grid Layout:
@@ -618,7 +631,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         // Add new role
         String newRoleName = "New Role";
         Permissions newPermissions = new Permissions();
-        CreateCustomRoleDTO roleDTO = new CreateCustomRoleDTO(newRoleName, organization.getId(), newPermissions);
+        CreateCustomRoleDTO roleDTO = new CreateCustomRoleDTO(newRoleName, organizationViewData.getOrganization().getId(), newPermissions);
         customRoleService.createCustomRole(roleDTO)
                 .thenApply(this::handleNewRoleResponse)
                 .exceptionally(ex -> {

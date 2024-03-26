@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
-<VBox xmlns="http://javafx.com/javafx"
+<StackPane xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.core.organization.controller.OrganizationOverviewController"
         prefHeight="800">
@@ -19,8 +19,8 @@
 
         <ScrollPane VBox.vgrow="ALWAYS" style="-fx-background-color: white">
             <GridPane fx:id="membersGridPane" VBox.vgrow="ALWAYS"
-                      style="-fx-background-color: white; -fx-padding: 0px 20px;"/>
+                      styleClass="grid-pane-container"/>
         </ScrollPane>
     </VBox>
 
-</VBox>
+</StackPane>

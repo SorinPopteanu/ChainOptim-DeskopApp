@@ -15,7 +15,6 @@
 
 .standard-delete-button {
     -fx-pref-height: 32px;
-    /* Find more professional red*/
     -fx-background-color: #B22222;
     -fx-text-fill: white;
     -fx-font-weight: normal;

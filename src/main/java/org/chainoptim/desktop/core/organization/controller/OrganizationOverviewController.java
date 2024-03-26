@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.core.organization.controller;
 
 import org.chainoptim.desktop.core.organization.model.Organization;
+import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
@@ -15,12 +16,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
-public class OrganizationOverviewController implements DataReceiver<Organization> {
+public class OrganizationOverviewController implements DataReceiver<OrganizationViewData> {
 
     // State
-    private Organization organization;
+    private OrganizationViewData organizationViewData;
     private boolean isDeleteMode = false;
 
     // FXML
@@ -41,21 +44,22 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private Image trashImage;
 
     @Override
-    public void setData(Organization data) {
-        this.organization = data;
+    public void setData(OrganizationViewData data) {
+        this.organizationViewData = data;
 
         initializeUI();
     }
 
     private void initializeUI() {
-        if (organization.getUsers() == null) {
+        Set<User> users = organizationViewData.getOrganization().getUsers();
+        if (users == null) {
             return;
         }
 
         initializeIcons();
 
         // Initialize title container
-        tabTitle.setText("Members (" + organization.getUsers().size() + ")");
+        tabTitle.setText("Members (" + users.size() + ")");
         styleDeleteRoleButton(removeMemberButton);
         removeMemberButton.setOnAction(event -> toggleDeleteMode());
         styleAddNewRoleButton(addNewMemberButton);
@@ -83,25 +87,34 @@ public class OrganizationOverviewController implements DataReceiver<Organization
 
         // Rows
         int row = 1;
-        for (User user : organization.getUsers()) {
+        for (User user : organizationViewData.getOrganization().getUsers()) {
             for (int i = 0; i < headers.length; i++) {
-                String property = getDisplayedPropertyByHeader(user, headers[i]);
-                Label label = new Label(property);
-                applyStandardMargin(label);
-                membersGridPane.add(label, i, row);
-                GridPane.setHalignment(label, HPos.CENTER);
+                Node node = getDisplayedPropertyByHeader(user, headers[i]);
+                if (i > 0) applyStandardMargin(node);
+                membersGridPane.add(node, i, row);
+                GridPane.setHalignment(node, HPos.CENTER);
             }
             row++;
         }
     }
 
-    private String getDisplayedPropertyByHeader(User user, String header) {
+    private Node getDisplayedPropertyByHeader(User user, String header) {
+        if (header.equals("Custom Role")) {
+            if (user.getCustomRole() != null) {
+                return new Label(user.getCustomRole().getName());
+            }
+            Button button = new Button("Assign");
+            button.getStyleClass().add("pseudo-link");
+            button.setOnAction(event -> {
+                System.out.println("Assign custom role");
+            });
+            return button;
+        }
         return switch (header) {
-            case "Username" -> user.getUsername();
-            case "Role" -> user.getRole().toString();
-            case "Custom Role" -> user.getCustomRole() != null ? user.getCustomRole().getName() : "Not assigned";
-            case "Joined At" -> user.getCreatedAt().toString();
-            case "Email" -> user.getEmail();
+            case "Username" -> new Label(user.getUsername());
+            case "Role" -> new Label(user.getRole().toString());
+            case "Joined At" -> new Label(user.getCreatedAt().toString());
+            case "Email" -> new Label(user.getEmail());
             default -> null;
         };
     }

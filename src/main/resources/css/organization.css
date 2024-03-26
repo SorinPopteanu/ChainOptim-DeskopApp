@@ -27,6 +27,11 @@
 }
 
 /* Custom Roles */
+.grid-pane-container {
+    -fx-background-color: white;
+    -fx-padding: 0px 20px;
+}
+
 .column-header {
     -fx-padding: 8px 0px;
     -fx-font-size: 16px;

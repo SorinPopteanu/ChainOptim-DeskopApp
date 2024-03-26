@@ -19,7 +19,7 @@
 
         <ScrollPane VBox.vgrow="ALWAYS" style="-fx-background-color: white">
             <GridPane fx:id="customRolesPane" VBox.vgrow="ALWAYS"
-                      style="-fx-background-color: white; -fx-padding: 0px 20px;"/>
+                      styleClass="grid-pane-container"/>
         </ScrollPane>
     </VBox>
 
