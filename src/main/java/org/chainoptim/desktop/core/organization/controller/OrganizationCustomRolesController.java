@@ -5,6 +5,9 @@ import org.chainoptim.desktop.core.organization.dto.CreateCustomRoleDTO;
 import org.chainoptim.desktop.core.organization.dto.UpdateCustomRoleDTO;
 import org.chainoptim.desktop.core.organization.model.*;
 import org.chainoptim.desktop.core.organization.service.CustomRoleService;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -27,8 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
-public class OrganizationCustomRolesController implements DataReceiver<Organization>, ConfirmUpdateDialogActionListener, ConfirmDeleteDialogActionListener {
+public class OrganizationCustomRolesController implements DataReceiver<Organization> {
 
     // Injected services and controllers
     private final CustomRoleService customRoleService;
@@ -36,8 +40,12 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
-    private ConfirmCustomRoleUpdateController confirmCustomRoleUpdateController;
-    private ConfirmCustomRoleDeleteController confirmCustomRoleDeleteController;
+    private GenericConfirmDialogController<CustomRole> confirmCustomRoleUpdateController;
+    private GenericConfirmDialogController<CustomRole> confirmCustomRoleDeleteController;
+
+    // Confirm Dialog Listeners
+    private RunnableConfirmDialogActionListener<CustomRole> confirmDialogUpdateListener;
+    private RunnableConfirmDialogActionListener<CustomRole> confirmDialogDeleteListener;
 
     // FXML
     @FXML
@@ -96,6 +104,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         }
 
         initializeIcons();
+        setupListeners();
         loadConfirmUpdateDialog();
         loadConfirmDeleteDialog();
 
@@ -113,16 +122,28 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         cancelImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
     }
 
+    private void setupListeners() {
+        Consumer<CustomRole> onConfirmDelete = this::handleDeleteRole;
+        Runnable onCancelDelete = this::closeConfirmDeleteDialog;
+
+        confirmDialogDeleteListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
+
+        Consumer<CustomRole> onConfirmUpdate = this::saveRoleChanges;
+        Runnable onCancelUpdate = this::closeConfirmUpdateDialog;
+
+        confirmDialogUpdateListener = new RunnableConfirmDialogActionListener<>(onConfirmUpdate, onCancelUpdate);
+    }
+
     private void loadConfirmUpdateDialog() {
         // Load view into fallbackContainer
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/organization/ConfirmCustomRoleUpdateView.fxml",
+                "/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml",
                 controllerFactory::createController
         );
         try {
             Node confirmDialogView = loader.load();
             confirmCustomRoleUpdateController = loader.getController();
-            confirmCustomRoleUpdateController.setConfirmUpdateDialogActionListener(this); // Listen to confirm dialog actions
+            confirmCustomRoleUpdateController.setActionListener(confirmDialogUpdateListener); // Listen to confirm dialog actions
             confirmUpdateDialogContainer.getChildren().add(confirmDialogView);
             closeConfirmUpdateDialog(); // Start hidden
         } catch (IOException ex) {
@@ -132,13 +153,13 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private void loadConfirmDeleteDialog() {
         // Load view into fallbackContainer
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/organization/ConfirmCustomRoleDeleteView.fxml",
+                "/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml",
                 controllerFactory::createController
         );
         try {
             Node confirmDialogView = loader.load();
             confirmCustomRoleDeleteController = loader.getController();
-            confirmCustomRoleDeleteController.setActionListener(this); // Listen to confirm dialog actions
+            confirmCustomRoleDeleteController.setActionListener(confirmDialogDeleteListener); // Listen to confirm dialog actions
             confirmDeleteDialogContainer.getChildren().add(confirmDialogView);
             closeConfirmDeleteDialog(); // Start hidden
         } catch (IOException ex) {
@@ -454,30 +475,21 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         customRolesPane.add(saveButton, operations.length + 3, rowIndex);
     }
 
-    @Override
-    public void onConfirmCustomRoleUpdate(CustomRole customRole) {
-        if (currentEditedRowIndex != -1) {
-            saveRoleChanges(customRole, currentEditedRowIndex);
-        } else {
+    private void saveRoleChanges(CustomRole customRole) {
+        if (currentEditedRowIndex == -1) {
             fallbackManager.setErrorMessage("No changes have been detected.");
             closeConfirmUpdateDialog();
+            return;
         }
-    }
 
-    @Override
-    public void onCancelCustomRoleUpdate() {
-        closeConfirmUpdateDialog();
-    }
-
-    private void saveRoleChanges(CustomRole customRole, int rowIndex) {
-        UpdateCustomRoleDTO updateCustomRoleDTO = gatherUpdatedCustomRole(customRole, rowIndex);
+        UpdateCustomRoleDTO updateCustomRoleDTO = gatherUpdatedCustomRole(customRole, currentEditedRowIndex);
         System.out.println(updateCustomRoleDTO);
 
         // Save changes
         fallbackManager.setLoading(true);
 
         customRoleService.updateCustomRole(updateCustomRoleDTO)
-                .thenAccept(updatedRole -> handleSuccessfulUpdate(updatedRole, rowIndex));
+                .thenAccept(updatedRole -> handleSuccessfulUpdate(updatedRole, currentEditedRowIndex));
     }
 
     private UpdateCustomRoleDTO gatherUpdatedCustomRole(CustomRole customRole, int startingRowIndex) {
@@ -558,7 +570,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         styleDeleteRoleButton(deleteButton);
         deleteButton.setOnAction(event -> {
             currentToBeDeletedRowIndex = rowIndex;
-            openConfirmDeleteDialog(role.getId());
+            openConfirmDeleteDialog(role);
         });
         applyStandardMargin(deleteButton);
         deleteButton.setVisible(false);
@@ -566,26 +578,16 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         customRolesPane.add(deleteButton, operations.length + 4, rowIndex);
     }
 
-    @Override
-    public void onConfirmCustomRoleDelete(Integer customRoleId) {
-        if (currentToBeDeletedRowIndex != -1) {
-            handleDeleteRole(customRoleId, currentToBeDeletedRowIndex);
-        } else {
+    private void handleDeleteRole(CustomRole customRole) {
+        if (currentToBeDeletedRowIndex == -1) {
             fallbackManager.setErrorMessage("No changes have been detected.");
             closeConfirmUpdateDialog();
+            return;
         }
-    }
-
-    @Override
-    public void onCancelCustomRoleDelete() {
-        closeConfirmDeleteDialog();
-    }
-
-    private void handleDeleteRole(Integer customRoleId, int rowIndex) {
         fallbackManager.setLoading(true);
 
-        customRoleService.deleteCustomRole(customRoleId)
-                .thenAccept(deletedRoleIdOptional -> handleSuccessfulDelete(deletedRoleIdOptional, rowIndex));
+        customRoleService.deleteCustomRole(customRole.getId())
+                .thenAccept(deletedRoleIdOptional -> handleSuccessfulDelete(deletedRoleIdOptional, currentToBeDeletedRowIndex));
     }
 
     private void handleSuccessfulDelete(Optional<Integer> deletedRoleIdOptional, int rowIndex) {
@@ -648,7 +650,8 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
 
     // Utils
     private void openConfirmUpdateDialog(CustomRole customRole) {
-        confirmCustomRoleUpdateController.setData(customRole);
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Custom Role Update", "Are you sure you want to update this custom role? The following members will be affected by this change: ", "/org/chainoptim/desktop/core/user/UsersListByCustomRoleView.fxml");
+        confirmCustomRoleUpdateController.setData(customRole, confirmDialogInput);
         confirmUpdateDialogContainer.setVisible(true);
         confirmUpdateDialogContainer.setManaged(true);
     }
@@ -658,8 +661,9 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         confirmUpdateDialogContainer.setManaged(false);
     }
 
-    private void openConfirmDeleteDialog(Integer customRoleId) {
-        confirmCustomRoleDeleteController.setData(customRoleId);
+    private void openConfirmDeleteDialog(CustomRole customRole) {
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Custom Role Delete", "Are you sure you want to delete this custom role? The following members will be affected by this change: ", "/org/chainoptim/desktop/core/user/UsersListByCustomRoleView.fxml");
+        confirmCustomRoleDeleteController.setData(customRole, confirmDialogInput);
         confirmDeleteDialogContainer.setVisible(true);
         confirmDeleteDialogContainer.setManaged(true);
     }
