@@ -10,10 +10,13 @@
 
 .table-view .column-header,
 .table-view .table-cell {
-    -fx-padding: 10px;
     -fx-border-color: #d0d0d0;
     -fx-background-color: transparent;
     -fx-alignment: CENTER;
+}
+
+.table-view .table-row-cell {
+    -fx-cell-size: 40px;
 }
 
 .table-view .column-header .label {
@@ -38,4 +41,9 @@
 
 .table-view .table-row-cell:selected {
     -fx-background-color: #cce0ff;
+    -fx-text-fill: black;
+}
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: black;
 }

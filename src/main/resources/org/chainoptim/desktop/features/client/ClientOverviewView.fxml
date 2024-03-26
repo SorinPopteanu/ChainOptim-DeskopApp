@@ -4,8 +4,7 @@
 <?import javafx.scene.control.Label?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOverviewController"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOverviewController">
 
 
     <Label fx:id="clientName" />
