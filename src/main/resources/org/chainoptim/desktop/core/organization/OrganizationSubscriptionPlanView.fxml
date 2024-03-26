@@ -9,5 +9,6 @@
 
     <Label text="Subscription Plan"/>
 
-    <StackPane fx:id="confirmDialogPane"/>
+    <StackPane fx:id="updateConfirmDialogPane"/>
+    <StackPane fx:id="deleteConfirmDialogPane"/>
 </VBox>

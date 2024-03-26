@@ -21,9 +21,6 @@ import java.io.IOException;
 
 public class GenericConfirmDialogController<T> implements ConfirmDialogDataReceiver<T> {
 
-//    private final UserService userService;
-
-//    private Integer customRoleId;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
 
@@ -50,10 +47,6 @@ public class GenericConfirmDialogController<T> implements ConfirmDialogDataRecei
         this.controllerFactory = controllerFactory;
     }
 
-//    @Inject
-//    public GenericConfirmDialogController(UserService userService) {
-//        this.userService = userService;
-//    }
 
     @Override
     public void setData(T data, ConfirmDialogInput confirmDialogInput) {
@@ -61,9 +54,6 @@ public class GenericConfirmDialogController<T> implements ConfirmDialogDataRecei
         this.confirmDialogInput = confirmDialogInput;
 
         initializeUI();
-//        userService.getUsersByCustomRoleId(customRoleId)
-//                .thenApply(this::handleUsersResponse)
-//                .exceptionally(this::handleUsersException);
     }
 
     private void initializeUI() {
