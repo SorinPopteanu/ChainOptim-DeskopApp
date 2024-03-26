@@ -67,10 +67,12 @@ public class FallbackManager {
     }
 
     public void reset() {
-        setErrorMessage("");
-        setLoading(false);
-        setNoOrganization(false);
-        setNoResults(false);
+        if (!isEmpty.get()) {
+            setErrorMessage("");
+            setLoading(false);
+            setNoOrganization(false);
+            setNoResults(false);
+        }
     }
 
     public BooleanProperty isEmptyProperty() {

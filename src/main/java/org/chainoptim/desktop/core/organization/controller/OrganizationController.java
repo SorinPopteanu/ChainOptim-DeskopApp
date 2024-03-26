@@ -167,8 +167,7 @@ public class OrganizationController implements Initializable {
     }
 
     @FXML
-    private void handleChangePlan() {
-
-        loadTabContent(subscriptionPlanTab, "/org/chainoptim/desktop/core/organization/OrganizationSubscriptionPlanView.fxml", this.organization);
+    private void handleEditOrganization() {
+        System.out.println("Edit organization clicked");
     }
 }
