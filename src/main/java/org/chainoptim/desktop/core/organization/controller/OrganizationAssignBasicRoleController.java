@@ -60,7 +60,9 @@ public class OrganizationAssignBasicRoleController implements DataReceiver<User>
         titleLabel.setText("Assign role to " + user.getUsername());
 
         for (User.Role role : User.Role.values()) {
-            Button selectRoleButton = new Button(role.toString());
+            String label = role.toString();
+            label = label.substring(0, 1).toUpperCase() + label.substring(1).toLowerCase();
+            Button selectRoleButton = new Button(label);
             boolean isSelected = role.equals(selectedRole);
             styleSelectButton(selectRoleButton, isSelected);
             selectRoleButton.setOnAction(this::selectRole);

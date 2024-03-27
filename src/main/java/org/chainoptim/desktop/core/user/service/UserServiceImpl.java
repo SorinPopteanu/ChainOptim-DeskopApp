@@ -154,5 +154,31 @@ public class UserServiceImpl implements UserService {
                     return Optional.empty();
                 });
     }
+
+    public CompletableFuture<Optional<User>> removeUserFromOrganization(String userId, Integer organizationId) {
+        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/remove-from-organization/" + organizationId.toString();
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .headers(HEADER_KEY, headerValue)
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<User>empty();
+                    try {
+                        User user = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<User>() {});
+                        return Optional.of(user);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<User>empty();
+                    }
+                });
+    }
 }
 

@@ -5,7 +5,9 @@ import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.UserService;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -22,6 +24,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Popup;
 import javafx.util.Pair;
 
@@ -44,6 +47,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     // Listeners
     private RunnableConfirmDialogActionListener<Pair<String, Integer>> customRoleUpdateDialogListener; // Pair (userId, customRoleId)
     private RunnableConfirmDialogActionListener<Pair<String, User.Role>> basicRoleUpdateDialogListener; // Custom Role name
+    private RunnableConfirmDialogActionListener<Pair<String, Integer>> removeMemberDialogListener; // Pair (userId, organizationId)
 
     // State
     private OrganizationViewData organizationViewData;
@@ -61,13 +65,16 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private Button addNewMemberButton;
     @FXML
     private GridPane membersGridPane;
-    Popup assingBasicRolePopup;
-    Popup assignCustomRolePopup;
+    private Popup assingBasicRolePopup;
+    private Popup assignCustomRolePopup;
+    @FXML
+    private StackPane removeConfirmDialogPane;
 
     // Constants
     private static final String[] headers = {"Username", "Joined At", "Email", "Role", "Custom Role"};
     private static final int ASSIGN_BASIC_ROLE_COLUMN_INDEX = 3;
     private static final int ASSIGN_ROLE_COLUMN_INDEX = 4;
+    private static final int DELETE_COLUMN_INDEX = 5;
 
     // Icons
     private Image plusImage;
@@ -123,17 +130,27 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     }
 
     private void setupListeners() {
+        // Assign Custom Role
         Consumer<Pair<String, Integer>> onConfirmUpdate = this::assignCustomRole;
         Runnable onCancelUpdate = this::cancelAssignCustomRole;
 
         customRoleUpdateDialogListener = new RunnableConfirmDialogActionListener<>(onConfirmUpdate, onCancelUpdate);
 
+        // Assign Basic Role
         Consumer<Pair<String, User.Role>> onConfirmBasicRoleUpdate = this::assignBasicRole;
         Runnable onCancelBasicRoleUpdate = this::cancelAssignBasicRole;
 
         basicRoleUpdateDialogListener = new RunnableConfirmDialogActionListener<>(onConfirmBasicRoleUpdate, onCancelBasicRoleUpdate);
+
+        // Remove organization member
+        Consumer<Pair<String, Integer>> onConfirmDelete = this::removeOrganizationMember;
+        Runnable onCancelDelete = this::cancelRemoveMember;
+
+        removeMemberDialogListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
+
     }
 
+    // Render UI
     private void renderMembersGrid() {
         membersGridPane.getChildren().clear();
 
@@ -150,10 +167,13 @@ public class OrganizationOverviewController implements DataReceiver<Organization
         for (User user : organizationViewData.getOrganization().getUsers()) {
             for (int i = 0; i < headers.length; i++) {
                 Node node = getDisplayedPropertyByHeader(user, row, i);
-                if (i > 0) applyStandardMargin(node);
+                if (i > 0 && i != 2) applyStandardMargin(node); // Skip for username and email
                 membersGridPane.add(node, i, row);
                 GridPane.setHalignment(node, HPos.CENTER);
             }
+
+            addRemoveMemberButton(user, row);
+
             row++;
         }
     }
@@ -217,6 +237,18 @@ public class OrganizationOverviewController implements DataReceiver<Organization
         return button;
     }
 
+    private void addRemoveMemberButton(User user, int rowIndex) {
+        Button removeButton = new Button();
+        styleDeleteRoleButton(removeButton);
+        removeButton.setOnAction(event -> loadConfirmDeleteDialog(user));
+        applyStandardMargin(removeButton);
+        removeButton.setVisible(false); // Hide it initially
+        membersGridPane.add(removeButton, DELETE_COLUMN_INDEX, rowIndex);
+        GridPane.setHalignment(removeButton, HPos.CENTER);
+    }
+
+    // Event handlers
+    // - Assign Basic Role
     private void loadAssignBasicRoleDialog(User user, ActionEvent event) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
                 "/org/chainoptim/desktop/core/organization/OrganizationAssignBasicRoleView.fxml",
@@ -290,6 +322,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
         assingBasicRolePopup.hide();
     }
 
+    // - Assign Custom Role
     private void loadAssignCustomRoleDialog(User user, ActionEvent event, CustomRole selectedRole) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
                 "/org/chainoptim/desktop/core/organization/OrganizationAssignCustomRoleView.fxml",
@@ -363,16 +396,97 @@ public class OrganizationOverviewController implements DataReceiver<Organization
         assignCustomRolePopup.hide();
     }
 
+    // - Delete
     private void toggleDeleteMode() {
         isDeleteMode = !isDeleteMode;
+        for (int row = 1; row < membersGridPane.getRowCount(); row++) {
+            Node removeButton = getNodeByRowColumnIndex(row, DELETE_COLUMN_INDEX);
+            if (removeButton instanceof Button button) {
+                button.setVisible(isDeleteMode);
+            }
+        }
     }
 
+    private void loadConfirmDeleteDialog(User user) {
+        // Load confirm dialog
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
 
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Member Removal", "Are you sure you want to remove " + user.getUsername() + "?", null);
+
+        try {
+            Node view = loader.load();
+            GenericConfirmDialogController<Pair<String, Integer>> controller = loader.getController();
+            controller.setData(new Pair<>(user.getId(), organizationViewData.getOrganization().getId()), confirmDialogInput);
+            controller.setActionListener(removeMemberDialogListener);
+            removeConfirmDialogPane.getChildren().add(view);
+            toggleRemoveDialog(true);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void removeOrganizationMember(Pair<String, Integer> userIdOrganizationId) {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        userService.removeUserFromOrganization(userIdOrganizationId.getKey(), userIdOrganizationId.getValue())
+                .thenApply(this::handleRemoveMemberResponse)
+                .exceptionally(this::handleRemoveMemberException);
+    }
+
+    private Optional<User> handleRemoveMemberResponse(Optional<User> userOptional) {
+        Platform.runLater(() -> {
+            if (userOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to remove member.");
+                return;
+            }
+            User user = userOptional.get();
+
+            toggleRemoveDialog(false);
+            fallbackManager.setLoading(false);
+            toggleDeleteMode();
+
+            // Remove user from organization
+            organizationViewData.getOrganization().getUsers().removeIf(u -> u.getId().equals(user.getId()));
+
+            // Re-render members grid - necessary here, at least from that user down
+            renderMembersGrid();
+        });
+        return userOptional;
+    }
+
+    private Optional<User> handleRemoveMemberException(Throwable throwable) {
+        fallbackManager.setErrorMessage("Failed to remove member.");
+        return Optional.empty();
+    }
+
+    private void cancelRemoveMember() {
+        toggleRemoveDialog(false);
+    }
+
+    private void toggleRemoveDialog(boolean isActive) {
+        removeConfirmDialogPane.setVisible(isActive);
+        removeConfirmDialogPane.setManaged(isActive);
+    }
+
+    // Utils
+    private Node getNodeByRowColumnIndex(final int row, final int column) {
+        Node result = null;
+        for (Node node : membersGridPane.getChildren()) {
+            if(GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
+                result = node;
+                break;
+            }
+        }
+        return result;
+    }
+
+    // Styling
     // TODO: Take this into separate class and reuse
     private void styleAddNewRoleButton(Button button) {
         button.getStyleClass().add("standard-write-button");
         button.setGraphic(createImageView(plusImage));
-        button.setText("Add New Member");
+        button.setText("Add New Members");
         applyStandardMargin(button);
     }
 

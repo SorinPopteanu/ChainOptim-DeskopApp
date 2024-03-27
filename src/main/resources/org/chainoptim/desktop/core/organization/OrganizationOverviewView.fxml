@@ -23,4 +23,5 @@
         </ScrollPane>
     </VBox>
 
+    <StackPane fx:id="removeConfirmDialogPane" style="-fx-padding: 96px;" visible="false"/>
 </StackPane>

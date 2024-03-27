@@ -11,4 +11,5 @@ public interface UserService {
     CompletableFuture<Optional<List<User>>> getUsersByCustomRoleId(Integer customRoleId);
     CompletableFuture<Optional<User>> assignBasicRoleToUser(String userId, User.Role role);
     CompletableFuture<Optional<User>> assignCustomRoleToUser(String userId, Integer roleId);
+    CompletableFuture<Optional<User>> removeUserFromOrganization(String userId, Integer organizationId);
 }
