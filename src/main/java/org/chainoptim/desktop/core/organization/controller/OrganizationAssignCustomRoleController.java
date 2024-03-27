@@ -20,7 +20,7 @@ import lombok.Setter;
 import java.util.List;
 import java.util.Objects;
 
-public class OrganizationAssignRoleController implements DataReceiver<Pair<User, Pair<List<CustomRole>, CustomRole>>> {
+public class OrganizationAssignCustomRoleController implements DataReceiver<Pair<User, Pair<List<CustomRole>, CustomRole>>> {
 
     // State
     private User user;
@@ -90,7 +90,7 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
 
         // Deselect other roles
         for (int i = 0; i < rolesVBox.getChildren().size(); i++) {
-            if (i != rolesVBox.getChildren().indexOf(source)) {
+            if (i != roleIndex) {
                 Node otherButton = rolesVBox.getChildren().get(i);
                 if (otherButton instanceof Button button) {
                     styleSelectButton(button, false);
@@ -153,7 +153,7 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
     @FXML
     private void onConfirmButtonClicked() {
         Integer selectedRoleId = selectedRole == null ? null : selectedRole.getId(); // Allow null = no custom role
-        if (selectedRole != null && Objects.equals(selectedRole.getId(), originalSelectedRole.getId())) return; // Skip if already assigned
+        if (selectedRole != null && originalSelectedRole != null && Objects.equals(selectedRole.getId(), originalSelectedRole.getId())) return; // Skip if already assigned
 
         Pair<String, Integer> data = new Pair<>(user.getId(), selectedRoleId);
         actionListener.onConfirmAction(data);

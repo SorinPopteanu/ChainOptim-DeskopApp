@@ -22,7 +22,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Popup;
 import javafx.util.Pair;
 
@@ -43,7 +42,8 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private final ControllerFactory controllerFactory;
 
     // Listeners
-    private RunnableConfirmDialogActionListener<Pair<String, Integer>> confirmDialogUpdateListener; // Pair (userId, customRoleId)
+    private RunnableConfirmDialogActionListener<Pair<String, Integer>> customRoleUpdateDialogListener; // Pair (userId, customRoleId)
+    private RunnableConfirmDialogActionListener<Pair<String, User.Role>> basicRoleUpdateDialogListener; // Custom Role name
 
     // State
     private OrganizationViewData organizationViewData;
@@ -61,10 +61,12 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private Button addNewMemberButton;
     @FXML
     private GridPane membersGridPane;
-    Popup assignRolePopup;
+    Popup assingBasicRolePopup;
+    Popup assignCustomRolePopup;
 
     // Constants
     private static final String[] headers = {"Username", "Joined At", "Email", "Role", "Custom Role"};
+    private static final int ASSIGN_BASIC_ROLE_COLUMN_INDEX = 3;
     private static final int ASSIGN_ROLE_COLUMN_INDEX = 4;
 
     // Icons
@@ -121,10 +123,15 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     }
 
     private void setupListeners() {
-        Consumer<Pair<String, Integer>> onConfirmUpdate = this::assignRole;
-        Runnable onCancelUpdate = this::cancelAssignRole;
+        Consumer<Pair<String, Integer>> onConfirmUpdate = this::assignCustomRole;
+        Runnable onCancelUpdate = this::cancelAssignCustomRole;
 
-        confirmDialogUpdateListener = new RunnableConfirmDialogActionListener<>(onConfirmUpdate, onCancelUpdate);
+        customRoleUpdateDialogListener = new RunnableConfirmDialogActionListener<>(onConfirmUpdate, onCancelUpdate);
+
+        Consumer<Pair<String, User.Role>> onConfirmBasicRoleUpdate = this::assignBasicRole;
+        Runnable onCancelBasicRoleUpdate = this::cancelAssignBasicRole;
+
+        basicRoleUpdateDialogListener = new RunnableConfirmDialogActionListener<>(onConfirmBasicRoleUpdate, onCancelBasicRoleUpdate);
     }
 
     private void renderMembersGrid() {
@@ -165,7 +172,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
                 yield new Label(formattedDate);
             }
             case "Email" -> addEmailHyperlink(user);
-            case "Role" -> new Label(user.getRole().toString());
+            case "Role" -> addBasicRoleButton(user, rowIndex);
             case "Custom Role" -> addCustomRoleButton(user, rowIndex);
             default -> null;
         };
@@ -186,58 +193,149 @@ public class OrganizationOverviewController implements DataReceiver<Organization
         return emailLink;
     }
 
+    private Button addBasicRoleButton(User user, Integer rowIndex) {
+        String label = user.getRole() != null ? user.getRole().toString() : "Assign";
+        // Decapitalize except first letter
+        label = label.substring(0, 1).toUpperCase() + label.substring(1).toLowerCase();
+        Button button = new Button(label);
+        button.setOnAction(event -> {
+            editedUserRowIndex = rowIndex;
+            loadAssignBasicRoleDialog(user, event);
+        });
+        button.getStyleClass().add("pseudo-link");
+        return button;
+    }
+
     private Button addCustomRoleButton(User user, Integer rowIndex) {
         String label = user.getCustomRole() != null ? user.getCustomRole().getName() : "Assign";
         Button button = new Button(label);
         button.getStyleClass().add("pseudo-link");
         button.setOnAction(event -> {
             editedUserRowIndex = rowIndex;
-            loadAssignRoleDialog(user, event, user.getCustomRole());
+            loadAssignCustomRoleDialog(user, event, user.getCustomRole());
         });
         return button;
     }
 
-    private void loadAssignRoleDialog(User user, ActionEvent event, CustomRole selectedRole) {
+    private void loadAssignBasicRoleDialog(User user, ActionEvent event) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/organization/OrganizationAssignRoleView.fxml",
+                "/org/chainoptim/desktop/core/organization/OrganizationAssignBasicRoleView.fxml",
                 controllerFactory::createController
         );
         try {
             Node content = loader.load();
-            OrganizationAssignRoleController controller = loader.getController();
-            controller.setData(new Pair<>(user, new Pair<>(organizationViewData.getCustomRoles(), selectedRole)));
-            controller.setActionListener(confirmDialogUpdateListener);
+            OrganizationAssignBasicRoleController controller = loader.getController();
+            controller.setData(user);
+            controller.setActionListener(basicRoleUpdateDialogListener);
 
-            assignRolePopup = new Popup();
-            assignRolePopup.getContent().add(content);
-            assignRolePopup.setAutoHide(true);
+            assingBasicRolePopup = new Popup();
+            assingBasicRolePopup.getContent().add(content);
+            assingBasicRolePopup.setAutoHide(true);
 
             Button sourceButton = (Button) event.getSource(); // Safe cast, source is a Button
             double x = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMaxX(); // Open to the left
             double y = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMaxY();
-            assignRolePopup.show(sourceButton, x, y);
+            assingBasicRolePopup.show(sourceButton, x, y);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
 
-    private void assignRole(Pair<String, Integer> userIdCustomRoleId) {
+    private void assignBasicRole(Pair<String, User.Role> userIdRole) {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        userService.assignBasicRoleToUser(userIdRole.getKey(), userIdRole.getValue())
+                .thenApply(this::handleBasicRoleResponse)
+                .exceptionally(this::handleBasicRoleException);
+    }
+
+    private Optional<User> handleBasicRoleResponse(Optional<User> userOptional) {
+        Platform.runLater(() -> {
+            if (userOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to assign basic role.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            // Update Users list with updated user
+            User updatedUser = userOptional.get();
+            organizationViewData.getOrganization().getUsers().stream()
+                    .filter(user -> user.getId().equals(updatedUser.getId()))
+                    .findFirst().ifPresent(user -> user.setRole(updatedUser.getRole()));
+
+            // Update Custom Role button
+            Node assignNode = membersGridPane.getChildren().stream()
+                    .filter(node -> GridPane.getRowIndex(node) == editedUserRowIndex && GridPane.getColumnIndex(node) == ASSIGN_BASIC_ROLE_COLUMN_INDEX)
+                    .findFirst().orElse(null);
+            if (assignNode == null) return;
+
+            membersGridPane.getChildren().remove(assignNode);
+            Button button = addBasicRoleButton(userOptional.get(), editedUserRowIndex);
+            applyStandardMargin(button);
+            membersGridPane.add(button, ASSIGN_BASIC_ROLE_COLUMN_INDEX, editedUserRowIndex);
+            GridPane.setHalignment(button, HPos.CENTER);
+
+            editedUserRowIndex = -1;
+        });
+        return userOptional;
+    }
+
+    private Optional<User> handleBasicRoleException(Throwable throwable) {
+        fallbackManager.setErrorMessage("Failed to assign basic role.");
+        return Optional.empty();
+    }
+
+    private void cancelAssignBasicRole() {
+        assingBasicRolePopup.hide();
+    }
+
+    private void loadAssignCustomRoleDialog(User user, ActionEvent event, CustomRole selectedRole) {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/organization/OrganizationAssignCustomRoleView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node content = loader.load();
+            OrganizationAssignCustomRoleController controller = loader.getController();
+            controller.setData(new Pair<>(user, new Pair<>(organizationViewData.getCustomRoles(), selectedRole)));
+            controller.setActionListener(customRoleUpdateDialogListener);
+
+            assignCustomRolePopup = new Popup();
+            assignCustomRolePopup.getContent().add(content);
+            assignCustomRolePopup.setAutoHide(true);
+
+            Button sourceButton = (Button) event.getSource(); // Safe cast, source is a Button
+            double x = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMaxX(); // Open to the left
+            double y = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMaxY();
+            assignCustomRolePopup.show(sourceButton, x, y);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void assignCustomRole(Pair<String, Integer> userIdCustomRoleId) {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         userService.assignCustomRoleToUser(userIdCustomRoleId.getKey(), userIdCustomRoleId.getValue())
-                .thenApply(this::handleRoleResponse)
-                .exceptionally(this::handleRoleException);
+                .thenApply(this::handleCustomRoleResponse)
+                .exceptionally(this::handleCustomRoleException);
     }
 
-    private Optional<User> handleRoleResponse(Optional<User> userOptional) {
+    private Optional<User> handleCustomRoleResponse(Optional<User> userOptional) {
         Platform.runLater(() -> {
             if (userOptional.isEmpty()) {
-                fallbackManager.setErrorMessage("Failed to assign role");
+                fallbackManager.setErrorMessage("Failed to assign custom role.");
                 return;
             }
             fallbackManager.setLoading(false);
+
+            // Update users list with updated user
+            User updatedUser = userOptional.get();
+            organizationViewData.getOrganization().getUsers().stream()
+                    .filter(user -> user.getId().equals(updatedUser.getId()))
+                    .findFirst().ifPresent(user -> user.setCustomRole(updatedUser.getCustomRole()));
 
             // Update Custom Role button
             Node assignNode = membersGridPane.getChildren().stream()
@@ -256,13 +354,13 @@ public class OrganizationOverviewController implements DataReceiver<Organization
         return userOptional;
     }
 
-    private Optional<User> handleRoleException(Throwable throwable) {
-        fallbackManager.setErrorMessage("Failed to assign role");
+    private Optional<User> handleCustomRoleException(Throwable throwable) {
+        fallbackManager.setErrorMessage("Failed to assign custom role.");
         return Optional.empty();
     }
 
-    private void cancelAssignRole() {
-        assignRolePopup.hide();
+    private void cancelAssignCustomRole() {
+        assignCustomRolePopup.hide();
     }
 
     private void toggleDeleteMode() {

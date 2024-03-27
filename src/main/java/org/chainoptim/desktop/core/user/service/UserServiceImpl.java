@@ -1,13 +1,13 @@
 package org.chainoptim.desktop.core.user.service;
 
-import org.chainoptim.desktop.core.user.dto.AssignRoleDTO;
+import org.chainoptim.desktop.core.user.dto.AssignBasicRoleDTO;
+import org.chainoptim.desktop.core.user.dto.AssignCustomRoleDTO;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -83,8 +83,8 @@ public class UserServiceImpl implements UserService {
                 });
     }
 
-    public CompletableFuture<Optional<User>> assignCustomRoleToUser(String userId, Integer roleId) {
-        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/assign-role";
+    public CompletableFuture<Optional<User>> assignBasicRoleToUser(String userId, User.Role role) {
+        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/assign-basic-role";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -93,7 +93,43 @@ public class UserServiceImpl implements UserService {
         // Serialize DTO
         String requestBody = null;
         try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(new AssignRoleDTO(roleId));
+            requestBody = JsonUtil.getObjectMapper().writeValueAsString(new AssignBasicRoleDTO(role));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assert requestBody != null;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .headers(HEADER_KEY, headerValue)
+                .headers("Content-Type", "application/json")
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
+                    try {
+                        User user = JsonUtil.getObjectMapper().readValue(response.body(), User.class);
+                        return Optional.of(user);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return Optional.empty();
+                });
+    }
+
+    public CompletableFuture<Optional<User>> assignCustomRoleToUser(String userId, Integer roleId) {
+        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/assign-custom-role";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
+        // Serialize DTO
+        String requestBody = null;
+        try {
+            requestBody = JsonUtil.getObjectMapper().writeValueAsString(new AssignCustomRoleDTO(roleId));
         } catch (Exception e) {
             e.printStackTrace();
         }
