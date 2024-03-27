@@ -5,12 +5,13 @@
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.core.organization.controller.AddNewMembersController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="400.0" prefWidth="600.0" styleClass="form-container">
 
-    <VBox fx:id="contentVBox">
-        <Label text="Add New Members" />
+    <Label text="Add New Members" styleClass="form-label"/>
 
-    </VBox>
+    <StackPane fx:id="usersSelectionContainer">
+
+    </StackPane>
 
     <StackPane fx:id="fallbackContainer"/>
 </VBox>

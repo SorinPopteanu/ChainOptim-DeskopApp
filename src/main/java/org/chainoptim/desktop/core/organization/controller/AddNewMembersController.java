@@ -28,7 +28,7 @@ public class AddNewMembersController implements Initializable {
     private Integer organizationId;
 
     @FXML
-    private VBox contentVBox;
+    private StackPane usersSelectionContainer;
     @FXML
     private StackPane fallbackContainer;
 
@@ -50,6 +50,7 @@ public class AddNewMembersController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resourceBundle) {
         loadFallbackManager();
+        loadUsersSearch();
         setupListeners();
 
         Integer receivedOrganizationId = currentSelectionService.getSelectedId();
@@ -70,10 +71,18 @@ public class AddNewMembersController implements Initializable {
         fallbackContainer.getChildren().add(fallbackView);
     }
 
+    private void loadUsersSearch() {
+        Node usersSearchView = fxmlLoaderService.loadView(
+                "/org/chainoptim/desktop/core/user/PublicUsersSearchAndSelectionView.fxml",
+                controllerFactory::createController
+        );
+        usersSelectionContainer.getChildren().add(usersSearchView);
+    }
+
     private void setupListeners() {
         fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
-            contentVBox.setVisible(newValue);
-            contentVBox.setManaged(newValue);
+            usersSelectionContainer.setVisible(newValue);
+            usersSelectionContainer.setManaged(newValue);
             fallbackContainer.setVisible(!newValue);
             fallbackContainer.setManaged(!newValue);
         });

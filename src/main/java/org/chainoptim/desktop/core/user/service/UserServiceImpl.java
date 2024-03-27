@@ -2,7 +2,9 @@ package org.chainoptim.desktop.core.user.service;
 
 import org.chainoptim.desktop.core.user.dto.AssignBasicRoleDTO;
 import org.chainoptim.desktop.core.user.dto.AssignCustomRoleDTO;
+import org.chainoptim.desktop.core.user.dto.UserSearchResultDTO;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 
@@ -25,10 +27,11 @@ public class UserServiceImpl implements UserService {
 
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
+    private static final String BASE_PATH = "http://localhost:8080/api/v1/users";
 
     public CompletableFuture<Optional<User>> getUserByUsername(String username) {
         String encodedUsername = URLEncoder.encode(username, StandardCharsets.UTF_8);
-        String routeAddress = "http://localhost:8080/api/v1/users/username/" + encodedUsername;
+        String routeAddress = BASE_PATH + "/username/" + encodedUsername;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -55,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public CompletableFuture<Optional<List<User>>> getUsersByCustomRoleId(Integer customRoleId) {
-        String routeAddress = "http://localhost:8080/api/v1/users/search/custom-role/" + customRoleId;
+        String routeAddress = BASE_PATH + "/search/custom-role/" + customRoleId;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -83,8 +86,36 @@ public class UserServiceImpl implements UserService {
                 });
     }
 
+    public CompletableFuture<Optional<PaginatedResults<UserSearchResultDTO>>> searchPublicUsers(String searchQuery, int page, int itemsPerPage) {
+        String encodedSearchQuery = URLEncoder.encode(searchQuery, StandardCharsets.UTF_8);
+        String routeAddress = BASE_PATH + "/search/public?searchQuery=" + encodedSearchQuery + "&page=" + page + "&itemsPerPage=" + itemsPerPage;
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .headers(HEADER_KEY, headerValue)
+                .GET()
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<PaginatedResults<UserSearchResultDTO>>empty();
+                    try {
+                        PaginatedResults<UserSearchResultDTO> userSearchResultDTO = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<UserSearchResultDTO>>() {});
+                        return Optional.of(userSearchResultDTO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return Optional.<PaginatedResults<UserSearchResultDTO>>empty();
+                });
+    }
+
+    // Write
     public CompletableFuture<Optional<User>> assignBasicRoleToUser(String userId, User.Role role) {
-        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/assign-basic-role";
+        String routeAddress = BASE_PATH + "/" + userId + "/assign-basic-role";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -120,7 +151,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public CompletableFuture<Optional<User>> assignCustomRoleToUser(String userId, Integer roleId) {
-        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/assign-custom-role";
+        String routeAddress = BASE_PATH + "/" + userId + "/assign-custom-role";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -156,7 +187,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public CompletableFuture<Optional<User>> removeUserFromOrganization(String userId, Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/remove-from-organization/" + organizationId.toString();
+        String routeAddress = BASE_PATH + "/" + userId + "/remove-from-organization/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

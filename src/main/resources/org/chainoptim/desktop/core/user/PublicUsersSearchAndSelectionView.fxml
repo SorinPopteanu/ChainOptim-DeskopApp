@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.core.user.controller.PublicUsersSearchAndSelectionController"
+      prefHeight="360.0" prefWidth="240.0" spacing="4">
+
+    <Label text="Invite Existing Users" styleClass="general-label"/>
+
+    <HBox>
+        <TextField promptText="Search for Existing Users" fx:id="searchInput" HBox.hgrow="ALWAYS" style="-fx-pref-height: 32px; -fx-pref-width: 240px;"/>
+        <Button fx:id="searchButton" />
+    </HBox>
+
+    <VBox fx:id="userResultsVBox" style="-fx-padding: 10px 0px;">
+
+    </VBox>
+
+    <Label text="Selected Users" styleClass="general-label"/>
+
+    <VBox fx:id="selectedUsersVBox" spacing="4">
+
+    </VBox>
+</VBox>
