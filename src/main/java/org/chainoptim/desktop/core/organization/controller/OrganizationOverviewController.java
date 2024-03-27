@@ -1,6 +1,8 @@
 package org.chainoptim.desktop.core.organization.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
 import org.chainoptim.desktop.core.user.model.User;
@@ -41,6 +43,8 @@ public class OrganizationOverviewController implements DataReceiver<Organization
 
     // Services
     private final UserService userService;
+    private final NavigationService navigationService;
+    private final CurrentSelectionService currentSelectionService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
 
@@ -82,10 +86,14 @@ public class OrganizationOverviewController implements DataReceiver<Organization
 
     @Inject
     public OrganizationOverviewController(UserService userService,
+                                          NavigationService navigationService,
+                                          CurrentSelectionService currentSelectionService,
                                           FXMLLoaderService fxmlLoaderService,
                                           ControllerFactory controllerFactory,
                                           FallbackManager fallbackManager) {
         this.userService = userService;
+        this.navigationService = navigationService;
+        this.currentSelectionService = currentSelectionService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
@@ -126,7 +134,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
         styleDeleteRoleButton(removeMemberButton);
         removeMemberButton.setOnAction(event -> toggleDeleteMode());
         styleAddNewRoleButton(addNewMemberButton);
-        addNewMemberButton.setOnAction(event -> {});
+        addNewMemberButton.setOnAction(event -> handleAddNewMembers());
     }
 
     private void setupListeners() {
@@ -467,6 +475,13 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private void toggleRemoveDialog(boolean isActive) {
         removeConfirmDialogPane.setVisible(isActive);
         removeConfirmDialogPane.setManaged(isActive);
+    }
+
+    // Add New Members
+    private void handleAddNewMembers() {
+        Integer organizationId = organizationViewData.getOrganization().getId();
+        currentSelectionService.setSelectedId(organizationId);
+        navigationService.switchView("Add-New-Members?id=" + organizationId, true);
     }
 
     // Utils
