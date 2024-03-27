@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.core.organization.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.UserService;
@@ -26,10 +27,13 @@ import javafx.stage.Popup;
 import javafx.util.Pair;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
+import java.awt.Desktop;
 
 public class OrganizationOverviewController implements DataReceiver<OrganizationViewData> {
 
@@ -44,7 +48,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     // State
     private OrganizationViewData organizationViewData;
     private boolean isInitialRender = true;
-    private int editedUserRowId = -1; // Marker for no edit
+    private int editedUserRowIndex = -1; // Marker for no edit
     private boolean isDeleteMode = false;
     private final FallbackManager fallbackManager;
 
@@ -60,8 +64,8 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     Popup assignRolePopup;
 
     // Constants
-    private static final String[] headers = {"Username", "Role", "Custom Role", "Joined At", "Email"};
-    private static final int ASSIGN_ROLE_COLUMN_INDEX = 2;
+    private static final String[] headers = {"Username", "Joined At", "Email", "Role", "Custom Role"};
+    private static final int ASSIGN_ROLE_COLUMN_INDEX = 4;
 
     // Icons
     private Image plusImage;
@@ -149,29 +153,51 @@ public class OrganizationOverviewController implements DataReceiver<Organization
 
     private Node getDisplayedPropertyByHeader(User user, int rowIndex, int headerIndex) {
         String header = headers[headerIndex];
-        if (header.equals("Custom Role")) {
-            if (user.getCustomRole() != null) {
-                return new Label(user.getCustomRole().getName());
-            }
-            Button button = new Button("Assign");
-            button.getStyleClass().add("pseudo-link");
-            button.setOnAction(event -> {
-                System.out.println("Assigning role to user: " + user.getUsername() + " rowId: " + rowIndex + " headerIndex: " + headerIndex);
-                editedUserRowId = rowIndex;
-                loadAssignRoleDialog(user, event);
-            });
-            return button;
-        }
         return switch (header) {
-            case "Username" -> new Label(user.getUsername());
+            case "Username" -> {
+                Label label = new Label(user.getUsername());
+                label.getStyleClass().add("parent-row");
+                yield label;
+            }
+            case "Joined At" -> {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+                String formattedDate = user.getCreatedAt().format(formatter);
+                yield new Label(formattedDate);
+            }
+            case "Email" -> addEmailHyperlink(user);
             case "Role" -> new Label(user.getRole().toString());
-            case "Joined At" -> new Label(user.getCreatedAt().toString());
-            case "Email" -> new Label(user.getEmail());
+            case "Custom Role" -> addCustomRoleButton(user, rowIndex);
             default -> null;
         };
     }
 
-    private void loadAssignRoleDialog(User user, ActionEvent event) {
+    private Hyperlink addEmailHyperlink(User user) {
+        Hyperlink emailLink = new Hyperlink(user.getEmail());
+        emailLink.getStyleClass().clear();
+        emailLink.getStyleClass().add("pseudo-link");
+        emailLink.setOnAction(event -> {
+            // Open default email client
+            try {
+                Desktop.getDesktop().mail(new URI("mailto:" + user.getEmail()));
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        });
+        return emailLink;
+    }
+
+    private Button addCustomRoleButton(User user, Integer rowIndex) {
+        String label = user.getCustomRole() != null ? user.getCustomRole().getName() : "Assign";
+        Button button = new Button(label);
+        button.getStyleClass().add("pseudo-link");
+        button.setOnAction(event -> {
+            editedUserRowIndex = rowIndex;
+            loadAssignRoleDialog(user, event, user.getCustomRole());
+        });
+        return button;
+    }
+
+    private void loadAssignRoleDialog(User user, ActionEvent event, CustomRole selectedRole) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
                 "/org/chainoptim/desktop/core/organization/OrganizationAssignRoleView.fxml",
                 controllerFactory::createController
@@ -179,7 +205,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
         try {
             Node content = loader.load();
             OrganizationAssignRoleController controller = loader.getController();
-            controller.setData(new Pair<>(user, organizationViewData.getCustomRoles()));
+            controller.setData(new Pair<>(user, new Pair<>(organizationViewData.getCustomRoles(), selectedRole)));
             controller.setActionListener(confirmDialogUpdateListener);
 
             assignRolePopup = new Popup();
@@ -187,7 +213,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
             assignRolePopup.setAutoHide(true);
 
             Button sourceButton = (Button) event.getSource(); // Safe cast, source is a Button
-            double x = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMinX() - 120; // Center the popup
+            double x = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMaxX(); // Open to the left
             double y = sourceButton.localToScreen(sourceButton.getBoundsInLocal()).getMaxY();
             assignRolePopup.show(sourceButton, x, y);
         } catch (IOException ex) {
@@ -213,19 +239,19 @@ public class OrganizationOverviewController implements DataReceiver<Organization
             }
             fallbackManager.setLoading(false);
 
-            // Turn Assign button into Custom Role label
+            // Update Custom Role button
             Node assignNode = membersGridPane.getChildren().stream()
-                    .filter(node -> GridPane.getRowIndex(node) == editedUserRowId && GridPane.getColumnIndex(node) == ASSIGN_ROLE_COLUMN_INDEX)
+                    .filter(node -> GridPane.getRowIndex(node) == editedUserRowIndex && GridPane.getColumnIndex(node) == ASSIGN_ROLE_COLUMN_INDEX)
                     .findFirst().orElse(null);
             if (assignNode == null) return;
 
             membersGridPane.getChildren().remove(assignNode);
-            Label label = new Label(userOptional.get().getCustomRole().getName());
-            applyStandardMargin(label);
-            membersGridPane.add(label, ASSIGN_ROLE_COLUMN_INDEX, editedUserRowId);
-            GridPane.setHalignment(label, HPos.CENTER);
+            Button button = addCustomRoleButton(userOptional.get(), editedUserRowIndex);
+            applyStandardMargin(button);
+            membersGridPane.add(button, ASSIGN_ROLE_COLUMN_INDEX, editedUserRowIndex);
+            GridPane.setHalignment(button, HPos.CENTER);
 
-            editedUserRowId = -1;
+            editedUserRowIndex = -1;
         });
         return userOptional;
     }
@@ -255,7 +281,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private void styleDeleteRoleButton(Button button) {
         button.getStyleClass().add("standard-delete-button");
         button.setGraphic(createImageView(trashImage));
-        button.setTooltip(new Tooltip("Delete Member"));
+        button.setTooltip(new Tooltip("Remove Member"));
         GridPane.setMargin(button, new Insets(12));
     }
 

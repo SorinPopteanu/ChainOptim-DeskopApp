@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.user.service;
 
+import org.chainoptim.desktop.core.user.dto.AssignRoleDTO;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 import org.chainoptim.desktop.core.user.util.TokenManager;
@@ -83,16 +84,26 @@ public class UserServiceImpl implements UserService {
     }
 
     public CompletableFuture<Optional<User>> assignCustomRoleToUser(String userId, Integer roleId) {
-        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/assign-role/" + roleId;
+        String routeAddress = "http://localhost:8080/api/v1/users/" + userId + "/assign-role";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
         String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
+        // Serialize DTO
+        String requestBody = null;
+        try {
+            requestBody = JsonUtil.getObjectMapper().writeValueAsString(new AssignRoleDTO(roleId));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assert requestBody != null;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                 .headers(HEADER_KEY, headerValue)
-                .PUT(HttpRequest.BodyPublishers.noBody())
+                .headers("Content-Type", "application/json")
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
