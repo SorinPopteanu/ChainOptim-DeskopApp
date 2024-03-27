@@ -26,7 +26,32 @@
     -fx-font-weight: bold;
 }
 
+/* Overview */
+.assign-role-element {
+    -fx-background-color: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 4px 20px;
+    -fx-cursor: hand;
+}
+
+.assign-role-selected-element {
+    -fx-background-color: #006AEE;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 4px 20px;
+    -fx-cursor: hand;
+}
+
 /* Custom Roles */
+.grid-pane-container {
+    -fx-background-color: white;
+    -fx-padding: 0px 20px;
+}
+
 .column-header {
     -fx-padding: 8px 0px;
     -fx-font-size: 16px;

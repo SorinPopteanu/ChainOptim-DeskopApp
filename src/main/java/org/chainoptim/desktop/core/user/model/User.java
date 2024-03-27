@@ -4,6 +4,8 @@ import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.Organization;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     private String id;

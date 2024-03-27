@@ -1,0 +1,19 @@
+.general-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.pseudo-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #007bff;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-cursor: hand;
+}
+
+.pseudo-link:hover {
+    -fx-text-fill: #0056b3;
+    -fx-underline: true;
+}

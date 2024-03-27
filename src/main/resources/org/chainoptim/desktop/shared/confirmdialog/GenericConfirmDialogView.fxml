@@ -3,23 +3,22 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.organization.controller.ConfirmCustomRoleUpdateController"
+      fx:controller="org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController"
       prefHeight="400.0" prefWidth="400.0" styleClass="generic-dialog">
 
-    <Label text="Confirm Custom Role Update" styleClass="dialog-title"/>
+    <Label fx:id="titleLabel" styleClass="dialog-title"/>
 
     <VBox spacing="8">
-        <TextFlow styleClass="dialog-message" VBox.vgrow="ALWAYS">
-            <Text text="Are you sure you want to update this custom role? The following members will be affected by this change: " />
+        <TextFlow fx:id="messageTextFlowContainer" styleClass="dialog-message" VBox.vgrow="ALWAYS">
+            <!-- Message -->
         </TextFlow>
 
         <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">
-            <VBox fx:id="usersVBox" spacing="8" style="-fx-padding: 10; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <StackPane fx:id="extraStackPane" style="-fx-padding: 10; -fx-font-size: 14px; -fx-font-weight: bold;"/>
         </ScrollPane>
     </VBox>
 
