@@ -108,6 +108,9 @@ module org.chainoptim.desktop {
     // - Common UI elements
     opens org.chainoptim.desktop.shared.common.uielements to javafx.fxml, com.google.guice;
 
+    // - Table
+    opens org.chainoptim.desktop.shared.table to javafx.fxml, com.google.guice;
+
     // - Location
     opens org.chainoptim.desktop.shared.features.location.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.shared.features.location.dto to com.fasterxml.jackson.databind;
