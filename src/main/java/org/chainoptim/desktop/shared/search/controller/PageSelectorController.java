@@ -32,6 +32,7 @@ public class PageSelectorController {
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) ->
             searchParams.setPage(newIndex.intValue() + 1)
         );
+
     }
 
 }

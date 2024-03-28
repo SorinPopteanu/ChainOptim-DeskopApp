@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.shared.table.TableToolbarController">
+
+    <ToolBar styleClass="table-toolbar">
+        <HBox alignment="CENTER" HBox.hgrow="ALWAYS" styleClass="items-alignment">
+            <StackPane alignment="CENTER_RIGHT">
+                <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
+                <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
+            </StackPane>
+            <Region HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption"/>
+            <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="refreshButton" styleClass="refresh-button"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="editButton" onAction="#handleEditButton" styleClass="standard-write-button"/>
+            <Button fx:id="createNewOrderButton" onAction="#handleCreateNewOrderButton" styleClass="standard-write-button"/>
+        </HBox>
+    </ToolBar>
+
+</VBox>
