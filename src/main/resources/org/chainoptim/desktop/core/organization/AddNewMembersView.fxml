@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.core.organization.controller.AddNewMembersController"
+            prefHeight="400.0" prefWidth="600.0" styleClass="form-container">
+
+    <Label text="Add New Members" styleClass="form-label"/>
+
+    <StackPane fx:id="usersSelectionContainer">
+
+    </StackPane>
+
+    <StackPane fx:id="fallbackContainer"/>
+</VBox>

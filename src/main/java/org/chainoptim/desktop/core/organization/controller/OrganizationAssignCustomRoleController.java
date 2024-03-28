@@ -2,14 +2,13 @@ package org.chainoptim.desktop.core.organization.controller;
 
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.FeaturePermissions;
-import org.chainoptim.desktop.core.organization.model.Permissions;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -19,12 +18,14 @@ import javafx.util.Pair;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Objects;
 
-public class OrganizationAssignRoleController implements DataReceiver<Pair<User, List<CustomRole>>> {
+public class OrganizationAssignCustomRoleController implements DataReceiver<Pair<User, Pair<List<CustomRole>, CustomRole>>> {
 
     // State
     private User user;
     private List<CustomRole> customRoles;
+    private CustomRole originalSelectedRole;
     private CustomRole selectedRole;
     private boolean hasRenderedWarning;
 
@@ -47,10 +48,11 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
     private Button cancelButton;
 
     @Override
-    public void setData(Pair<User, List<CustomRole>> data) {
+    public void setData(Pair<User, Pair<List<CustomRole>, CustomRole>> data) {
         user = data.getKey();
-        customRoles = data.getValue();
-        System.out.println("Receiving data: " + user + " " + customRoles);
+        customRoles = data.getValue().getKey();
+        originalSelectedRole = data.getValue().getValue();
+        selectedRole = originalSelectedRole;
 
         initializeUI();
     }
@@ -60,26 +62,39 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
 
         titleLabel.setText("Assign role to " + user.getUsername());
 
+        // Add None Option
+        Button selectNoneButton = new Button("None");
+        styleSelectButton(selectNoneButton, selectedRole == null);
+        selectNoneButton.setOnAction(this::selectRole);
+        rolesVBox.getChildren().add(selectNoneButton);
+
+        // Add role buttons
         for (CustomRole customRole : customRoles) {
-            Button roleName = new Button(customRole.getName());
-            roleName.setMaxWidth(Double.MAX_VALUE);
-            roleName.getStyleClass().add("assign-role-element");
-            roleName.setOnAction(this::selectRole);
-            rolesVBox.getChildren().add(roleName);
+            Button selectRoleButton = new Button(customRole.getName());
+            boolean isSelected = selectedRole != null && customRole.getId().equals(selectedRole.getId());
+            styleSelectButton(selectRoleButton, isSelected);
+            selectRoleButton.setOnAction(this::selectRole);
+
+
+            rolesVBox.getChildren().add(selectRoleButton);
         }
     }
 
     private void selectRole(ActionEvent event) {
         Button source = (Button) event.getSource();
-        selectedRole = customRoles.get(rolesVBox.getChildren().indexOf(source));
-        source.getStyleClass().clear();
-        source.getStyleClass().add("assign-role-selected-element");
+
+        // Select role, accounting for None button
+        int roleIndex = rolesVBox.getChildren().indexOf(source);
+        selectedRole = roleIndex > 0 ? customRoles.get(roleIndex - 1) : null;
+        styleSelectButton(source, true);
 
         // Deselect other roles
         for (int i = 0; i < rolesVBox.getChildren().size(); i++) {
-            if (i != rolesVBox.getChildren().indexOf(source)) {
-                rolesVBox.getChildren().get(i).getStyleClass().clear();
-                rolesVBox.getChildren().get(i).getStyleClass().add("assign-role-element");
+            if (i != roleIndex) {
+                Node otherButton = rolesVBox.getChildren().get(i);
+                if (otherButton instanceof Button button) {
+                    styleSelectButton(button, false);
+                }
             }
         }
 
@@ -137,14 +152,35 @@ public class OrganizationAssignRoleController implements DataReceiver<Pair<User,
 
     @FXML
     private void onConfirmButtonClicked() {
-        if (selectedRole == null) return;
+        Integer selectedRoleId = selectedRole == null ? null : selectedRole.getId(); // Allow null = no custom role
+        if (selectedRole != null && originalSelectedRole != null && Objects.equals(selectedRole.getId(), originalSelectedRole.getId())) return; // Skip if already assigned
 
-        Pair<String, Integer> data = new Pair<>(user.getId(), selectedRole.getId());
+        Pair<String, Integer> data = new Pair<>(user.getId(), selectedRoleId);
         actionListener.onConfirmAction(data);
     }
 
     @FXML
     private void onCancelButtonClicked() {
         actionListener.onCancelAction();
+    }
+
+    private void styleSelectButton(Button selectButton, boolean isSelected) {
+        if (isSelected) {
+            styleSelectedButton(selectButton);
+        } else {
+            styleUnselectedButton(selectButton);
+        }
+    }
+
+    private void styleUnselectedButton(Button selectButton) {
+        selectButton.setMaxWidth(Double.MAX_VALUE);
+        selectButton.getStyleClass().clear();
+        selectButton.getStyleClass().add("assign-role-element");
+    }
+
+    private void styleSelectedButton(Button selectButton) {
+        selectButton.setMaxWidth(Double.MAX_VALUE);
+        selectButton.getStyleClass().clear();
+        selectButton.getStyleClass().add("assign-role-selected-element");
     }
 }

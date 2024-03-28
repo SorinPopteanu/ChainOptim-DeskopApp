@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.core.organization.service;
 
 import org.chainoptim.desktop.core.organization.model.Organization;
+import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 

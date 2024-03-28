@@ -49,7 +49,9 @@ public class NavigationServiceImpl implements NavigationService {
 
     private final Map<String, String> viewMap = Map.ofEntries(
             Map.entry("Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml"),
+
             Map.entry("Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml"),
+            Map.entry("Add-New-Members", "/org/chainoptim/desktop/core/organization/AddNewMembersView.fxml"),
 
             Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
             Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),

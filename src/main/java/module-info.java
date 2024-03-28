@@ -8,6 +8,7 @@ module org.chainoptim.desktop {
     requires java.prefs;
     requires org.json;
     requires java.base;
+    requires java.desktop;
 
     // Http
     requires java.net.http;
@@ -43,6 +44,7 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.user.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.core.user.service to com.google.guice;
     opens org.chainoptim.desktop.core.user.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.user.dto to com.fasterxml.jackson.databind;
 
     // - Organization
     opens org.chainoptim.desktop.core.organization.service to com.google.guice;
