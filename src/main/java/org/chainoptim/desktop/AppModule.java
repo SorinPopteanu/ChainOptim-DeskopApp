@@ -11,6 +11,8 @@ import org.chainoptim.desktop.core.organization.service.CustomRoleService;
 import org.chainoptim.desktop.core.organization.service.CustomRoleServiceImpl;
 import org.chainoptim.desktop.core.organization.service.OrganizationService;
 import org.chainoptim.desktop.core.organization.service.OrganizationServiceImpl;
+import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
+import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotServiceImpl;
 import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.core.user.service.UserServiceImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
@@ -77,6 +79,9 @@ public class AppModule extends AbstractModule {
         // - Organization
         bind(OrganizationService.class).to(OrganizationServiceImpl.class);
         bind(CustomRoleService.class).to(CustomRoleServiceImpl.class);
+
+        // - Overview
+        bind(SupplyChainSnapshotService.class).to(SupplyChainSnapshotServiceImpl.class);
 
         // Features
         // - Product
