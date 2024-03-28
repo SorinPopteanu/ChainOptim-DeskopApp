@@ -8,4 +8,7 @@
             styleClass="organization-content-container">
 
     <Label text="Subscription Plan"/>
+
+    <StackPane fx:id="updateConfirmDialogPane"/>
+    <StackPane fx:id="deleteConfirmDialogPane"/>
 </VBox>

@@ -1,7 +1,5 @@
-package org.chainoptim.desktop.core.organization.controller;
+package org.chainoptim.desktop.core.user.controller;
 
-import org.chainoptim.desktop.core.organization.model.ConfirmDeleteDialogActionListener;
-import org.chainoptim.desktop.core.organization.model.ConfirmUpdateDialogActionListener;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.UserService;
@@ -9,40 +7,31 @@ import org.chainoptim.desktop.shared.util.DataReceiver;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ConfirmCustomRoleDeleteController implements DataReceiver<Integer> {
+public class UsersListByCustomRoleController implements DataReceiver<CustomRole> {
 
     private final UserService userService;
 
-    private Integer customRoleId;
-
-    @Setter
-    private ConfirmDeleteDialogActionListener actionListener;
+    private CustomRole customRole;
 
     @FXML
     private VBox usersVBox;
-    @FXML
-    private Button confirmButton;
-    @FXML
-    private Button cancelButton;
 
     @Inject
-    public ConfirmCustomRoleDeleteController(UserService userService) {
+    public UsersListByCustomRoleController(UserService userService) {
         this.userService = userService;
     }
 
     @Override
-    public void setData(Integer customRoleId) {
-        this.customRoleId = customRoleId;
+    public void setData(CustomRole data) {
+        customRole = data;
 
-        userService.getUsersByCustomRoleId(customRoleId)
+        userService.getUsersByCustomRoleId(customRole.getId())
                 .thenApply(this::handleUsersResponse)
                 .exceptionally(this::handleUsersException);
     }
@@ -69,13 +58,4 @@ public class ConfirmCustomRoleDeleteController implements DataReceiver<Integer> 
         return Optional.empty();
     }
 
-    @FXML
-    private void onConfirmButtonClicked() {
-        actionListener.onConfirmCustomRoleDelete(customRoleId);
-    }
-
-    @FXML
-    private void onCancelButtonClicked() {
-        actionListener.onCancelCustomRoleDelete();
-    }
 }
