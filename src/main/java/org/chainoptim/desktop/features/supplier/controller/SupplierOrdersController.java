@@ -165,6 +165,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
+        System.out.println("Current page: " + searchParams.getPage());
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
@@ -179,22 +181,25 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     }
 
     private Optional<PaginatedResults<SupplierOrder>> handleOrdersResponse(Optional<PaginatedResults<SupplierOrder>> supplierOrdersOptional) {
+        System.out.println("Received supplier orders: " + supplierOrdersOptional);
+
         Platform.runLater(() -> {
             if (supplierOrdersOptional.isEmpty()) {
                 System.out.println("No orders found");
                 fallbackManager.setErrorMessage("No orders found");
                 return;
             }
-            tableView.getItems().clear();
             PaginatedResults<SupplierOrder> paginatedResults = supplierOrdersOptional.get();
+            tableView.getItems().clear();
             totalRowsCount = paginatedResults.getTotalCount();
 
             if (!paginatedResults.results.isEmpty()) {
+                System.out.println("Supplier orders found");
                 for (SupplierOrder supplierOrder : paginatedResults.results) {
                     System.out.println("Supplier order: " + supplierOrder);
                     bindDataToTableView(supplierOrder);
-                    Platform.runLater(() -> pageSelectorController.initialize(totalRowsCount));
                 }
+                Platform.runLater(() -> pageSelectorController.initialize(totalRowsCount));
                 fallbackManager.setNoResults(false);
             } else {
                 fallbackManager.setNoResults(true);
@@ -231,7 +236,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         estimatedDeliveryDateColumn.setCellValueFactory(new PropertyValueFactory<>("estimatedDeliveryDate"));
         deliveryDateColumn.setCellValueFactory(new PropertyValueFactory<>("deliveryDate"));
 
-        tableView.getItems().setAll(results);
+        tableView.getItems().add(results);
     }
 
     private void setEditEvents() {
