@@ -1,12 +1,5 @@
 package org.chainoptim.desktop.core.overview.controller;
 
-import com.google.inject.Inject;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
@@ -18,8 +11,26 @@ import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
+import com.google.inject.Inject;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+
+import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -38,11 +49,21 @@ public class OverviewController implements Initializable {
 
     // FXML
     @FXML
-    private StackPane contentContainer;
+    private VBox headerContainer;
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private StackPane contentStackPane;
+    @FXML
+    private VBox contentContainer;
+    @FXML
+    private HBox entityCountsHBox;
     @FXML
     private StackPane fallbackContainer;
     @FXML
-    private Label factoriesCountLabel;
+    private Label notificationsLabel;
+    @FXML
+    private VBox notificationsVBox;
 
     @Inject
     public OverviewController(AuthenticationService authenticationService,
@@ -69,6 +90,7 @@ public class OverviewController implements Initializable {
 
         loadFallbackManager();
         setUpListeners();
+        initializeUI();
 
         fallbackManager.reset();
         fallbackManager.setLoading(true);
@@ -88,11 +110,19 @@ public class OverviewController implements Initializable {
     private void setUpListeners() {
         // Listen to empty fallback state
         fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
-            contentContainer.setVisible(newValue);
-            contentContainer.setManaged(newValue);
+            contentStackPane.setVisible(newValue);
+            contentStackPane.setManaged(newValue);
             fallbackContainer.setVisible(!newValue);
             fallbackContainer.setManaged(!newValue);
         });
+    }
+
+    private void initializeUI() {
+        Image headerImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/globe-solid-black.png")));
+        ImageView headerImageView = new ImageView(headerImage);
+        headerImageView.setFitHeight(16);
+        headerImageView.setFitWidth(16);
+        titleLabel.setGraphic(headerImageView);
     }
 
     private void fetchAndSetUser(String username) {
@@ -135,11 +165,59 @@ public class OverviewController implements Initializable {
                 return;
             }
             snapshot = snapshotOptional.get();
-            factoriesCountLabel.setText(String.valueOf(snapshot.getFactoryCount()));
-            fallbackManager.setLoading(false);
             System.out.println("Snapshot received: " + snapshot);
+            fallbackManager.setLoading(false);
+
+            renderEntityCountsVBox(snapshot);
+
+            renderNotificationsVBox();
         });
 
         return snapshotOptional;
     }
+
+    private void renderEntityCountsVBox(SupplyChainSnapshot snapshot) {
+        entityCountsHBox.getChildren().clear();
+
+        HBox productsCountLabel = getFeatureCountBadge("Products", snapshot.getProductsCount());
+        HBox factoriesCountLabel = getFeatureCountBadge("Factories", snapshot.getFactoriesCount());
+        HBox warehousesCountLabel = getFeatureCountBadge("Warehouses", snapshot.getWarehousesCount());
+        HBox suppliersCountLabel = getFeatureCountBadge("Suppliers", snapshot.getSuppliersCount());
+        HBox clientsCountLabel = getFeatureCountBadge("Clients", snapshot.getClientsCount());
+
+        entityCountsHBox.getChildren().addAll(productsCountLabel, factoriesCountLabel, warehousesCountLabel, suppliersCountLabel, clientsCountLabel);
+        entityCountsHBox.setSpacing(20);
+        entityCountsHBox.setPadding(new Insets(0, 20, 0, 20));
+    }
+
+    private HBox getFeatureCountBadge(String featureName, long count) {
+        HBox badgeContainer = new HBox(0); // Adjust spacing as needed
+        badgeContainer.setAlignment(Pos.CENTER_LEFT);
+        badgeContainer.getStyleClass().add("badge-container");
+
+        Label featureLabel = new Label(featureName);
+        featureLabel.getStyleClass().add("feature-count-label");
+        featureLabel.setMinWidth(88);
+
+        // Creating a region to act as a separator
+        Region separator = new Region();
+        separator.setPrefWidth(1);
+        separator.setMinHeight(20);
+        separator.setStyle("-fx-background-color: #d3d6d4;");
+
+        Label countLabel = new Label(String.valueOf(count));
+        countLabel.getStyleClass().add("count-label");
+        featureLabel.setMinWidth(25);
+
+        badgeContainer.getChildren().addAll(featureLabel, separator, countLabel);
+
+        return badgeContainer;
+    }
+
+    private void renderNotificationsVBox() {
+        notificationsLabel.setText("Notifications (0)");
+        notificationsVBox.getChildren().clear();
+        notificationsVBox.getChildren().add(new Label("You have a new notification!"));
+    }
+
 }

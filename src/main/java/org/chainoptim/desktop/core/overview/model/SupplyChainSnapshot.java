@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 public class SupplyChainSnapshot {
 
     private long membersCount;
-    private long productCount;
-    private long factoryCount;
-    private long warehouseCount;
+    private long productsCount;
+    private long factoriesCount;
+    private long warehousesCount;
     private long suppliersCount;
-    private  long clientsCount;
+    private long clientsCount;
 }
