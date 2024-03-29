@@ -2,6 +2,8 @@ package org.chainoptim.desktop.core.overview.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.notification.model.Notification;
+import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
 import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -14,7 +16,7 @@ import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import com.google.inject.Inject;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.effect.ColorAdjust;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -22,14 +24,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
-import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -40,6 +39,7 @@ public class OverviewController implements Initializable {
     private final AuthenticationService authenticationService;
     private final UserService userService;
     private final SupplyChainSnapshotService supplyChainSnapshotService;
+    private final NotificationPersistenceService notificationPersistenceService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
@@ -69,12 +69,14 @@ public class OverviewController implements Initializable {
     public OverviewController(AuthenticationService authenticationService,
                               UserService userService,
                               SupplyChainSnapshotService supplyChainSnapshotService,
+                              NotificationPersistenceService notificationPersistenceService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
                               FallbackManager fallbackManager) {
         this.authenticationService = authenticationService;
         this.userService = userService;
         this.supplyChainSnapshotService = supplyChainSnapshotService;
+        this.notificationPersistenceService = notificationPersistenceService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
@@ -98,6 +100,7 @@ public class OverviewController implements Initializable {
         authenticationService.getUsernameFromJWTToken(jwtToken).ifPresent(this::fetchAndSetUser);
     }
 
+    // Initialization
     private void loadFallbackManager() {
         // Load view into fallbackContainer
         Node fallbackView = fxmlLoaderService.loadView(
@@ -125,6 +128,7 @@ public class OverviewController implements Initializable {
         titleLabel.setGraphic(headerImageView);
     }
 
+    // Fetches
     private void fetchAndSetUser(String username) {
         userService.getUserByUsername(username)
                 .thenApply(this::handleUserResponse)
@@ -147,7 +151,7 @@ public class OverviewController implements Initializable {
             Integer organizationId = user.getOrganization().getId();
             if (organizationId == null) return;
 
-            // Fetch Supply Chain snapshot
+            // Fetch Supply Chain snapshot and Notifications on separate threads
             supplyChainSnapshotService.getSupplyChainSnapshot(organizationId)
                     .thenApply(this::handleSupplyChainSnapshotResponse)
                     .exceptionally(ex -> {
@@ -155,6 +159,12 @@ public class OverviewController implements Initializable {
                         return Optional.empty();
                     });
 
+            notificationPersistenceService.getNotificationsByUserId(user.getId())
+                    .thenApply(this::handleNotificationsResponse)
+                    .exceptionally(ex -> {
+                        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load notifications."));
+                        return Optional.empty();
+                    });
         });
         return userOptional;
     }
@@ -169,13 +179,25 @@ public class OverviewController implements Initializable {
             fallbackManager.setLoading(false);
 
             renderEntityCountsVBox(snapshot);
-
-            renderNotificationsVBox();
         });
 
         return snapshotOptional;
     }
 
+    private Optional<List<Notification>> handleNotificationsResponse(Optional<List<Notification>> notificationsOptional) {
+        Platform.runLater(() -> {
+            if (notificationsOptional.isEmpty()) {
+                return;
+            }
+            List<Notification> notifications = notificationsOptional.get();
+            System.out.println("Notifications received: " + notifications.size());
+            renderNotificationsVBox(notifications);
+        });
+
+        return notificationsOptional;
+    }
+
+    // UI Rendering
     private void renderEntityCountsVBox(SupplyChainSnapshot snapshot) {
         entityCountsHBox.getChildren().clear();
 
@@ -185,9 +207,10 @@ public class OverviewController implements Initializable {
         HBox suppliersCountLabel = getFeatureCountBadge("Suppliers", snapshot.getSuppliersCount());
         HBox clientsCountLabel = getFeatureCountBadge("Clients", snapshot.getClientsCount());
 
+
         entityCountsHBox.getChildren().addAll(productsCountLabel, factoriesCountLabel, warehousesCountLabel, suppliersCountLabel, clientsCountLabel);
-        entityCountsHBox.setSpacing(20);
-        entityCountsHBox.setPadding(new Insets(0, 20, 0, 20));
+        entityCountsHBox.setSpacing(40);
+        entityCountsHBox.setAlignment(Pos.CENTER);
     }
 
     private HBox getFeatureCountBadge(String featureName, long count) {
@@ -197,7 +220,6 @@ public class OverviewController implements Initializable {
 
         Label featureLabel = new Label(featureName);
         featureLabel.getStyleClass().add("feature-count-label");
-        featureLabel.setMinWidth(88);
 
         // Creating a region to act as a separator
         Region separator = new Region();
@@ -207,17 +229,38 @@ public class OverviewController implements Initializable {
 
         Label countLabel = new Label(String.valueOf(count));
         countLabel.getStyleClass().add("count-label");
-        featureLabel.setMinWidth(25);
 
         badgeContainer.getChildren().addAll(featureLabel, separator, countLabel);
 
         return badgeContainer;
     }
 
-    private void renderNotificationsVBox() {
-        notificationsLabel.setText("Notifications (0)");
+    private void renderNotificationsVBox(List<Notification> notifications) {
+        notificationsLabel.setText("Notifications (" + notifications.size() + ")");
+
         notificationsVBox.getChildren().clear();
-        notificationsVBox.getChildren().add(new Label("You have a new notification!"));
+
+        notifications.forEach(notification -> {
+            HBox notificationHBox = new HBox(0);
+            notificationHBox.setAlignment(Pos.CENTER_LEFT);
+            notificationHBox.getStyleClass().add("notification-container");
+
+            Label notificationLabel = new Label(notification.getMessage());
+            notificationLabel.getStyleClass().add("notification-message");
+            notificationHBox.getChildren().add(notificationLabel);
+
+            Region separator = new Region();
+            // Grow
+            HBox.setHgrow(separator, Priority.ALWAYS);
+            notificationHBox.getChildren().add(separator);
+
+            String read = Boolean.TRUE.equals(notification.getReadStatus()) ? "read" : "unread";
+            Label readLabel = new Label(read);
+            readLabel.getStyleClass().add("notification-read-status");
+            notificationHBox.getChildren().add(readLabel);
+
+            notificationsVBox.getChildren().add(notificationHBox);
+        });
     }
 
 }

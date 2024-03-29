@@ -11,7 +11,7 @@
 .feature-count-label {
     -fx-background-color: #f4f5f6;
     -fx-background-radius: 8 0 0 8;
-    -fx-padding: 4px 8px 4px 10px;
+    -fx-padding: 4px 12px 4px 12px;
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
@@ -23,23 +23,40 @@
 }
 
 .count-label {
-    -fx-padding: 4px 10px 4px 8px;
+    -fx-padding: 4px 8px 4px 8px;
     -fx-background-radius: 0 8 8 0;
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #454545;
 }
 
-.box-label {
-    -fx-padding: 4px 8px;
+/* Notifications */
+.notifications-box {
+    -fx-background-radius: 8;
+    -fx-border-color: #d3d6d4;
+    -fx-border-radius: 8px;
+}
+
+.notifications-box-label-container {
+    -fx-background-color: #f4f5f6;
+    -fx-background-radius: 8 8 0 0;
+    -fx-border-color: #d3d6d4;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-radius: 8 8 0 0;
+}
+
+.notifications-box-label {
+    -fx-padding: 8px 12px;
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
 }
 
-.notifications-box {
-    -fx-padding: 4px 8px;
-    -fx-background-radius: 8;
-    -fx-border-color: #d3d6d4;
-    -fx-border-radius: 8px;
+.notifications-box-content {
+    -fx-padding: 8px;
+}
+
+.notification-message {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
 }

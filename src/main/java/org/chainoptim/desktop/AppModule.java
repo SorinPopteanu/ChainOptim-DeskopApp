@@ -7,6 +7,8 @@ import org.chainoptim.desktop.core.abstraction.ThreadRunner;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
+import org.chainoptim.desktop.core.notification.service.NotificationPersistenceServiceImpl;
 import org.chainoptim.desktop.core.organization.service.CustomRoleService;
 import org.chainoptim.desktop.core.organization.service.CustomRoleServiceImpl;
 import org.chainoptim.desktop.core.organization.service.OrganizationService;
@@ -82,6 +84,9 @@ public class AppModule extends AbstractModule {
 
         // - Overview
         bind(SupplyChainSnapshotService.class).to(SupplyChainSnapshotServiceImpl.class);
+
+        // - Notifications
+        bind(NotificationPersistenceService.class).to(NotificationPersistenceServiceImpl.class);
 
         // Features
         // - Product

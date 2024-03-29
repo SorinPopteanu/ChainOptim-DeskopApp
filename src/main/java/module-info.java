@@ -57,6 +57,10 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.overview.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.overview.service to com.google.guice;
 
+    // - Notifications
+    opens org.chainoptim.desktop.core.notification.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.notification.service to com.google.guice;
+
     // Features
     // - Product
     opens org.chainoptim.desktop.features.product.controller to javafx.fxml, com.google.guice;
