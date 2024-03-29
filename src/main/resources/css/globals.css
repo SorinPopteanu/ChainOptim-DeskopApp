@@ -14,3 +14,7 @@
 @import url("common-elements.css");
 @import url("scrollbar.css");
 @import url("table-toolbar.css");
+
+.root {
+    -fx-font-family: 'Roboto';
+}

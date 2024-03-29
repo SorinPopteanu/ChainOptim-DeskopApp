@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import org.chainoptim.desktop.core.main.service.SceneManager;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.shared.util.resourceloader.FontLoaderService;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -26,6 +27,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         SceneManager.setPrimaryStage(primaryStage);
+        FontLoaderService.loadRobotoFonts();
 
         // Show Login Scene or Main Scene depending on whether a valid JWT token exists
         String jwtToken = TokenManager.getToken();
