@@ -1,11 +1,11 @@
 .sidebar {
     -fx-background-color: #000000;
     -fx-border-color: #333;
-    -fx-spacing: 24px;
 }
 
 .sidebar-inner-container {
-    -fx-padding: 24px;
+    -fx-padding: 16px;
+    -fx-spacing: 14px;
 }
 
 .sidebar-title {

@@ -1,9 +1,9 @@
 .overview-container {
-    -fx-padding: 32px;
+    -fx-padding: 20px 32px 0px 32px;
 }
 
 .overview-page-title {
-    -fx-font-size: 24px;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
     -fx-graphic-text-gap: 8;
 }

@@ -3,7 +3,10 @@ package org.chainoptim.desktop.core.overview.controller;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.notification.model.Notification;
+import org.chainoptim.desktop.core.notification.service.MyWebSocketClient;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
+import org.chainoptim.desktop.core.notification.service.StompClient;
+import org.chainoptim.desktop.core.notification.service.WebSocketService;
 import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -14,9 +17,7 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -25,8 +26,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
-import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +43,7 @@ public class OverviewController implements Initializable {
     private final AuthenticationService authenticationService;
     private final UserService userService;
     private final SupplyChainSnapshotService supplyChainSnapshotService;
+//    private final WebSocketService webSocketService;
     private final NotificationPersistenceService notificationPersistenceService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
@@ -65,10 +70,14 @@ public class OverviewController implements Initializable {
     @FXML
     private VBox notificationsVBox;
 
+    // Icons
+    private Image alertImage;
+
     @Inject
     public OverviewController(AuthenticationService authenticationService,
                               UserService userService,
                               SupplyChainSnapshotService supplyChainSnapshotService,
+//                              WebSocketService webSocketService,
                               NotificationPersistenceService notificationPersistenceService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
@@ -76,6 +85,7 @@ public class OverviewController implements Initializable {
         this.authenticationService = authenticationService;
         this.userService = userService;
         this.supplyChainSnapshotService = supplyChainSnapshotService;
+//        this.webSocketService = webSocketService;
         this.notificationPersistenceService = notificationPersistenceService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
@@ -126,6 +136,8 @@ public class OverviewController implements Initializable {
         headerImageView.setFitHeight(16);
         headerImageView.setFitWidth(16);
         titleLabel.setGraphic(headerImageView);
+
+//        alertImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/alert-circle-solid.png")));
     }
 
     // Fetches
@@ -144,6 +156,16 @@ public class OverviewController implements Initializable {
                 return;
             }
             User user = userOptional.get();
+            String userIdParam = "?userId=" + user.getId(); // Or use jwtToken
+            System.out.println("Connecting to WebSocket with userId: " + user.getId());
+
+            try {
+                URI serverUri = new URI("ws://localhost:8080/ws" + userIdParam);
+                MyWebSocketClient client = new MyWebSocketClient(serverUri);
+                client.connect();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
 
             // Set user to TenantContext for reuse throughout the app
             TenantContext.setCurrentUser(user);
@@ -254,10 +276,17 @@ public class OverviewController implements Initializable {
             HBox.setHgrow(separator, Priority.ALWAYS);
             notificationHBox.getChildren().add(separator);
 
-            String read = Boolean.TRUE.equals(notification.getReadStatus()) ? "read" : "unread";
-            Label readLabel = new Label(read);
-            readLabel.getStyleClass().add("notification-read-status");
-            notificationHBox.getChildren().add(readLabel);
+            // Alert indicator
+
+
+            // Read indicator
+            Circle indicator = new Circle(4);
+            indicator.setFill(Color.TRANSPARENT);
+
+            if (Boolean.FALSE.equals(notification.getReadStatus())) {
+                indicator.setFill(Color.web("#006AEE"));
+            }
+            notificationHBox.getChildren().add(indicator);
 
             notificationsVBox.getChildren().add(notificationHBox);
         });

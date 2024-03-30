@@ -18,12 +18,12 @@
                 <!-- Counts of organization entities -->
             </HBox>
 
-            <VBox styleClass="notifications-box" spacing="16">
+            <VBox styleClass="notifications-box">
                 <HBox styleClass="notifications-box-label-container">
                     <Label fx:id="notificationsLabel" styleClass="notifications-box-label"/>
                 </HBox>
 
-                <VBox fx:id="notificationsVBox" styleClass="notifications-box-content"/>
+                <VBox fx:id="notificationsVBox" styleClass="notifications-box-content" spacing="16"/>
             </VBox>
         </VBox>
 
