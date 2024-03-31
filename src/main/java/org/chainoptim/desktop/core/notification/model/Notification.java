@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class Notification {
 
     private Integer id;
-    private String userId;
     private String title;
     private Integer entityId;
     private String entityType;

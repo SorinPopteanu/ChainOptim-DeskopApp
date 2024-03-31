@@ -30,11 +30,6 @@ module org.chainoptim.desktop {
     requires org.apache.commons.text;
     requires jdk.jsobject;
     requires org.java_websocket;
-    requires spring.web;
-    requires spring.messaging;
-    requires spring.websocket;
-    requires spring.core;
-    requires jakarta.websocket;
 
 
     opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core;

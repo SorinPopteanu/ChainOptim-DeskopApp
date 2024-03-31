@@ -3,10 +3,9 @@ package org.chainoptim.desktop.core.overview.controller;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.notification.model.Notification;
-import org.chainoptim.desktop.core.notification.service.MyWebSocketClient;
+import org.chainoptim.desktop.core.notification.model.NotificationUser;
+import org.chainoptim.desktop.core.notification.service.NotificationWebSocketClient;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
-import org.chainoptim.desktop.core.notification.service.StompClient;
-import org.chainoptim.desktop.core.notification.service.WebSocketService;
 import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -17,7 +16,12 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -28,6 +32,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,6 +44,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class OverviewController implements Initializable {
 
@@ -43,7 +52,6 @@ public class OverviewController implements Initializable {
     private final AuthenticationService authenticationService;
     private final UserService userService;
     private final SupplyChainSnapshotService supplyChainSnapshotService;
-//    private final WebSocketService webSocketService;
     private final NotificationPersistenceService notificationPersistenceService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
@@ -51,6 +59,7 @@ public class OverviewController implements Initializable {
 
     // State
     private SupplyChainSnapshot snapshot;
+    private final ObservableList<Notification> receivedNotifications = FXCollections.observableArrayList();
 
     // FXML
     @FXML
@@ -77,7 +86,6 @@ public class OverviewController implements Initializable {
     public OverviewController(AuthenticationService authenticationService,
                               UserService userService,
                               SupplyChainSnapshotService supplyChainSnapshotService,
-//                              WebSocketService webSocketService,
                               NotificationPersistenceService notificationPersistenceService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
@@ -85,7 +93,6 @@ public class OverviewController implements Initializable {
         this.authenticationService = authenticationService;
         this.userService = userService;
         this.supplyChainSnapshotService = supplyChainSnapshotService;
-//        this.webSocketService = webSocketService;
         this.notificationPersistenceService = notificationPersistenceService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
@@ -128,6 +135,16 @@ public class OverviewController implements Initializable {
             fallbackContainer.setVisible(!newValue);
             fallbackContainer.setManaged(!newValue);
         });
+
+        // Listen to received notifications
+        receivedNotifications.addListener((ListChangeListener<Notification>) change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    List<? extends Notification> addedSubList = change.getAddedSubList();
+                    addedSubList.forEach(this::addNotificationPopup);
+                }
+            }
+        });
     }
 
     private void initializeUI() {
@@ -156,16 +173,6 @@ public class OverviewController implements Initializable {
                 return;
             }
             User user = userOptional.get();
-            String userIdParam = "?userId=" + user.getId(); // Or use jwtToken
-            System.out.println("Connecting to WebSocket with userId: " + user.getId());
-
-            try {
-                URI serverUri = new URI("ws://localhost:8080/ws" + userIdParam);
-                MyWebSocketClient client = new MyWebSocketClient(serverUri);
-                client.connect();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
 
             // Set user to TenantContext for reuse throughout the app
             TenantContext.setCurrentUser(user);
@@ -187,6 +194,8 @@ public class OverviewController implements Initializable {
                         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load notifications."));
                         return Optional.empty();
                     });
+
+            startWebSocket(user);
         });
         return userOptional;
     }
@@ -206,12 +215,12 @@ public class OverviewController implements Initializable {
         return snapshotOptional;
     }
 
-    private Optional<List<Notification>> handleNotificationsResponse(Optional<List<Notification>> notificationsOptional) {
+    private Optional<List<NotificationUser>> handleNotificationsResponse(Optional<List<NotificationUser>> notificationsOptional) {
         Platform.runLater(() -> {
             if (notificationsOptional.isEmpty()) {
                 return;
             }
-            List<Notification> notifications = notificationsOptional.get();
+            List<NotificationUser> notifications = notificationsOptional.get();
             System.out.println("Notifications received: " + notifications.size());
             renderNotificationsVBox(notifications);
         });
@@ -257,7 +266,7 @@ public class OverviewController implements Initializable {
         return badgeContainer;
     }
 
-    private void renderNotificationsVBox(List<Notification> notifications) {
+    private void renderNotificationsVBox(List<NotificationUser> notifications) {
         notificationsLabel.setText("Notifications (" + notifications.size() + ")");
 
         notificationsVBox.getChildren().clear();
@@ -267,12 +276,11 @@ public class OverviewController implements Initializable {
             notificationHBox.setAlignment(Pos.CENTER_LEFT);
             notificationHBox.getStyleClass().add("notification-container");
 
-            Label notificationLabel = new Label(notification.getMessage());
+            Label notificationLabel = new Label(notification.getNotification().getMessage());
             notificationLabel.getStyleClass().add("notification-message");
             notificationHBox.getChildren().add(notificationLabel);
 
             Region separator = new Region();
-            // Grow
             HBox.setHgrow(separator, Priority.ALWAYS);
             notificationHBox.getChildren().add(separator);
 
@@ -292,4 +300,46 @@ public class OverviewController implements Initializable {
         });
     }
 
+    // Real-time Notifications
+    private void startWebSocket(User user) {
+        String userIdParam = "?userId=" + user.getId(); // Or use jwtToken
+        System.out.println("Connecting to WebSocket with userId: " + user.getId());
+
+        try {
+            URI serverUri = new URI("ws://localhost:8080/ws" + userIdParam);
+            Consumer<Notification> addMessageToUI = receivedNotifications::add;
+            NotificationWebSocketClient client = new NotificationWebSocketClient(serverUri, addMessageToUI);
+            client.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addNotificationPopup(Notification notification) {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.NONE);
+        popupStage.initStyle(StageStyle.TRANSPARENT);
+
+        Label messageLabel = new Label(notification.getMessage());
+        messageLabel.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-border-color: black");
+
+        Scene scene = new Scene(new StackPane(messageLabel));
+        scene.setFill(Color.TRANSPARENT);
+        popupStage.setScene(scene);
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        popupStage.setX(screenBounds.getMaxX() - 300);
+        popupStage.setY(screenBounds.getMaxY() - 120);
+
+        popupStage.show();
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(10000); // 10 seconds
+                Platform.runLater(popupStage::close);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 }
