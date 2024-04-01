@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.shared.table;
 
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import com.google.inject.Inject;
 import javafx.animation.Interpolator;
@@ -14,7 +15,6 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,6 +22,7 @@ public class TableToolbarController {
 
     private final SearchParams searchParams;
     private final NavigationService navigationService;
+    private final SupplierOrdersController supplierOrdersController;
 
     @FXML
     private TextField searchBar;
@@ -34,7 +35,13 @@ public class TableToolbarController {
     @FXML
     private Button refreshButton;
     @FXML
-    private Button editButton;
+    private Button cancelRowSelectionButton;
+    @FXML
+    private Button deleteSelectedRowsButton;
+    @FXML
+    private Button editSelectedRowsButton;
+    @FXML
+    private Button saveChangesButton;
     @FXML
     private Button createNewOrderButton;
 
@@ -47,9 +54,15 @@ public class TableToolbarController {
     private final Image searchIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/search.png")));
     private final ImageView searchImageView = new ImageView(searchIcon);
     private final Image refreshIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/rotate-right-solid.png")));
-    private final ImageView refreshIconView = new ImageView(refreshIcon);
+    private final ImageView refreshImageView = new ImageView(refreshIcon);
+    private final Image cancelIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
+    private final ImageView cancelImageView =new ImageView (cancelIcon);
+    private final Image deleteIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
+    private final ImageView deleteImageView = new ImageView(deleteIcon);
+    private final Image saveIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
+    private final ImageView saveImageView = new ImageView(saveIcon);
     private final Image plusIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
-    private final ImageView plusIconView = new ImageView(plusIcon);
+    private final ImageView plusImageView = new ImageView(plusIcon);
     private final Map<String, String> sortOptionsMap = Map.of(
             "createdAt", "Created At",
             "updatedAt", "Updated At"
@@ -58,10 +71,12 @@ public class TableToolbarController {
     @Inject
     public TableToolbarController(
             SearchParams searchParams,
-            NavigationService navigationService
+            NavigationService navigationService,
+            SupplierOrdersController supplierOrdersController
     ) {
         this.searchParams = searchParams;
         this.navigationService = navigationService;
+        this.supplierOrdersController = supplierOrdersController;
     }
 
     @FXML
@@ -69,7 +84,10 @@ public class TableToolbarController {
         setSearchButton();
         setOrderingButton();
         setRefreshButton(() -> {});
-        setEditButton();
+        setCancelRowSelectionButton();
+        setDeleteSelectedRowsButton();
+        setEditSelectedRowsButton();
+        setSaveChangesButton();
         setCreateNewOrderButton();
     }
 
@@ -91,16 +109,16 @@ public class TableToolbarController {
     }
 
     public void setRefreshButton(Runnable refreshAction) {
-        refreshIconView.setFitWidth(14);
-        refreshIconView.setFitHeight(14);
+        refreshImageView.setFitWidth(14);
+        refreshImageView.setFitHeight(14);
 
         // Apply rotation on click
-        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), refreshIconView);
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), refreshImageView);
         rotateTransition.setByAngle(360);
         rotateTransition.setCycleCount(1);
         rotateTransition.setInterpolator(Interpolator.LINEAR);
 
-        refreshButton.setGraphic(refreshIconView);
+        refreshButton.setGraphic(refreshImageView);
 
         refreshButton.setOnAction(e -> {
             rotateTransition.stop();
@@ -110,20 +128,48 @@ public class TableToolbarController {
         });
     }
 
-    private void setEditButton() {
+    private void setCancelRowSelectionButton() {
+        cancelImageView.setFitWidth(16);
+        cancelImageView.setFitHeight(16);
+        cancelRowSelectionButton.setGraphic(cancelImageView);
+        cancelRowSelectionButton.setVisible(false);
+    }
+
+    private void setDeleteSelectedRowsButton() {
+        deleteImageView.setFitWidth(16);
+        deleteImageView.setFitHeight(16);
+        deleteSelectedRowsButton.setGraphic(deleteImageView);
+        deleteSelectedRowsButton.setVisible(false);
+    }
+
+    private void setEditSelectedRowsButton() {
         editImageView.setFitWidth(16);
         editImageView.setFitHeight(16);
-        editButton.setGraphic(editImageView);
+        editSelectedRowsButton.setGraphic(editImageView);
+        editSelectedRowsButton.setVisible(false);
+    }
+
+    private void setSaveChangesButton() {
+        saveImageView.setFitWidth(16);
+        saveImageView.setFitHeight(16);
+        saveChangesButton.setGraphic(saveImageView);
+        saveChangesButton.setVisible(false);
     }
 
     private void setCreateNewOrderButton() {
-        plusIconView.setFitWidth(12);
-        plusIconView.setFitHeight(12);
+        plusImageView.setFitWidth(12);
+        plusImageView.setFitHeight(12);
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(1);
-        plusIconView.setEffect(colorAdjust);
-        createNewOrderButton.setGraphic(plusIconView);
+        plusImageView.setEffect(colorAdjust);
+        createNewOrderButton.setGraphic(plusImageView);
         createNewOrderButton.setContentDisplay(ContentDisplay.LEFT);
+    }
+
+    public void setButtonsAvailability(boolean value) {
+        cancelRowSelectionButton.setVisible(value);
+        deleteSelectedRowsButton.setVisible(value);
+        editSelectedRowsButton.setVisible(value);
     }
 
     @FXML
@@ -153,12 +199,27 @@ public class TableToolbarController {
     }
 
     @FXML
-    private void handleEditButton() {
+    private void handleCancelRowSelection() {
+        supplierOrdersController.deselectAllRows();
+    }
+
+    @FXML
+    private void handleDeleteSelectedRows() {
 
     }
 
     @FXML
-    private void handleCreateNewOrderButton() {
+    private void handleEditSelectedRows() {
+
+    }
+
+    @FXML
+    private void handleSaveChanges() {
+
+    }
+
+    @FXML
+    private void handleCreateNewOrder() {
 
     }
 

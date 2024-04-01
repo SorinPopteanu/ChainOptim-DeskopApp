@@ -14,6 +14,7 @@
             <VBox>
                 <TableView fx:id="tableView" styleClass="table-view">
                     <columns>
+                        <TableColumn fx:id="selectRowColumn" prefWidth="50"/>
                         <TableColumn text="Order ID" fx:id="orderIdColumn" minWidth="150"/>
                         <TableColumn text="Supplier ID" fx:id="supplierIdColumn" minWidth="150"/>
                         <TableColumn text="Component ID" fx:id="componentIdColumn" minWidth="150"/>
@@ -27,7 +28,6 @@
                 <StackPane fx:id="pageSelectorContainer"/>
             </VBox>
         </ScrollPane>
-        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS" styleClass="page-fallback-container"/>
     </StackPane>
 
 

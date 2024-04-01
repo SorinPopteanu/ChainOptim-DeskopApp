@@ -18,7 +18,7 @@ public class SearchParams {
         sortOption = new SimpleStringProperty("createdAt");
         ascending = new SimpleBooleanProperty(true);
         page = new SimpleIntegerProperty(1);
-        itemsPerPage = new SimpleIntegerProperty(10);
+        itemsPerPage = new SimpleIntegerProperty(3);
     }
 
     public BooleanProperty getAscendingProperty() {

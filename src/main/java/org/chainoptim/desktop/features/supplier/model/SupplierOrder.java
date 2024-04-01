@@ -1,5 +1,7 @@
 package org.chainoptim.desktop.features.supplier.model;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,4 +31,10 @@ public class SupplierOrder {
     private LocalDateTime estimatedDeliveryDate;
     private LocalDateTime deliveryDate;
     private Status status;
+
+    private BooleanProperty selected = new SimpleBooleanProperty(false);
+
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
 }
