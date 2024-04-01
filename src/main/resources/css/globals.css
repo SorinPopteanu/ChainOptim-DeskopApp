@@ -1,4 +1,6 @@
 @import url("sidebar.css");
+@import url("overview.css");
+@import url("organization.css");
 @import url("page-elements.css");
 @import url("buttons.css");
 @import url("forms.css");
@@ -8,8 +10,11 @@
 @import url("table.css");
 @import url("factory-production.css");
 @import url("fallback.css");
-@import url("organization.css");
 @import url("dialogs.css");
 @import url("common-elements.css");
 @import url("scrollbar.css");
 @import url("table-toolbar.css");
+
+.root {
+    -fx-font-family: 'Roboto';
+}

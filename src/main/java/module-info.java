@@ -29,6 +29,8 @@ module org.chainoptim.desktop {
     requires gs.ui.javafx;
     requires org.apache.commons.text;
     requires jdk.jsobject;
+    requires org.java_websocket;
+
 
     opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core;
 
@@ -47,9 +49,19 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.user.dto to com.fasterxml.jackson.databind;
 
     // - Organization
+    opens org.chainoptim.desktop.core.organization.controller to com.fasterxml.jackson.databind, com.google.guice, javafx.fxml;
     opens org.chainoptim.desktop.core.organization.service to com.google.guice;
     opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.organization.dto to com.fasterxml.jackson.databind;
+
+    // - Overview
+    opens org.chainoptim.desktop.core.overview.controller to com.google.guice, javafx.fxml;
+    opens org.chainoptim.desktop.core.overview.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.overview.service to com.google.guice;
+
+    // - Notifications
+    opens org.chainoptim.desktop.core.notification.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.notification.service to com.google.guice;
 
     // Features
     // - Product
@@ -121,6 +133,7 @@ module org.chainoptim.desktop {
 
     // - Confirm Dialogs
     opens org.chainoptim.desktop.shared.confirmdialog.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.shared.confirmdialog.controller to com.fasterxml.jackson.databind, com.google.guice, javafx.fxml;
 
     // - Utils
     opens org.chainoptim.desktop.shared.util.resourceloader to com.google.guice;
@@ -130,7 +143,4 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.shared.search.controller to com.google.guice, javafx.fxml;
 
     exports org.chainoptim.desktop;
-    opens org.chainoptim.desktop.core.organization.controller to com.fasterxml.jackson.databind, com.google.guice, javafx.fxml;
-    opens org.chainoptim.desktop.shared.confirmdialog.controller to com.fasterxml.jackson.databind, com.google.guice, javafx.fxml;
-
 }

@@ -9,7 +9,7 @@
     <!-- Header -->
     <VBox spacing="16" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" style="-fx-background-color: #ffffff;">
         <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
-            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
                 <Label fx:id="warehouseName" styleClass="entity-page-title"/>
                 <Label fx:id="warehouseLocation" styleClass="entity-page-description"/>
             </VBox>

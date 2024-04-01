@@ -7,10 +7,14 @@ import org.chainoptim.desktop.core.abstraction.ThreadRunner;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
+import org.chainoptim.desktop.core.notification.service.NotificationPersistenceServiceImpl;
 import org.chainoptim.desktop.core.organization.service.CustomRoleService;
 import org.chainoptim.desktop.core.organization.service.CustomRoleServiceImpl;
 import org.chainoptim.desktop.core.organization.service.OrganizationService;
 import org.chainoptim.desktop.core.organization.service.OrganizationServiceImpl;
+import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
+import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotServiceImpl;
 import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.core.user.service.UserServiceImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
@@ -77,6 +81,19 @@ public class AppModule extends AbstractModule {
         // - Organization
         bind(OrganizationService.class).to(OrganizationServiceImpl.class);
         bind(CustomRoleService.class).to(CustomRoleServiceImpl.class);
+
+        // - Overview
+        bind(SupplyChainSnapshotService.class).to(SupplyChainSnapshotServiceImpl.class);
+
+        // - Notifications
+        bind(NotificationPersistenceService.class).to(NotificationPersistenceServiceImpl.class);
+//        bind(WebSocketService.class).to(WebSocketServiceImpl.class);
+
+//        try {
+//            bind(WebSocketService.class).toInstance(new WebSocketServiceImpl(new URI("ws://localhost:8080/ws")));
+//        } catch (URISyntaxException e) {
+//            addError(e);
+//        }
 
         // Features
         // - Product

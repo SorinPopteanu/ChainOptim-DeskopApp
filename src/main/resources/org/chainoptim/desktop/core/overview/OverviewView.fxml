@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.core.overview.controller.OverviewController"
+            styleClass="overview-container">
+
+    <VBox fx:id="headerContainer">
+        <Label fx:id="titleLabel" text="Overview" styleClass="overview-page-title"/>
+    </VBox>
+
+    <StackPane fx:id="contentStackPane" style="-fx-padding: 20px 0px;">
+
+        <VBox fx:id="contentContainer" spacing="40">
+            <HBox fx:id="entityCountsHBox">
+                <!-- Counts of organization entities -->
+            </HBox>
+
+            <VBox styleClass="notifications-box">
+                <HBox styleClass="notifications-box-label-container">
+                    <Label fx:id="notificationsLabel" styleClass="notifications-box-label"/>
+                </HBox>
+
+                <VBox fx:id="notificationsVBox" styleClass="notifications-box-content" spacing="16"/>
+            </VBox>
+        </VBox>
+
+        <StackPane fx:id="fallbackContainer"/>
+
+    </StackPane>
+
+</VBox>
