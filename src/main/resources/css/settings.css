@@ -1,17 +1,19 @@
 .settings-tab-container {
-    -fx-padding: 20px 60px;
+    -fx-padding: 20px 40px;
 }
 
 .toggle-button {
-    -fx-background-color: transparent, linear-gradient(#d6d6d6, #d6d6d6), linear-gradient(#dadada, #c0c0c0), linear-gradient(#f2f2f2, #d4d4d4);
+    -fx-background-color: #f3f4f5;
+    -fx-border-color: #d0d0d0;
     -fx-background-radius: 100;
+    -fx-border-radius: 100;
     -fx-padding: 5 10 5 10;
     -fx-text-fill: black;
     -fx-font-weight: bold;
 }
 
 .toggle-button:selected {
-    -fx-background-color: transparent, linear-gradient(#7ebcea, #2f4b8f), linear-gradient(#426ab7, #263e75), linear-gradient(#395cab, #223768);
+    -fx-background-color: #006AEE;
     -fx-text-fill: white;
 }
 
@@ -24,4 +26,17 @@
 .settings-label {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+}
+
+.no-changes-button {
+    -fx-pref-height: 32px;
+    -fx-background-color: #5588DD;
+    -fx-background-radius: 4;
+    -fx-padding: 4px 12px 4px 12px;
+    -fx-border-radius: 4;
+    -fx-text-fill: white;
+    -fx-font-weight: normal;
+    -fx-font-size: 14px;
+    -fx-graphic-text-gap: 8px;
+    -fx-cursor: hand;
 }

@@ -3,6 +3,7 @@ package org.chainoptim.desktop.core.settings.controller;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.context.TenantSettingsContext;
+import org.chainoptim.desktop.core.settings.dto.UpdateUserSettingsDTO;
 import org.chainoptim.desktop.core.settings.model.UserSettings;
 import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -16,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -26,13 +28,18 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class SettingsController implements Initializable {
+public class SettingsController implements Initializable, SettingsListener {
 
+    // Services
     private final UserSettingsService userSettingsService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
+    // Controllers
+    private NotificationSettingsController notificationSettingsController;
+
+    // State
     private User currentUser;
     private UserSettings userSettings;
 
@@ -50,6 +57,10 @@ public class SettingsController implements Initializable {
 
     @FXML
     private Label usernameLabel;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button cancelButton;
 
     @Inject
     public SettingsController(UserSettingsService userSettingsService,
@@ -69,7 +80,9 @@ public class SettingsController implements Initializable {
 
         currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) return;
+
         usernameLabel.setText(currentUser.getUsername());
+        handleSettingsChanged(false);
 
         userSettings = TenantSettingsContext.getCurrentUserSettings();
         if (userSettings == null) {
@@ -120,6 +133,10 @@ public class SettingsController implements Initializable {
             Node content = loader.load();
             DataReceiver<UserSettings> controller = loader.getController();
             controller.setData(userSettings);
+            if (controller instanceof NotificationSettingsController notificationController) {
+                notificationSettingsController = notificationController;
+                notificationSettingsController.setSettingsListener(this);
+            }
             tab.setContent(content);
         } catch (IOException e) {
             e.printStackTrace();
@@ -154,5 +171,54 @@ public class SettingsController implements Initializable {
     private Optional<UserSettings> handleUserSettingsException(Throwable ex) {
         fallbackManager.setErrorMessage("Failed to load user settings.");
         return Optional.empty();
+    }
+
+    @Override
+    public void handleSettingsChanged(boolean haveChanged) {
+        saveButton.setDisable(!haveChanged);
+        saveButton.getStyleClass().setAll(haveChanged ? "standard-write-button" : "no-changes-button");
+        cancelButton.setVisible(haveChanged);
+        cancelButton.setManaged(haveChanged);
+    }
+
+    @FXML
+    public void handleSave() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        UpdateUserSettingsDTO userSettingsDTO = new UpdateUserSettingsDTO(userSettings.getId(), userSettings.getUserId(), userSettings.getNotificationSettings());
+
+        // Save the user settings
+        userSettingsService.saveUserSettings(userSettingsDTO)
+                .thenApply(this::handleSaveResponse)
+                .exceptionally(this::handleSaveException);
+    }
+
+    private Optional<UserSettings> handleSaveResponse(Optional<UserSettings> userSettingsOptional) {
+        Platform.runLater(() -> {
+            if (userSettingsOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to save user settings.");
+                return;
+            }
+            userSettings = userSettingsOptional.get();
+            TenantSettingsContext.setCurrentUserSettings(userSettings);
+
+            fallbackManager.setLoading(false);
+            handleSettingsChanged(false);
+        });
+
+        return userSettingsOptional;
+    }
+
+    private Optional<UserSettings> handleSaveException(Throwable ex) {
+        fallbackManager.setErrorMessage("Failed to save user settings.");
+        return Optional.empty();
+    }
+
+    @FXML
+    private void handleCancel() {
+        // Reselect based on original settings
+        notificationSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings());
+        handleSettingsChanged(false);
     }
 }

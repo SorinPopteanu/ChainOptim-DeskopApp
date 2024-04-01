@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ToggleButton?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.core.settings.controller.NotificationSettingsController"
       prefHeight="400.0" prefWidth="600.0">
 
     <VBox fx:id="contentVBox" styleClass="settings-tab-container">
-        <HBox prefWidth="Infinity">
-            <Label text="Notifications On" styleClass="settings-section-label"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <ToggleButton fx:id="toggleOverallButton" styleClass="toggle-button"/>
-        </HBox>
+        <!-- Overall Settings -->
 
-        <!-- Feature-specific Toggles -->
+        <!-- Feature-specific Settings -->
     </VBox>
 </VBox>

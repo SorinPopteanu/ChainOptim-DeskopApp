@@ -1,10 +1,10 @@
 .standard-write-button {
     -fx-pref-height: 32px;
+    -fx-padding: 4px 12px 4px 12px;
     -fx-background-color: #006AEE;
     -fx-text-fill: white;
     -fx-font-weight: normal;
     -fx-font-size: 14px;
-    -fx-padding: 4px 12px 4px 12px;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
 }
@@ -20,6 +20,19 @@
     -fx-font-weight: normal;
     -fx-font-size: 14px;
     -fx-padding: 4px 12px 4px 12px;
+    -fx-graphic-text-gap: 8px;
+    -fx-cursor: hand;
+}
+
+.standard-cancel-button {
+    -fx-pref-height: 32px;
+    -fx-padding: 4px 12px 4px 12px;
+    -fx-background-color: #eeeeee;
+    -fx-border-color: #d0d0d0;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-font-weight: normal;
+    -fx-font-size: 14px;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
 }

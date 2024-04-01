@@ -47,7 +47,7 @@ public class UserSettingsServiceImpl implements UserSettingsService {
                 });
     }
 
-    public CompletableFuture<Optional<UserSettings>> updateUserSettings(UpdateUserSettingsDTO userSettingsDTO) {
+    public CompletableFuture<Optional<UserSettings>> saveUserSettings(UpdateUserSettingsDTO userSettingsDTO) {
         String routeAddress = "http://localhost:8080/api/v1/user-settings/update";
 
         String jwtToken = TokenManager.getToken();
