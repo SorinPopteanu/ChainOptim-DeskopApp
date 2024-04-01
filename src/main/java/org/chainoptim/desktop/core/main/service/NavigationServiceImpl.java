@@ -79,7 +79,7 @@ public class NavigationServiceImpl implements NavigationService {
 
             Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml"),
 
-            Map.entry("Settings", "/org/chainoptim/desktop/features/settings/SettingsView.fxml")
+            Map.entry("Settings", "/org/chainoptim/desktop/core/settings/SettingsView.fxml")
     );
 
     public void switchView(String viewKey, boolean forward) {

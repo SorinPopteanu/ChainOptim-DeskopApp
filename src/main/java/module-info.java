@@ -64,6 +64,12 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.notification.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.notification.service to com.google.guice;
 
+    // - Settings
+    opens org.chainoptim.desktop.core.settings.controller to com.google.guice, javafx.fxml;
+    opens org.chainoptim.desktop.core.settings.service to com.google.guice;
+    opens org.chainoptim.desktop.core.settings.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.settings.dto to com.fasterxml.jackson.databind;
+
     // Features
     // - Product
     opens org.chainoptim.desktop.features.product.controller to javafx.fxml, com.google.guice;
@@ -113,9 +119,6 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind, javafx.base;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
-
-    // - Settings
-    opens org.chainoptim.desktop.features.settings.controller to javafx.fxml, com.google.guice;
 
     // Shared
     // - Common UI elements

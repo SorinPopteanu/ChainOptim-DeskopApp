@@ -6,11 +6,13 @@ import javafx.scene.layout.StackPane;
 
 import javafx.fxml.FXML;
 import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.notification.controller.NotificationManager;
 import org.chainoptim.desktop.core.notification.model.Notification;
 import org.chainoptim.desktop.core.notification.service.NotificationWebSocketClient;
+import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.UserService;
@@ -24,7 +26,7 @@ import java.util.function.Consumer;
 /*
  * Root controller managing the currently displayed main content
  * through sidebarController and navigationService.
- * It is also responsible for loading the current user details
+ * It is also responsible for loading the current user details, user settings,
  * and starting a WebSocket connection for real-time notifications.
  */
 public class AppController {
@@ -32,6 +34,7 @@ public class AppController {
     private final NavigationService navigationService;
     private final AuthenticationService authenticationService;
     private final UserService userService;
+    private final UserSettingsService userSettingsService;
     private final NotificationManager notificationManager;
 
     @FXML
@@ -44,11 +47,13 @@ public class AppController {
     public AppController(NavigationService navigationService,
                          AuthenticationService authenticationService,
                          UserService userService,
+                         UserSettingsService userSettingsService,
                          NotificationManager notificationManager,
                          SidebarController sidebarController) {
         this.navigationService = navigationService;
         this.authenticationService = authenticationService;
         this.userService = userService;
+        this.userSettingsService = userSettingsService;
         this.notificationManager = notificationManager;
         this.sidebarController = sidebarController;
     }
@@ -83,9 +88,18 @@ public class AppController {
             // Set user to TenantContext for reuse throughout the app
             TenantContext.setCurrentUser(user);
 
+            // Fetch user settings and set them to TenantSettingsContext
+            userSettingsService.getUserSettings(user.getId())
+                    .thenAccept(userSettingsOptional -> {
+                        if (userSettingsOptional.isEmpty()) return;
+                        System.out.println("User settings loaded: " + userSettingsOptional.get());
+                        TenantSettingsContext.setCurrentUserSettings(userSettingsOptional.get());
+                    });
+
             // Start WebSocket connection
             startWebSocket(user);
         });
+
         return userOptional;
     }
 

@@ -16,6 +16,8 @@ import org.chainoptim.desktop.core.organization.service.OrganizationService;
 import org.chainoptim.desktop.core.organization.service.OrganizationServiceImpl;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotServiceImpl;
+import org.chainoptim.desktop.core.settings.service.UserSettingsService;
+import org.chainoptim.desktop.core.settings.service.UserSettingsServiceImpl;
 import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.core.user.service.UserServiceImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
@@ -89,6 +91,9 @@ public class AppModule extends AbstractModule {
 
         // - Notifications
         bind(NotificationPersistenceService.class).to(NotificationPersistenceServiceImpl.class);
+
+        // - Settings
+        bind(UserSettingsService.class).to(UserSettingsServiceImpl.class);
 
         // Features
         // - Product
