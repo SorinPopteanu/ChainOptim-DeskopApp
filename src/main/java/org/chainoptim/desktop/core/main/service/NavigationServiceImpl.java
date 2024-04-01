@@ -48,7 +48,7 @@ public class NavigationServiceImpl implements NavigationService {
     private static final Map<String, Node> viewCache = new HashMap<>();
 
     private final Map<String, String> viewMap = Map.ofEntries(
-            Map.entry("Overview", "/org/chainoptim/desktop/core/main/OverviewView.fxml"),
+            Map.entry("Overview", "/org/chainoptim/desktop/core/overview/OverviewView.fxml"),
 
             Map.entry("Organization", "/org/chainoptim/desktop/core/organization/OrganizationView.fxml"),
             Map.entry("Add-New-Members", "/org/chainoptim/desktop/core/organization/AddNewMembersView.fxml"),

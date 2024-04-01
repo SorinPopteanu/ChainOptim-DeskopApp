@@ -1,0 +1,62 @@
+.overview-container {
+    -fx-padding: 20px 32px 0px 32px;
+}
+
+.overview-page-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 8;
+}
+
+.feature-count-label {
+    -fx-background-color: #f4f5f6;
+    -fx-background-radius: 8 0 0 8;
+    -fx-padding: 4px 12px 4px 12px;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+.badge-container {
+    -fx-border-color: #d3d6d4;
+    -fx-border-radius: 8px;
+}
+
+.count-label {
+    -fx-padding: 4px 8px 4px 8px;
+    -fx-background-radius: 0 8 8 0;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #454545;
+}
+
+/* Notifications */
+.notifications-box {
+    -fx-background-radius: 8;
+    -fx-border-color: #d3d6d4;
+    -fx-border-radius: 8px;
+}
+
+.notifications-box-label-container {
+    -fx-background-color: #f4f5f6;
+    -fx-background-radius: 8 8 0 0;
+    -fx-border-color: #d3d6d4;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-radius: 8 8 0 0;
+}
+
+.notifications-box-label {
+    -fx-padding: 8px 12px;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+.notifications-box-content {
+    -fx-padding: 8px;
+}
+
+.notification-message {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
