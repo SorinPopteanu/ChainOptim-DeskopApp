@@ -1,0 +1,26 @@
+.notification-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8;
+    -fx-border-color: #d3d6d4;
+    -fx-border-radius: 8px;
+    -fx-padding: 8px 16px;
+}
+
+.notification-card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.notification-card-close-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-cursor: hand;
+}
+
+.notification-card-message {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}

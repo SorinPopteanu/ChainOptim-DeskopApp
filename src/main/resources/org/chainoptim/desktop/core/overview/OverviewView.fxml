@@ -23,11 +23,13 @@
                     <Label fx:id="notificationsLabel" styleClass="notifications-box-label"/>
                 </HBox>
 
-                <VBox fx:id="notificationsVBox" styleClass="notifications-box-content" spacing="16"/>
+                <ScrollPane prefHeight="400" fitToWidth="true">
+                    <VBox fx:id="notificationsVBox" styleClass="notifications-box-content" spacing="16"/>
+                </ScrollPane>
             </VBox>
         </VBox>
 
-        <StackPane fx:id="fallbackContainer"/>
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
 
     </StackPane>
 

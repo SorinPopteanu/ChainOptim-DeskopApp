@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.core.notification.controller.NotificationPopupController"
+            prefHeight="400.0" prefWidth="600.0" spacing="10"
+            styleClass="notification-card">
+
+    <HBox>
+        <Label fx:id="titleLabel" styleClass="notification-card-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="closeButton" styleClass="notification-card-close-button"/>
+    </HBox>
+
+    <Label fx:id="messageLabel" styleClass="notification-card-message"/>
+</VBox>

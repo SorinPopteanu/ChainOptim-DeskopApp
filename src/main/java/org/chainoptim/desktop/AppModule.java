@@ -7,6 +7,7 @@ import org.chainoptim.desktop.core.abstraction.ThreadRunner;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.notification.controller.NotificationManager;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceServiceImpl;
 import org.chainoptim.desktop.core.organization.service.CustomRoleService;
@@ -61,6 +62,7 @@ public class AppModule extends AbstractModule {
         bind(FallbackManager.class).in(Singleton.class);
         bind(CurrentSelectionService.class).in(Singleton.class);
         bind(SearchParams.class).in(Singleton.class);
+        bind(NotificationManager.class).in(Singleton.class);
 
         bind(HttpClient.class).toInstance(HttpClient.newHttpClient());
 
@@ -87,13 +89,6 @@ public class AppModule extends AbstractModule {
 
         // - Notifications
         bind(NotificationPersistenceService.class).to(NotificationPersistenceServiceImpl.class);
-//        bind(WebSocketService.class).to(WebSocketServiceImpl.class);
-
-//        try {
-//            bind(WebSocketService.class).toInstance(new WebSocketServiceImpl(new URI("ws://localhost:8080/ws")));
-//        } catch (URISyntaxException e) {
-//            addError(e);
-//        }
 
         // Features
         // - Product
