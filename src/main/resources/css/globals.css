@@ -15,6 +15,7 @@
 @import url("scrollbar.css");
 @import url("table-toolbar.css");
 @import url("notifications.css");
+@import url("settings.css");
 
 .root {
     -fx-font-family: 'Roboto';

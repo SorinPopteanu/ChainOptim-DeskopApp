@@ -2,10 +2,27 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.Label?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.settings.controller.SettingsController"
-            prefHeight="400.0" prefWidth="600.0">
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.core.settings.controller.SettingsController">
 
-    <Label text="Settings"/>
-</AnchorPane>
+    <!-- Header -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+          styleClass="entity-header-container" spacing="8">
+        <Label text="Settings" styleClass="entity-page-title"/>
+        <Label fx:id="usernameLabel" styleClass="entity-page-description"/>
+    </VBox>
+
+    <!-- Content -->
+    <StackPane>
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+            <Tab fx:id="generalTab" text="General"/>
+            <Tab fx:id="accountTab" text="Account"/>
+            <Tab fx:id="notificationTab" text="Notifications"/>
+        </TabPane>
+
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container" visible="false"/>
+    </StackPane>
+</VBox>
