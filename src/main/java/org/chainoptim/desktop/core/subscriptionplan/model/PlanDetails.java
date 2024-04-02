@@ -7,6 +7,8 @@ import lombok.Data;
 @Builder
 public class PlanDetails {
 
+    private int pricePerMonthDollars;
+
     // Organization
     private int maxMembers;
     private int maxRoles;

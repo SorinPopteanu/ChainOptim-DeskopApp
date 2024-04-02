@@ -92,3 +92,10 @@ scroll-pane {
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
 }
+
+/* Subscription Plan */
+.limit-reached-label {
+    -fx-text-fill: #B22222;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}

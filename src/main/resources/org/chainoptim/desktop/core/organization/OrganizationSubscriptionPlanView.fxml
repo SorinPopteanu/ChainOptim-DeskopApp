@@ -15,8 +15,17 @@
         <Button fx:id="changePlanButton"/>
     </HBox>
 
-    <ScrollPane VBox.vgrow="ALWAYS" style="-fx-background-color: white">
-        <GridPane fx:id="planGridPane" VBox.vgrow="ALWAYS" styleClass="grid-pane-container"/>
+    <ScrollPane VBox.vgrow="ALWAYS" style="-fx-background-color: white;">
+        <VBox style="-fx-padding: 10px 60px;" spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Price:" styleClass="column-header"/>
+                <Label fx:id="priceLabel" styleClass="parent-row"/>
+            </HBox>
+
+            <Label text="Feature Limits:" styleClass="column-header"/>
+
+            <GridPane fx:id="planGridPane" VBox.vgrow="ALWAYS" styleClass="grid-pane-container" style=" -fx-padding: 0px 0px 0px 10px;"/>
+        </VBox>
     </ScrollPane>
 
 </VBox>

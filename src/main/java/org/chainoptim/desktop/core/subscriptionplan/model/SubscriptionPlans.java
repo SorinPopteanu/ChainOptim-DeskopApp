@@ -8,9 +8,10 @@ import java.util.Map;
 @Getter
 public class SubscriptionPlans {
 
-    private SubscriptionPlans() {
-    }
+    private SubscriptionPlans() {}
+
     private static final PlanDetails NONE_PLAN = PlanDetails.builder()
+            .pricePerMonthDollars(0)
             .maxMembers(2)
             .maxRoles(2)
             .realTimeNotificationsOn(false)
@@ -36,6 +37,7 @@ public class SubscriptionPlans {
             .build();
 
     private static final PlanDetails BASIC_PLAN = PlanDetails.builder()
+            .pricePerMonthDollars(300)
             .maxMembers(10)
             .maxRoles(10)
             .realTimeNotificationsOn(true)
@@ -61,6 +63,7 @@ public class SubscriptionPlans {
             .build();
 
     private static final PlanDetails PRO_PLAN = PlanDetails.builder()
+            .pricePerMonthDollars(1200)
             .maxMembers(-1) // Unlimited marker
             .maxRoles(-1)
             .realTimeNotificationsOn(true)
