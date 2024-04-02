@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.core.overview.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.notification.model.NotificationUser;
@@ -47,6 +48,7 @@ public class OverviewController implements Initializable {
 
     // State
     private SupplyChainSnapshot snapshot;
+    private SupplyChainSnapshotContext snapshotContext;
 
     // FXML
     @FXML
@@ -75,13 +77,15 @@ public class OverviewController implements Initializable {
                               NavigationService navigationService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
-                              FallbackManager fallbackManager) {
+                              FallbackManager fallbackManager,
+                              SupplyChainSnapshotContext snapshotContext) {
         this.supplyChainSnapshotService = supplyChainSnapshotService;
         this.notificationPersistenceService = notificationPersistenceService;
         this.navigationService = navigationService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
+        this.snapshotContext = snapshotContext;
     }
 
     @Override
@@ -155,6 +159,7 @@ public class OverviewController implements Initializable {
                 return;
             }
             snapshot = snapshotOptional.get();
+            snapshotContext.setSnapshot(snapshot);
             fallbackManager.setLoading(false);
 
             renderEntityCountsVBox(snapshot);

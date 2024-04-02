@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.abstraction.GuiceControllerFactory;
 import org.chainoptim.desktop.core.abstraction.JavaFXThreadRunner;
 import org.chainoptim.desktop.core.abstraction.ThreadRunner;
+import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
@@ -67,6 +68,7 @@ public class AppModule extends AbstractModule {
         bind(FallbackManager.class).in(Singleton.class);
         bind(CurrentSelectionService.class).in(Singleton.class);
         bind(NotificationManager.class).in(Singleton.class);
+        bind(SupplyChainSnapshotContext.class).in(Singleton.class);
 
         bind(HttpClient.class).toInstance(HttpClient.newHttpClient());
 

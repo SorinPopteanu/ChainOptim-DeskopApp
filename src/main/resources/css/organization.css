@@ -65,6 +65,11 @@
     -fx-font-weight: bold;
 }
 
+.child-row {
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
 scroll-pane {
     -fx-background-color: white;
 }

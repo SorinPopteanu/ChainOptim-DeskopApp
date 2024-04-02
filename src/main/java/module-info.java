@@ -39,6 +39,9 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.main.controller to com.google.guice, javafx.fxml;
     opens org.chainoptim.desktop.core.main.service to com.google.guice, javafx.fxml;
 
+    // - Context
+    opens org.chainoptim.desktop.core.context to com.google.guice;
+
     // - Abstraction
     opens org.chainoptim.desktop.core.abstraction to com.google.guice, javafx.fxml;
 
@@ -53,6 +56,9 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.organization.service to com.google.guice;
     opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.organization.dto to com.fasterxml.jackson.databind;
+
+    // - Subscription Plan
+    opens org.chainoptim.desktop.core.subscriptionplan.model to com.google.guice, com.fasterxml.jackson.databind;
 
     // - Overview
     opens org.chainoptim.desktop.core.overview.controller to com.google.guice, javafx.fxml;

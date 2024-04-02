@@ -261,6 +261,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
             Node node;
             if (col == 0) {
                 node = new Label(feature);
+                node.getStyleClass().setAll("child-row");
             } else {
                 boolean hasPermission = getPermissionByColumnIndex(featurePermissions, col - 1);
                 CheckBox checkBox = new CheckBox();
@@ -318,7 +319,6 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
 
     // - Edit
     private void addEditButton(int rowIndex) {
-        System.out.println("Adding edit button to row " + rowIndex);
         Button editButton = new Button();
         styleEditButton(editButton);
 
