@@ -3,19 +3,16 @@ package org.chainoptim.desktop.features.factory.controller;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
-import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
@@ -24,9 +21,7 @@ import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -34,16 +29,26 @@ import java.util.ResourceBundle;
 
 public class FactoriesController implements Initializable {
 
+    // Services
     private final FactoryService factoryService;
-    private final NavigationServiceImpl navigationService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
-    private final FallbackManager fallbackManager;
 
-    @FXML
+    // State
+    private final SearchParams searchParams;
+    private final FallbackManager fallbackManager;
+    private long totalCount;
+    private final Map<String, String> sortOptions = Map.of(
+            "createdAt", "Created At",
+            "updatedAt", "Updated At"
+    );
+
+    // Controllers
     private ListHeaderController headerController;
-    @FXML
     private PageSelectorController pageSelectorController;
+
+    // FXML
     @FXML
     private ScrollPane factoriesScrollPane;
     @FXML
@@ -55,16 +60,10 @@ public class FactoriesController implements Initializable {
     @FXML
     private StackPane headerContainer;
 
-    private final SearchParams searchParams;
-    private final Map<String, String> sortOptions = Map.of(
-            "createdAt", "Created At",
-            "updatedAt", "Updated At"
-    );
-    private long totalCount;
 
     @Inject
     public FactoriesController(FactoryService factoryService,
-                              NavigationServiceImpl navigationService,
+                              NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
                               CommonViewsLoader commonViewsLoader,
                               FallbackManager fallbackManager,
@@ -81,7 +80,7 @@ public class FactoriesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resourceBundle) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader("Factories", "/img/industry-solid.png", sortOptions, this::loadFactories, "Factory", "Create-Factory");
+        headerController.initializeHeader(searchParams, "Factories", "/img/industry-solid.png", sortOptions, this::loadFactories, "Factory", "Create-Factory");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadFactories();
@@ -117,8 +116,7 @@ public class FactoriesController implements Initializable {
 
         factoryService.getFactoriesByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleFactoryResponse)
-                .exceptionally(this::handleFactoryException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+                .exceptionally(this::handleFactoryException);
     }
 
     private Optional<PaginatedResults<Factory>> handleFactoryResponse(Optional<PaginatedResults<Factory>> factoriesOptional) {
@@ -128,20 +126,21 @@ public class FactoriesController implements Initializable {
                 return;
             }
             PaginatedResults<Factory> paginatedResults = factoriesOptional.get();
+            fallbackManager.setLoading(false);
+
+            totalCount = paginatedResults.getTotalCount();
+            pageSelectorController.initialize(searchParams, totalCount);
 
             factoriesVBox.getChildren().clear();
-            totalCount = paginatedResults.getTotalCount();
-
-            if (!paginatedResults.results.isEmpty()) {
-                for (Factory factory : paginatedResults.results) {
-                    loadFactoryCardUI(factory);
-                    Platform.runLater(() -> pageSelectorController.initialize(totalCount));
-                }
-                fallbackManager.setNoResults(false);
-            } else {
+            if (paginatedResults.results.isEmpty()) {
                 fallbackManager.setNoResults(true);
+                return;
             }
 
+            for (Factory factory : paginatedResults.results) {
+                loadFactoryCardUI(factory);
+            }
+            fallbackManager.setNoResults(false);
         });
         return factoriesOptional;
     }

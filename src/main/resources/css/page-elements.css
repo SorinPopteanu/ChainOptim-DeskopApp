@@ -1,4 +1,3 @@
-/* Everything related to the main stage: */
 .main-container {
     -fx-background-color: #ffffff;
 }
@@ -9,7 +8,6 @@
     -fx-spacing: 20px;
 }
 
-/* Everything related to pagination: */
 .pagination {
     -fx-padding: 20px;
     -fx-page-information-visible: false;
@@ -43,9 +41,6 @@
     -fx-text-fill: white;
 }
 
-/* Just for tests: */
 .test {
     -fx-background-color: #efb3b3;
 }
-
-/* Select Element */

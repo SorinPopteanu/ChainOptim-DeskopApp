@@ -3,7 +3,6 @@ package org.chainoptim.desktop.features.warehouse.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
-import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;

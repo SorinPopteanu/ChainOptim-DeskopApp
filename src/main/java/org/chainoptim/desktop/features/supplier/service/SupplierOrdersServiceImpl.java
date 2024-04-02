@@ -5,7 +5,7 @@ import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.supplier.dto.CreateSupplierOrderDTO;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -54,7 +54,7 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
 
     public CompletableFuture<Optional<PaginatedResults<SupplierOrder>>> getSuppliersBySupplierIdAdvanced(
             Integer supplierId,
-            SearchParams searchParams
+            SearchParamsImpl searchParams
     ) {
         String routeAddress = "http://localhost:8080/api/v1/supplier-orders/organization/advanced/" + supplierId.toString()
                 + "?searchQuery=" + searchParams.getSearchQuery()

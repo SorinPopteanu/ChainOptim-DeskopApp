@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.shared.table;
 
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
 import com.google.inject.Inject;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -14,13 +14,13 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-import java.util.HashMap;
+
 import java.util.Map;
 import java.util.Objects;
 
 public class TableToolbarController {
 
-    private final SearchParams searchParams;
+    private final SearchParamsImpl searchParams;
     private final NavigationService navigationService;
 
     @FXML
@@ -57,7 +57,7 @@ public class TableToolbarController {
 
     @Inject
     public TableToolbarController(
-            SearchParams searchParams,
+            SearchParamsImpl searchParams,
             NavigationService navigationService
     ) {
         this.searchParams = searchParams;

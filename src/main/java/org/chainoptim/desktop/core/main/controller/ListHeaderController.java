@@ -1,7 +1,6 @@
 package org.chainoptim.desktop.core.main.controller;
 
 import com.google.inject.Inject;
-import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
@@ -20,8 +19,8 @@ import java.util.Objects;
 
 public class ListHeaderController {
 
-    private final SearchParams searchParams;
     private final NavigationService navigationService;
+    private SearchParams searchParams;
     private String createNewItem;
 
     @FXML
@@ -48,17 +47,17 @@ public class ListHeaderController {
 
     @Inject
     public ListHeaderController(
-            SearchParams searchParams,
             NavigationService navigationService
     ) {
-        this.searchParams = searchParams;
         this.navigationService = navigationService;
     }
 
-    public void initializeHeader(String titleText, String titleIconPath,
+    public void initializeHeader(SearchParams searchParams,
+                                 String titleText, String titleIconPath,
                                  Map<String, String> sortOptionsMap,
                                  Runnable refreshAction,
                                  String createNewItemButtonText, String createNewItem) {
+        this.searchParams = searchParams;
         this.sortOptionsMap = sortOptionsMap;
         setTitle(titleText, titleIconPath);
         setSearchButton();

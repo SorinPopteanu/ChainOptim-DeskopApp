@@ -3,7 +3,7 @@ package org.chainoptim.desktop.features.client.controller;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
-import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
@@ -30,17 +30,25 @@ import java.util.ResourceBundle;
 
 public class ClientsController implements Initializable {
 
+    // Services
     private final ClientService clientService;
-    private final NavigationServiceImpl navigationService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+
+    // State
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
+    private long totalCount;
+    private final Map<String, String> sortOptions = Map.of(
+            "createdAt", "Created At",
+            "updatedAt", "Updated At"
+    );
 
-    @FXML
+    // Controllers
     private ListHeaderController headerController;
-    @FXML
     private PageSelectorController pageSelectorController;
+
     @FXML
     private ScrollPane clientsScrollPane;
     @FXML
@@ -52,16 +60,9 @@ public class ClientsController implements Initializable {
     @FXML
     private StackPane pageSelectorContainer;
 
-    private long totalCount;
-
-    private final Map<String, String> sortOptions = Map.of(
-            "createdAt", "Created At",
-            "updatedAt", "Updated At"
-    );
-
     @Inject
     public ClientsController(ClientService clientService,
-                             NavigationServiceImpl navigationService,
+                             NavigationService navigationService,
                              CurrentSelectionService currentSelectionService,
                              CommonViewsLoader commonViewsLoader,
                              FallbackManager fallbackManager,
@@ -77,7 +78,7 @@ public class ClientsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader("Clients", "/img/truck-arrow-right-solid.png", sortOptions, this::loadClients, "Client", "Create-Client");
+        headerController.initializeHeader(searchParams, "Clients", "/img/truck-arrow-right-solid.png", sortOptions, this::loadClients, "Client", "Create-Client");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadClients();
@@ -112,29 +113,31 @@ public class ClientsController implements Initializable {
 
         clientService.getClientsByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleClientResponse)
-                .exceptionally(this::handleClientException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+                .exceptionally(this::handleClientException);
     }
 
     private Optional<PaginatedResults<Client>> handleClientResponse(Optional<PaginatedResults<Client>> clientsOptional) {
         Platform.runLater(() -> {
-           if (clientsOptional.isEmpty()) {
+            if (clientsOptional.isEmpty()) {
                fallbackManager.setErrorMessage("Failed to load clients.");
                return;
-           }
-           clientsVBox.getChildren().clear();
-           PaginatedResults<Client> paginatedResults = clientsOptional.get();
-           totalCount = paginatedResults.getTotalCount();
+            }
+            PaginatedResults<Client> paginatedResults = clientsOptional.get();
+            fallbackManager.setLoading(false);
 
-           if (!paginatedResults.results.isEmpty()) {
-               for (Client client : paginatedResults.results) {
-                   loadClientCardUI(client);
-                   Platform.runLater(() -> pageSelectorController.initialize(totalCount));
-               }
-               fallbackManager.setNoResults(false);
-           } else {
-               fallbackManager.setNoResults(true);
-           }
+            totalCount = paginatedResults.getTotalCount();
+            pageSelectorController.initialize(searchParams, totalCount);
+
+            clientsVBox.getChildren().clear();
+            if (paginatedResults.results.isEmpty()) {
+                fallbackManager.setNoResults(true);
+                return;
+            }
+
+            for (Client client : paginatedResults.results) {
+                loadClientCardUI(client);
+            }
+            fallbackManager.setNoResults(false);
         });
         return clientsOptional;
     }

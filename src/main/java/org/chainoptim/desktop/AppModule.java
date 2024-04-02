@@ -44,6 +44,7 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
 import org.chainoptim.desktop.shared.features.location.service.LocationServiceImpl;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoaderImpl;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -65,7 +66,6 @@ public class AppModule extends AbstractModule {
         bind(NavigationServiceImpl.class).asEagerSingleton();
         bind(FallbackManager.class).in(Singleton.class);
         bind(CurrentSelectionService.class).in(Singleton.class);
-        bind(SearchParams.class).in(Singleton.class);
         bind(NotificationManager.class).in(Singleton.class);
 
         bind(HttpClient.class).toInstance(HttpClient.newHttpClient());
@@ -136,5 +136,8 @@ public class AppModule extends AbstractModule {
 
         // - Resource Loading
         bind(CommonViewsLoader.class).to(CommonViewsLoaderImpl.class);
+
+        // - Search
+        bind(SearchParams.class).to(SearchParamsImpl.class);
     }
 }

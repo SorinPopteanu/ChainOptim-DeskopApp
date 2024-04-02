@@ -3,7 +3,7 @@ package org.chainoptim.desktop.features.supplier.controller;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
-import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
@@ -29,17 +29,26 @@ import java.util.ResourceBundle;
 
 public class SuppliersController implements Initializable {
 
+    // Services
     private final SupplierService supplierService;
-    private final NavigationServiceImpl navigationService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+
+    // State
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
+    private long totalCount;
+    private final Map<String, String> sortOptions = Map.of(
+            "createdAt", "Created At",
+            "updatedAt", "Updated At"
+    );
 
-    @FXML
+    // Controllers
     private ListHeaderController headerController;
-    @FXML
     private PageSelectorController pageSelectorController;
+
+    // FXML
     @FXML
     private ScrollPane suppliersScrollPane;
     @FXML
@@ -51,16 +60,9 @@ public class SuppliersController implements Initializable {
     @FXML
     private StackPane pageSelectorContainer;
 
-    private long totalCount;
-
-    private final Map<String, String> sortOptions = Map.of(
-            "createdAt", "Created At",
-            "updatedAt", "Updated At"
-    );
-
     @Inject
     public SuppliersController(SupplierService supplierService,
-                               NavigationServiceImpl navigationService,
+                               NavigationService navigationService,
                                CurrentSelectionService currentSelectionService,
                                CommonViewsLoader commonViewsLoader,
                                FallbackManager fallbackManager,
@@ -76,7 +78,7 @@ public class SuppliersController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader("Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, this::loadSuppliers, "Supplier", "Create-Supplier");
+        headerController.initializeHeader(searchParams, "Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, this::loadSuppliers, "Supplier", "Create-Supplier");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadSuppliers();
@@ -111,29 +113,31 @@ public class SuppliersController implements Initializable {
 
         supplierService.getSuppliersByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleSupplierResponse)
-                .exceptionally(this::handleSupplierException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+                .exceptionally(this::handleSupplierException);
     }
 
     private Optional<PaginatedResults<Supplier>> handleSupplierResponse(Optional<PaginatedResults<Supplier>> suppliersOptional) {
         Platform.runLater(() -> {
-           if (suppliersOptional.isEmpty()) {
+            if (suppliersOptional.isEmpty()) {
                fallbackManager.setErrorMessage("Failed to load suppliers.");
                return;
-           }
-           suppliersVBox.getChildren().clear();
-           PaginatedResults<Supplier> paginatedResults = suppliersOptional.get();
-           totalCount = paginatedResults.getTotalCount();
+            }
+            PaginatedResults<Supplier> paginatedResults = suppliersOptional.get();
+            fallbackManager.setLoading(false);
 
-           if (!paginatedResults.results.isEmpty()) {
-               for (Supplier supplier : paginatedResults.results) {
-                   loadSupplierCardUI(supplier);
-                   Platform.runLater(() -> pageSelectorController.initialize(totalCount));
-               }
-               fallbackManager.setNoResults(false);
-           } else {
-               fallbackManager.setNoResults(true);
-           }
+            totalCount = paginatedResults.getTotalCount();
+            pageSelectorController.initialize(searchParams, totalCount);
+
+            suppliersVBox.getChildren().clear();
+            if (paginatedResults.results.isEmpty()) {
+                fallbackManager.setNoResults(true);
+                return;
+            }
+
+            for (Supplier supplier : paginatedResults.results) {
+                loadSupplierCardUI(supplier);
+            }
+            fallbackManager.setNoResults(false);
         });
         return suppliersOptional;
     }

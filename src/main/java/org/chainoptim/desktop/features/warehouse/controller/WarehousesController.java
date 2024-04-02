@@ -3,7 +3,7 @@ package org.chainoptim.desktop.features.warehouse.controller;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
-import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
@@ -30,17 +30,27 @@ import java.util.ResourceBundle;
 
 public class WarehousesController implements Initializable {
 
+    // Services
     private final WarehouseService warehouseService;
-    private final NavigationServiceImpl navigationService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+
+    // Settings
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
+    private long totalCount;
 
-    @FXML
+    private final Map<String, String> sortOptions = Map.of(
+            "createdAt", "Created At",
+            "updatedAt", "Updated At"
+    );
+
+    // Controllers
     private ListHeaderController headerController;
-    @FXML
     private PageSelectorController pageSelectorController;
+
+    // FXML
     @FXML
     private ScrollPane warehousesScrollPane;
     @FXML
@@ -52,16 +62,10 @@ public class WarehousesController implements Initializable {
     @FXML
     private StackPane fallbackContainer;
 
-    private long totalCount;
-
-    private final Map<String, String> sortOptions = Map.of(
-            "createdAt", "Created At",
-            "updatedAt", "Updated At"
-    );
 
     @Inject
     public WarehousesController(WarehouseService warehouseService,
-                               NavigationServiceImpl navigationService,
+                               NavigationService navigationService,
                                CurrentSelectionService currentSelectionService,
                                CommonViewsLoader commonViewsLoader,
                                FallbackManager fallbackManager,
@@ -75,11 +79,10 @@ public class WarehousesController implements Initializable {
         this.searchParams = searchParams;
     }
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader("Warehouses", "/img/warehouse-solid.png", sortOptions, this::loadWarehouses, "Warehouse", "Create-Warehouse");
+        headerController.initializeHeader(searchParams, "Warehouses", "/img/warehouse-solid.png", sortOptions, this::loadWarehouses, "Warehouse", "Create-Warehouse");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadWarehouses();
@@ -114,8 +117,7 @@ public class WarehousesController implements Initializable {
 
         warehouseService.getWarehousesByOrganizationIdAdvanced(organizationId, searchParams)
                 .thenApply(this::handleWarehouseResponse)
-                .exceptionally(this::handleWarehouseException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+                .exceptionally(this::handleWarehouseException);
     }
 
     private Optional<PaginatedResults<Warehouse>> handleWarehouseResponse(Optional<PaginatedResults<Warehouse>> warehousesOptional) {
@@ -124,20 +126,22 @@ public class WarehousesController implements Initializable {
                 fallbackManager.setErrorMessage("Failed to load warehouses. ");
                 return;
             }
-            warehousesVBox.getChildren().clear();
             PaginatedResults<Warehouse> paginatedResults = warehousesOptional.get();
-            totalCount = paginatedResults.getTotalCount();
+            fallbackManager.setLoading(false);
 
-            if(!paginatedResults.results.isEmpty()) {
-                for (Warehouse warehouse : paginatedResults.results) {
-                    loadWarehouseCardUI(warehouse);
-                    Platform.runLater(() -> pageSelectorController.initialize(totalCount));
-                }
-                fallbackManager.setNoResults(false);
-            } else {
+            totalCount = paginatedResults.getTotalCount();
+            pageSelectorController.initialize(searchParams, totalCount);
+
+            warehousesVBox.getChildren().clear();
+            if(paginatedResults.results.isEmpty()) {
                 fallbackManager.setNoResults(true);
+                return;
             }
 
+            for (Warehouse warehouse : paginatedResults.results) {
+                loadWarehouseCardUI(warehouse);
+            }
+            fallbackManager.setNoResults(false);
         });
         return warehousesOptional;
     }

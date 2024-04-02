@@ -11,7 +11,7 @@ import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -43,7 +43,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private final ControllerFactory controllerFactory;
     private final CurrentSelectionService currentSelectionService;
     private final NavigationServiceImpl navigationService;
-    private final SearchParams searchParams;
+    private final SearchParamsImpl searchParams;
 
 //    private List<SupplierOrder> supplierOrders;
     private Supplier supplier;
@@ -88,7 +88,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                                     FallbackManager fallbackManager,
                                     FXMLLoaderService fxmlLoaderService,
                                     ControllerFactory controllerFactory,
-                                    SearchParams searchParams) {
+                                    SearchParamsImpl searchParams) {
         this.supplierOrdersService = supplierOrdersService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
@@ -199,7 +199,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                     System.out.println("Supplier order: " + supplierOrder);
                     bindDataToTableView(supplierOrder);
                 }
-                Platform.runLater(() -> pageSelectorController.initialize(totalRowsCount));
+                Platform.runLater(() -> pageSelectorController.initialize(searchParams, totalRowsCount));
                 fallbackManager.setNoResults(false);
             } else {
                 fallbackManager.setNoResults(true);

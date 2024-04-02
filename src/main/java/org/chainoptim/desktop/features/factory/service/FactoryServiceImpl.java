@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.factory.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.factory.dto.FactoriesSearchDTO;
 import org.chainoptim.desktop.features.factory.model.Factory;
@@ -8,6 +7,7 @@ import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
