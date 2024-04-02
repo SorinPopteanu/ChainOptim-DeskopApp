@@ -1,17 +1,5 @@
 package org.chainoptim.desktop.features.client.controller;
 
-import com.google.inject.Inject;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
@@ -23,9 +11,18 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
-import java.io.IOException;
+import com.google.inject.Inject;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -36,8 +33,7 @@ public class ClientsController implements Initializable {
     private final ClientService clientService;
     private final NavigationServiceImpl navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
 
@@ -67,71 +63,32 @@ public class ClientsController implements Initializable {
     public ClientsController(ClientService clientService,
                              NavigationServiceImpl navigationService,
                              CurrentSelectionService currentSelectionService,
-                             FXMLLoaderService fxmlLoaderService,
-                             ControllerFactory controllerFactory,
+                             CommonViewsLoader commonViewsLoader,
                              FallbackManager fallbackManager,
-                             SearchParams searchParams
-   ) {
+                             SearchParams searchParams) {
         this.clientService = clientService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
         this.searchParams = searchParams;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initializeHeader();
-        loadFallbackManager();
+        headerController = commonViewsLoader.loadListHeader(headerContainer);
+        headerController.initializeHeader("Clients", "/img/truck-arrow-right-solid.png", sortOptions, this::loadClients, "Client", "Create-Client");
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadClients();
-        initializePageSelector();
-    }
-
-    private void initializeHeader() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node headerView = loader.load();
-            headerContainer.getChildren().add(headerView);
-            headerController = loader.getController();
-            headerController.initializeHeader("Clients", "/img/truck-arrow-right-solid.png", sortOptions, this::loadClients, "Client", "Create-Client");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadFallbackManager() {
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
-    private void initializePageSelector() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node pageSelectorView = loader.load();
-            pageSelectorContainer.getChildren().add(pageSelectorView);
-            pageSelectorController = loader.getController();
-            searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadClients());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
     }
 
     private void setUpListeners() {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadClients());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadClients());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadClients());
+        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadClients());
 
         // Listen to empty fallback state
         fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
@@ -216,12 +173,5 @@ public class ClientsController implements Initializable {
 
         navigationService.switchView("Client?id=" + clientId, true);
     }
-
-
-
-
-
-
-
 }
 

@@ -1,26 +1,21 @@
 package org.chainoptim.desktop.features.client.controller;
 
-import com.google.inject.Inject;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.layout.StackPane;
-import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
-import org.chainoptim.desktop.shared.util.DataReceiver;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
-import java.io.IOException;
+import com.google.inject.Inject;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.StackPane;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -30,8 +25,7 @@ public class ClientController implements Initializable {
     private final ClientService clientService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
     private final FallbackManager fallbackManager;
 
     private Client client;
@@ -57,20 +51,18 @@ public class ClientController implements Initializable {
     public ClientController(ClientService clientService,
                             NavigationService navigationService,
                             CurrentSelectionService currentSelectionService,
-                            FXMLLoaderService fxmlLoaderService,
-                            ControllerFactory controllerFactory,
+                            CommonViewsLoader commonViewsLoader,
                             FallbackManager fallbackManager) {
         this.clientService = clientService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
 
         Integer clientId = currentSelectionService.getSelectedId();
@@ -82,34 +74,25 @@ public class ClientController implements Initializable {
         }
     }
 
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
     private void setupListeners() {
         overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
+                commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
             }
         });
         ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
-                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/client/ClientOrdersView.fxml", this.client);
+                commonViewsLoader.loadTabContent(ordersTab, "/org/chainoptim/desktop/features/client/ClientOrdersView.fxml", this.client);
             }
         });
         shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/client/ClientShipmentsView.fxml", this.client);
+                commonViewsLoader.loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/client/ClientShipmentsView.fxml", this.client);
             }
         });
         evaluationTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && evaluationTab.getContent() == null) {
-                loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/client/ClientEvaluationView.fxml", this.client);
+                commonViewsLoader.loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/client/ClientEvaluationView.fxml", this.client);
             }
         });
 
@@ -137,6 +120,7 @@ public class ClientController implements Initializable {
                 return;
             }
             this.client = clientOptional.get();
+
             clientName.setText(client.getName());
             if (client.getLocation() != null) {
                 clientLocation.setText(client.getLocation().getFormattedLocation());
@@ -145,7 +129,7 @@ public class ClientController implements Initializable {
             }
 
             // Load overview tab
-            loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
+            commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
         });
 
         return clientOptional;
@@ -154,19 +138,6 @@ public class ClientController implements Initializable {
     private Optional<Client> handleClientException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load client."));
         return Optional.empty();
-    }
-
-    private void loadTabContent(Tab tab, String fxmlFilepath, Client client) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
-            loader.setControllerFactory(MainApplication.injector::getInstance);
-            Node content = loader.load();
-            DataReceiver<Client> controller = loader.getController();
-            controller.setData(client);
-            tab.setContent(content);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @FXML

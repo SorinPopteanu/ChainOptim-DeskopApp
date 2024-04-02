@@ -1,28 +1,21 @@
 package org.chainoptim.desktop.features.warehouse.controller;
 
+import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.features.warehouse.model.Warehouse;
+import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
+import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
+
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
-import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
-import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
-import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.features.supplier.model.Supplier;
-import org.chainoptim.desktop.features.supplier.service.SupplierService;
-import org.chainoptim.desktop.features.warehouse.model.Warehouse;
-import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
-import org.chainoptim.desktop.shared.fallback.FallbackManager;
-import org.chainoptim.desktop.shared.util.DataReceiver;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -31,8 +24,7 @@ public class WarehouseController implements Initializable {
     private final WarehouseService warehouseService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
     private final FallbackManager fallbackManager;
 
     private Warehouse warehouse;
@@ -54,20 +46,18 @@ public class WarehouseController implements Initializable {
     public WarehouseController(WarehouseService warehouseService,
                               NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
-                              FXMLLoaderService fxmlLoaderService,
-                              ControllerFactory controllerFactory,
+                              CommonViewsLoader commonViewsLoader,
                               FallbackManager fallbackManager) {
         this.warehouseService = warehouseService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
 
         Integer warehouseId = currentSelectionService.getSelectedId();
@@ -79,24 +69,15 @@ public class WarehouseController implements Initializable {
         }
     }
 
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
     private void setupListeners() {
         overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
+                commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
             }
         });
         inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
-                loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", this.warehouse);
+                commonViewsLoader.loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", this.warehouse);
             }
         });
 
@@ -128,7 +109,7 @@ public class WarehouseController implements Initializable {
             warehouseName.setText(warehouse.getName());
             warehouseLocation.setText(warehouse.getLocation().getFormattedLocation());
 
-            loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
+            commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
         });
 
         return warehouseOptional;
@@ -137,19 +118,6 @@ public class WarehouseController implements Initializable {
     private Optional<Warehouse> handleWarehouseException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load warehouse."));
         return Optional.empty();
-    }
-
-    private void loadTabContent(Tab tab, String fxmlFilepath, Warehouse warehouse) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
-            loader.setControllerFactory(MainApplication.injector::getInstance);
-            Node content = loader.load();
-            DataReceiver<Warehouse> controller = loader.getController();
-            controller.setData(warehouse);
-            tab.setContent(content);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @FXML

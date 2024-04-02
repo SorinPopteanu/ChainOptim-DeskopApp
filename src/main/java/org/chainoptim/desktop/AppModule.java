@@ -44,6 +44,8 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
 import org.chainoptim.desktop.shared.features.location.service.LocationServiceImpl;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoaderImpl;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderServiceImpl;
 
@@ -131,5 +133,8 @@ public class AppModule extends AbstractModule {
         // Shared
         // - Location
         bind(LocationService.class).to(LocationServiceImpl.class);
+
+        // - Resource Loading
+        bind(CommonViewsLoader.class).to(CommonViewsLoaderImpl.class);
     }
 }

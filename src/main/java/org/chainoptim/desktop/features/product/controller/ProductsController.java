@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.product.controller;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
@@ -12,19 +11,16 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -33,8 +29,7 @@ public class ProductsController implements Initializable {
     private final ProductService productService;
     private final NavigationServiceImpl navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
 
@@ -64,68 +59,26 @@ public class ProductsController implements Initializable {
     public ProductsController(ProductService productService,
                               NavigationServiceImpl navigationService,
                               CurrentSelectionService currentSelectionService,
-                              FXMLLoaderService fxmlLoaderService,
-                              ControllerFactory controllerFactory,
+                              CommonViewsLoader commonViewsLoader,
                               FallbackManager fallbackManager,
                               SearchParams searchParams
     ) {
         this.productService = productService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
         this.searchParams = searchParams;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initializeHeader();
-        loadFallbackManager();
+        headerController = commonViewsLoader.loadListHeader(headerContainer);
+        headerController.initializeHeader("Products", "/img/box-solid.png", sortOptions, this::loadProducts, "Product", "Create-Product");
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadProducts();
-        initializePageSelector();
-    }
-
-    private void initializeHeader() {
-        // Load view into headerContainer and initialize it with appropriate values
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node headerView = loader.load();
-            headerContainer.getChildren().add(headerView);
-            headerController = loader.getController();
-            headerController.initializeHeader("Products", "/img/box-solid.png", sortOptions, this::loadProducts, "Product", "Create-Product");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
-    private void initializePageSelector() {
-        // Load view into pageSelectorContainer and initialize it with appropriate values
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node pageSelectorView = loader.load();
-            pageSelectorContainer.getChildren().add(pageSelectorView);
-            pageSelectorController = loader.getController();
-            searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadProducts());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
     }
 
     private void setUpListeners() {
@@ -133,6 +86,7 @@ public class ProductsController implements Initializable {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadProducts());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadProducts());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadProducts());
+        searchParams.getPageProperty().addListener((obs, oldPage, newPage) -> loadProducts());
 
         // Listen to empty fallback state
         fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {

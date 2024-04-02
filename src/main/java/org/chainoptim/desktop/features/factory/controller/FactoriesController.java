@@ -23,6 +23,7 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import java.io.IOException;
@@ -36,8 +37,7 @@ public class FactoriesController implements Initializable {
     private final FactoryService factoryService;
     private final NavigationServiceImpl navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
     private final FallbackManager fallbackManager;
 
     @FXML
@@ -66,69 +66,26 @@ public class FactoriesController implements Initializable {
     public FactoriesController(FactoryService factoryService,
                               NavigationServiceImpl navigationService,
                               CurrentSelectionService currentSelectionService,
-                              FXMLLoaderService fxmlLoaderService,
-                              ControllerFactory controllerFactory,
+                              CommonViewsLoader commonViewsLoader,
                               FallbackManager fallbackManager,
                               SearchParams searchParams
     ) {
         this.factoryService = factoryService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
         this.searchParams = searchParams;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resourceBundle) {
-        initializeHeader();
-        loadFallbackManager();
+        headerController = commonViewsLoader.loadListHeader(headerContainer);
+        headerController.initializeHeader("Factories", "/img/industry-solid.png", sortOptions, this::loadFactories, "Factory", "Create-Factory");
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadFactories();
-        initializePageSelector();
-    }
-
-    private void initializeHeader() {
-        // Load view into headerContainer and initialize it with appropriate values
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node headerView = loader.load();
-            headerContainer.getChildren().add(headerView);
-            headerController = loader.getController();
-            headerController.initializeHeader("Factories", "/img/industry-solid.png", sortOptions, this::loadFactories, "Factory", "Create-Factory");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
-    private void initializePageSelector() {
-        // Load view into pageSelectorContainer and initialize it with appropriate values
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node pageSelectorView = loader.load();
-            pageSelectorContainer.getChildren().add(pageSelectorView);
-            pageSelectorController = loader.getController();
-
-            searchParams.getPageProperty().addListener((obs, oldPage, newPage) -> loadFactories());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
     }
 
     private void setUpListeners() {
@@ -136,6 +93,7 @@ public class FactoriesController implements Initializable {
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadFactories());
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadFactories());
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadFactories());
+        searchParams.getPageProperty().addListener((obs, oldPage, newPage) -> loadFactories());
 
         // Listen to empty fallback state
         fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
@@ -169,8 +127,9 @@ public class FactoriesController implements Initializable {
                 fallbackManager.setErrorMessage("Failed to load factories.");
                 return;
             }
-            factoriesVBox.getChildren().clear();
             PaginatedResults<Factory> paginatedResults = factoriesOptional.get();
+
+            factoriesVBox.getChildren().clear();
             totalCount = paginatedResults.getTotalCount();
 
             if (!paginatedResults.results.isEmpty()) {
