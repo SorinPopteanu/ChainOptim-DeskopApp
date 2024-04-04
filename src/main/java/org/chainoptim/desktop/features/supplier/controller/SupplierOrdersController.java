@@ -306,6 +306,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         tableToolbarController.getEditSelectedRowsButton().setVisible(false);
         tableToolbarController.getSaveChangesButton().setVisible(true);
         selectRowColumn.setEditable(false);
+
+        
         quantityColumn.setCellFactory(column -> new TextFieldTableCell<SupplierOrder, Float>(new FloatStringConverter()) {
             private TextField textField;
             private Float initialValue;
@@ -364,6 +366,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         });
         quantityColumn.setEditable(true);
 
+//        quantityColumn.setCellFactory(column -> new EditableSpinnerTableCell<SupplierOrder, Float>(new FloatStringConverter()));
 //        tableView.getSelectionModel().getSelectedItems().forEach(item -> {
 //            if (item != null) {
 //                int index = tableView.getItems().indexOf(item);
@@ -373,6 +376,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 //                }
 //            }
 //        });
+//        quantityColumn.setEditable(true);
 
 
     }
