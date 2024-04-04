@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.supplier.controller;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
@@ -10,17 +9,14 @@ import org.chainoptim.desktop.features.supplier.service.SupplierService;
 import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -31,8 +27,7 @@ public class UpdateSupplierController implements Initializable {
     private final SupplierWriteService supplierWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
     private final FallbackManager fallbackManager;
 
     private Supplier supplier;
@@ -53,46 +48,22 @@ public class UpdateSupplierController implements Initializable {
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
             FallbackManager fallbackManager,
-            FXMLLoaderService fxmlLoaderService,
-            ControllerFactory controllerFactory
+            CommonViewsLoader commonViewsLoader
     ) {
         this.supplierService = supplierService;
         this.supplierWriteService = supplierWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
     }
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
-        loadSelectOrCreateLocation();
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
+        selectOrCreateLocationController = commonViewsLoader.loadSelectOrCreateLocation(selectOrCreateLocationContainer);
+        selectOrCreateLocationController.initialize();
         loadSupplier(currentSelectionService.getSelectedId());
-    }
-
-    private void loadFallbackManager() {
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
-    private void loadSelectOrCreateLocation() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectOrCreateLocationView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node selectOrCreateLocationView = loader.load();
-            selectOrCreateLocationController = loader.getController();
-            selectOrCreateLocationContainer.getChildren().add(selectOrCreateLocationView);
-            selectOrCreateLocationController.initialize();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
     private void loadSupplier(Integer supplierId) {
@@ -131,7 +102,6 @@ public class UpdateSupplierController implements Initializable {
         fallbackManager.setLoading(true);
 
         UpdateSupplierDTO supplierDTO = getUpdateSupplierDTO();
-        System.out.println(supplierDTO);
 
         supplierWriteService.updateSupplier(supplierDTO)
                 .thenAccept(supplierOptional ->

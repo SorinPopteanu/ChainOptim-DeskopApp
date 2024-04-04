@@ -65,6 +65,11 @@
     -fx-font-weight: bold;
 }
 
+.child-row {
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
 scroll-pane {
     -fx-background-color: white;
 }
@@ -75,4 +80,22 @@ scroll-pane {
 
 .custom-checkbox {
     -fx-cursor: hand;
+}
+
+.cancel-edit-button {
+    -fx-pref-height: 32px;
+    -fx-padding: 8px 10px;
+    -fx-background-color: #e6e6e6;
+    -fx-border-color: #d3d3d3;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-graphic-text-gap: 8px;
+    -fx-cursor: hand;
+}
+
+/* Subscription Plan */
+.limit-reached-label {
+    -fx-text-fill: #B22222;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
 }

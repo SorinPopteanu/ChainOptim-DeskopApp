@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.client.controller;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
@@ -10,18 +9,15 @@ import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientWriteService;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import javafx.scene.layout.StackPane;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -30,8 +26,7 @@ public class CreateClientController implements Initializable {
     private final ClientWriteService clientWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
     private final FallbackManager fallbackManager;
 
     private SelectOrCreateLocationController selectOrCreateLocationController;
@@ -50,44 +45,20 @@ public class CreateClientController implements Initializable {
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
             FallbackManager fallbackManager,
-            FXMLLoaderService fxmlLoaderService,
-            ControllerFactory controllerFactory
+            CommonViewsLoader commonViewsLoader
     ) {
         this.clientWriteService = clientWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
-        loadSelectOrCreateLocation();
-    }
-
-    private void loadFallbackManager() {
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
-    private void loadSelectOrCreateLocation() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectOrCreateLocationView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node selectOrCreateLocationView = loader.load();
-            selectOrCreateLocationController = loader.getController();
-            selectOrCreateLocationContainer.getChildren().add(selectOrCreateLocationView);
-            selectOrCreateLocationController.initialize();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
+        selectOrCreateLocationController = commonViewsLoader.loadSelectOrCreateLocation(selectOrCreateLocationContainer);
+        selectOrCreateLocationController.initialize();
     }
 
     @FXML
@@ -102,8 +73,6 @@ public class CreateClientController implements Initializable {
         Integer organizationId = currentUser.getOrganization().getId();
 
         CreateClientDTO clientDTO = getCreateClientDTO(organizationId);
-
-        System.out.println(clientDTO);
 
         clientWriteService.createClient(clientDTO)
                 .thenAccept(clientOptional ->

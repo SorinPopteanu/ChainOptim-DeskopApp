@@ -1,6 +1,7 @@
 .header {
     -fx-background-color: #ffffff;
     -fx-spacing: 20px;
+    -fx-border-color: #c0c0c0;
 }
 
 .toolbar {

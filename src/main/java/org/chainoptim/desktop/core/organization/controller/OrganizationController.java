@@ -210,7 +210,7 @@ public class OrganizationController implements Initializable {
     private void initializeUI() {
         organizationName.setText("Organization: " + organizationViewData.getOrganization().getName());
         organizationAddress.setText("Address: " + organizationViewData.getOrganization().getAddress());
-        planLabel.setText("Subscription Plan: " + organizationViewData.getOrganization().getSubscriptionPlan().name());
+        planLabel.setText("Subscription Plan: " + organizationViewData.getOrganization().getSubscriptionPlanTier().toString());
     }
 
     private Optional<Organization> handleOrganizationException(Throwable ex) {

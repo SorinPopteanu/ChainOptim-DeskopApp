@@ -4,9 +4,11 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.abstraction.GuiceControllerFactory;
 import org.chainoptim.desktop.core.abstraction.JavaFXThreadRunner;
 import org.chainoptim.desktop.core.abstraction.ThreadRunner;
+import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.notification.controller.NotificationManager;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceServiceImpl;
 import org.chainoptim.desktop.core.organization.service.CustomRoleService;
@@ -15,6 +17,8 @@ import org.chainoptim.desktop.core.organization.service.OrganizationService;
 import org.chainoptim.desktop.core.organization.service.OrganizationServiceImpl;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotServiceImpl;
+import org.chainoptim.desktop.core.settings.service.UserSettingsService;
+import org.chainoptim.desktop.core.settings.service.UserSettingsServiceImpl;
 import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.core.user.service.UserServiceImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
@@ -41,6 +45,9 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
 import org.chainoptim.desktop.shared.features.location.service.LocationServiceImpl;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoaderImpl;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderServiceImpl;
 
@@ -60,7 +67,8 @@ public class AppModule extends AbstractModule {
         bind(NavigationServiceImpl.class).asEagerSingleton();
         bind(FallbackManager.class).in(Singleton.class);
         bind(CurrentSelectionService.class).in(Singleton.class);
-        bind(SearchParams.class).in(Singleton.class);
+        bind(NotificationManager.class).in(Singleton.class);
+        bind(SupplyChainSnapshotContext.class).in(Singleton.class);
 
         bind(HttpClient.class).toInstance(HttpClient.newHttpClient());
 
@@ -87,13 +95,9 @@ public class AppModule extends AbstractModule {
 
         // - Notifications
         bind(NotificationPersistenceService.class).to(NotificationPersistenceServiceImpl.class);
-//        bind(WebSocketService.class).to(WebSocketServiceImpl.class);
 
-//        try {
-//            bind(WebSocketService.class).toInstance(new WebSocketServiceImpl(new URI("ws://localhost:8080/ws")));
-//        } catch (URISyntaxException e) {
-//            addError(e);
-//        }
+        // - Settings
+        bind(UserSettingsService.class).to(UserSettingsServiceImpl.class);
 
         // Features
         // - Product
@@ -131,5 +135,11 @@ public class AppModule extends AbstractModule {
         // Shared
         // - Location
         bind(LocationService.class).to(LocationServiceImpl.class);
+
+        // - Resource Loading
+        bind(CommonViewsLoader.class).to(CommonViewsLoaderImpl.class);
+
+        // - Search
+        bind(SearchParams.class).to(SearchParamsImpl.class);
     }
 }

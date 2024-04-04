@@ -39,6 +39,9 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.main.controller to com.google.guice, javafx.fxml;
     opens org.chainoptim.desktop.core.main.service to com.google.guice, javafx.fxml;
 
+    // - Context
+    opens org.chainoptim.desktop.core.context to com.google.guice;
+
     // - Abstraction
     opens org.chainoptim.desktop.core.abstraction to com.google.guice, javafx.fxml;
 
@@ -54,14 +57,24 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.organization.dto to com.fasterxml.jackson.databind;
 
+    // - Subscription Plan
+    opens org.chainoptim.desktop.core.subscriptionplan.model to com.google.guice, com.fasterxml.jackson.databind;
+
     // - Overview
     opens org.chainoptim.desktop.core.overview.controller to com.google.guice, javafx.fxml;
     opens org.chainoptim.desktop.core.overview.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.overview.service to com.google.guice;
 
     // - Notifications
+    opens org.chainoptim.desktop.core.notification.controller to com.google.guice, javafx.fxml;
     opens org.chainoptim.desktop.core.notification.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.notification.service to com.google.guice;
+
+    // - Settings
+    opens org.chainoptim.desktop.core.settings.controller to com.google.guice, javafx.fxml;
+    opens org.chainoptim.desktop.core.settings.service to com.google.guice;
+    opens org.chainoptim.desktop.core.settings.model to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.settings.dto to com.fasterxml.jackson.databind;
 
     // Features
     // - Product
@@ -112,9 +125,6 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind, javafx.base;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
-
-    // - Settings
-    opens org.chainoptim.desktop.features.settings.controller to javafx.fxml, com.google.guice;
 
     // Shared
     // - Common UI elements

@@ -1,27 +1,20 @@
 package org.chainoptim.desktop.core.overview.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.notification.model.Notification;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.notification.model.NotificationUser;
-import org.chainoptim.desktop.core.notification.service.NotificationWebSocketClient;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
+import org.chainoptim.desktop.core.overview.model.Snapshot;
 import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.core.user.service.UserService;
-import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -32,34 +25,31 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.stage.Modality;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
+/*
+ * Controller for the initial overview screen of the application.
+ * Loads and displays a snapshot of the organization's supply chain
+ * and the current user's notifications history.
+ */
 public class OverviewController implements Initializable {
 
     // Services
-    private final AuthenticationService authenticationService;
-    private final UserService userService;
     private final SupplyChainSnapshotService supplyChainSnapshotService;
     private final NotificationPersistenceService notificationPersistenceService;
+    private final NavigationService navigationService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
     // State
-    private SupplyChainSnapshot snapshot;
-    private final ObservableList<Notification> receivedNotifications = FXCollections.observableArrayList();
+    private Snapshot snapshot;
+    private SupplyChainSnapshotContext snapshotContext;
 
     // FXML
     @FXML
@@ -83,38 +73,27 @@ public class OverviewController implements Initializable {
     private Image alertImage;
 
     @Inject
-    public OverviewController(AuthenticationService authenticationService,
-                              UserService userService,
-                              SupplyChainSnapshotService supplyChainSnapshotService,
+    public OverviewController(SupplyChainSnapshotService supplyChainSnapshotService,
                               NotificationPersistenceService notificationPersistenceService,
+                              NavigationService navigationService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
-                              FallbackManager fallbackManager) {
-        this.authenticationService = authenticationService;
-        this.userService = userService;
+                              FallbackManager fallbackManager,
+                              SupplyChainSnapshotContext snapshotContext) {
         this.supplyChainSnapshotService = supplyChainSnapshotService;
         this.notificationPersistenceService = notificationPersistenceService;
+        this.navigationService = navigationService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
+        this.snapshotContext = snapshotContext;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        User currentUser = TenantContext.getCurrentUser();
-        if (currentUser != null) return;
-
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return; // Future: Switch to Login Scene
-
         loadFallbackManager();
         setUpListeners();
         initializeUI();
-
-        fallbackManager.reset();
-        fallbackManager.setLoading(true);
-
-        authenticationService.getUsernameFromJWTToken(jwtToken).ifPresent(this::fetchAndSetUser);
     }
 
     // Initialization
@@ -136,15 +115,8 @@ public class OverviewController implements Initializable {
             fallbackContainer.setManaged(!newValue);
         });
 
-        // Listen to received notifications
-        receivedNotifications.addListener((ListChangeListener<Notification>) change -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    List<? extends Notification> addedSubList = change.getAddedSubList();
-                    addedSubList.forEach(this::addNotificationPopup);
-                }
-            }
-        });
+        // Listen to current user changes
+        TenantContext.currentUserProperty().addListener((observable, oldValue, newValue) -> loadData(newValue));
     }
 
     private void initializeUI() {
@@ -157,56 +129,38 @@ public class OverviewController implements Initializable {
 //        alertImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/alert-circle-solid.png")));
     }
 
-    // Fetches
-    private void fetchAndSetUser(String username) {
-        userService.getUserByUsername(username)
-                .thenApply(this::handleUserResponse)
+    private void loadData(User currentUser) {
+        if (currentUser == null) return;
+        Integer organizationId = currentUser.getOrganization().getId();
+        if (organizationId == null) return;
+
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        // Fetch Supply Chain snapshot and Notifications on separate threads
+        supplyChainSnapshotService.getSupplyChainSnapshot(organizationId)
+                .thenApply(this::handleSupplyChainSnapshotResponse)
                 .exceptionally(ex -> {
-                    Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load user."));
+                    Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supply chain snapshot."));
+                    return Optional.empty();
+                });
+
+        notificationPersistenceService.getNotificationsByUserId(currentUser.getId())
+                .thenApply(this::handleNotificationsResponse)
+                .exceptionally(ex -> {
+                    Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load notifications."));
                     return Optional.empty();
                 });
     }
 
-    private Optional<User> handleUserResponse(Optional<User> userOptional) {
-        Platform.runLater(() -> {
-            if (userOptional.isEmpty()) {
-                return;
-            }
-            User user = userOptional.get();
-
-            // Set user to TenantContext for reuse throughout the app
-            TenantContext.setCurrentUser(user);
-
-            Integer organizationId = user.getOrganization().getId();
-            if (organizationId == null) return;
-
-            // Fetch Supply Chain snapshot and Notifications on separate threads
-            supplyChainSnapshotService.getSupplyChainSnapshot(organizationId)
-                    .thenApply(this::handleSupplyChainSnapshotResponse)
-                    .exceptionally(ex -> {
-                        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supply chain snapshot."));
-                        return Optional.empty();
-                    });
-
-            notificationPersistenceService.getNotificationsByUserId(user.getId())
-                    .thenApply(this::handleNotificationsResponse)
-                    .exceptionally(ex -> {
-                        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load notifications."));
-                        return Optional.empty();
-                    });
-
-            startWebSocket(user);
-        });
-        return userOptional;
-    }
-
+    // Fetches
     private Optional<SupplyChainSnapshot> handleSupplyChainSnapshotResponse(Optional<SupplyChainSnapshot> snapshotOptional) {
         Platform.runLater(() -> {
             if (snapshotOptional.isEmpty()) {
                 return;
             }
-            snapshot = snapshotOptional.get();
-            System.out.println("Snapshot received: " + snapshot);
+            snapshot = snapshotOptional.get().getSnapshot();
+            snapshotContext.setSnapshot(snapshot);
             fallbackManager.setLoading(false);
 
             renderEntityCountsVBox(snapshot);
@@ -221,7 +175,8 @@ public class OverviewController implements Initializable {
                 return;
             }
             List<NotificationUser> notifications = notificationsOptional.get();
-            System.out.println("Notifications received: " + notifications.size());
+            fallbackManager.setLoading(false);
+
             renderNotificationsVBox(notifications);
         });
 
@@ -229,7 +184,7 @@ public class OverviewController implements Initializable {
     }
 
     // UI Rendering
-    private void renderEntityCountsVBox(SupplyChainSnapshot snapshot) {
+    private void renderEntityCountsVBox(Snapshot snapshot) {
         entityCountsHBox.getChildren().clear();
 
         HBox productsCountLabel = getFeatureCountBadge("Products", snapshot.getProductsCount());
@@ -238,14 +193,13 @@ public class OverviewController implements Initializable {
         HBox suppliersCountLabel = getFeatureCountBadge("Suppliers", snapshot.getSuppliersCount());
         HBox clientsCountLabel = getFeatureCountBadge("Clients", snapshot.getClientsCount());
 
-
         entityCountsHBox.getChildren().addAll(productsCountLabel, factoriesCountLabel, warehousesCountLabel, suppliersCountLabel, clientsCountLabel);
         entityCountsHBox.setSpacing(40);
         entityCountsHBox.setAlignment(Pos.CENTER);
     }
 
     private HBox getFeatureCountBadge(String featureName, long count) {
-        HBox badgeContainer = new HBox(0); // Adjust spacing as needed
+        HBox badgeContainer = new HBox(0);
         badgeContainer.setAlignment(Pos.CENTER_LEFT);
         badgeContainer.getStyleClass().add("badge-container");
 
@@ -262,6 +216,7 @@ public class OverviewController implements Initializable {
         countLabel.getStyleClass().add("count-label");
 
         badgeContainer.getChildren().addAll(featureLabel, separator, countLabel);
+        badgeContainer.setOnMouseClicked(event -> navigationService.switchView(featureName, true));
 
         return badgeContainer;
     }
@@ -298,48 +253,5 @@ public class OverviewController implements Initializable {
 
             notificationsVBox.getChildren().add(notificationHBox);
         });
-    }
-
-    // Real-time Notifications
-    private void startWebSocket(User user) {
-        String userIdParam = "?userId=" + user.getId(); // Or use jwtToken
-        System.out.println("Connecting to WebSocket with userId: " + user.getId());
-
-        try {
-            URI serverUri = new URI("ws://localhost:8080/ws" + userIdParam);
-            Consumer<Notification> addMessageToUI = receivedNotifications::add;
-            NotificationWebSocketClient client = new NotificationWebSocketClient(serverUri, addMessageToUI);
-            client.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void addNotificationPopup(Notification notification) {
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.NONE);
-        popupStage.initStyle(StageStyle.TRANSPARENT);
-
-        Label messageLabel = new Label(notification.getMessage());
-        messageLabel.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-border-color: black");
-
-        Scene scene = new Scene(new StackPane(messageLabel));
-        scene.setFill(Color.TRANSPARENT);
-        popupStage.setScene(scene);
-
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        popupStage.setX(screenBounds.getMaxX() - 300);
-        popupStage.setY(screenBounds.getMaxY() - 120);
-
-        popupStage.show();
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(10000); // 10 seconds
-                Platform.runLater(popupStage::close);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 }

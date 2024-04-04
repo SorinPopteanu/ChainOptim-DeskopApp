@@ -20,6 +20,7 @@
 .badge-container {
     -fx-border-color: #d3d6d4;
     -fx-border-radius: 8px;
+    -fx-cursor: hand;
 }
 
 .count-label {

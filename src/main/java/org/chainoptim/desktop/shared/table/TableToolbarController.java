@@ -15,7 +15,10 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+
 import lombok.Getter;
+
+import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,7 +26,6 @@ public class TableToolbarController {
 
     private final SearchParams searchParams;
     private final NavigationService navigationService;
-    private final SupplierOrdersController supplierOrdersController;
 
     @FXML
     private TextField searchBar;
@@ -77,16 +79,17 @@ public class TableToolbarController {
     @Inject
     public TableToolbarController(
             SearchParams searchParams,
-            NavigationService navigationService,
-            SupplierOrdersController supplierOrdersController
+            NavigationService navigationService
     ) {
         this.searchParams = searchParams;
         this.navigationService = navigationService;
-        this.supplierOrdersController = supplierOrdersController;
     }
 
-    @FXML
-    public void initialize() {
+    private void initializeIcons() {
+
+    }
+
+    public void initialize(Runnable refreshAction) {
         setSearchButton();
         setOrderingButton();
         setRefreshButton(() -> {});
@@ -135,36 +138,36 @@ public class TableToolbarController {
     }
 
     private void setCancelRowSelectionButton() {
-        cancelImageView.setFitWidth(16);
-        cancelImageView.setFitHeight(16);
+        cancelImageView.setFitWidth(14);
+        cancelImageView.setFitHeight(14);
         cancelRowSelectionButton.setGraphic(cancelImageView);
         cancelRowSelectionButton.setVisible(false);
     }
 
     private void setDeleteSelectedRowsButton() {
-        deleteImageView.setFitWidth(16);
-        deleteImageView.setFitHeight(16);
+        deleteImageView.setFitWidth(14);
+        deleteImageView.setFitHeight(14);
         deleteSelectedRowsButton.setGraphic(deleteImageView);
         deleteSelectedRowsButton.setVisible(false);
     }
 
     private void setEditSelectedRowsButton() {
-        editImageView.setFitWidth(16);
-        editImageView.setFitHeight(16);
+        editImageView.setFitWidth(14);
+        editImageView.setFitHeight(14);
         editSelectedRowsButton.setGraphic(editImageView);
         editSelectedRowsButton.setVisible(false);
     }
 
     private void setSaveChangesButton() {
-        saveImageView.setFitWidth(16);
-        saveImageView.setFitHeight(16);
+        saveImageView.setFitWidth(14);
+        saveImageView.setFitHeight(14);
         saveChangesButton.setGraphic(saveImageView);
         saveChangesButton.setVisible(false);
     }
 
     private void setCreateNewOrderButton() {
-        plusImageView.setFitWidth(12);
-        plusImageView.setFitHeight(12);
+        plusImageView.setFitWidth(14);
+        plusImageView.setFitHeight(14);
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(1);
         plusImageView.setEffect(colorAdjust);

@@ -17,3 +17,7 @@
     -fx-text-fill: #0056b3;
     -fx-underline: true;
 }
+
+.menu-item:hover {
+    -fx-background-color: #006AEE;
+}

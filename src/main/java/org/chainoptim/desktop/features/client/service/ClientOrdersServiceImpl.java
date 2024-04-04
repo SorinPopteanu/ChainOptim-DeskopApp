@@ -2,12 +2,8 @@ package org.chainoptim.desktop.features.client.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
-import org.chainoptim.desktop.features.client.dto.CreateClientDTO;
 import org.chainoptim.desktop.features.client.dto.CreateClientOrderDTO;
-import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.model.ClientOrder;
-import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
