@@ -5,6 +5,7 @@ import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import com.google.inject.Inject;
 import javafx.fxml.FXMLLoader;
@@ -101,6 +102,21 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
             return loader.getController();
         } catch (IOException ex) {
             ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public TableToolbarController initializeTableToolbar(StackPane tableToolbarContainer) {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/table/TableToolbarView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node tableToolbarView = loader.load();
+            tableToolbarContainer.getChildren().add(tableToolbarView);
+            return loader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }

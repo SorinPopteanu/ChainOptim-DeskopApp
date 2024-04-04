@@ -5,7 +5,7 @@ import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.supplier.dto.CreateSupplierOrderDTO;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -54,7 +54,7 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
 
     public CompletableFuture<Optional<PaginatedResults<SupplierOrder>>> getSuppliersBySupplierIdAdvanced(
             Integer supplierId,
-            SearchParamsImpl searchParams
+            SearchParams searchParams
     ) {
         String routeAddress = "http://localhost:8080/api/v1/supplier-orders/organization/advanced/" + supplierId.toString()
                 + "?searchQuery=" + searchParams.getSearchQuery()
@@ -64,7 +64,6 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
                 + "&itemsPerPage=" + searchParams.getItemsPerPage();
 
         String jwtToken = TokenManager.getToken();
-        System.out.println("JWT Token: " + jwtToken);
         if (jwtToken == null) return new CompletableFuture<>();
         String headerValue = HEADER_VALUE_PREFIX + jwtToken;
 
@@ -77,13 +76,10 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-                        System.out.println("Response code: " + response.statusCode());
-                        System.out.println("Response body: " + response.body());
                         return Optional.<PaginatedResults<SupplierOrder>>empty();
                     }
                     try {
                         PaginatedResults<SupplierOrder> supplierOrders = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<SupplierOrder>>() {});
-                        System.out.println("Supplier Orders: " + supplierOrders);
                         return Optional.of(supplierOrders);
                     } catch (Exception e) {
                         e.printStackTrace();

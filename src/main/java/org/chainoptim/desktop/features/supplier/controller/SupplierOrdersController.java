@@ -11,38 +11,29 @@ import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.table.edit.cells.EditableSpinnerTableCell;
+import org.chainoptim.desktop.shared.table.edit.cells.EditableTextFieldTableCell;
+import org.chainoptim.desktop.shared.table.model.TableData;
+import org.chainoptim.desktop.shared.table.util.TableConfigurer;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.ComboBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.StackPane;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
 import javafx.util.converter.FloatStringConverter;
-import javafx.util.converter.IntegerStringConverter;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,205 +41,103 @@ import java.util.Optional;
 
 public class SupplierOrdersController implements DataReceiver<Supplier> {
 
+    // Services
     private final SupplierOrdersService supplierOrdersService;
-    private final FallbackManager fallbackManager;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
     private final CurrentSelectionService currentSelectionService;
     private final NavigationServiceImpl navigationService;
-    private final SearchParamsImpl searchParams;
+    private final CommonViewsLoader commonViewsLoader;
 
+    // Controllers
+    private TableToolbarController tableToolbarController;
+    private PageSelectorController pageSelectorController;
+
+    // State
+    private final FallbackManager fallbackManager;
+    private final SearchParams searchParams;
     private Supplier supplier;
-    private SimpleIntegerProperty selectedCount = new SimpleIntegerProperty(0);
+    private final SimpleIntegerProperty selectedCount = new SimpleIntegerProperty(0);
+    private long totalRowsCount;
+    private final List<TextFieldTableCell<SupplierOrder, ?>> editedCells = new ArrayList<>();
 
-
+    // FXML
     @FXML
     private StackPane tableToolbarContainer;
     @FXML
-    private TableToolbarController tableToolbarController;
-    @FXML
     private ScrollPane supplierOrdersScrollPane;
     @FXML
-    private TableView<SupplierOrder> tableView;
+    private TableView<TableData<SupplierOrder>> tableView;
     @FXML
-    private TableColumn<SupplierOrder, Boolean> selectRowColumn;
+    private TableColumn<TableData<SupplierOrder>, Boolean> selectRowColumn;
     @FXML
-    private TableColumn<SupplierOrder, Integer> orderIdColumn;
+    private TableColumn<TableData<SupplierOrder>, Integer> orderIdColumn;
     @FXML
-    private TableColumn<SupplierOrder, Integer> supplierIdColumn;
+    private TableColumn<TableData<SupplierOrder>, Integer> supplierIdColumn;
     @FXML
-    private TableColumn<SupplierOrder, Integer> componentIdColumn;
+    private TableColumn<TableData<SupplierOrder>, Integer> componentIdColumn;
     @FXML
-    private TableColumn<SupplierOrder, Float> quantityColumn;
+    private TableColumn<TableData<SupplierOrder>, String> quantityColumn;
     @FXML
-    private TableColumn<SupplierOrder, String> statusColumn;
+    private TableColumn<TableData<SupplierOrder>, String> statusColumn;
     @FXML
-    private TableColumn<SupplierOrder, LocalDateTime> orderDateColumn;
+    private TableColumn<TableData<SupplierOrder>, LocalDateTime> orderDateColumn;
     @FXML
-    private TableColumn<SupplierOrder, LocalDateTime> estimatedDeliveryDateColumn;
+    private TableColumn<TableData<SupplierOrder>, LocalDateTime> estimatedDeliveryDateColumn;
     @FXML
-    private TableColumn<SupplierOrder, LocalDateTime> deliveryDateColumn;
+    private TableColumn<TableData<SupplierOrder>, LocalDateTime> deliveryDateColumn;
     @FXML
-    private TableColumn<SupplierOrder, String> companyIdColumn;
+    private TableColumn<TableData<SupplierOrder>, String> companyIdColumn;
     @FXML
     private StackPane pageSelectorContainer;
-    @FXML
-    private PageSelectorController pageSelectorController;
-
-    private long totalRowsCount;
-
-    private List<TextFieldTableCell<SupplierOrder, ?>> cells = new ArrayList<>();
 
 
     @Inject
     public SupplierOrdersController(SupplierOrdersService supplierOrdersService,
                                     NavigationServiceImpl navigationService,
                                     CurrentSelectionService currentSelectionService,
+                                    CommonViewsLoader commonViewsLoader,
                                     FallbackManager fallbackManager,
-                                    FXMLLoaderService fxmlLoaderService,
-                                    ControllerFactory controllerFactory,
-                                    SearchParamsImpl searchParams) {
+                                    SearchParams searchParams) {
         this.supplierOrdersService = supplierOrdersService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
         this.searchParams = searchParams;
-
     }
 
     @Override
     public void setData(Supplier supplier) {
         this.supplier = supplier;
-        loadSupplierOrders(this.supplier);
-        configureTableView();
-        initializeTableToolbar();
-        initializePageSelector();
-        setEditEvents();
+        TableConfigurer.configureTableView(tableView, selectRowColumn);
+        bindDataToTableView();
+        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
+        tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
+        tableToolbarController.initialize(() -> loadSupplierOrders(this.supplier.getId()));
+
         setUpListeners();
+
+        loadSupplierOrders(this.supplier.getId());
     }
 
-    private void initializeTableToolbar() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/table/TableToolbarView.fxml",
-                controllerFactory::createController
+    private void bindDataToTableView() {
+
+        selectRowColumn.setCellValueFactory(data -> data.getValue().isSelectedProperty());
+        orderIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getId()));
+        supplierIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getSupplierId()));
+        componentIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getComponent().getId()));
+        quantityColumn.setCellValueFactory(data ->
+                new SimpleObjectProperty<>(
+                        Float.toString(data.getValue().getData().getQuantity() != null ? data.getValue().getData().getQuantity() : 0.0f)
+                )
         );
-        try {
-            Node tableToolbarView = loader.load();
-            tableToolbarContainer.getChildren().add(tableToolbarView);
-            tableToolbarController = loader.getController();
-            tableToolbarController.initialize();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void initializePageSelector() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/search/PageSelectorView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node pageSelectorView = loader.load();
-            pageSelectorContainer.getChildren().add(pageSelectorView);
-            pageSelectorController = loader.getController();
-            searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSupplierOrders(supplier));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+        statusColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getStatus() != null ? data.getValue().getData().getStatus().name() : "N/A"));
+        orderDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getOrderDate()));
+        estimatedDeliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getEstimatedDeliveryDate()));
+        deliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getDeliveryDate()));
+        companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId()).asString());
 
-    private void loadSupplierOrders(Supplier supplier) {
-        fallbackManager.reset();
-        fallbackManager.setLoading(true);
-
-        System.out.println("Current page: " + searchParams.getPage());
-
-        User currentUser = TenantContext.getCurrentUser();
-        if (currentUser == null) {
-            Platform.runLater(() -> fallbackManager.setLoading(false));
-            return;
-        }
-        Integer supplierId = supplier.getId();
-        System.out.println("Supplier ID: " + supplierId);
-        supplierOrdersService.getSuppliersBySupplierIdAdvanced(supplierId, searchParams)
-                .thenApply(this::handleOrdersResponse)
-                .exceptionally(this::handleOrdersException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
-    }
-
-    private Optional<PaginatedResults<SupplierOrder>> handleOrdersResponse(Optional<PaginatedResults<SupplierOrder>> supplierOrdersOptional) {
-        Platform.runLater(() -> {
-            if (supplierOrdersOptional.isEmpty()) {
-                fallbackManager.setErrorMessage("No orders found");
-                return;
-            }
-            PaginatedResults<SupplierOrder> paginatedResults = supplierOrdersOptional.get();
-            tableView.getItems().clear();
-            totalRowsCount = paginatedResults.getTotalCount();
-
-            if (!paginatedResults.results.isEmpty()) {
-                for (SupplierOrder supplierOrder : paginatedResults.results) {
-                    bindDataToTableView(supplierOrder);
-                }
-                Platform.runLater(() -> pageSelectorController.initialize(searchParams, totalRowsCount));
-
-                fallbackManager.setNoResults(false);
-            } else {
-                fallbackManager.setNoResults(true);
-            }
-        });
-
-        return supplierOrdersOptional;
-    }
-
-    private Optional<PaginatedResults<SupplierOrder>> handleOrdersException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supplier orders."));
-        return Optional.empty();
-    }
-
-    private void configureTableView() {
-        tableView.setMaxHeight(Double.MAX_VALUE);
-        tableView.setEditable(true);
-        tableView.getColumns().forEach(column -> column.setEditable(false));
-
-        selectRowColumn.setCellFactory(CheckBoxTableCell.forTableColumn(selectRowColumn));
-        selectRowColumn.setEditable(true);
-
-        quantityColumn.setCellFactory(col -> new EditableSpinnerTableCell<>(new FloatStringConverter()));
-
-        tableView.setColumnResizePolicy(new Callback<TableView.ResizeFeatures, Boolean>() {
-            @Override
-            public Boolean call(TableView.ResizeFeatures param) {
-                return TableView.CONSTRAINED_RESIZE_POLICY.call(param) || Boolean.TRUE;
-            }
-        });
-    }
-
-    private void bindDataToTableView(SupplierOrder results) {
-        selectRowColumn.setCellValueFactory(data -> data.getValue().selectedProperty());
-        orderIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getId()));
-        supplierIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getSupplierId()));
-        componentIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getComponentId()));
-        quantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getQuantity()));
-        statusColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getStatus() != null ? data.getValue().getStatus().name() : "N/A"));
-        orderDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getOrderDate()));
-        estimatedDeliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getEstimatedDeliveryDate()));
-        deliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getDeliveryDate()));
-        companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getCompanyId()).asString());
-
-        // Add listener to the selectedProperty of SupplierOrder
-        results.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-            if (isSelected) {
-                selectedCount.set(selectedCount.get() + 1);
-            } else {
-                selectedCount.set(selectedCount.get() - 1);
-            }
-        });
-        selectRowColumn.textProperty().bind(selectedCount.asString());
-
-        tableView.getItems().add(results);
+        quantityColumn.setCellFactory(col -> new EditableTextFieldTableCell<SupplierOrder>());
     }
 
     private void setUpListeners() {
@@ -267,104 +156,143 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         // Add listeners to the toolbar buttons
         tableToolbarController.getCancelRowSelectionButton().setOnAction(e -> deselectAllRows());
         tableToolbarController.getEditSelectedRowsButton().setOnAction(e -> editSelectedRows());
-
     }
 
-    private void setEditEvents() {
-        supplierIdColumn.setOnEditCommit(event -> {
-            SupplierOrder order = event.getRowValue();
-            order.setSupplierId(event.getNewValue());
-            updateInDatabase(order);
-        });
+    private void loadSupplierOrders(Integer supplierId) {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
 
-        componentIdColumn.setOnEditCommit(event -> {
-            SupplierOrder order = event.getRowValue();
-            order.setComponentId(event.getNewValue());
-            updateInDatabase(order);
-        });
+        User currentUser = TenantContext.getCurrentUser();
+        if (currentUser == null) {
+            fallbackManager.setLoading(false);
+            return;
+        }
 
-        quantityColumn.setOnEditCommit(event -> {
-            SupplierOrder order = event.getRowValue();
-            order.setQuantity(event.getNewValue());
-            updateInDatabase(order);
-        });
+        supplierOrdersService.getSuppliersBySupplierIdAdvanced(supplierId, searchParams)
+                .thenApply(this::handleOrdersResponse)
+                .exceptionally(this::handleOrdersException);
     }
 
-    private void updateInDatabase(SupplierOrder order) {
-        System.out.println("Change detected: " + order);
+    private Optional<PaginatedResults<SupplierOrder>> handleOrdersResponse(Optional<PaginatedResults<SupplierOrder>> supplierOrdersOptional) {
+        Platform.runLater(() -> {
+            if (supplierOrdersOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("No orders found");
+                return;
+            }
+            PaginatedResults<SupplierOrder> paginatedResults = supplierOrdersOptional.get();
+            fallbackManager.setLoading(false);
+
+            totalRowsCount = paginatedResults.getTotalCount();
+            pageSelectorController.initialize(searchParams, totalRowsCount);
+
+            tableView.getItems().clear();
+            if (paginatedResults.results.isEmpty()) {
+                fallbackManager.setNoResults(true);
+                return;
+            }
+
+            for (SupplierOrder supplierOrder : paginatedResults.results) {
+                TableData<SupplierOrder> tableRow = new TableData<>(supplierOrder, new SimpleBooleanProperty(false));
+                setRowListeners(tableRow);
+            }
+        });
+
+        return supplierOrdersOptional;
+    }
+
+    private Optional<PaginatedResults<SupplierOrder>> handleOrdersException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supplier orders."));
+        return Optional.empty();
+    }
+
+    private void setRowListeners(TableData<SupplierOrder> supplierOrder) {
+        // Add listener to the selectedProperty of SupplierOrder
+        supplierOrder.isSelectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (Boolean.TRUE.equals(isSelected)) {
+                selectedCount.set(selectedCount.get() + 1);
+            } else {
+                selectedCount.set(selectedCount.get() - 1);
+            }
+        });
+        selectRowColumn.textProperty().bind(selectedCount.asString());
+
+        tableView.getItems().add(supplierOrder);
     }
 
     public void deselectAllRows() {
         tableToolbarController.getSaveChangesButton().setVisible(false);
+        tableToolbarController.getSaveChangesButton().setManaged(false);
         selectRowColumn.setEditable(true);
-        tableView.getItems().forEach(order -> order.setSelectedProperty(false));
-        for (TextFieldTableCell<SupplierOrder, ?> cell : cells) {
+        tableView.getItems().forEach(order -> order.setSelectedProperty(new SimpleBooleanProperty(false)));
+        for (TextFieldTableCell<SupplierOrder, ?> cell : editedCells) {
             cell.cancelEdit();
         }
     }
 
+
     public void editSelectedRows() {
         tableToolbarController.getEditSelectedRowsButton().setVisible(false);
+        tableToolbarController.getEditSelectedRowsButton().setManaged(false);
         tableToolbarController.getSaveChangesButton().setVisible(true);
+        tableToolbarController.getSaveChangesButton().setManaged(true);
         selectRowColumn.setEditable(false);
-
-        
-        quantityColumn.setCellFactory(column -> new TextFieldTableCell<SupplierOrder, Float>(new FloatStringConverter()) {
-            private TextField textField;
-            private Float initialValue;
-            private ChangeListener<Boolean> editListener;
-
-            @Override
-            public void updateItem(Float item, boolean empty) {
-                super.updateItem(item, empty);
-                if (getIndex() >= 0 && getIndex() < getTableView().getItems().size()) {
-                    SupplierOrder order = getTableView().getItems().get(getIndex());
-
-                    if (editListener != null) {
-                        order.selectedProperty().removeListener(editListener);
-                    }
-
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        editListener = (obs, wasSelected, isSelected) -> {
-                            if (isSelected) {
-                                textField = new TextField();
-                                textField.setEditable(true);
-                                textField.setText(item != null ? item.toString() : "");
-                                setGraphic(textField);
-                            } else {
-                                setGraphic(null);
-                            }
-                        };
-                    }
-                    order.selectedProperty().addListener(editListener);
-                    editListener.changed(null, !order.selectedProperty().get(), order.selectedProperty().get());
-                }
-            }
-
-            @Override
-            public void startEdit() {
-                SupplierOrder order = getTableView().getItems().get(getIndex());
-                if (order.selectedProperty().get()) {
-                    initialValue = getItem();
-                    super.startEdit();
-                    cells.add(this);
-                }
-            }
-
-            @Override
-            public void cancelEdit() {
-                super.cancelEdit();
-                setGraphic(null);
-                setItem(initialValue);
-                SupplierOrder order = getTableView().getItems().get(getIndex());
-                if (editListener != null) {
-                    order.selectedProperty().removeListener(editListener);
-                }
-                cells.remove(this);
-            }
-        });
+//        quantityColumn.setCellFactory(col -> new EditableSpinnerTableCell<>(new FloatStringConverter()));
+//        quantityColumn.setCellFactory(column -> new TextFieldTableCell<SupplierOrder, Float>(new FloatStringConverter()) {
+//            private TextField textField;
+//            private Float initialValue;
+//            private ChangeListener<Boolean> editListener;
+//
+//            @Override
+//            public void updateItem(Float item, boolean empty) {
+//                super.updateItem(item, empty);
+//                if (getIndex() >= 0 && getIndex() < getTableView().getItems().size()) {
+//                    SupplierOrder order = getTableView().getItems().get(getIndex());
+//
+//                    if (editListener != null) {
+//                        order.selectedProperty().removeListener(editListener);
+//                    }
+//
+//                    if (empty) {
+//                        setGraphic(null);
+//                    } else {
+//                        editListener = (obs, wasSelected, isSelected) -> {
+//                            if (isSelected) {
+//                                textField = new TextField();
+//                                textField.setEditable(true);
+//                                textField.setText(item != null ? item.toString() : "");
+//                                setGraphic(textField);
+//                            } else {
+//                                setGraphic(null);
+//                            }
+//                        };
+//                    }
+//                    order.selectedProperty().addListener(editListener);
+//                    editListener.changed(null, !order.selectedProperty().get(), order.selectedProperty().get());
+//                }
+//            }
+//
+//            @Override
+//            public void startEdit() {
+//                TableData<SupplierOrder> order = getTableView().getItems().get(getIndex());
+//                if (order.isSelectedProperty().get()) {
+//                    initialValue = super.getItem();
+//                    super.startEdit();
+//                    editedCells.add(this);
+//                }
+//            }
+//
+//            @Override
+//            public void cancelEdit() {
+//                super.cancelEdit();
+//                super.setGraphic(null);
+//                super.setItem(initialValue);
+//                SupplierOrder order = getTableView().getItems().get(getIndex());
+//                if (editListener != null) {
+//                    order.selectedProperty().removeListener(editListener);
+//                }
+//                editedCells.remove(this);
+//            }
+//        });
         quantityColumn.setEditable(true);
 
 //        quantityColumn.setCellFactory(column -> new EditableSpinnerTableCell<SupplierOrder, Float>(new FloatStringConverter()));
