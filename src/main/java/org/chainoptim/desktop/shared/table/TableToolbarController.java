@@ -15,6 +15,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+import lombok.Getter;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,14 +35,19 @@ public class TableToolbarController {
     private Button orderingButton;
     @FXML
     private Button refreshButton;
+    @Getter
     @FXML
     private Button cancelRowSelectionButton;
+    @Getter
     @FXML
     private Button deleteSelectedRowsButton;
+    @Getter
     @FXML
     private Button editSelectedRowsButton;
+    @Getter
     @FXML
     private Button saveChangesButton;
+    @Getter
     @FXML
     private Button createNewOrderButton;
 
@@ -197,31 +203,4 @@ public class TableToolbarController {
                 .orElse(selectedSortOption);
         searchParams.setSortOption(backendSortOption);
     }
-
-    @FXML
-    private void handleCancelRowSelection() {
-        supplierOrdersController.deselectAllRows();
-    }
-
-    @FXML
-    private void handleDeleteSelectedRows() {
-
-    }
-
-    @FXML
-    private void handleEditSelectedRows() {
-
-    }
-
-    @FXML
-    private void handleSaveChanges() {
-
-    }
-
-    @FXML
-    private void handleCreateNewOrder() {
-
-    }
-
-
 }
