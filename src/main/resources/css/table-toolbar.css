@@ -9,4 +9,24 @@
 
 .items-alignment {
     -fx-spacing: 10px;
+    -fx-padding: 4px 8px;
+}
+
+.table-toolbar .combo-box {
+    -fx-pref-height: 32px;
+    -fx-background-color: #ffffff;
+    -fx-font-weight: bold;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.table-toolbar .combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.table-toolbar .combo-box .arrow {
+    -fx-background-color: #c0c0c0;
 }

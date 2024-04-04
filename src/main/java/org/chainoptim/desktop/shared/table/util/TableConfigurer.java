@@ -6,7 +6,10 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 
 public class TableConfigurer {
 
+    private TableConfigurer() {}
+
     public static <T> void configureTableView(TableView<T> tableView, TableColumn<T, Boolean> selectRowColumn) {
+        tableView.setEditable(true);
         tableView.setMaxHeight(Double.MAX_VALUE);
         tableView.setEditable(true);
         tableView.getColumns().forEach(column -> column.setEditable(false));
