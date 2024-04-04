@@ -1,8 +1,7 @@
 package org.chainoptim.desktop.shared.table;
 
-import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
+
 import com.google.inject.Inject;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -18,15 +17,20 @@ import javafx.util.Duration;
 
 import lombok.Getter;
 
-import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
 
 public class TableToolbarController {
 
+    // State
     private final SearchParams searchParams;
-    private final NavigationService navigationService;
 
+    private final Map<String, String> sortOptionsMap = Map.of(
+            "createdAt", "Created At",
+            "updatedAt", "Updated At"
+    );
+
+    // FXMl
     @FXML
     private TextField searchBar;
     @FXML
@@ -53,46 +57,29 @@ public class TableToolbarController {
     @FXML
     private Button createNewOrderButton;
 
-    private final Image sortUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/sort-up.png")));
-    private final ImageView sortUpImageView = new ImageView(sortUpIcon);
-    private final Image sortDownIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/sort-down.png")));
-    private final ImageView sortDownImageView = new ImageView(sortDownIcon);
-    private final Image editIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
-    private final ImageView editImageView = new ImageView(editIcon);
-    private final Image searchIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/search.png")));
-    private final ImageView searchImageView = new ImageView(searchIcon);
-    private final Image refreshIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/rotate-right-solid.png")));
-    private final ImageView refreshImageView = new ImageView(refreshIcon);
-    private final Image cancelIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
-    private final ImageView cancelImageView =new ImageView (cancelIcon);
-    private final Image deleteIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
-    private final ImageView deleteImageView = new ImageView(deleteIcon);
-    private final Image saveIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
-    private final ImageView saveImageView = new ImageView(saveIcon);
-    private final Image plusIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
-    private final ImageView plusImageView = new ImageView(plusIcon);
-    private final Map<String, String> sortOptionsMap = Map.of(
-            "createdAt", "Created At",
-            "updatedAt", "Updated At"
-    );
+    // Icons
+    private Image sortUpIcon;
+    private Image sortDownIcon;
+    private Image editIcon;
+    private Image searchIcon;
+    private Image refreshIcon;
+    private Image cancelIcon;
+    private Image deleteIcon;
+    private Image saveIcon;
+    private Image plusIcon;
 
     @Inject
     public TableToolbarController(
-            SearchParams searchParams,
-            NavigationService navigationService
+            SearchParams searchParams
     ) {
         this.searchParams = searchParams;
-        this.navigationService = navigationService;
-    }
-
-    private void initializeIcons() {
-
     }
 
     public void initialize(Runnable refreshAction) {
+        initializeIcons();
         setSearchButton();
         setOrderingButton();
-        setRefreshButton(() -> {});
+        setRefreshButton(refreshAction);
         setCancelRowSelectionButton();
         setDeleteSelectedRowsButton();
         setEditSelectedRowsButton();
@@ -100,9 +87,20 @@ public class TableToolbarController {
         setCreateNewOrderButton();
     }
 
+    private void initializeIcons() {
+        sortUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/sort-up.png")));
+        sortDownIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/sort-down.png")));
+        editIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
+        searchIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/search.png")));
+        refreshIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/rotate-right-solid.png")));
+        cancelIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
+        deleteIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
+        saveIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
+        plusIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
+    }
+
     private void setSearchButton() {
-        searchImageView.setFitWidth(16);
-        searchImageView.setFitHeight(16);
+        ImageView searchImageView = createImageView(searchIcon, 16, 16);
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(1);
         searchImageView.setEffect(colorAdjust);
@@ -110,16 +108,12 @@ public class TableToolbarController {
     }
 
     private void setOrderingButton() {
-        sortDownImageView.setFitWidth(16);
-        sortDownImageView.setFitHeight(16);
-        sortUpImageView.setFitWidth(16);
-        sortUpImageView.setFitHeight(16);
+        ImageView sortUpImageView = createImageView(sortUpIcon, 16, 16);
         orderingButton.setGraphic(sortUpImageView);
     }
 
     public void setRefreshButton(Runnable refreshAction) {
-        refreshImageView.setFitWidth(14);
-        refreshImageView.setFitHeight(14);
+        ImageView refreshImageView = createImageView(refreshIcon, 14, 14);
 
         // Apply rotation on click
         RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), refreshImageView);
@@ -138,36 +132,31 @@ public class TableToolbarController {
     }
 
     private void setCancelRowSelectionButton() {
-        cancelImageView.setFitWidth(14);
-        cancelImageView.setFitHeight(14);
+        ImageView cancelImageView = createImageView(cancelIcon, 14, 14);
         cancelRowSelectionButton.setGraphic(cancelImageView);
         cancelRowSelectionButton.setVisible(false);
     }
 
     private void setDeleteSelectedRowsButton() {
-        deleteImageView.setFitWidth(14);
-        deleteImageView.setFitHeight(14);
+        ImageView deleteImageView = createImageView(deleteIcon, 14, 14);
         deleteSelectedRowsButton.setGraphic(deleteImageView);
         deleteSelectedRowsButton.setVisible(false);
     }
 
     private void setEditSelectedRowsButton() {
-        editImageView.setFitWidth(14);
-        editImageView.setFitHeight(14);
+        ImageView editImageView = createImageView(editIcon, 14, 14);
         editSelectedRowsButton.setGraphic(editImageView);
         editSelectedRowsButton.setVisible(false);
     }
 
     private void setSaveChangesButton() {
-        saveImageView.setFitWidth(14);
-        saveImageView.setFitHeight(14);
+        ImageView saveImageView = createImageView(saveIcon, 14, 14);
         saveChangesButton.setGraphic(saveImageView);
-        saveChangesButton.setVisible(false);
+        toggleButtonVisibility(saveChangesButton, false);
     }
 
     private void setCreateNewOrderButton() {
-        plusImageView.setFitWidth(14);
-        plusImageView.setFitHeight(14);
+        ImageView plusImageView = createImageView(plusIcon, 14, 14);
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(1);
         plusImageView.setEffect(colorAdjust);
@@ -175,10 +164,28 @@ public class TableToolbarController {
         createNewOrderButton.setContentDisplay(ContentDisplay.LEFT);
     }
 
-    public void setButtonsAvailability(boolean value) {
-        cancelRowSelectionButton.setVisible(value);
-        deleteSelectedRowsButton.setVisible(value);
-        editSelectedRowsButton.setVisible(value);
+    public void toggleButtonVisibilityOnSelection(boolean isSelection) {
+        toggleButtonVisibility(cancelRowSelectionButton, isSelection);
+        toggleButtonVisibility(deleteSelectedRowsButton, isSelection);
+        toggleButtonVisibility(editSelectedRowsButton, isSelection);
+    }
+
+    public void toggleButtonVisibilityOnEdit(boolean isEditing) {
+        toggleButtonVisibility(saveChangesButton, isEditing);
+        toggleButtonVisibility(deleteSelectedRowsButton, !isEditing);
+        toggleButtonVisibility(editSelectedRowsButton, !isEditing);
+    }
+
+    public void toggleButtonVisibilityOnCancel() {
+        toggleButtonVisibility(cancelRowSelectionButton, false);
+        toggleButtonVisibility(deleteSelectedRowsButton, false);
+        toggleButtonVisibility(editSelectedRowsButton, false);
+        toggleButtonVisibility(saveChangesButton, false);
+    }
+
+    private void toggleButtonVisibility(Button button, boolean isVisible) {
+        button.setVisible(isVisible);
+        button.setManaged(isVisible);
     }
 
     @FXML
@@ -189,9 +196,11 @@ public class TableToolbarController {
     @FXML
     private void handleOrdering() {
         searchParams.setAscending(!searchParams.getAscending());
-        if (orderingButton.getGraphic().equals(sortDownImageView)) {
+        if (Boolean.TRUE.equals(searchParams.getAscending())) {
+            ImageView sortUpImageView = createImageView(sortUpIcon, 16, 16);
             orderingButton.setGraphic(sortUpImageView);
         } else {
+            ImageView sortDownImageView = createImageView(sortUpIcon, 16, 16);
             orderingButton.setGraphic(sortDownImageView);
         }
     }
@@ -205,5 +214,12 @@ public class TableToolbarController {
                 .findFirst()
                 .orElse(selectedSortOption);
         searchParams.setSortOption(backendSortOption);
+    }
+
+    private ImageView createImageView(Image image, int width, int height) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        return imageView;
     }
 }

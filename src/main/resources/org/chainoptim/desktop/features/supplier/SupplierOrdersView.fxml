@@ -15,15 +15,15 @@
                 <TableView fx:id="tableView" styleClass="table-view">
                     <columns>
                         <TableColumn fx:id="selectRowColumn" prefWidth="50"/>
-                        <TableColumn text="Order ID" fx:id="orderIdColumn" minWidth="150"/>
-                        <TableColumn text="Supplier ID" fx:id="supplierIdColumn" minWidth="150"/>
-                        <TableColumn text="Component ID" fx:id="componentIdColumn" minWidth="150"/>
+                        <TableColumn text="Order ID" fx:id="orderIdColumn" minWidth="120"/>
+                        <TableColumn text="Company Order ID" fx:id="companyIdColumn" minWidth="150"/>
+                        <TableColumn text="Supplier" fx:id="supplierNameColumn" minWidth="150"/>
+                        <TableColumn text="Component" fx:id="componentNameColumn" minWidth="150"/>
                         <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
                         <TableColumn text="Status" fx:id="statusColumn" minWidth="150"/>
                         <TableColumn text="Order Date" fx:id="orderDateColumn" minWidth="150"/>
                         <TableColumn text="Estimated Delivery Date" fx:id="estimatedDeliveryDateColumn" minWidth="200"/>
                         <TableColumn text="Delivery Date" fx:id="deliveryDateColumn" minWidth="150"/>
-                        <TableColumn text="Company ID" fx:id="companyIdColumn" minWidth="150"/>
                     </columns>
                 </TableView>
                 <StackPane fx:id="pageSelectorContainer"/>
