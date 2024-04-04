@@ -8,11 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SupplyChainSnapshot {
-
-    private long membersCount;
-    private long productsCount;
-    private long factoriesCount;
-    private long warehousesCount;
-    private long suppliersCount;
-    private long clientsCount;
+    private Integer id;
+    private Integer organizationId;
+    private Snapshot snapshot;
 }

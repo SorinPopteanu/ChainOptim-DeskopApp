@@ -126,6 +126,8 @@ public class ProductsController implements Initializable {
 
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
+            int productsLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxProducts();
+            headerController.disableCreateButton(totalCount >= productsLimit, "You have reached the limit of products allowed by your current subscription plan.");
 
             productsVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {

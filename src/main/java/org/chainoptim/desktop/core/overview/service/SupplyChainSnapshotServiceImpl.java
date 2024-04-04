@@ -38,8 +38,8 @@ public class SupplyChainSnapshotServiceImpl implements SupplyChainSnapshotServic
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<SupplyChainSnapshot>empty();
                     try {
-                        SupplyChainSnapshot supplyChainSnapshot = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<SupplyChainSnapshot>() {});
-                        return Optional.of(supplyChainSnapshot);
+                        SupplyChainSnapshot snapshot = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<SupplyChainSnapshot>() {});
+                        return Optional.of(snapshot);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return Optional.<SupplyChainSnapshot>empty();

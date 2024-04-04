@@ -131,6 +131,8 @@ public class WarehousesController implements Initializable {
 
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
+            int warehousesLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxWarehouses();
+            headerController.disableCreateButton(totalCount >= warehousesLimit, "You have reached the limit of warehouses allowed by your current subscription plan.");
 
             warehousesVBox.getChildren().clear();
             if(paginatedResults.results.isEmpty()) {

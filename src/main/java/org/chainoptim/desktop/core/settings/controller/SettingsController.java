@@ -176,7 +176,7 @@ public class SettingsController implements Initializable, SettingsListener {
     @Override
     public void handleSettingsChanged(boolean haveChanged) {
         saveButton.setDisable(!haveChanged);
-        saveButton.getStyleClass().setAll(haveChanged ? "standard-write-button" : "no-changes-button");
+        saveButton.getStyleClass().setAll(haveChanged ? "standard-write-button" : "standard-write-button-disabled");
         cancelButton.setVisible(haveChanged);
         cancelButton.setManaged(haveChanged);
     }

@@ -27,16 +27,3 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-
-.no-changes-button {
-    -fx-pref-height: 32px;
-    -fx-background-color: #5588DD;
-    -fx-background-radius: 4;
-    -fx-padding: 4px 12px 4px 12px;
-    -fx-border-radius: 4;
-    -fx-text-fill: white;
-    -fx-font-weight: normal;
-    -fx-font-size: 14px;
-    -fx-graphic-text-gap: 8px;
-    -fx-cursor: hand;
-}

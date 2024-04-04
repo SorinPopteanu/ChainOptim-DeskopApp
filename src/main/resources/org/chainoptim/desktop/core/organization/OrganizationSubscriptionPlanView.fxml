@@ -12,6 +12,8 @@
     <HBox styleClass="tab-title-container" spacing="10" alignment="CENTER">
         <Label fx:id="tabTitle" styleClass="tab-title"/>
         <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="cancelButton"/>
+        <Button fx:id="continueButton"/>
         <Button fx:id="changePlanButton"/>
     </HBox>
 

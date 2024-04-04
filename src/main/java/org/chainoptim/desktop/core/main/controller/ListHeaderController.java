@@ -68,6 +68,18 @@ public class ListHeaderController {
         setNewItemKey(createNewItem);
     }
 
+    public void disableCreateButton(boolean isDisabled, String disabledTooltipText) {
+        if (isDisabled) {
+            createNewItemButton.getStyleClass().setAll("standard-write-button-disabled");
+            createNewItemButton.setTooltip(new Tooltip(disabledTooltipText));
+            createNewItemButton.setOnAction(null);
+        } else {
+            createNewItemButton.getStyleClass().setAll("standard-write-button");
+            createNewItemButton.setTooltip(null);
+            createNewItemButton.setOnAction(e -> handleCreateNewItem());
+        }
+    }
+
     private void setTitle(String titleText, String titleIconPath) {
         title.setText(titleText);
         Image titleIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream(titleIconPath)));
@@ -137,6 +149,7 @@ public class ListHeaderController {
         plusIconView.setEffect(colorAdjust);
         createNewItemButton.setGraphic(plusIconView);
         createNewItemButton.setContentDisplay(ContentDisplay.LEFT);
+        createNewItemButton.setOnAction(e -> handleCreateNewItem());
     }
 
     @FXML
@@ -169,7 +182,6 @@ public class ListHeaderController {
         this.createNewItem = createNewItem;
     }
 
-    @FXML
     private void handleCreateNewItem() {
         navigationService.switchView(createNewItem, true);
     }

@@ -40,12 +40,17 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
     @FXML
     private Button changePlanButton;
     @FXML
+    private Button cancelButton;
+    @FXML
+    private Button continueButton;
+    @FXML
     private Label priceLabel;
     @FXML
     private GridPane planGridPane;
 
     // Icons
     private Image editImage;
+    private Image cancelImage;
 
     @Inject
     public OrganizationSubscriptionPlanController(SupplyChainSnapshotContext snapshotContext) {
@@ -59,30 +64,42 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
         this.currentPlan = organizationViewData.getOrganization().getSubscriptionPlanTier();
         this.currentPreviewedPlan = currentPlan;
 
-        initializeIcons();
         initializeUI();
     }
 
     private void initializeUI() {
-        tabTitle.setText("Subscription Plan: " + organizationViewData.getOrganization().getSubscriptionPlanTier().toString());
-
-        styleEditButton(changePlanButton);
-        changePlanButton.setText(currentPlan == currentPreviewedPlan ? "Change Plan" : "Continue");
-        ContextMenu planPopover = createPlanPopover();
-        // Show Preview Plan popover
-        changePlanButton.setOnAction(event ->
-            planPopover.show(changePlanButton, Side.BOTTOM, 0, 0));
-
-        priceLabel.setText("$" + planDetails.getPricePerMonthDollars() + " / month");
-
+        initializeIcons();
+        initializeTitleContainer();
         renderGridPane();
     }
 
     private void initializeIcons() {
         editImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
+        cancelImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/xmark-solid.png")));
+    }
+
+    private void initializeTitleContainer() {
+        tabTitle.setText("Subscription Plan: " + organizationViewData.getOrganization().getSubscriptionPlanTier().toString());
+
+        styleEditButton(changePlanButton);
+        changePlanButton.setText("Change Plan");
+        // Show Preview Plan popover
+        ContextMenu planPopover = createPlanPopover();
+        changePlanButton.setOnAction(event -> planPopover.show(changePlanButton, Side.BOTTOM, 0, 0));
+
+        styleEditButton(continueButton);
+        continueButton.setText("Continue");
+        continueButton.setOnAction(event -> handleContinue());
+
+        styleCancelButton(cancelButton);
+        cancelButton.setOnAction(event -> handleCancelPreview(planPopover));
+
+        toggleButtonsVisibility(false);
     }
 
     private void renderGridPane() {
+        priceLabel.setText("$" + planDetails.getPricePerMonthDollars() + " / month");
+
         planGridPane.getChildren().clear();
         planGridPane.getColumnConstraints().clear();
 
@@ -98,28 +115,28 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
         addSectionRow("Products", 7);
         addIntLimitRow("Products", (int) snapshotContext.getSnapshot().getProductsCount(), planDetails.getMaxProducts(), 8);
         addIntLimitRow("Components", 0, planDetails.getMaxComponents(), 9);
-        addIntLimitRow("Stages per Product", 0, planDetails.getMaxStagesPerProduct(), 10);
+        addIntLimitRow("Product Stages", 0, planDetails.getMaxProductStages(), 10);
 
         addSectionRow("Factories", 11);
         addIntLimitRow("Factories", (int) snapshotContext.getSnapshot().getFactoriesCount(), planDetails.getMaxFactories(), 12);
-        addIntLimitRow("Stages per Factory", 0, planDetails.getMaxStagesPerFactory(), 13);
-        addIntLimitRow("Inventory Items per Factory", 0, planDetails.getMaxInventoryItemsPerFactory(), 14);
+        addIntLimitRow("Factory Stages", 0, planDetails.getMaxFactoryStages(), 13);
+        addIntLimitRow("Factory Inventory Items", (int) snapshotContext.getSnapshot().getFactoryInventoryItemsCount(), planDetails.getMaxFactoryInventoryItems(), 14);
         addBooleanRow("Factory Performance", planDetails.isFactoryPerformanceOn(), 15);
 
         addSectionRow("Warehouses", 16);
         addIntLimitRow("Warehouses", (int) snapshotContext.getSnapshot().getWarehousesCount(), planDetails.getMaxWarehouses(), 17);
-        addIntLimitRow("Inventory Items per Warehouse", 0, planDetails.getMaxInventoryItemsPerWarehouse(), 18);
+        addIntLimitRow("Warehouse Inventory Items", (int) snapshotContext.getSnapshot().getFactoryInventoryItemsCount(), planDetails.getMaxWarehouseInventoryItems(), 18);
 
         addSectionRow("Suppliers", 19);
         addIntLimitRow("Suppliers", (int) snapshotContext.getSnapshot().getSuppliersCount(), planDetails.getMaxSuppliers(), 20);
-        addIntLimitRow("Orders per Supplier", 0, planDetails.getMaxOrdersPerSupplier(), 21);
-        addIntLimitRow("Shipments per Supplier Order", 0, planDetails.getMaxShipmentsPerSupplierOrder(), 22);
+        addIntLimitRow("Supplier Orders", (int) snapshotContext.getSnapshot().getSupplierOrdersCount(), planDetails.getMaxSupplierOrders(), 21);
+        addIntLimitRow("Supplier Shipments", 0, planDetails.getMaxSupplierShipments(), 22);
         addBooleanRow("Supplier Performance", planDetails.isSupplierPerformanceOn(), 23);
 
         addSectionRow("Clients", 24);
         addIntLimitRow("Clients", (int) snapshotContext.getSnapshot().getClientsCount(), planDetails.getMaxClients(), 25);
-        addIntLimitRow("Orders per Client", 0, planDetails.getMaxOrdersPerClient(), 26);
-        addIntLimitRow("Shipments per Client Order", 0, planDetails.getMaxShipmentsPerClientOrder(), 27);
+        addIntLimitRow("Client Orders", (int) snapshotContext.getSnapshot().getClientOrdersCount(), planDetails.getMaxClientOrders(), 26);
+        addIntLimitRow("Client Shipments", 0, planDetails.getMaxClientShipments(), 27);
         addBooleanRow("Client Performance", planDetails.isClientPerformanceOn(), 28);
     }
 
@@ -164,7 +181,7 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
 
     private ContextMenu createPlanPopover() {
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setStyle("-fx-pref-width: 125px;");
+        contextMenu.setStyle("-fx-pref-width: 124px;");
 
         // Add a non-selectable label item for "Preview"
         Label previewLabel = new Label("Preview");
@@ -182,24 +199,61 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
             if (plan == currentPlan) {
                 planItem.getStyleClass().add("general-label");
             }
-            planItem.setOnAction(event -> {
-                // Rerender with preview plan
-                if (currentPreviewedPlan == plan) return;
-                currentPreviewedPlan = plan;
-                planDetails = SubscriptionPlans.getPlans().get(plan);
-                initializeUI();
-            });
+            planItem.setOnAction(event -> handlePreviewPlan(plan));
             contextMenu.getItems().add(planItem);
         }
 
         return contextMenu;
     }
 
+    private void handlePreviewPlan(Organization.SubscriptionPlanTier plan) {
+        toggleButtonsVisibility(true);
+
+        previewPlan(plan);
+    }
+
+    private void handleCancelPreview(ContextMenu planPopover) {
+        toggleButtonsVisibility(false);
+
+        planPopover.hide();
+
+        previewPlan(currentPlan);
+    }
+
+    private void previewPlan(Organization.SubscriptionPlanTier plan) {
+        if (currentPreviewedPlan == plan) return;
+        currentPreviewedPlan = plan;
+        planDetails = SubscriptionPlans.getPlans().get(plan);
+        // Rerender UI
+        tabTitle.setText("Subscription Plan: " + plan.toString());
+        renderGridPane();
+    }
+
+    private void handleContinue() {
+
+    }
+
+    private void toggleButtonsVisibility(boolean planPreviewSelected) {
+        changePlanButton.setVisible(!planPreviewSelected);
+        changePlanButton.setManaged(!planPreviewSelected);
+        continueButton.setVisible(planPreviewSelected);
+        continueButton.setManaged(planPreviewSelected);
+        cancelButton.setVisible(planPreviewSelected);
+        cancelButton.setManaged(planPreviewSelected);
+    }
+
     // Utils
     private void styleEditButton(Button button) {
-        button.getStyleClass().add("standard-write-button");
+        button.getStyleClass().setAll("standard-write-button");
         button.setMinHeight(32);
         button.setGraphic(createImageView(editImage));
+    }
+
+    private void styleCancelButton(Button button) {
+        button.setText("Cancel");
+        button.setMinHeight(32);
+        button.getStyleClass().setAll("standard-cancel-button");
+        button.setGraphic(createImageView(cancelImage));
     }
 
     private ImageView createImageView(Image image) {

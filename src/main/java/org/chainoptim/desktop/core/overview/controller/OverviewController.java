@@ -6,6 +6,7 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.notification.model.NotificationUser;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
+import org.chainoptim.desktop.core.overview.model.Snapshot;
 import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -47,7 +48,7 @@ public class OverviewController implements Initializable {
     private final FallbackManager fallbackManager;
 
     // State
-    private SupplyChainSnapshot snapshot;
+    private Snapshot snapshot;
     private SupplyChainSnapshotContext snapshotContext;
 
     // FXML
@@ -158,7 +159,7 @@ public class OverviewController implements Initializable {
             if (snapshotOptional.isEmpty()) {
                 return;
             }
-            snapshot = snapshotOptional.get();
+            snapshot = snapshotOptional.get().getSnapshot();
             snapshotContext.setSnapshot(snapshot);
             fallbackManager.setLoading(false);
 
@@ -183,7 +184,7 @@ public class OverviewController implements Initializable {
     }
 
     // UI Rendering
-    private void renderEntityCountsVBox(SupplyChainSnapshot snapshot) {
+    private void renderEntityCountsVBox(Snapshot snapshot) {
         entityCountsHBox.getChildren().clear();
 
         HBox productsCountLabel = getFeatureCountBadge("Products", snapshot.getProductsCount());

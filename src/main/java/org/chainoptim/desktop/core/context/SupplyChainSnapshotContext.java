@@ -1,10 +1,10 @@
 package org.chainoptim.desktop.core.context;
 
-import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
+import org.chainoptim.desktop.core.overview.model.Snapshot;
 import lombok.Data;
 
 @Data
 public class SupplyChainSnapshotContext {
 
-    private SupplyChainSnapshot snapshot;
+    private Snapshot snapshot;
 }

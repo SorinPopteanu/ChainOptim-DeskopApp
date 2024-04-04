@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.client.controller;
 
+import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
@@ -82,6 +83,7 @@ public class ClientsController implements Initializable {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadClients();
+
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
     }
 
@@ -127,6 +129,8 @@ public class ClientsController implements Initializable {
 
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
+            int clientsLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxClients();
+            headerController.disableCreateButton(totalCount >= clientsLimit, "You have reached the limit of clients allowed by your current subscription plan.");
 
             clientsVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {
