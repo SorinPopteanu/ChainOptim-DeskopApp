@@ -5,6 +5,8 @@ import com.google.inject.Injector;
 import org.chainoptim.desktop.core.main.service.SceneManager;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController;
+import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.util.resourceloader.FontLoaderService;
 
 import javafx.application.Application;

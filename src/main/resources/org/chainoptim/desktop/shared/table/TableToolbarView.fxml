@@ -19,8 +19,11 @@
             <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="refreshButton" styleClass="refresh-button"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="editButton" onAction="#handleEditButton" styleClass="standard-write-button"/>
-            <Button fx:id="createNewOrderButton" onAction="#handleCreateNewOrderButton" styleClass="standard-write-button"/>
+            <Button fx:id="cancelRowSelectionButton" styleClass="cancel-edit-button"/>
+            <Button fx:id="deleteSelectedRowsButton" styleClass="standard-delete-button"/>
+            <Button fx:id="editSelectedRowsButton" styleClass="standard-write-button"/>
+            <Button fx:id="saveChangesButton" styleClass="standard-write-button"/>
+            <Button fx:id="createNewOrderButton" styleClass="standard-write-button"/>
         </HBox>
     </ToolBar>
 
