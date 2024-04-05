@@ -152,5 +152,8 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.shared.search.model to com.fasterxml.jackson.databind, com.google.guice;
     opens org.chainoptim.desktop.shared.search.controller to com.google.guice, javafx.fxml;
 
+    // - Caching
+    opens org.chainoptim.desktop.shared.caching to com.google.guice;
+
     exports org.chainoptim.desktop;
 }

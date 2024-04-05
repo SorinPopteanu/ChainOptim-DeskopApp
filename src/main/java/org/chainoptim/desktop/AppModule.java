@@ -23,8 +23,11 @@ import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.core.user.service.UserServiceImpl;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
+import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.*;
+import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.*;
+import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.*;
 import org.chainoptim.desktop.features.productpipeline.service.StageService;
 import org.chainoptim.desktop.features.productpipeline.service.StageServiceImpl;
@@ -36,14 +39,19 @@ import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductPr
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationServiceImpl;
+import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.service.*;
+import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseServiceImpl;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteServiceImpl;
+import org.chainoptim.desktop.shared.caching.CachingService;
+import org.chainoptim.desktop.shared.caching.CachingServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
 import org.chainoptim.desktop.shared.features.location.service.LocationServiceImpl;
+import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -53,6 +61,7 @@ import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderServiceImpl;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 
 import java.net.http.HttpClient;
 
@@ -141,5 +150,17 @@ public class AppModule extends AbstractModule {
 
         // - Search
         bind(SearchParams.class).to(SearchParamsImpl.class);
+
+        // - Caching
+        bind(new TypeLiteral<CachingService<PaginatedResults<Product>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Product>>>() {});
+        bind(new TypeLiteral<CachingService<PaginatedResults<Factory>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Factory>>>() {});
+        bind(new TypeLiteral<CachingService<PaginatedResults<Warehouse>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Warehouse>>>() {});
+        bind(new TypeLiteral<CachingService<PaginatedResults<Supplier>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Supplier>>>() {});
+        bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {});
     }
 }
