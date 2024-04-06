@@ -34,7 +34,6 @@ public class CachingServiceImpl<T> implements CachingService<T> {
     }
 
     public boolean isStale(String key) {
-        System.out.println("Cache: " + cache);
         CachedData<T> cachedData = cache.get(key);
         return cachedData == null || cachedData.isStale();
     }
