@@ -40,6 +40,10 @@
     -fx-cursor: hand;
 }
 
+.standard-delete-button:hover {
+    -fx-background-color: #A52A2A;
+}
+
 .standard-cancel-button {
     -fx-pref-height: 32px;
     -fx-padding: 4px 12px 4px 12px;
@@ -53,8 +57,8 @@
     -fx-cursor: hand;
 }
 
-.standard-delete-button:hover {
-    -fx-background-color: #A52A2A;
+.standard-cancel-button:hover {
+    -fx-background-color: #e0e0e0;
 }
 
 /* Button with default JavaFX styles removed */
