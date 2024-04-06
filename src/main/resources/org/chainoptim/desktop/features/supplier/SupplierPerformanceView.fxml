@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierPerformanceController"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierPerformanceController"
+      prefHeight="400.0" prefWidth="600.0" style="-fx-padding: 10px 20px;" spacing="4">
 
-</AnchorPane>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="Total Delivered Orders:" styleClass="general-label"/>
+        <Label fx:id="totalDeliveredOrders" styleClass="count-label"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="Total Delay Time:" styleClass="general-label"/>
+        <Label fx:id="totalDelays" styleClass="count-label"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="Average Delay Time Per Order:" styleClass="general-label"/>
+        <Label fx:id="averageDelayPerOrder" styleClass="count-label"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="Average Time To Ship Order:" styleClass="general-label"/>
+        <Label fx:id="averageTimeToShipOrder" styleClass="count-label"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="Orders Delivered On Time:" styleClass="general-label"/>
+        <Label fx:id="onTimeOrdersPercentage" styleClass="count-label"/>
+    </HBox>
+</VBox>
