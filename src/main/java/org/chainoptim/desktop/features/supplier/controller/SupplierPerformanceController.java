@@ -66,6 +66,8 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
     @FXML
     private Label averageOrderQuantity;
     @FXML
+    private Label averageShipmentQuantity;
+    @FXML
     private Label deliveredPerOrderedPercentage;
     @FXML
     private LineChart<String, Number> lineChart;
@@ -175,6 +177,7 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
         totalDeliveredQuantity.setText(Float.toString(componentDeliveryPerformance.getTotalDeliveredQuantity()));
         averageDeliveredQuantity.setText(Float.toString(componentDeliveryPerformance.getAverageDeliveredQuantity()));
         averageOrderQuantity.setText(Float.toString(componentDeliveryPerformance.getAverageOrderQuantity()));
+        averageShipmentQuantity.setText(Float.toString(componentDeliveryPerformance.getAverageShipmentQuantity()));
         deliveredPerOrderedPercentage.setText(componentDeliveryPerformance.getDeliveredPerOrderedRatio() * 100 + "%");
 
         plotData(componentDeliveryPerformance.getFirstDeliveryDate(), componentDeliveryPerformance.getDeliveredQuantityOverTime());
@@ -182,6 +185,8 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
 
     private void plotData(LocalDateTime firstDeliveryDate, Map<Float, Float> deliveredQuantityOverTime) {
         lineChart.getData().clear();
+        lineChart.setLegendVisible(false);
+
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         LocalDate startDate = firstDeliveryDate.toLocalDate();

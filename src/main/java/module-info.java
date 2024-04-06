@@ -54,11 +54,8 @@ module org.chainoptim.desktop {
     // - Organization
     opens org.chainoptim.desktop.core.organization.controller to com.fasterxml.jackson.databind, com.google.guice, javafx.fxml;
     opens org.chainoptim.desktop.core.organization.service to com.google.guice;
-    opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.organization.dto to com.fasterxml.jackson.databind;
-
-    // - Subscription Plan
-    opens org.chainoptim.desktop.core.subscriptionplan.model to com.google.guice, com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind, com.google.guice;
 
     // - Overview
     opens org.chainoptim.desktop.core.overview.controller to com.google.guice, javafx.fxml;

@@ -1,8 +1,6 @@
 package org.chainoptim.desktop.core.organization.model;
 
 import lombok.Data;
-import org.chainoptim.desktop.core.subscriptionplan.model.PlanDetails;
-import org.chainoptim.desktop.core.subscriptionplan.model.SubscriptionPlans;
 import org.chainoptim.desktop.core.user.model.User;
 
 import java.util.Set;
