@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.function.Consumer;
+import static org.chainoptim.desktop.core.organization.model.Organization.SubscriptionPlanTier.PRO;
 
 /*
  * Root controller managing the currently displayed main content
@@ -83,7 +84,11 @@ public class AppController {
             if (userOptional.isEmpty()) {
                 return;
             }
+
             User user = userOptional.get();
+
+            user.getOrganization().setSubscriptionPlanTier(PRO);
+            System.out.println("Subscription plan: " + user.getOrganization().getSubscriptionPlanTier().toString());
 
             // Set user to TenantContext for reuse throughout the app
             TenantContext.setCurrentUser(user);

@@ -1,12 +1,17 @@
 package org.chainoptim.desktop.features.supplier.controller;
 
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -17,6 +22,7 @@ import org.chainoptim.desktop.shared.table.model.TableData;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -25,9 +31,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +49,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private final CurrentSelectionService currentSelectionService;
     private final NavigationServiceImpl navigationService;
     private final CommonViewsLoader commonViewsLoader;
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
 
     // Controllers
     private TableToolbarController tableToolbarController;
@@ -53,6 +64,10 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private final List<Integer> selectedRowsIndices = new ArrayList<>();
     private final SimpleIntegerProperty selectedCount = new SimpleIntegerProperty(0);
     private final BooleanProperty isEditMode = new SimpleBooleanProperty(false);
+
+    // Listeners
+    private RunnableConfirmDialogActionListener<CustomRole> confirmDialogUpdateListener;
+    private RunnableConfirmDialogActionListener<CustomRole> confirmDialogDeleteListener;
 
     // FXML
     @FXML
@@ -83,6 +98,10 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private TableColumn<TableData<SupplierOrder>, LocalDateTime> deliveryDateColumn;
     @FXML
     private StackPane pageSelectorContainer;
+    @FXML
+    private StackPane updateConfirmDialogPane;
+    @FXML
+    private StackPane deleteConfirmDialogPane;
 
 
     @Inject
@@ -91,13 +110,17 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                                     CurrentSelectionService currentSelectionService,
                                     CommonViewsLoader commonViewsLoader,
                                     FallbackManager fallbackManager,
-                                    SearchParams searchParams) {
+                                    SearchParams searchParams,
+                                    FXMLLoaderService fxmlLoaderService,
+                                    ControllerFactory controllerFactory) {
         this.supplierOrdersService = supplierOrdersService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
         this.searchParams = searchParams;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
     }
 
     @Override
@@ -122,7 +145,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"
         ));
         supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.supplier.getName()));
-        componentNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getComponent().getName()));
+//        componentNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getComponent().getName()));
         quantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getQuantity()));
         statusColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getStatus() != null ? data.getValue().getData().getStatus().name() : "N/A"));
         orderDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getOrderDate()));
@@ -243,11 +266,55 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     }
 
     private void deleteSelectedRows() {
-        // supplierOrdersService.deleteOrdersInBulk(selectedRowsIndices).thenApply... (actually you will go to Confirm Dialog before this)
-        // tableView.getItems().removeIf(row -> selectedRowsIndices.contains(tableView.getItems().indexOf(row)));
+//         supplierOrdersService.deleteOrdersInBulk(selectedRowsIndices).thenApply... (actually you will go to Confirm Dialog before this)
+//         tableView.getItems().removeIf(row -> selectedRowsIndices.contains(tableView.getItems().indexOf(row)));
 
         isEditMode.set(false);
         tableView.refresh();
     }
+
+    private void loadUpdateConfirmDialog() {
+        // Load confirm dialog
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
+
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Supplier Orders Update", "Are you sure you want to update selected orders", null);
+        CustomRole customRole = new CustomRole();
+        customRole.setId(1);
+
+        try {
+            Node view = loader.load();
+            GenericConfirmDialogController<CustomRole> controller = loader.getController();
+            controller.setData(customRole, confirmDialogInput);
+            controller.setActionListener(confirmDialogUpdateListener);
+            updateConfirmDialogPane.getChildren().add(view);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void loadDeleteConfirmDialog() {
+        //Load delete dialog
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
+
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Supplier Orders Delete", "Are you sure you want to delete selected orders?", null);
+        CustomRole customRole = new CustomRole();
+        customRole.setId(2);
+
+        try {
+            Node view = loader.load();
+            GenericConfirmDialogController<CustomRole> controller = loader.getController();
+            controller.setData(customRole, confirmDialogInput);
+            controller.setActionListener(confirmDialogDeleteListener);
+            deleteConfirmDialogPane.getChildren().add(view);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+
+
+
+
 }
 

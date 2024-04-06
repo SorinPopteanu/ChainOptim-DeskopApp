@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import static org.chainoptim.desktop.core.organization.model.Organization.SubscriptionPlanTier.PRO;
 
 public class OrganizationController implements Initializable {
 
@@ -166,6 +167,9 @@ public class OrganizationController implements Initializable {
                 return;
             }
             organizationViewData.setOrganization(organizationOptional.get());
+
+            organizationViewData.getOrganization().setSubscriptionPlanTier(PRO);
+
             System.out.println("Organization: " + organizationViewData.getOrganization());
 
             initializeUI();
