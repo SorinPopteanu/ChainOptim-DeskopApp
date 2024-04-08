@@ -3,8 +3,8 @@ package org.chainoptim.desktop.core.organization.controller;
 import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
-import org.chainoptim.desktop.core.subscriptionplan.model.PlanDetails;
-import org.chainoptim.desktop.core.subscriptionplan.model.SubscriptionPlans;
+import org.chainoptim.desktop.core.organization.model.PlanDetails;
+import org.chainoptim.desktop.core.organization.model.SubscriptionPlans;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import com.google.inject.Inject;

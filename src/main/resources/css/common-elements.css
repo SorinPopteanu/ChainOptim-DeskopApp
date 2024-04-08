@@ -3,6 +3,16 @@
     -fx-font-weight: bold;
 }
 
+.general-label-small {
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+}
+
+.general-label-large {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
 .pseudo-link {
     -fx-background-color: transparent;
     -fx-text-fill: #007aee;
@@ -20,4 +30,23 @@
 
 .menu-item:hover {
     -fx-background-color: #006AEE;
+}
+
+.custom-combo-box {
+    -fx-pref-height: 32px;
+    -fx-background-color: #ffffff;
+    -fx-font-weight: bold;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.custom-combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.custom-combo-box .arrow {
+    -fx-background-color: #c0c0c0;
 }

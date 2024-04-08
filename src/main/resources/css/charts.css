@@ -1,0 +1,27 @@
+.chart-series-line {
+    -fx-stroke: #006AEE;
+}
+
+.chart-line-symbol {
+    -fx-background-color: #006AEE, white;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.chart {
+    -fx-background-color: #ffffff;
+}
+.chart-plot-background {
+    -fx-background-color: #f3f3f3;
+}
+
+.axis {
+    -fx-tick-label-fill: #333333;
+    -fx-axis-label-fill: #333333;
+}
+
+.axis-tick-labels {
+    -fx-font-size: 10px;
+    -fx-font-family: "Arial";
+}
