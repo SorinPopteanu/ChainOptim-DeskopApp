@@ -1,12 +1,15 @@
 package org.chainoptim.desktop.features.client.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.client.model.Client;
+import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
+import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.inject.Inject;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,10 +21,17 @@ import java.util.concurrent.CompletableFuture;
 
 public class ClientServiceImpl implements ClientService {
 
+    private final CachingService<PaginatedResults<Client>> cachingService;
     private final HttpClient client = HttpClient.newHttpClient();
 
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
+    private static final int STALE_TIME = 300;
+
+    @Inject
+    public ClientServiceImpl(CachingService<PaginatedResults<Client>> cachingService) {
+        this.cachingService = cachingService;
+    }
 
     public CompletableFuture<Optional<List<Client>>> getClientsByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/clients/organizations/" + organizationId.toString();
@@ -54,12 +64,9 @@ public class ClientServiceImpl implements ClientService {
             Integer organizationId,
             SearchParams searchParams
     ) {
-        String routeAddress = "http://localhost:8080/api/v1/clients/organizations/advanced/" + organizationId.toString()
-                + "?searchQuery=" + searchParams.getSearchQuery()
-                + "&sortOption=" + searchParams.getSortOption()
-                + "&ascending=" + searchParams.getAscending()
-                + "&page=" + searchParams.getPage()
-                + "&itemsPerPage=" + searchParams.getItemsPerPage();
+        String rootAddress = "http://localhost:8080/api/v1/";
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("products", organizationId, searchParams);
+        String routeAddress = rootAddress + cacheKey;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -71,11 +78,19 @@ public class ClientServiceImpl implements ClientService {
                 .headers(HEADER_KEY, headerValue)
                 .build();
 
+        if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
+            return CompletableFuture.completedFuture(Optional.of(cachingService.get(cacheKey)));
+        }
+
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<PaginatedResults<Client>>empty();
                     try {
                         PaginatedResults<Client> clients = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<Client>>() {});
+
+                        cachingService.remove(cacheKey); // Ensure there isn't a stale cache entry
+                        cachingService.add(cacheKey, clients, STALE_TIME);
+
                         return Optional.of(clients);
                     } catch (Exception e) {
                         e.printStackTrace();

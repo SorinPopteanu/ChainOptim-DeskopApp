@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.core.subscriptionplan.model;
+package org.chainoptim.desktop.core.organization.model;
 
 import lombok.*;
 

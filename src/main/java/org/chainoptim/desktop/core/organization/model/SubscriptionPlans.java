@@ -1,6 +1,7 @@
-package org.chainoptim.desktop.core.subscriptionplan.model;
+package org.chainoptim.desktop.core.organization.model;
 
 import org.chainoptim.desktop.core.organization.model.Organization;
+import org.chainoptim.desktop.core.organization.model.PlanDetails;
 
 import lombok.Getter;
 

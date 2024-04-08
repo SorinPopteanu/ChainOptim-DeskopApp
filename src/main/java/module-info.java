@@ -54,11 +54,8 @@ module org.chainoptim.desktop {
     // - Organization
     opens org.chainoptim.desktop.core.organization.controller to com.fasterxml.jackson.databind, com.google.guice, javafx.fxml;
     opens org.chainoptim.desktop.core.organization.service to com.google.guice;
-    opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.core.organization.dto to com.fasterxml.jackson.databind;
-
-    // - Subscription Plan
-    opens org.chainoptim.desktop.core.subscriptionplan.model to com.google.guice, com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.core.organization.model to com.fasterxml.jackson.databind, com.google.guice;
 
     // - Overview
     opens org.chainoptim.desktop.core.overview.controller to com.google.guice, javafx.fxml;
@@ -126,6 +123,10 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
 
+    // -- Supplier
+    opens org.chainoptim.desktop.features.scanalysis.supply.model to com.fasterxml.jackson.databind, javafx.base;
+    opens org.chainoptim.desktop.features.scanalysis.supply.service to com.google.guice;
+
     // Shared
     // - Common UI elements
     opens org.chainoptim.desktop.shared.common.uielements to javafx.fxml, com.google.guice;
@@ -151,6 +152,9 @@ module org.chainoptim.desktop {
     // - Search
     opens org.chainoptim.desktop.shared.search.model to com.fasterxml.jackson.databind, com.google.guice;
     opens org.chainoptim.desktop.shared.search.controller to com.google.guice, javafx.fxml;
+
+    // - Caching
+    opens org.chainoptim.desktop.shared.caching to com.google.guice;
 
     exports org.chainoptim.desktop;
 }
