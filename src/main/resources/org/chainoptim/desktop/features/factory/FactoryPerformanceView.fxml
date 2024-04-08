@@ -4,11 +4,17 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
-<AnchorPane xmlns="http://javafx.com/javafx"
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.factory.controller.FactoryPerformanceController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="400.0" prefWidth="600.0" spacing="10">
 
+    <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 10px;">
+        <Label text="Component: " styleClass="general-label"/>
+        <ComboBox fx:id="componentsComboBox" prefWidth="150.0" styleClass="custom-combo-box"/>
+    </HBox>
     <LineChart fx:id="lineChart" maxWidth="420.0" minHeight="240.0">
         <xAxis>
             <CategoryAxis/>
@@ -17,4 +23,4 @@
             <NumberAxis label="Allocations Over Time" styleClass="general-label"/>
         </yAxis>
     </LineChart>
-</AnchorPane>
+</VBox>

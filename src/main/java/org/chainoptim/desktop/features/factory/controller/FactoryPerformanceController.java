@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.scanalysis.productionhistory.model.DailyProductionRecord;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.ProductionHistory;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryService;
@@ -11,9 +12,13 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.util.Pair;
 
 import java.time.LocalDate;
@@ -33,6 +38,8 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     // FXML
     @FXML
+    private ComboBox<Pair<Integer, String>> componentsComboBox; // Component ID, Component Name
+    @FXML
     private LineChart<String, Number> lineChart;
 
     @Inject
@@ -43,7 +50,34 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     @Override
     public void setData(Factory factory) {
+        setUpComponentsComboBox();
         loadProductionHistory(factory.getId());
+    }
+
+    private void setUpComponentsComboBox() {
+        // Make combo box only display component name
+        componentsComboBox.setCellFactory(lv -> new ListCell<Pair<Integer, String>>() {
+            @Override
+            protected void updateItem(Pair<Integer, String> item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item.getValue());
+            }
+        });
+        componentsComboBox.setButtonCell(new ListCell<Pair<Integer, String>>() {
+            @Override
+            protected void updateItem(Pair<Integer, String> item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item.getValue());
+            }
+        });
+
+        // Listen to component selection and update component UI accordingly
+        componentsComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                int selectedComponentId = newValue.getKey();
+                updateComponentUI(factoryProductionHistory.getProductionHistory(), selectedComponentId);
+            }
+        });
     }
 
     private void loadProductionHistory(Integer factoryId) {
@@ -65,11 +99,22 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             fallbackManager.setLoading(false);
 
             System.out.println("Production History: " + factoryProductionHistory);
-            updateComponentUI(factoryProductionHistory.getProductionHistory(), 1);
+            displayHistory(factoryProductionHistory.getProductionHistory());
         });
         return productionHistoryOptional;
     }
 
+    private void displayHistory(ProductionHistory history) {
+        componentsComboBox.getItems().clear();
+        for (Map.Entry<Float, DailyProductionRecord> entry : history.getDailyProductionRecords().entrySet()) {
+            for (ResourceAllocation allocation : entry.getValue().getActualResourceAllocations()) {
+                if (componentsComboBox.getItems().stream().noneMatch(pair -> pair.getKey().equals(allocation.getComponentId()))) {
+                    componentsComboBox.getItems().add(new Pair<>(allocation.getComponentId(), allocation.getComponentName()));
+                }
+            }
+        }
+        componentsComboBox.getSelectionModel().selectFirst();
+    }
     private void updateComponentUI(ProductionHistory history, int componentId) {
         Map<Float, Pair<Float, Float>> dataOverTime = history.getDailyProductionRecords().entrySet().stream()
                 .collect(Collectors.toMap(
@@ -93,7 +138,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
         // Create two series for the two types of data
         XYChart.Series<String, Number> requestedSeries = new XYChart.Series<>();
-        requestedSeries.setName("Requested Amount");
+        requestedSeries.setName("Needed Amount");
         XYChart.Series<String, Number> allocatedSeries = new XYChart.Series<>();
         allocatedSeries.setName("Allocated Amount");
 
@@ -146,7 +191,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             for (int i = 0; i < lineChart.getData().size(); i++) {
                 XYChart.Series<String, Number> series = lineChart.getData().get(i);
                 switch (series.getName()) {
-                    case "Requested Amount":
+                    case "Needed Amount":
                         series.getNode().setStyle("-fx-stroke: blue;");
                         break;
                     case "Allocated Amount":
@@ -155,6 +200,23 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
                     default:
                         break;
                 }
+            }
+
+            // Add event listener on legend items to toggle visibility of series
+            for (Node node : lineChart.lookupAll(".chart-legend-item")) {
+                node.setOnMouseClicked(mouseEvent -> {
+                    for (XYChart.Series<String, Number> s : lineChart.getData()) {
+                        if (s.getName().equals(((Label) node).getText())) {
+                            s.getNode().setVisible(!s.getNode().isVisible());
+                            s.getData().forEach(data -> {
+                                Node dataNode = data.getNode();
+                                if (dataNode != null) {
+                                    dataNode.setVisible(s.getNode().isVisible());
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
     }
