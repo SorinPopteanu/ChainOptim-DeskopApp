@@ -3,13 +3,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
+<StackPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController">
 
-    <StackPane fx:id="tableToolbarContainer"/>
 
-    <StackPane VBox.vgrow="ALWAYS">
+    <VBox VBox.vgrow="ALWAYS">
+        <StackPane fx:id="tableToolbarContainer"/>
         <ScrollPane fx:id="supplierOrdersScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
             <VBox>
                 <TableView fx:id="tableView" styleClass="table-view">
@@ -29,8 +29,9 @@
                 <StackPane fx:id="pageSelectorContainer"/>
             </VBox>
         </ScrollPane>
-    </StackPane>
+    </VBox>
 
+    <StackPane fx:id="confirmUpdateDialogContainer" />
+    <StackPane fx:id="confirmDeleteDialogContainer" />
 
-
-</VBox>
+</StackPane>

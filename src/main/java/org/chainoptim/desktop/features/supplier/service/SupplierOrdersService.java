@@ -17,4 +17,6 @@ public interface SupplierOrdersService {
             SearchParams searchParams
     );
     CompletableFuture<SupplierOrder> createSupplierOrder(CreateSupplierOrderDTO supplierDTO);
+
+    CompletableFuture<List<Integer>> deleteSupplierOrderInBulk(List<Integer> orderIds);
 }

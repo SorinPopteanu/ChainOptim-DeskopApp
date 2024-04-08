@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class SupplierOrdersController implements DataReceiver<Supplier> {
 
@@ -55,6 +56,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     // Controllers
     private TableToolbarController tableToolbarController;
     private PageSelectorController pageSelectorController;
+    private GenericConfirmDialogController<List<SupplierOrder>> confirmSupplierOrderUpdateController;
+    private GenericConfirmDialogController<List<SupplierOrder>> confirmSupplierOrderDeleteController;
 
     // State
     private final FallbackManager fallbackManager;
@@ -65,9 +68,9 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private final SimpleIntegerProperty selectedCount = new SimpleIntegerProperty(0);
     private final BooleanProperty isEditMode = new SimpleBooleanProperty(false);
 
-    // Listeners
-    private RunnableConfirmDialogActionListener<CustomRole> confirmDialogUpdateListener;
-    private RunnableConfirmDialogActionListener<CustomRole> confirmDialogDeleteListener;
+    // Confirm Dialog Listeners
+    private RunnableConfirmDialogActionListener<List<SupplierOrder>> confirmDialogUpdateListener;
+    private RunnableConfirmDialogActionListener<List<SupplierOrder>> confirmDialogDeleteListener;
 
     // FXML
     @FXML
@@ -99,9 +102,9 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     @FXML
     private StackPane pageSelectorContainer;
     @FXML
-    private StackPane updateConfirmDialogPane;
+    private StackPane confirmUpdateDialogContainer;
     @FXML
-    private StackPane deleteConfirmDialogPane;
+    private StackPane confirmDeleteDialogContainer;
 
 
     @Inject
@@ -135,6 +138,10 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         setUpListeners();
 
         loadSupplierOrders(supplier.getId());
+        loadConfirmDeleteDialog();
+        loadConfirmDeleteDialog();
+        confirmDeleteDialogContainer.setVisible(false);
+        confirmUpdateDialogContainer.setVisible(false);
     }
 
     private void configureTableColumns() {
@@ -172,11 +179,16 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             tableToolbarController.toggleButtonVisibilityOnSelection(isAnyRowSelected);
         });
 
+        // Listen to Dialog confirmations
+        Consumer<List<SupplierOrder>> onConfirmDelete = this::handleDeleteOrders;
+        Runnable onCancelDelete = this::closeConfirmDeleteDialog;
+        confirmDialogDeleteListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
+
         // Listen to the toolbar buttons
         tableToolbarController.getCancelRowSelectionButton().setOnAction(e -> cancelSelectionsAndEdit());
         tableToolbarController.getEditSelectedRowsButton().setOnAction(e -> editSelectedRows());
         tableToolbarController.getSaveChangesButton().setOnAction(e -> saveEditedRows());
-        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> deleteSelectedRows());
+        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
     }
 
     private void loadSupplierOrders(Integer supplierId) {
@@ -265,54 +277,59 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     }
 
-    private void deleteSelectedRows() {
-//         supplierOrdersService.deleteOrdersInBulk(selectedRowsIndices).thenApply... (actually you will go to Confirm Dialog before this)
-//         tableView.getItems().removeIf(row -> selectedRowsIndices.contains(tableView.getItems().indexOf(row)));
+    private void loadConfirmDeleteDialog() {
+        //Load delete dialog
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml",
+                controllerFactory::createController);
 
+        try {
+            Node confirmDialogView = loader.load();
+            confirmSupplierOrderDeleteController = loader.getController();
+            confirmSupplierOrderDeleteController.setActionListener(confirmDialogDeleteListener);
+            confirmDeleteDialogContainer.getChildren().add(confirmDialogView);
+            closeConfirmDeleteDialog();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    // Utils
+    private void openConfirmDeleteDialog(List<Integer> selectedRowsIndices) {
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
+                "Confirm Supplier Orders Delete",
+                "Are you sure you want to delete selected orders?",
+                null);
+        List<SupplierOrder> selectedOrders = new ArrayList<>();
+        for (Integer index : selectedRowsIndices) {
+            selectedOrders.add(tableView.getItems().get(index).getData());
+        }
+        confirmSupplierOrderDeleteController.setData(selectedOrders, confirmDialogInput);
+        confirmDeleteDialogContainer.setVisible(true);
+        confirmDeleteDialogContainer.setManaged(true);
+    }
+
+    private void closeConfirmDeleteDialog() {
+        confirmDeleteDialogContainer.setVisible(false);
+        confirmDeleteDialogContainer.setManaged(false);
+    }
+
+    private void handleDeleteOrders(List<SupplierOrder> supplierOrders) {
+        List<Integer> ordersToRemoveIds = new ArrayList<>();
+        for (SupplierOrder order : supplierOrders) {
+            ordersToRemoveIds.add(order.getId());
+        }
+        supplierOrdersService.deleteSupplierOrderInBulk(ordersToRemoveIds)
+                .thenAccept(result -> System.out.println("Orders deleted successfully:" + ordersToRemoveIds));
+
+
+        tableView.getItems().removeIf(tableData -> ordersToRemoveIds.contains(tableData.getData().getId()));
+
+        closeConfirmDeleteDialog();
         isEditMode.set(false);
         tableView.refresh();
     }
-
-    private void loadUpdateConfirmDialog() {
-        // Load confirm dialog
-        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
-
-        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Supplier Orders Update", "Are you sure you want to update selected orders", null);
-        CustomRole customRole = new CustomRole();
-        customRole.setId(1);
-
-        try {
-            Node view = loader.load();
-            GenericConfirmDialogController<CustomRole> controller = loader.getController();
-            controller.setData(customRole, confirmDialogInput);
-            controller.setActionListener(confirmDialogUpdateListener);
-            updateConfirmDialogPane.getChildren().add(view);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void loadDeleteConfirmDialog() {
-        //Load delete dialog
-        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
-
-        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Supplier Orders Delete", "Are you sure you want to delete selected orders?", null);
-        CustomRole customRole = new CustomRole();
-        customRole.setId(2);
-
-        try {
-            Node view = loader.load();
-            GenericConfirmDialogController<CustomRole> controller = loader.getController();
-            controller.setData(customRole, confirmDialogInput);
-            controller.setActionListener(confirmDialogDeleteListener);
-            deleteConfirmDialogPane.getChildren().add(view);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-
 
 
 
