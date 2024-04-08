@@ -25,7 +25,7 @@ public class ComponentServiceImpl implements ComponentService {
 
     // Fetch
     public CompletableFuture<Optional<List<Component>>> getComponentsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/components/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/components/organization/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

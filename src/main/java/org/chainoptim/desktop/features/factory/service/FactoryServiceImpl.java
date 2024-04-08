@@ -62,7 +62,7 @@ public class FactoryServiceImpl implements FactoryService {
     }
 
     public CompletableFuture<Optional<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/factories/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/factories/organization/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -92,7 +92,7 @@ public class FactoryServiceImpl implements FactoryService {
             SearchParams searchParams
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("products", organizationId, searchParams);
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("factories", organizationId, searchParams);
         String routeAddress = rootAddress + cacheKey;
 
         String jwtToken = TokenManager.getToken();

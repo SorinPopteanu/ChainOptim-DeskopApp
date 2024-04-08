@@ -1,0 +1,11 @@
+.good-label {
+    -fx-text-fill: #4CAF50;
+}
+
+.average-label {
+    -fx-text-fill: #FFEB3B;
+}
+
+.bad-label {
+    -fx-text-fill: #F44336;
+}

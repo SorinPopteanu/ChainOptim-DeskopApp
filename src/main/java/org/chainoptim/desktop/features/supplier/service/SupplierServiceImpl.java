@@ -34,7 +34,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     public CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/suppliers/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/suppliers/organization/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public CompletableFuture<Optional<List<ProductsSearchDTO>>> getProductsByOrganizationId(Integer organizationId, boolean small) {
-        String routeAddress = "http://localhost:8080/api/v1/products/organizations/" + organizationId.toString() + (small ? "/small" : "");
+        String routeAddress = "http://localhost:8080/api/v1/products/organization/" + organizationId.toString() + (small ? "/small" : "");
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
