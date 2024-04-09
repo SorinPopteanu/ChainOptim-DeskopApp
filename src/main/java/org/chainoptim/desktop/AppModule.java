@@ -37,6 +37,8 @@ import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryPr
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphServiceImpl;
+import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryService;
+import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceService;
@@ -143,6 +145,7 @@ public class AppModule extends AbstractModule {
         bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
         bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);
 
+        bind(FactoryProductionHistoryService.class).to(FactoryProductionHistoryServiceImpl.class);
         bind(SupplierPerformanceService.class).to(SupplierPerformanceServiceImpl.class);
 
         // Shared

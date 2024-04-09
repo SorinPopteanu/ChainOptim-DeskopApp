@@ -15,17 +15,6 @@
     -fx-font-weight: bold;
 }
 
-.tab-title-container {
-    -fx-padding: 20px;
-    -fx-border-color: transparent transparent #dcdcdc transparent;
-    -fx-border-width: 0 0 1 0;
-}
-
-.tab-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-}
-
 /* Overview */
 .assign-role-element {
     -fx-background-color: #ffffff;

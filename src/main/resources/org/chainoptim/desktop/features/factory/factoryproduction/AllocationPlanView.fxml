@@ -4,18 +4,27 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.AllocationPlanController"
-            prefHeight="400.0" prefWidth="600.0">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.AllocationPlanController"
+      style="-fx-border-color: #c0c0c0; -fx-border-width: 1px;">
 
-    <Label text="Allocation Plan" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 16px;"/>
+    <HBox alignment="CENTER_LEFT" spacing="4" styleClass="tab-title-container">
+        <Label text="Allocation Plan" styleClass="tab-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="usePlanButton"/>
+        <Button fx:id="saveButton"/>
+    </HBox>
 
-    <Label text="Allocations"/>
     <TableView fx:id="tableView" styleClass="table-view">
         <columns>
-            <TableColumn text="Allocated Amount" fx:id="allocatedAmountColumn"/>
-            <TableColumn text="Requested Amount" fx:id="requestedAmountColumn"/>
+            <TableColumn text="Allocated Amount" fx:id="allocatedAmountColumn" minWidth="150"/>
+            <TableColumn text="Requested Amount" fx:id="requestedAmountColumn" minWidth="150"/>
+            <TableColumn text="Deficit" fx:id="deficitColumn" minWidth="120"/>
+            <TableColumn text="Deficit Percentage" fx:id="deficitPercentageColumn" minWidth="150"/>
+            <TableColumn text="Component" fx:id="componentNameColumn" minWidth="120"/>
+
         </columns>
     </TableView>
 </VBox>

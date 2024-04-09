@@ -34,7 +34,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     public CompletableFuture<Optional<List<Client>>> getClientsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/clients/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/clients/organization/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
