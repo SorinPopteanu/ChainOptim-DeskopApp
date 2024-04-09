@@ -42,6 +42,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     private FactoryProductionHistory factoryProductionHistory;
     private int selectedComponentId;
     private String selectedDuration = "3 Months";
+    private Map<String, Boolean> seriesVisibilityMap = new HashMap<>();
 
     // Constants
     private static final List<String> DURATION_OPTIONS = List.of("1 Week", "1 Month", "3 Months", "1 Year", "2 Years", "5 Years", "All Time");
@@ -107,6 +108,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             if (newValue != null) {
                 selectedDuration = newValue;
                 updateComponentAreaUI(factoryProductionHistory.getProductionHistory());
+                applySeriesVisibility();
                 updateComponentUI(factoryProductionHistory.getProductionHistory());
             }
         });
@@ -137,6 +139,12 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     private void displayHistory(ProductionHistory history) {
         componentsComboBox.getItems().clear();
+
+        // Set up initial visibility of Series Types
+        seriesVisibilityMap.put(SERIES_TYPES.get(0), false);
+        seriesVisibilityMap.put(SERIES_TYPES.get(1), true);
+        seriesVisibilityMap.put(SERIES_TYPES.get(2), true);
+
         // Find components
         for (Map.Entry<Float, DailyProductionRecord> entry : history.getDailyProductionRecords().entrySet()) {
             for (ResourceAllocation allocation : entry.getValue().getActualResourceAllocations()) {
@@ -145,8 +153,11 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
                 }
             }
         }
+
         // Select first to trigger update
         componentsComboBox.getSelectionModel().selectFirst();
+
+        applySeriesVisibility();
     }
 
     private void updateComponentAreaUI(ProductionHistory history) {
@@ -154,7 +165,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
         float chartStart = determineChartStart();
 
-        // Draw series for each allocation record
+        // Draw series for each daily record
         for (Map.Entry<Float, DailyProductionRecord> entry : history.getDailyProductionRecords().entrySet()) {
             Float daysSinceStart = entry.getKey();
             DailyProductionRecord dailyProductionRecord = entry.getValue();
@@ -162,14 +173,17 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             LocalDate recordStartDate = LocalDate.from(history.getStartDate().plusDays(daysSinceStart.longValue()));
             LocalDate recordEndDate = recordStartDate.plusDays((long) dailyProductionRecord.getDurationDays());
 
-            Number plannedValue = findValueInAllocations(dailyProductionRecord.getPlannedResourceAllocations(), selectedComponentId, false);
-            createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary", recordStartDate, recordEndDate, plannedValue);
+            Number requestedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, true, dailyProductionRecord.getDurationDays());
+            createAndStyleSeries(SERIES_TYPES.get(2), "custom-area-line-secondary", "custom-area-fill-secondary", "custom-node-secondary",
+                    recordStartDate, recordEndDate, requestedValue);
 
-            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, false);
-            createAndStyleSeries(SERIES_TYPES.get(1), "custom-area-line-primary", "custom-area-fill-primary", "custom-node-primary", recordStartDate, recordEndDate, allocatedValue);
+            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
+            createAndStyleSeries(SERIES_TYPES.get(1), "custom-area-line-primary", "custom-area-fill-primary", "custom-node-primary",
+                    recordStartDate, recordEndDate, allocatedValue);
 
-            Number requestedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, true);
-            createAndStyleSeries(SERIES_TYPES.get(2), "custom-area-line-secondary", "custom-area-fill-secondary", "custom-node-secondary", recordStartDate, recordEndDate, requestedValue);
+            Number plannedValue = findValueInAllocations(dailyProductionRecord.getPlannedResourceAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
+            createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary",
+                    recordStartDate, recordEndDate, plannedValue);
         }
 
         Platform.runLater(this::setupCustomLegend);
@@ -194,22 +208,18 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
         return chartStart;
     }
 
-    private Number findValueInAllocations(List<ResourceAllocation> allocations, Integer componentId, boolean isRequested) {
+    private Number findValueInAllocations(List<ResourceAllocation> allocations, Integer componentId, boolean isRequested, float durationDays) {
         return allocations.stream()
                 .filter(alloc -> alloc.getComponentId().equals(componentId))
                 .findFirst()
                 .map(alloc -> isRequested ? alloc.getRequestedAmount() : alloc.getAllocatedAmount())
+                .map(value -> durationDays != 0 ? value / durationDays : 0f) // Normalize to daily value
                 .orElse(0f);
     }
 
     private void createAndStyleSeries(
-            String seriesName,
-            String lineStyleClass,
-            String fillStyleClass,
-            String nodeStyleClass,
-            LocalDate startDate,
-            LocalDate endDate,
-            Number value) {
+            String seriesName, String lineStyleClass, String fillStyleClass, String nodeStyleClass,
+            LocalDate startDate, LocalDate endDate, Number value) {
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName(seriesName);
@@ -279,7 +289,8 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             Label label = new Label(seriesType);
             Circle symbol = new Circle(5);
             symbol.setStroke(getColorByLabel(seriesType));
-            symbol.setFill(getColorByLabel(seriesType));
+            boolean isVisible = seriesVisibilityMap.getOrDefault(seriesType, true);
+            symbol.setFill(isVisible ? symbol.getStroke() : Color.TRANSPARENT);
             label.setGraphic(symbol);
             label.setContentDisplay(ContentDisplay.RIGHT);
 
@@ -292,19 +303,55 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
         legendPane.getChildren().add(legendContainer);
     }
 
+    private void applySeriesVisibility() {
+        for (Map.Entry<String, Boolean> entry : seriesVisibilityMap.entrySet()) {
+            String seriesType = entry.getKey();
+            boolean isVisible = entry.getValue();
+            areaChart.getData().stream()
+                    .filter(s -> s.getName().equals(seriesType))
+                    .forEach(s -> {
+                        s.getNode().setVisible(isVisible);
+                        s.getData().forEach(data -> {
+                            if (data.getNode() != null) {
+                                data.getNode().setVisible(isVisible);
+                            }
+                        });
+                    });
+            // Update legend circle color based on visibility state
+            updateLegendCircleColor(seriesType, isVisible);
+        }
+    }
+
+    private void updateLegendCircleColor(String seriesType, boolean isVisible) {
+        legendPane.getChildren().stream()
+                .filter(Label.class::isInstance)
+                .map(Label.class::cast)
+                .filter(label -> label.getText().equals(seriesType))
+                .findFirst()
+                .ifPresent(label -> {
+                    Circle symbol = (Circle) label.getGraphic();
+                    symbol.setFill(isVisible ? symbol.getStroke() : Color.TRANSPARENT);
+                });
+    }
+
     private void toggleSeriesVisibility(String seriesType, Circle symbol) {
+        boolean isVisible = seriesVisibilityMap.get(seriesType);
+        boolean newVisibility = !isVisible;
+        seriesVisibilityMap.put(seriesType, newVisibility);
+
         areaChart.getData().stream()
                 .filter(s -> s.getName().equals(seriesType))
                 .forEach(s -> {
-                    boolean isVisible = s.getNode().isVisible();
-                    s.getNode().setVisible(!isVisible);
+                    s.getNode().setVisible(newVisibility);
                     s.getData().forEach(data -> {
                         if (data.getNode() != null) {
-                            data.getNode().setVisible(!isVisible);
+                            data.getNode().setVisible(newVisibility);
                         }
                     });
-                    symbol.setFill(!isVisible ? symbol.getStroke() : Color.TRANSPARENT);
+                    symbol.setFill(newVisibility ? symbol.getStroke() : Color.TRANSPARENT);
                 });
+
+        updateLegendCircleColor(seriesType, newVisibility);
     }
 
     private Color getColorByLabel(String label) {

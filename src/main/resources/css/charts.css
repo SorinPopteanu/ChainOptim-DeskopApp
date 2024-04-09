@@ -1,3 +1,4 @@
+/* Line series */
 .series-line {
     -fx-stroke: #006AEE;
 }
@@ -26,22 +27,14 @@
     -fx-font-family: "Arial";
 }
 
-/*.chart-series-area-line {
-    -fx-stroke: #006AEE;
-}
-
-.chart-series-area-fill {
-    -fx-fill: rgba(0, 106, 238, 0.5);
-}*/
-
+/* Area series */
 /* Blue */
-.chart-series-line.custom-area-line-primary,
-.chart-area-symbol.custom-area-line-primary {
-    -fx-stroke: #006AEE;
+.chart-series-line.custom-area-line-primary {
+    -fx-stroke: #111111;
 }
 
 .chart-series-area-fill.custom-area-fill-primary {
-    -fx-fill: #006AEE80;
+    -fx-fill: #116BFF;
 }
 
 .custom-node-primary {
@@ -51,13 +44,12 @@
 }
 
 /* Orange */
-.chart-series-line.custom-area-line-secondary,
-.chart-area-symbol.custom-area-line-secondary {
-    -fx-stroke: #FF9800;
+.chart-series-line.custom-area-line-secondary {
+    -fx-stroke: #111111;
 }
 
 .chart-series-area-fill.custom-area-fill-secondary {
-    -fx-fill: #FF980080;
+    -fx-fill: #FFAA22;
 }
 
 .custom-node-secondary {
@@ -67,13 +59,12 @@
 }
 
 /* Green */
-.chart-series-line.custom-area-line-tertiary,
-.chart-area-symbol.custom-area-line-tertiary {
-    -fx-stroke: #4CAF50;
+.chart-series-line.custom-area-line-tertiary {
+    -fx-stroke: #111111;
 }
 
 .chart-series-area-fill.custom-area-fill-tertiary {
-    -fx-fill: #4CAF5080;
+    -fx-fill: #5DBF62;
 }
 
 .custom-node-tertiary {
