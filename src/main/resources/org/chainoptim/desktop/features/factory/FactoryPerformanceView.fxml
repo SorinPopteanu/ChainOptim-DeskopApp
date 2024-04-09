@@ -18,14 +18,18 @@
     </HBox>
 
     <HBox alignment="CENTER_LEFT" spacing="16">
-        <AreaChart fx:id="areaChart">
-            <xAxis>
-                <NumberAxis/>
-            </xAxis>
-            <yAxis>
-                <NumberAxis/>
-            </yAxis>
-        </AreaChart>
+        <VBox spacing="8">
+            <AreaChart fx:id="areaChart">
+                <xAxis>
+                    <NumberAxis/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis/>
+                </yAxis>
+            </AreaChart>
+
+            <StackPane fx:id="legendPane"/>
+        </VBox>
 
         <ComboBox fx:id="chartDurationComboBox" prefWidth="150.0" styleClass="custom-combo-box"/>
     </HBox>

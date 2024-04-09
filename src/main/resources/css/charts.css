@@ -26,12 +26,71 @@
     -fx-font-family: "Arial";
 }
 
-
-
-.chart-series-area-line {
+/*.chart-series-area-line {
     -fx-stroke: #006AEE;
 }
 
 .chart-series-area-fill {
     -fx-fill: rgba(0, 106, 238, 0.5);
+}*/
+
+/* Blue */
+.chart-series-line.custom-area-line-primary,
+.chart-area-symbol.custom-area-line-primary {
+    -fx-stroke: #006AEE;
+}
+
+.chart-series-area-fill.custom-area-fill-primary {
+    -fx-fill: #006AEE80;
+}
+
+.custom-node-primary {
+    -fx-background-color: #006AEE, white;
+    -fx-background-radius: 3px;
+    -fx-padding: 3px;
+}
+
+/* Orange */
+.chart-series-line.custom-area-line-secondary,
+.chart-area-symbol.custom-area-line-secondary {
+    -fx-stroke: #FF9800;
+}
+
+.chart-series-area-fill.custom-area-fill-secondary {
+    -fx-fill: #FF980080;
+}
+
+.custom-node-secondary {
+    -fx-background-color: #FF9800, white;
+    -fx-background-radius: 3px;
+    -fx-padding: 3px;
+}
+
+/* Green */
+.chart-series-line.custom-area-line-tertiary,
+.chart-area-symbol.custom-area-line-tertiary {
+    -fx-stroke: #4CAF50;
+}
+
+.chart-series-area-fill.custom-area-fill-tertiary {
+    -fx-fill: #4CAF5080;
+}
+
+.custom-node-tertiary {
+    -fx-background-color: #4CAF50, white;
+    -fx-background-radius: 3px;
+    -fx-padding: 3px;
+}
+
+/* Legend */
+.legend-container {
+    -fx-background-color: #f0f0f0;
+    -fx-padding: 10px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+}
+
+.legend-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
 }

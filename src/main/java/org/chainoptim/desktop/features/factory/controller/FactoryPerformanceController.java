@@ -8,6 +8,7 @@ import org.chainoptim.desktop.features.scanalysis.productionhistory.service.Fact
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocation;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -15,8 +16,13 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
 
@@ -39,6 +45,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     // Constants
     private static final List<String> DURATION_OPTIONS = List.of("1 Week", "1 Month", "3 Months", "1 Year", "2 Years", "5 Years", "All Time");
+    private static final List<String> SERIES_TYPES = List.of("Planned", "Allocated", "Requested");
 
     // FXML
     @FXML
@@ -50,6 +57,8 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     @FXML
     private LineChart<String, Number> lineChart;
+    @FXML
+    private StackPane legendPane;
 
     @Inject
     public FactoryPerformanceController(FactoryProductionHistoryService productionHistoryService, FallbackManager fallbackManager) {
@@ -121,7 +130,6 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             factoryProductionHistory = productionHistoryOptional.get();
             fallbackManager.setLoading(false);
 
-            System.out.println("Production History: " + factoryProductionHistory);
             displayHistory(factoryProductionHistory.getProductionHistory());
         });
         return productionHistoryOptional;
@@ -154,23 +162,74 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             LocalDate recordStartDate = LocalDate.from(history.getStartDate().plusDays(daysSinceStart.longValue()));
             LocalDate recordEndDate = recordStartDate.plusDays((long) dailyProductionRecord.getDurationDays());
 
-            XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            Number plannedValue = findValueInAllocations(dailyProductionRecord.getPlannedResourceAllocations(), selectedComponentId, false);
+            createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary", recordStartDate, recordEndDate, plannedValue);
 
-            Number value = dailyProductionRecord.getActualResourceAllocations().stream()
-                    .filter(alloc -> alloc.getComponentId().equals(selectedComponentId))
-                    .map(ResourceAllocation::getAllocatedAmount)
-                    .findFirst()
-                    .orElse(0f);
+            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, false);
+            createAndStyleSeries(SERIES_TYPES.get(1), "custom-area-line-primary", "custom-area-fill-primary", "custom-node-primary", recordStartDate, recordEndDate, allocatedValue);
 
-            series.getData().add(new XYChart.Data<>(recordStartDate.toEpochDay(), value));
-            series.getData().add(new XYChart.Data<>(recordEndDate.toEpochDay(), value));
-
-            areaChart.getData().add(series);
+            Number requestedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, true);
+            createAndStyleSeries(SERIES_TYPES.get(2), "custom-area-line-secondary", "custom-area-fill-secondary", "custom-node-secondary", recordStartDate, recordEndDate, requestedValue);
         }
 
+        Platform.runLater(this::setupCustomLegend);
+
+        configureXAxis(chartStart);
+    }
+
+    private long determineChartStart() {
+        long chartStart = 0;
+        LocalDate endDate = LocalDate.now();
+        chartStart = switch (selectedDuration) {
+            case "1 Week" -> endDate.minusWeeks(1).toEpochDay();
+            case "1 Month" -> endDate.minusMonths(1).toEpochDay();
+            case "3 Months" -> endDate.minusMonths(3).toEpochDay();
+            case "1 Year" -> endDate.minusYears(1).toEpochDay();
+            case "2 Years" -> endDate.minusYears(2).toEpochDay();
+            case "5 Years" -> endDate.minusYears(5).toEpochDay();
+            case "All Time" -> 0;
+            default -> chartStart;
+        };
+
+        return chartStart;
+    }
+
+    private Number findValueInAllocations(List<ResourceAllocation> allocations, Integer componentId, boolean isRequested) {
+        return allocations.stream()
+                .filter(alloc -> alloc.getComponentId().equals(componentId))
+                .findFirst()
+                .map(alloc -> isRequested ? alloc.getRequestedAmount() : alloc.getAllocatedAmount())
+                .orElse(0f);
+    }
+
+    private void createAndStyleSeries(
+            String seriesName,
+            String lineStyleClass,
+            String fillStyleClass,
+            String nodeStyleClass,
+            LocalDate startDate,
+            LocalDate endDate,
+            Number value) {
+
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName(seriesName);
+
+        series.getData().add(new XYChart.Data<>(startDate.toEpochDay(), value));
+        series.getData().add(new XYChart.Data<>(endDate.toEpochDay(), value));
+
+        areaChart.getData().add(series);
+
+        // Style series
+        Platform.runLater(() -> {
+            styleChartSeries(series, lineStyleClass, fillStyleClass);
+            styleChartNodes(series, nodeStyleClass);
+        });
+    }
+
+    private void configureXAxis(Float chartStart) {
         NumberAxis xAxis = (NumberAxis) areaChart.getXAxis();
 
-        LocalDate currentDate = LocalDate.now(); // Today's date
+        LocalDate currentDate = LocalDate.now();
         // Disable auto-ranging to manually set the bounds: chart start to today
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(chartStart);
@@ -191,23 +250,73 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
         });
     }
 
-    private long determineChartStart() {
-        long chartStart = 0;
-        LocalDate endDate = LocalDate.now();
-        chartStart = switch (selectedDuration) {
-            case "1 Week" -> endDate.minusWeeks(1).toEpochDay();
-            case "1 Month" -> endDate.minusMonths(1).toEpochDay();
-            case "3 Months" -> endDate.minusMonths(3).toEpochDay();
-            case "1 Year" -> endDate.minusYears(1).toEpochDay();
-            case "2 Years" -> endDate.minusYears(2).toEpochDay();
-            case "5 Years" -> endDate.minusYears(5).toEpochDay();
-            case "All Time" -> 0;
-            default -> chartStart;
-        };
+    private void styleChartSeries(XYChart.Series<Number, Number> series, String lineClass, String fillClass) {
+        Node line = series.getNode().lookup(".chart-series-line");
+        if (line != null) {
+            line.getStyleClass().add(lineClass);
+        }
 
-        return chartStart;
+        Node fill = series.getNode().lookup(".chart-series-area-fill");
+        if (fill != null) {
+            fill.getStyleClass().add(fillClass);
+        }
     }
 
+    private void styleChartNodes(XYChart.Series<Number, Number> series, String cssClass) {
+        for (XYChart.Data<Number, Number> data : series.getData()) {
+            Node node = data.getNode();
+            if (node != null) {
+                node.setStyle("");
+                node.getStyleClass().add(cssClass);
+            }
+        }
+    }
+
+    private void setupCustomLegend() {
+        HBox legendContainer = new HBox(10);
+
+        for (String seriesType : SERIES_TYPES) {
+            Label label = new Label(seriesType);
+            Circle symbol = new Circle(5);
+            symbol.setStroke(getColorByLabel(seriesType));
+            symbol.setFill(getColorByLabel(seriesType));
+            label.setGraphic(symbol);
+            label.setContentDisplay(ContentDisplay.RIGHT);
+
+            label.setOnMouseClicked(event -> toggleSeriesVisibility(seriesType, symbol));
+
+            legendContainer.getChildren().add(label);
+        }
+
+        legendPane.getChildren().clear();
+        legendPane.getChildren().add(legendContainer);
+    }
+
+    private void toggleSeriesVisibility(String seriesType, Circle symbol) {
+        areaChart.getData().stream()
+                .filter(s -> s.getName().equals(seriesType))
+                .forEach(s -> {
+                    boolean isVisible = s.getNode().isVisible();
+                    s.getNode().setVisible(!isVisible);
+                    s.getData().forEach(data -> {
+                        if (data.getNode() != null) {
+                            data.getNode().setVisible(!isVisible);
+                        }
+                    });
+                    symbol.setFill(!isVisible ? symbol.getStroke() : Color.TRANSPARENT);
+                });
+    }
+
+    private Color getColorByLabel(String label) {
+        return switch (label) {
+            case "Planned" -> Color.valueOf("#4CAF50");
+            case "Allocated" -> Color.valueOf("#006AEE");
+            case "Requested" -> Color.valueOf("#FF9800");
+            default -> Color.BLACK;
+        };
+    }
+
+    // Line Chart
     private void updateComponentUI(ProductionHistory history) {
         Map<Float, Pair<Float, Float>> dataOverTime = history.getDailyProductionRecords().entrySet().stream()
                 .collect(Collectors.toMap(
@@ -278,7 +387,6 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
         applyCustomSeriesStyles();
     }
-
 
     private void applyCustomSeriesStyles() {
         Platform.runLater(() -> {
