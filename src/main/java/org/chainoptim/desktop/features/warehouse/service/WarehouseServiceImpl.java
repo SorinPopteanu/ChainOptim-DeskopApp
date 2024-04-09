@@ -34,7 +34,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     public CompletableFuture<Optional<List<Warehouse>>> getWarehousesByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/warehouses/organizations/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/warehouses/organization/" + organizationId.toString();
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

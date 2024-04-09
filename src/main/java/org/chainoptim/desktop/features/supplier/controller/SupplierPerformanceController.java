@@ -187,7 +187,6 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
         lineChart.getData().clear();
         lineChart.setLegendVisible(false);
 
-
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         LocalDate startDate = firstDeliveryDate.toLocalDate();
         float maxDays = Collections.max(deliveredQuantityOverTime.keySet());

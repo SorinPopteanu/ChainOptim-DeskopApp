@@ -1,11 +1,11 @@
 .standard-write-button {
     -fx-pref-height: 32px;
-    -fx-padding: 4px 12px 4px 12px;
+    -fx-padding: 8px 12px 8px 12px;
     -fx-background-color: #006AEE;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
     -fx-text-fill: white;
-    -fx-font-weight: 500;
+    -fx-font-weight: 600;
     -fx-font-size: 14px;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;

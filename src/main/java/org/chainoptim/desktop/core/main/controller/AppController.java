@@ -81,6 +81,7 @@ public class AppController {
 
     private Optional<User> handleUserResponse(Optional<User> userOptional) {
         Platform.runLater(() -> {
+            System.out.println("User loaded: " + userOptional);
             if (userOptional.isEmpty()) {
                 return;
             }
