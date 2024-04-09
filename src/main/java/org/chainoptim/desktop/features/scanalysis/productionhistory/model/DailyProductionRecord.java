@@ -13,4 +13,5 @@ import java.util.List;
 public class DailyProductionRecord {
     private List<ResourceAllocation> plannedResourceAllocations;
     private List<ResourceAllocation> actualResourceAllocations;
+    private float durationDays;
 }

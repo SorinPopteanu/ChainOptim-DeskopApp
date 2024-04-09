@@ -1,4 +1,4 @@
-.chart-series-line {
+.series-line {
     -fx-stroke: #006AEE;
 }
 
@@ -24,4 +24,14 @@
 .axis-tick-labels {
     -fx-font-size: 10px;
     -fx-font-family: "Arial";
+}
+
+
+
+.chart-series-area-line {
+    -fx-stroke: #006AEE;
+}
+
+.chart-series-area-fill {
+    -fx-fill: rgba(0, 106, 238, 0.5);
 }

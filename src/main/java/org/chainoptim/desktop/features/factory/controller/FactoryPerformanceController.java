@@ -13,13 +13,12 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.util.Pair;
+import javafx.util.StringConverter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,10 +34,20 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     // State
     private final FallbackManager fallbackManager;
     private FactoryProductionHistory factoryProductionHistory;
+    private int selectedComponentId;
+    private String selectedDuration = "3 Months";
+
+    // Constants
+    private static final List<String> DURATION_OPTIONS = List.of("1 Week", "1 Month", "3 Months", "1 Year", "2 Years", "5 Years", "All Time");
 
     // FXML
     @FXML
     private ComboBox<Pair<Integer, String>> componentsComboBox; // Component ID, Component Name
+    @FXML
+    private AreaChart<Number, Number> areaChart;
+    @FXML
+    private ComboBox<String> chartDurationComboBox;
+
     @FXML
     private LineChart<String, Number> lineChart;
 
@@ -51,6 +60,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     @Override
     public void setData(Factory factory) {
         setUpComponentsComboBox();
+        setUpChartDurationComboBox();
         loadProductionHistory(factory.getId());
     }
 
@@ -74,8 +84,21 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
         // Listen to component selection and update component UI accordingly
         componentsComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                int selectedComponentId = newValue.getKey();
-                updateComponentUI(factoryProductionHistory.getProductionHistory(), selectedComponentId);
+                selectedComponentId = newValue.getKey();
+                updateComponentAreaUI(factoryProductionHistory.getProductionHistory());
+                updateComponentUI(factoryProductionHistory.getProductionHistory());
+            }
+        });
+    }
+
+    private void setUpChartDurationComboBox() {
+        chartDurationComboBox.getItems().addAll(DURATION_OPTIONS);
+        chartDurationComboBox.getSelectionModel().select(selectedDuration);
+        chartDurationComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                selectedDuration = newValue;
+                updateComponentAreaUI(factoryProductionHistory.getProductionHistory());
+                updateComponentUI(factoryProductionHistory.getProductionHistory());
             }
         });
     }
@@ -106,6 +129,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     private void displayHistory(ProductionHistory history) {
         componentsComboBox.getItems().clear();
+        // Find components
         for (Map.Entry<Float, DailyProductionRecord> entry : history.getDailyProductionRecords().entrySet()) {
             for (ResourceAllocation allocation : entry.getValue().getActualResourceAllocations()) {
                 if (componentsComboBox.getItems().stream().noneMatch(pair -> pair.getKey().equals(allocation.getComponentId()))) {
@@ -113,17 +137,86 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
                 }
             }
         }
+        // Select first to trigger update
         componentsComboBox.getSelectionModel().selectFirst();
     }
-    private void updateComponentUI(ProductionHistory history, int componentId) {
+
+    private void updateComponentAreaUI(ProductionHistory history) {
+        areaChart.getData().clear();
+
+        float chartStart = determineChartStart();
+
+        // Draw series for each allocation record
+        for (Map.Entry<Float, DailyProductionRecord> entry : history.getDailyProductionRecords().entrySet()) {
+            Float daysSinceStart = entry.getKey();
+            DailyProductionRecord dailyProductionRecord = entry.getValue();
+
+            LocalDate recordStartDate = LocalDate.from(history.getStartDate().plusDays(daysSinceStart.longValue()));
+            LocalDate recordEndDate = recordStartDate.plusDays((long) dailyProductionRecord.getDurationDays());
+
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
+
+            Number value = dailyProductionRecord.getActualResourceAllocations().stream()
+                    .filter(alloc -> alloc.getComponentId().equals(selectedComponentId))
+                    .map(ResourceAllocation::getAllocatedAmount)
+                    .findFirst()
+                    .orElse(0f);
+
+            series.getData().add(new XYChart.Data<>(recordStartDate.toEpochDay(), value));
+            series.getData().add(new XYChart.Data<>(recordEndDate.toEpochDay(), value));
+
+            areaChart.getData().add(series);
+        }
+
+        NumberAxis xAxis = (NumberAxis) areaChart.getXAxis();
+
+        LocalDate currentDate = LocalDate.now(); // Today's date
+        // Disable auto-ranging to manually set the bounds: chart start to today
+        xAxis.setAutoRanging(false);
+        xAxis.setLowerBound(chartStart);
+        xAxis.setUpperBound(currentDate.toEpochDay());
+
+        xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+            @Override
+            public String toString(Number object) {
+                // Convert the day offset back to a date for display
+                LocalDate date = LocalDate.ofEpochDay(object.longValue());
+                return date.format(DateTimeFormatter.ofPattern("MMM yyyy"));
+            }
+
+            @Override
+            public Number fromString(String string) {
+                return LocalDate.parse(string, DateTimeFormatter.ofPattern("MMM yyyy")).toEpochDay();
+            }
+        });
+    }
+
+    private long determineChartStart() {
+        long chartStart = 0;
+        LocalDate endDate = LocalDate.now();
+        chartStart = switch (selectedDuration) {
+            case "1 Week" -> endDate.minusWeeks(1).toEpochDay();
+            case "1 Month" -> endDate.minusMonths(1).toEpochDay();
+            case "3 Months" -> endDate.minusMonths(3).toEpochDay();
+            case "1 Year" -> endDate.minusYears(1).toEpochDay();
+            case "2 Years" -> endDate.minusYears(2).toEpochDay();
+            case "5 Years" -> endDate.minusYears(5).toEpochDay();
+            case "All Time" -> 0;
+            default -> chartStart;
+        };
+
+        return chartStart;
+    }
+
+    private void updateComponentUI(ProductionHistory history) {
         Map<Float, Pair<Float, Float>> dataOverTime = history.getDailyProductionRecords().entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> {
                             var allocations = entry.getValue().getActualResourceAllocations().stream()
-                                    .filter(alloc -> alloc.getComponentId().equals(componentId))
+                                    .filter(alloc -> alloc.getComponentId().equals(selectedComponentId))
                                     .findFirst()
-                                    .orElse(new ResourceAllocation()); // Consider proper handling for missing allocations
+                                    .orElse(new ResourceAllocation());
 
                             float requestedAmount = allocations.getRequestedAmount();
                             float allocatedAmount = allocations.getAllocatedAmount();
@@ -131,6 +224,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
                         }));
         plotData(history.getStartDate(), dataOverTime);
     }
+
 
     private void plotData(LocalDateTime firstDeliveryDate, Map<Float, Pair<Float, Float>> dataOverTime) {
         lineChart.getData().clear();
