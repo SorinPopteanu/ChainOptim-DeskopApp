@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.Button?>
+
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.AllocationPlanController"
@@ -13,8 +13,9 @@
     <HBox alignment="CENTER_LEFT" spacing="4" styleClass="tab-title-container">
         <Label text="Allocation Plan" styleClass="tab-title"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="usePlanButton"/>
-        <Button fx:id="saveButton"/>
+        <Button fx:id="deactivatePlanButton"/>
+        <Button fx:id="replaceCurrentPlanButton"/>
+        <Button fx:id="activatePlanButton"/>
     </HBox>
 
     <TableView fx:id="tableView" styleClass="table-view">

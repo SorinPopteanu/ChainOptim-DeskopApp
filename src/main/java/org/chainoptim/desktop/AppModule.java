@@ -39,6 +39,7 @@ import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductPr
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryService;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryServiceImpl;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationPersistenceService;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationPersistenceServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
@@ -172,5 +173,7 @@ public class AppModule extends AbstractModule {
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Supplier>>>() {});
         bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {});
+        bind(new TypeLiteral<CachingService<ResourceAllocationPlan>>() {})
+            .in(Singleton.class);
     }
 }

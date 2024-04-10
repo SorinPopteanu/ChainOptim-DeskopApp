@@ -15,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.web.WebView;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class FactoryProductionTabsController implements TabsActionListener {
         }
         if (tabPaneKey.equals("Allocation Plan")) {
             AllocationPlanController controller = loader.getController();
-            controller.initialize((AllocationPlan) extraData);
+            controller.initialize(((Pair<AllocationPlan, Boolean>) extraData).getKey(), factory.getId(), ((Pair<AllocationPlan, Boolean>) extraData).getValue());
         }
     }
 

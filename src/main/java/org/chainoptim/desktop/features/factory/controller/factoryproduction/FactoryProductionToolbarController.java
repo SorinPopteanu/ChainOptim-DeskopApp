@@ -185,22 +185,22 @@ public class FactoryProductionToolbarController {
 
     // Toggle Toolbar sections
     @FXML
-    private void toggleEditConfigurationSection(ActionEvent event) {
+    private void toggleEditConfigurationSection() {
         toggleSection(editConfigurationContentVBox, toggleEditConfigurationButton);
     }
 
     @FXML
-    private void toggleDisplayInfoSection(ActionEvent event) {
+    private void toggleDisplayInfoSection() {
         toggleSection(displayInfoContentVBox, toggleDisplayInfoButton);
     }
 
     @FXML
-    private void toggleResourceAllocationSection(ActionEvent event) {
+    private void toggleResourceAllocationSection() {
         toggleSection(resourceAllocationContentBox, toggleResourceAllocationButton);
     }
 
     @FXML
-    private void toggleSeekResourcesSection(ActionEvent event) {
+    private void toggleSeekResourcesSection() {
         toggleSection(seekResourcesContentBox, toggleSeekResourcesButton);
     }
 
@@ -255,6 +255,11 @@ public class FactoryProductionToolbarController {
 
     @FXML
     private void openAllocationPlan() {
-        actionListener.onOpenAllocationPlanRequested(allocationPlan);
+        actionListener.onOpenAllocationPlanRequested(allocationPlan, false);
+    }
+
+    @FXML
+    private void openCurrentAllocationPlan() {
+        actionListener.onOpenAllocationPlanRequested(allocationPlan, true);
     }
 }

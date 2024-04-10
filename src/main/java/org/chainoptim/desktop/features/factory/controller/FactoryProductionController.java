@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
+import javafx.util.Pair;
 import netscape.javascript.JSObject;
 
 import java.io.IOException;
@@ -104,7 +105,7 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     }
 
     @Override
-    public void onOpenAllocationPlanRequested(AllocationPlan allocationPlan) {
-        productionTabsController.addTab("Allocation Plan", allocationPlan);
+    public void onOpenAllocationPlanRequested(AllocationPlan allocationPlan, Boolean isCurrentPlan) {
+        productionTabsController.addTab("Allocation Plan", new Pair<AllocationPlan, Boolean>(allocationPlan, isCurrentPlan));
     }
 }

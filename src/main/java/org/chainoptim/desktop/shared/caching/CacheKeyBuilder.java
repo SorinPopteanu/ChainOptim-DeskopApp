@@ -14,4 +14,8 @@ public class CacheKeyBuilder {
                 + "&page=" + searchParams.getPage()
                 + "&itemsPerPage=" + searchParams.getItemsPerPage();
     }
+
+    public static String buildSecondaryFeatureKey(String mainFeature, String secondaryFeature, Integer secondaryFeatureId) {
+        return mainFeature + "/" + secondaryFeature + "/" + secondaryFeatureId.toString();
+    }
 }

@@ -71,12 +71,14 @@
     </HBox>
     <VBox spacing="10">
         <VBox fx:id="resourceAllocationContentBox" spacing="10">
+            <Button text="View Active Plan" onAction="#openCurrentAllocationPlan" styleClass="standard-cancel-button"/>
             <Label text="From Inventory" style="-fx-font-size: 12px;"/>
             <Label text="For Duration:" style="-fx-font-size: 12px;"/>
             <!-- Selection of duration container -->
             <StackPane fx:id="durationInputContainer"/>
             <Button text="Allocate Resources" onAction="#handleAllocateResources" styleClass="allocate-resources-button"/>
-            <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan"/>
+
+            <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan" styleClass="standard-cancel-button"/>
         </VBox>
     </VBox>
 
