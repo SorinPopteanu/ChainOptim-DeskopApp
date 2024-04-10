@@ -48,6 +48,7 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
                 .build();
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
+            System.out.println("Cache hit:  " + cacheKey + " - ResourceAllocationPlan");
             return CompletableFuture.completedFuture(Optional.of(cachingService.get(cacheKey)));
         }
 
@@ -68,13 +69,10 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
                 });
     }
 
-    public CompletableFuture<Optional<ResourceAllocationPlan>> changePlanActivationStatus(UpdateAllocationPlanDTO allocationPlanDTO, boolean isActive) {
-        allocationPlanDTO.setActive(isActive);
-        if (isActive) {
-            allocationPlanDTO.setActivationDate(LocalDateTime.now());
-        }
-
-        String routeAddress = "http://localhost:8080/api/v1/resource-allocation-plans/update";
+    public CompletableFuture<Optional<ResourceAllocationPlan>> updateAllocationPlan(UpdateAllocationPlanDTO allocationPlanDTO) {
+        String rootAddress = "http://localhost:8080/api/v1/";
+        String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("active-resource-allocation-plans", "factory", allocationPlanDTO.getFactoryId());
+        String routeAddress = rootAddress + "active-resource-allocation-plans/update";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -101,6 +99,8 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
                         ResourceAllocationPlan allocationPlan = JsonUtil.getObjectMapper().readValue(response.body(), ResourceAllocationPlan.class);
+
+                        cachingService.remove(cacheKey); // Invalidate cache
 
                         return Optional.of(allocationPlan);
                     } catch (Exception e) {

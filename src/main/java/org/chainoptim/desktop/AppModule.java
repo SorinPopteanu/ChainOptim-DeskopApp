@@ -174,6 +174,7 @@ public class AppModule extends AbstractModule {
         bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {});
         bind(new TypeLiteral<CachingService<ResourceAllocationPlan>>() {})
-            .in(Singleton.class);
+                .to(new TypeLiteral<CachingServiceImpl<ResourceAllocationPlan>>() {})
+                .in(Singleton.class);
     }
 }

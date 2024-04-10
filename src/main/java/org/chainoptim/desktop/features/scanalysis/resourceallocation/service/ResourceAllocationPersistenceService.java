@@ -9,6 +9,6 @@ import java.util.concurrent.CompletableFuture;
 public interface ResourceAllocationPersistenceService {
 
     CompletableFuture<Optional<ResourceAllocationPlan>> getResourceAllocationPlanByFactoryId(Integer factoryId);
-    CompletableFuture<Optional<ResourceAllocationPlan>> changePlanActivationStatus(UpdateAllocationPlanDTO allocationPlanDTO, boolean isActive);
+    CompletableFuture<Optional<ResourceAllocationPlan>> updateAllocationPlan(UpdateAllocationPlanDTO allocationPlanDTO);
 
 }

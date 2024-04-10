@@ -20,4 +20,7 @@ public class AllocationPlan {
     private Map<Integer, FactoryInventoryItem> inventoryBalance;
 
     private List<ResourceAllocation> allocations;
+    private List<AllocationResult> results;
+    private Float durationDays;
+
 }

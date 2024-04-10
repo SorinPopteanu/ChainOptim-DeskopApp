@@ -1,37 +1,61 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.dto.UpdateAllocationPlanDTO;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocation;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationPersistenceService;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.util.TimeUtil;
+import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableCell;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class AllocationPlanController {
 
     // Services
     private final ResourceAllocationPersistenceService resourceAllocationPersistenceService;
+    private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
 
     // State
     private final FallbackManager fallbackManager;
+    private Integer factoryId;
     private AllocationPlan allocationPlan;
+    private boolean isCurrentPlan;
+    private boolean isPlanActive;
+
+    // Listeners
+    private RunnableConfirmDialogActionListener<AllocationPlan> confirmDialogActivatePlanListener;
+    private RunnableConfirmDialogActionListener<AllocationPlan> confirmDialogDeactivatePlanListener;
+    private RunnableConfirmDialogActionListener<AllocationPlan> confirmDialogReplacePlanListener;
 
     // FXML
+    @FXML
+    private Label durationStartDateLabel;
+    @FXML
+    private Label durationLabel;
     @FXML
     private Button deactivatePlanButton;
     @FXML
@@ -41,6 +65,8 @@ public class AllocationPlanController {
     @FXML
     private TableView<ResourceAllocation> tableView;
     @FXML
+    private TableColumn<ResourceAllocation, String> componentNameColumn;
+    @FXML
     private TableColumn<ResourceAllocation, Float> allocatedAmountColumn;
     @FXML
     private TableColumn<ResourceAllocation, Float> requestedAmountColumn;
@@ -49,33 +75,88 @@ public class AllocationPlanController {
     @FXML
     private TableColumn<ResourceAllocation, String> deficitPercentageColumn;
     @FXML
-    private TableColumn<ResourceAllocation, String> componentNameColumn;
+    private StackPane activateConfirmDialogPane;
+    @FXML
+    private StackPane deactivateConfirmDialogPane;
+    @FXML
+    private StackPane replaceConfirmDialogPane;
 
     // Icons
     private Image saveImage;
 
     @Inject
     public AllocationPlanController(ResourceAllocationPersistenceService resourceAllocationPersistenceService,
+                                    FXMLLoaderService fxmlLoaderService,
+                                    ControllerFactory controllerFactory,
                                     FallbackManager fallbackManager) {
         this.resourceAllocationPersistenceService = resourceAllocationPersistenceService;
+        this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
 
     public void initialize(AllocationPlan allocationPlan, Integer factoryId, boolean isCurrentPlan) {
         initializeIcons();
-        styleActivatePlanButton(activatePlanButton, isCurrentPlan);
-        styleDeactivatePlan(deactivatePlanButton, isCurrentPlan);
+        setUpListeners();
+
+        this.factoryId = factoryId;
+        this.isCurrentPlan = isCurrentPlan;
+
+        styleActivatePlanButton(activatePlanButton);
+        styleDeactivatePlan(deactivatePlanButton);
+        styleReplaceCurrentPlanButton(replaceCurrentPlanButton);
 
         if (!isCurrentPlan) {
             this.allocationPlan = allocationPlan;
             displayAllocations();
-        } else {
-            loadCurrentPlan(factoryId);
         }
+        loadCurrentPlan(factoryId);
     }
 
     private void initializeIcons() {
         saveImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
+    }
+
+    private void setUpListeners() {
+        Consumer<AllocationPlan> onConfirmActivatePlan = this::activatePlan;
+        Runnable onCancelActivation = this::cancelActivation;
+        confirmDialogActivatePlanListener = new RunnableConfirmDialogActionListener<>(onConfirmActivatePlan, onCancelActivation);
+
+        Consumer<AllocationPlan> onConfirmDeactivatePlan = this::deactivatePlan;
+        Runnable onCancelDeactivation = this::cancelActivation;
+        confirmDialogDeactivatePlanListener = new RunnableConfirmDialogActionListener<>(onConfirmDeactivatePlan, onCancelDeactivation);
+
+        Consumer<AllocationPlan> onConfirmReplacePlan = this::replaceCurrentPlan;
+        Runnable onCancelReplacement = this::cancelActivation;
+        confirmDialogReplacePlanListener = new RunnableConfirmDialogActionListener<>(onConfirmReplacePlan, onCancelReplacement);
+    }
+
+    private void setUpConfirmDialogs() {
+        ConfirmDialogInput activateDialog = new ConfirmDialogInput("Activate Plan", "Are you sure you want to activate this plan?", null);
+        loadConfirmDialog(activateDialog, activateConfirmDialogPane, confirmDialogActivatePlanListener, allocationPlan);
+
+        ConfirmDialogInput deactivateDialog = new ConfirmDialogInput("Deactivate Plan", "Are you sure you want to deactivate this plan?", null);
+        loadConfirmDialog(deactivateDialog, deactivateConfirmDialogPane, confirmDialogDeactivatePlanListener, allocationPlan);
+
+        ConfirmDialogInput replaceDialog = new ConfirmDialogInput("Replace Current Plan", "Are you sure you want to replace the current plan?", null);
+        loadConfirmDialog(replaceDialog, replaceConfirmDialogPane, confirmDialogReplacePlanListener, allocationPlan);
+    }
+
+    private void loadConfirmDialog(ConfirmDialogInput confirmDialogInput,
+                                   StackPane confirmDialogPane,
+                                   RunnableConfirmDialogActionListener<AllocationPlan> listener,
+                                   AllocationPlan allocationPlan) {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
+
+        try {
+            Node view = loader.load();
+            GenericConfirmDialogController<AllocationPlan> controller = loader.getController();
+            controller.setData(allocationPlan, confirmDialogInput);
+            controller.setActionListener(listener);
+            confirmDialogPane.getChildren().add(view);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void loadCurrentPlan(Integer factoryId) {
@@ -89,15 +170,25 @@ public class AllocationPlanController {
 
     private Optional<ResourceAllocationPlan> handleCurrentPlanResponse(Optional<ResourceAllocationPlan> planOptional) {
         Platform.runLater(() -> {
-            if (planOptional.isEmpty()) {
-                fallbackManager.setErrorMessage("No current allocation plan found.");
+            if (planOptional.isEmpty() || planOptional.get().getAllocationPlan() == null) {
+                isPlanActive = false;
+                adjustButtonsVisibilityBasedOnPlans();
                 return;
             }
-            allocationPlan = planOptional.get().getAllocationPlan();
-            System.out.println("Current allocation plan: " + allocationPlan);
             fallbackManager.setLoading(false);
+            isPlanActive = true;
+            adjustButtonsVisibilityBasedOnPlans();
 
-            displayAllocations();
+            if (isCurrentPlan) {
+                allocationPlan = planOptional.get().getAllocationPlan();
+                displayAllocations();
+                System.out.println("Current allocation plan: " + allocationPlan);
+
+            }
+
+            setUpConfirmDialogs();
+//            addDurationLabels(planOptional.get().getAllocationPlan().getDurationDays(), planOptional.get().getActivationDate());
+
         });
         return planOptional;
     }
@@ -108,6 +199,7 @@ public class AllocationPlanController {
     }
 
     private void displayAllocations() {
+        componentNameColumn.setCellValueFactory(new PropertyValueFactory<>("componentName"));
         allocatedAmountColumn.setCellValueFactory(new PropertyValueFactory<>("allocatedAmount"));
         requestedAmountColumn.setCellValueFactory(new PropertyValueFactory<>("requestedAmount"));
         deficitColumn.setCellValueFactory(cellData -> {
@@ -122,7 +214,6 @@ public class AllocationPlanController {
             float ratio = deficit / requestedAmount;
             return new SimpleStringProperty(ratio * 100 + "%");
         });
-        componentNameColumn.setCellValueFactory(new PropertyValueFactory<>("componentName"));
 
         // Change the style of the deficit column based on the ratio of the deficit to the requested amount
         setupDeficitStyling(deficitColumn, false);
@@ -169,24 +260,175 @@ public class AllocationPlanController {
         });
     }
 
+    private void activatePlan(AllocationPlan plan) {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        UpdateAllocationPlanDTO updateAllocationPlanDTO = new UpdateAllocationPlanDTO();
+        updateAllocationPlanDTO.setFactoryId(factoryId);
+        updateAllocationPlanDTO.setAllocationPlan(plan);
+        updateAllocationPlanDTO.setActive(true);
+        updateAllocationPlanDTO.setActivationDate(LocalDateTime.now());
+
+        resourceAllocationPersistenceService.updateAllocationPlan(updateAllocationPlanDTO)
+                .thenApply(this::handleActivatePlanResponse)
+                .exceptionally(this::handleActivatePlanException);
+    }
+
+    private Optional<ResourceAllocationPlan> handleActivatePlanResponse(Optional<ResourceAllocationPlan> planOptional) {
+        Platform.runLater(() -> {
+            if (planOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to activate the plan.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            isCurrentPlan = true;
+            isPlanActive = true;
+            adjustButtonsVisibilityBasedOnPlans();
+
+            allocationPlan = planOptional.get().getAllocationPlan();
+            displayAllocations();
+        });
+        return planOptional;
+    }
+
+    private Optional<ResourceAllocationPlan> handleActivatePlanException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to activate the plan."));
+        return Optional.empty();
+    }
+
+    private void cancelActivation() {
+        activateConfirmDialogPane.setVisible(false);
+        deactivateConfirmDialogPane.setVisible(false);
+        replaceConfirmDialogPane.setVisible(false);
+    }
+
+    private void deactivatePlan(AllocationPlan plan) {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        UpdateAllocationPlanDTO updateAllocationPlanDTO = new UpdateAllocationPlanDTO();
+        updateAllocationPlanDTO.setFactoryId(factoryId);
+        updateAllocationPlanDTO.setAllocationPlan(null);
+        updateAllocationPlanDTO.setActive(false);
+
+        resourceAllocationPersistenceService.updateAllocationPlan(updateAllocationPlanDTO)
+                .thenApply(this::handleDeactivatePlanResponse)
+                .exceptionally(this::handleDeactivatePlanException);
+    }
+
+    private Optional<ResourceAllocationPlan> handleDeactivatePlanResponse(Optional<ResourceAllocationPlan> planOptional) {
+        Platform.runLater(() -> {
+            if (planOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to deactivate the plan.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            isCurrentPlan = false;
+            isPlanActive = false;
+            adjustButtonsVisibilityBasedOnPlans();
+
+            allocationPlan = null;
+            tableView.getItems().clear();
+        });
+        return planOptional;
+    }
+
+    private Optional<ResourceAllocationPlan> handleDeactivatePlanException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to deactivate the plan."));
+        return Optional.empty();
+    }
+
+    private void replaceCurrentPlan(AllocationPlan plan) {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        UpdateAllocationPlanDTO updateAllocationPlanDTO = new UpdateAllocationPlanDTO();
+        updateAllocationPlanDTO.setFactoryId(factoryId);
+        updateAllocationPlanDTO.setAllocationPlan(plan);
+        updateAllocationPlanDTO.setActive(true);
+        updateAllocationPlanDTO.setActivationDate(LocalDateTime.now());
+
+        resourceAllocationPersistenceService.updateAllocationPlan(updateAllocationPlanDTO)
+                .thenApply(this::handleReplacePlanResponse)
+                .exceptionally(this::handleReplacePlanException);
+    }
+
+    private Optional<ResourceAllocationPlan> handleReplacePlanResponse(Optional<ResourceAllocationPlan> planOptional) {
+        Platform.runLater(() -> {
+            if (planOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to replace the plan.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            isCurrentPlan = true;
+            isPlanActive = true;
+            adjustButtonsVisibilityBasedOnPlans();
+
+            allocationPlan = planOptional.get().getAllocationPlan();
+            displayAllocations();
+        });
+        return planOptional;
+    }
+
+    private Optional<ResourceAllocationPlan> handleReplacePlanException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to replace the plan."));
+        return Optional.empty();
+    }
+
+
+    private void addDurationLabels(Float durationDays, LocalDateTime activationDate) {
+        durationLabel.setText(TimeUtil.formatDuration(durationDays));
+        durationStartDateLabel.setText(activationDate.toString());
+    }
+
+    private void adjustButtonsVisibilityBasedOnPlans() {
+        if (isCurrentPlan) {
+            adjustButtonsVisibility(isPlanActive, !isPlanActive, false);
+        } else {
+            adjustButtonsVisibility(false, !isPlanActive, isPlanActive);
+        }
+    }
+
+    private void adjustButtonsVisibility(boolean isDeactivateVisible, boolean isActivateVisible, boolean isReplaceVisible) {
+        adjustButtonVisibility(deactivatePlanButton, isDeactivateVisible);
+        adjustButtonVisibility(activatePlanButton, isActivateVisible);
+        adjustButtonVisibility(replaceCurrentPlanButton, isReplaceVisible);
+    }
+
+    private void styleActivatePlanButton(Button button) {
+        button.setText("Activate Plan");
+        button.getStyleClass().add("standard-write-button");
+        adjustButtonVisibility(button, !isCurrentPlan);
+        button.setOnAction(event -> activateConfirmDialogPane.setVisible(true));
+    }
+
+    private void styleReplaceCurrentPlanButton(Button button) {
+        button.setText("Replace Current Plan");
+        button.getStyleClass().add("standard-write-button");
+        adjustButtonVisibility(button, !isCurrentPlan);
+        button.setOnAction(event -> replaceConfirmDialogPane.setVisible(true));
+    }
+
+    private void styleDeactivatePlan(Button button) {
+        button.setText("Deactivate");
+        button.getStyleClass().add("standard-write-button");
+        adjustButtonVisibility(button, isCurrentPlan);
+        button.setOnAction(event -> deactivateConfirmDialogPane.setVisible(true));
+    }
+
+    private void adjustButtonVisibility(Button button, boolean isVisible) {
+        button.setVisible(isVisible);
+        button.setManaged(isVisible);
+    }
+
     private ImageView createImageView(Image image) {
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(12);
         imageView.setFitHeight(12);
         return imageView;
-    }
-
-    private void styleActivatePlanButton(Button button, Boolean isCurrentPlan) {
-        button.setText("Activate Plan");
-        button.getStyleClass().add("standard-write-button");
-        button.setVisible(!isCurrentPlan);
-        button.setManaged(!isCurrentPlan);
-    }
-
-    private void styleDeactivatePlan(Button button, Boolean isCurrentPlan) {
-        button.setText("Deactivate");
-        button.getStyleClass().add("standard-write-button");
-        button.setVisible(isCurrentPlan);
-        button.setManaged(isCurrentPlan);
     }
 }

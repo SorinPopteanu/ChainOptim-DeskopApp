@@ -96,10 +96,8 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
 
     @Override
     public void onOpenUpdateStageRequested() {
-        System.out.println("Parent listening");
         Integer factoryStageId = javaConnector.getSelectedNodeId();
         if (factoryStageId != null) {
-            System.out.println("Selected factory stage: " + factoryStageId);
             productionTabsController.addTab("Update Stage", factoryStageId);
         }
     }
