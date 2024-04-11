@@ -42,6 +42,7 @@ public class AllocationPlanController {
     // State
     private final FallbackManager fallbackManager;
     private Integer factoryId;
+    private ResourceAllocationPlan currentPlan;
     private AllocationPlan allocationPlan;
     private boolean isCurrentPlan;
     private boolean isPlanActive;
@@ -148,11 +149,13 @@ public class AllocationPlanController {
                                    AllocationPlan allocationPlan) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
 
+        System.out.println("Loading confirm dialog with allocation plan: " + allocationPlan);
         try {
             Node view = loader.load();
             GenericConfirmDialogController<AllocationPlan> controller = loader.getController();
             controller.setData(allocationPlan, confirmDialogInput);
             controller.setActionListener(listener);
+            System.out.println("Successfully loaded confirm dialog");
             confirmDialogPane.getChildren().add(view);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -170,25 +173,30 @@ public class AllocationPlanController {
 
     private Optional<ResourceAllocationPlan> handleCurrentPlanResponse(Optional<ResourceAllocationPlan> planOptional) {
         Platform.runLater(() -> {
-            if (planOptional.isEmpty() || planOptional.get().getAllocationPlan() == null) {
+            if (planOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to load current allocation plan.");
+                return;
+            }
+            currentPlan = planOptional.get();
+            fallbackManager.setLoading(false);
+
+            setUpConfirmDialogs();
+
+            if (currentPlan.getAllocationPlan() == null) {
                 isPlanActive = false;
                 adjustButtonsVisibilityBasedOnPlans();
                 return;
             }
-            fallbackManager.setLoading(false);
+
             isPlanActive = true;
             adjustButtonsVisibilityBasedOnPlans();
 
             if (isCurrentPlan) {
-                allocationPlan = planOptional.get().getAllocationPlan();
+                allocationPlan = currentPlan.getAllocationPlan();
                 displayAllocations();
-                System.out.println("Current allocation plan: " + allocationPlan);
-
             }
 
-            setUpConfirmDialogs();
 //            addDurationLabels(planOptional.get().getAllocationPlan().getDurationDays(), planOptional.get().getActivationDate());
-
         });
         return planOptional;
     }
@@ -209,7 +217,7 @@ public class AllocationPlanController {
         });
         deficitPercentageColumn.setCellValueFactory(cellData -> {
             ResourceAllocation allocation = cellData.getValue();
-            float requestedAmount = allocation.getRequestedAmount();
+            float requestedAmount = allocation.getRequestedAmount() != 0 ? allocation.getRequestedAmount() : 1;
             float deficit = allocation.getRequestedAmount() - allocation.getAllocatedAmount();
             float ratio = deficit / requestedAmount;
             return new SimpleStringProperty(ratio * 100 + "%");
@@ -265,6 +273,7 @@ public class AllocationPlanController {
         fallbackManager.setLoading(true);
 
         UpdateAllocationPlanDTO updateAllocationPlanDTO = new UpdateAllocationPlanDTO();
+        updateAllocationPlanDTO.setId(currentPlan.getId());
         updateAllocationPlanDTO.setFactoryId(factoryId);
         updateAllocationPlanDTO.setAllocationPlan(plan);
         updateAllocationPlanDTO.setActive(true);
@@ -282,6 +291,7 @@ public class AllocationPlanController {
                 return;
             }
             fallbackManager.setLoading(false);
+            cancelActivation();
 
             isCurrentPlan = true;
             isPlanActive = true;
@@ -309,6 +319,7 @@ public class AllocationPlanController {
         fallbackManager.setLoading(true);
 
         UpdateAllocationPlanDTO updateAllocationPlanDTO = new UpdateAllocationPlanDTO();
+        updateAllocationPlanDTO.setId(currentPlan.getId());
         updateAllocationPlanDTO.setFactoryId(factoryId);
         updateAllocationPlanDTO.setAllocationPlan(null);
         updateAllocationPlanDTO.setActive(false);
@@ -325,6 +336,7 @@ public class AllocationPlanController {
                 return;
             }
             fallbackManager.setLoading(false);
+            cancelActivation();
 
             isCurrentPlan = false;
             isPlanActive = false;
@@ -346,6 +358,7 @@ public class AllocationPlanController {
         fallbackManager.setLoading(true);
 
         UpdateAllocationPlanDTO updateAllocationPlanDTO = new UpdateAllocationPlanDTO();
+        updateAllocationPlanDTO.setId(currentPlan.getId());
         updateAllocationPlanDTO.setFactoryId(factoryId);
         updateAllocationPlanDTO.setAllocationPlan(plan);
         updateAllocationPlanDTO.setActive(true);
@@ -363,6 +376,7 @@ public class AllocationPlanController {
                 return;
             }
             fallbackManager.setLoading(false);
+            cancelActivation();
 
             isCurrentPlan = true;
             isPlanActive = true;
@@ -414,7 +428,7 @@ public class AllocationPlanController {
     }
 
     private void styleDeactivatePlan(Button button) {
-        button.setText("Deactivate");
+        button.setText("Deactivate Plan");
         button.getStyleClass().add("standard-write-button");
         adjustButtonVisibility(button, isCurrentPlan);
         button.setOnAction(event -> deactivateConfirmDialogPane.setVisible(true));

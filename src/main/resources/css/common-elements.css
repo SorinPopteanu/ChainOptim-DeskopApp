@@ -32,8 +32,19 @@
     -fx-background-color: #006AEE;
 }
 
+.custom-text-field {
+    -fx-pref-height: 32px;
+    -fx-max-height: 32px;
+    -fx-background-color: #ffffff;
+    -fx-font-weight: bold;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+}
+
 .custom-combo-box {
     -fx-pref-height: 32px;
+    -fx-max-height: 32px;
     -fx-background-color: #ffffff;
     -fx-font-weight: bold;
     -fx-border-color: #c0c0c0;

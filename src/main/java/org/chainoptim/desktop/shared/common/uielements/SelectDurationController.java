@@ -17,6 +17,11 @@ public class SelectDurationController {
     @FXML
     private ComboBox<String> timePeriodSelect;
 
+    @FXML
+    private void initialize() {
+        timePeriodSelect.getSelectionModel().select("Hours");
+    }
+
     public Float getTimeSeconds() {
         if (timeInput != null && !Objects.equals(timeInput.getText(), "") && timePeriodSelect.getValue() != null) {
             float inputDuration = parseFloat(timeInput.getText());

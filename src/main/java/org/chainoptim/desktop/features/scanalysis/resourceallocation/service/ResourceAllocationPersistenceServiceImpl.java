@@ -89,13 +89,14 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(routeAddress))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
                 .headers(HEADER_KEY, headerValue)
                 .headers("Content-Type", "application/json")
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
+                    System.out.println("Response: " + response);
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
                         ResourceAllocationPlan allocationPlan = JsonUtil.getObjectMapper().readValue(response.body(), ResourceAllocationPlan.class);
