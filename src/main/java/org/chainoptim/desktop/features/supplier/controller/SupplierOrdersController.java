@@ -4,8 +4,8 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
-import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierOrderDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
@@ -38,9 +38,7 @@ import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class SupplierOrdersController implements DataReceiver<Supplier> {
@@ -71,6 +69,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     // Confirm Dialog Listeners
     private RunnableConfirmDialogActionListener<List<SupplierOrder>> confirmDialogUpdateListener;
     private RunnableConfirmDialogActionListener<List<SupplierOrder>> confirmDialogDeleteListener;
+    private RunnableConfirmDialogActionListener<List<SupplierOrder>> confirmDialogCreateListener;
 
     // FXML
     @FXML
@@ -139,9 +138,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
         loadSupplierOrders(supplier.getId());
         loadConfirmDeleteDialog();
-        loadConfirmDeleteDialog();
-        confirmDeleteDialogContainer.setVisible(false);
-        confirmUpdateDialogContainer.setVisible(false);
+        loadConfirmUpdateDialog();
     }
 
     private void configureTableColumns() {
@@ -152,7 +149,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"
         ));
         supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.supplier.getName()));
-//        componentNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getComponent().getName()));
+        componentNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getComponent().getName()));
         quantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getQuantity()));
         statusColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getStatus() != null ? data.getValue().getData().getStatus().name() : "N/A"));
         orderDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getOrderDate()));
@@ -160,10 +157,61 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         deliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getDeliveryDate()));
 
         // Configure columns to use custom editable cells
-        companyIdColumn.setCellFactory(column -> new EditableCell<>(isEditMode, selectedRowsIndices));
-        quantityColumn.setCellFactory(column -> new EditableCell<>(isEditMode, selectedRowsIndices));
-        estimatedDeliveryDateColumn.setCellFactory(column -> new EditableCell<>(isEditMode, selectedRowsIndices));
-        deliveryDateColumn.setCellFactory(column -> new EditableCell<>(isEditMode, selectedRowsIndices));
+        companyIdColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, String>(isEditMode, selectedRowsIndices) {
+            @Override
+            public void commitEdit(String newValue) {
+                super.commitEdit(newValue);
+                SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
+                order.setCompanyId(newValue);
+                getTableView().refresh();
+                System.out.println("Storing updated value: " + newValue);
+            }
+        });
+        quantityColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, Float>(isEditMode, selectedRowsIndices) {
+            @Override
+            public void commitEdit(String newValue) {
+                try {
+                    Float parsedValue = Float.parseFloat(newValue);
+                    super.commitEdit(parsedValue);
+                    SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
+                    order.setQuantity(parsedValue);
+                    getTableView().refresh();
+                    System.out.println("Storing updated value: " + newValue);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid float value: " + newValue);
+                }
+            }
+        });
+        estimatedDeliveryDateColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, LocalDateTime>(isEditMode, selectedRowsIndices) {
+            @Override
+            public void commitEdit(String newValue) {
+                try {
+                    LocalDateTime parsedValue = LocalDateTime.parse(newValue);
+                    super.commitEdit(parsedValue);
+                    SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
+                    order.setEstimatedDeliveryDate(parsedValue);
+                    getTableView().refresh();
+                } catch (Exception e) {
+                    System.out.println("Invalid date value: " + newValue);
+                }
+            }
+        });
+        deliveryDateColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, LocalDateTime>(isEditMode, selectedRowsIndices) {
+            @Override
+            public void commitEdit(String newValue) {
+                try {
+                    LocalDateTime parsedValue = LocalDateTime.parse(newValue);
+                    super.commitEdit(parsedValue);
+                    SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
+                    order.setDeliveryDate(parsedValue);
+                    getTableView().refresh();
+                } catch (Exception e) {
+                    System.out.println("Invalid date value: " + newValue);
+                }
+            }
+        });
+
+
     }
 
     private void setUpListeners() {
@@ -184,10 +232,19 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         Runnable onCancelDelete = this::closeConfirmDeleteDialog;
         confirmDialogDeleteListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
 
+        Consumer<List<SupplierOrder>> onConfirmUpdate = this::handleUpdateOrders;
+        Runnable onCancelUpdate = this::closeConfirmUpdateDialog;
+        confirmDialogUpdateListener = new RunnableConfirmDialogActionListener<>(onConfirmUpdate, onCancelUpdate);
+
+        Consumer<List<SupplierOrder>> onConfirmCreate = this::handleCreateOrders;
+        Runnable onCancelCreate = this::closeConfirmCreateDialog;
+        confirmDialogCreateListener = new RunnableConfirmDialogActionListener<>(onConfirmCreate, onCancelCreate);
+
+
         // Listen to the toolbar buttons
         tableToolbarController.getCancelRowSelectionButton().setOnAction(e -> cancelSelectionsAndEdit());
         tableToolbarController.getEditSelectedRowsButton().setOnAction(e -> editSelectedRows());
-        tableToolbarController.getSaveChangesButton().setOnAction(e -> saveEditedRows());
+        tableToolbarController.getSaveChangesButton().setOnAction(e -> openConfirmUpdateDialog(selectedRowsIndices));
         tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
     }
 
@@ -225,7 +282,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             }
 
             for (SupplierOrder supplierOrder : paginatedResults.results) {
-                TableData<SupplierOrder> tableRow = new TableData<>(supplierOrder, new SimpleBooleanProperty(false));
+                SupplierOrder oldData = new SupplierOrder(supplierOrder);
+                TableData<SupplierOrder> tableRow = new TableData<>(supplierOrder, oldData, new SimpleBooleanProperty(false));
                 setRowListeners(tableRow);
                 tableView.getItems().add(tableRow);
             }
@@ -254,6 +312,10 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private void editSelectedRows() {
         tableToolbarController.toggleButtonVisibilityOnEdit(true);
         isEditMode.set(true);
+        for (Integer index : selectedRowsIndices) {
+            TableData<SupplierOrder> tableRow = tableView.getItems().get(index);
+            tableRow.setOldData(new SupplierOrder(tableRow.getData()));
+        }
         tableView.refresh();
     }
 
@@ -266,15 +328,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         // Deselect all rows and clear recording array
         List<Integer> indicesToClear = new ArrayList<>(selectedRowsIndices);
         for (Integer rowIndex : indicesToClear) {
-            tableView.getItems().get(rowIndex).setSelected(false);
+            TableData<SupplierOrder> tableRow = tableView.getItems().get(rowIndex);
+            tableRow.setData(tableRow.getOldData());
+            tableRow.setSelected(false);
         }
         selectedRowsIndices.clear();
-
         tableView.refresh();
-    }
-
-    private void saveEditedRows() {
-
     }
 
     private void loadConfirmDeleteDialog() {
@@ -289,10 +348,28 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             confirmSupplierOrderDeleteController.setActionListener(confirmDialogDeleteListener);
             confirmDeleteDialogContainer.getChildren().add(confirmDialogView);
             closeConfirmDeleteDialog();
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
+    }
+
+    private void loadConfirmUpdateDialog() {
+        // Load update dialog
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml",
+                controllerFactory::createController);
+
+        try {
+            Node confirmDialogView = loader.load();
+            confirmSupplierOrderUpdateController = loader.getController();
+            confirmSupplierOrderUpdateController.setActionListener(confirmDialogUpdateListener);
+            confirmUpdateDialogContainer.getChildren().add(confirmDialogView);
+            closeConfirmUpdateDialog();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     // Utils
@@ -320,18 +397,96 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         for (SupplierOrder order : supplierOrders) {
             ordersToRemoveIds.add(order.getId());
         }
-        supplierOrdersService.deleteSupplierOrderInBulk(ordersToRemoveIds)
-                .thenAccept(result -> System.out.println("Orders deleted successfully:" + ordersToRemoveIds));
-
+        try {
+            supplierOrdersService.deleteSupplierOrderInBulk(ordersToRemoveIds)
+                    .thenAccept(result -> System.out.println("Orders deleted successfully:" + ordersToRemoveIds));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         tableView.getItems().removeIf(tableData -> ordersToRemoveIds.contains(tableData.getData().getId()));
 
         closeConfirmDeleteDialog();
         isEditMode.set(false);
         tableView.refresh();
+        selectedRowsIndices.clear();
+    }
+
+    private void openConfirmUpdateDialog(List<Integer> selectedRowsIndices) {
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
+                "Confirm Supplier Orders Update",
+                "Are you sure you want to update selected orders?",
+                null);
+        List<SupplierOrder> selectedOrders = new ArrayList<>();
+        for (Integer index : selectedRowsIndices) {
+            selectedOrders.add(tableView.getItems().get(index).getData());
+        }
+        confirmSupplierOrderUpdateController.setData(selectedOrders, confirmDialogInput);
+        confirmUpdateDialogContainer.setVisible(true);
+        confirmUpdateDialogContainer.setManaged(true);
+    }
+
+    private void closeConfirmUpdateDialog() {
+        confirmUpdateDialogContainer.setVisible(false);
+        confirmUpdateDialogContainer.setManaged(false);
+    }
+
+    private void handleUpdateOrders(List<SupplierOrder> supplierOrders) {
+        List<UpdateSupplierOrderDTO> updateSupplierOrderDTOs = new ArrayList<>();
+
+        for (SupplierOrder order : supplierOrders) {
+            UpdateSupplierOrderDTO updateSupplierOrderDTO = new UpdateSupplierOrderDTO();
+            updateSupplierOrderDTO.setId(order.getId());
+            updateSupplierOrderDTO.setOrganizationId(order.getOrganizationId());
+            updateSupplierOrderDTO.setComponentId(order.getComponent().getId());
+            updateSupplierOrderDTO.setQuantity(order.getQuantity());
+            updateSupplierOrderDTO.setOrderDate(order.getOrderDate());
+            updateSupplierOrderDTO.setEstimatedDeliveryDate(order.getEstimatedDeliveryDate());
+            updateSupplierOrderDTO.setDeliveryDate(order.getDeliveryDate());
+            updateSupplierOrderDTO.setStatus(order.getStatus());
+            updateSupplierOrderDTO.setCompanyId(order.getCompanyId());
+
+            updateSupplierOrderDTOs.add(updateSupplierOrderDTO);
+        }
+
+
+        supplierOrdersService.updateSupplierOrdersInBulk(updateSupplierOrderDTOs)
+                .thenAccept(updatedOrders -> {
+                    if (updatedOrders != null) {
+                        System.out.println("Orders updated successfully: " + updatedOrders);
+                    } else {
+                        System.out.println("Error updating orders");
+                    }
+                });
+        closeConfirmUpdateDialog();
+        cancelSelectionsAndEdit();
+        isEditMode.set(false);
+        tableView.refresh();
+        selectedRowsIndices.clear();
+    }
+
+    private void openConfirmCreateDialog() {
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
+                "Confirm Supplier Orders Create",
+                "Are you sure you want to create new orders?",
+                null);
+        List<SupplierOrder> selectedOrders = new ArrayList<>();
+        for (Integer index : selectedRowsIndices) {
+            selectedOrders.add(tableView.getItems().get(index).getData());
+        }
+        confirmSupplierOrderUpdateController.setData(selectedOrders, confirmDialogInput);
+        confirmUpdateDialogContainer.setVisible(true);
+        confirmUpdateDialogContainer.setManaged(true);
+    }
+
+    private void closeConfirmCreateDialog() {
+        confirmUpdateDialogContainer.setVisible(false);
+        confirmUpdateDialogContainer.setManaged(false);
+    }
+
+    private void handleCreateOrders(List<SupplierOrder> supplierOrders) {
+
     }
 
 
-
 }
-
