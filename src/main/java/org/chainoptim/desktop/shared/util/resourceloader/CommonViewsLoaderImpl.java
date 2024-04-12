@@ -2,6 +2,7 @@ package org.chainoptim.desktop.shared.util.resourceloader;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
@@ -102,6 +103,21 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
             return loader.getController();
         } catch (IOException ex) {
             ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public SelectDurationController loadSelectDurationView(StackPane durationInputContainer) {
+        FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/common/uielements/SelectDurationView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node timeInputView = timeInputLoader.load();
+            durationInputContainer.getChildren().add(timeInputView);
+            return timeInputLoader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }

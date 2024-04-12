@@ -1,19 +1,18 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -32,16 +31,19 @@ import static org.chainoptim.desktop.shared.util.JsonUtil.prepareJsonString;
 
 public class FactoryProductionToolbarController {
 
+    // Services
     private final ResourceAllocationService resourceAllocationService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
 
+    // Listeners
     @Setter
     private ProductionToolbarActionListener actionListener;
 
+    // State
     private Factory factory;
     private AllocationPlan allocationPlan;
 
+    // FXML
     private WebView webView;
 
     // - Edit Configuration
@@ -105,11 +107,9 @@ public class FactoryProductionToolbarController {
 
     @Inject
     public FactoryProductionToolbarController(ResourceAllocationService resourceAllocationService,
-                                              FXMLLoaderService fxmlLoaderService,
-                                              ControllerFactory controllerFactory) {
+                                              CommonViewsLoader commonViewsLoader) {
         this.resourceAllocationService = resourceAllocationService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
     }
 
     public void initialize(WebView webView, Factory factory) {
@@ -120,6 +120,40 @@ public class FactoryProductionToolbarController {
         setupCheckboxListeners();
     }
 
+    // Initialization
+    private void initializeToolbarUI() {
+        initializeIcons();
+        initializeButtons();
+
+        selectDurationController = commonViewsLoader.loadSelectDurationView(durationInputContainer);
+    }
+
+    private void initializeIcons() {
+        angleUpImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
+        angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
+        addImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
+        updateImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
+        deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
+        eyeImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/eye-solid.png")));
+    }
+
+    private void initializeButtons() {
+        toggleEditConfigurationButton.setGraphic(createImageView(angleUpImage));
+        toggleDisplayInfoButton.setGraphic(createImageView(angleUpImage));
+        viewActivePlan.setGraphic(createImageView(eyeImage));
+        viewAllocationPlanButton.setGraphic(createImageView(eyeImage));
+        toggleResourceAllocationButton.setGraphic(createImageView(angleUpImage));
+        toggleSeekResourcesButton.setGraphic(createImageView(angleUpImage));
+        addStageButton.setGraphic(createImageView(addImage));
+        updateStageButton.setGraphic(createImageView(updateImage));
+        deleteStageButton.setGraphic(createImageView(deleteImage));
+        addConnectionButton.setGraphic(createImageView(addImage));
+        deleteConnectionButton.setGraphic(createImageView(deleteImage));
+
+        viewAllocationPlanButton.setVisible(false);
+        viewAllocationPlanButton.setManaged(false);
+    }
+
     private void setupCheckboxListeners() {
         quantitiesCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> webView.getEngine().executeScript("window.renderInfo('quantities', " + newValue + ");"));
 
@@ -128,6 +162,8 @@ public class FactoryProductionToolbarController {
         priorityCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> webView.getEngine().executeScript("window.renderInfo('priorities', " + newValue + ");"));
     }
 
+    // Actions
+    // - Allocate resources
     @FXML
     private void handleAllocateResources() {
         Float durationSeconds = selectDurationController.getTimeSeconds();
@@ -156,92 +192,6 @@ public class FactoryProductionToolbarController {
             }
         });
         return allocationPlan;
-    }
-
-    // Toolbar
-    private void initializeToolbarUI() {
-        // Initialize expand/collapse buttons
-        angleUpImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
-        angleDownImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
-        addImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
-        updateImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
-        deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
-        eyeImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/eye-solid.png")));
-
-        toggleEditConfigurationButton.setGraphic(createImageView(angleUpImage));
-        toggleDisplayInfoButton.setGraphic(createImageView(angleUpImage));
-        viewActivePlan.setGraphic(createImageView(eyeImage));
-        viewAllocationPlanButton.setGraphic(createImageView(eyeImage));
-        toggleResourceAllocationButton.setGraphic(createImageView(angleUpImage));
-        toggleSeekResourcesButton.setGraphic(createImageView(angleUpImage));
-        addStageButton.setGraphic(createImageView(addImage));
-        updateStageButton.setGraphic(createImageView(updateImage));
-        deleteStageButton.setGraphic(createImageView(deleteImage));
-        addConnectionButton.setGraphic(createImageView(addImage));
-        deleteConnectionButton.setGraphic(createImageView(deleteImage));
-
-        viewAllocationPlanButton.setVisible(false);
-        viewAllocationPlanButton.setManaged(false);
-
-        // Initialize time selection input view
-        FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectDurationView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node timeInputView = timeInputLoader.load();
-            selectDurationController = timeInputLoader.getController();
-            durationInputContainer.getChildren().add(timeInputView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Toggle Toolbar sections
-    @FXML
-    private void toggleEditConfigurationSection() {
-        toggleSection(editConfigurationContentVBox, toggleEditConfigurationButton);
-    }
-
-    @FXML
-    private void toggleDisplayInfoSection() {
-        toggleSection(displayInfoContentVBox, toggleDisplayInfoButton);
-    }
-
-    @FXML
-    private void toggleResourceAllocationSection() {
-        toggleSection(resourceAllocationContentBox, toggleResourceAllocationButton);
-    }
-
-    @FXML
-    private void toggleSeekResourcesSection() {
-        toggleSection(seekResourcesContentBox, toggleSeekResourcesButton);
-    }
-
-    private void toggleSection(VBox sectionVBox, Button sectionToggleButton) {
-        boolean isVisible = sectionVBox.isVisible();
-        sectionVBox.setVisible(!isVisible);
-        sectionVBox.setManaged(!isVisible);
-        if (isVisible) {
-            sectionToggleButton.setGraphic(createImageView(angleDownImage));
-        } else {
-            sectionToggleButton.setGraphic(createImageView(angleUpImage));
-        }
-    }
-
-    private ImageView createImageView(Image image) {
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(12);
-        imageView.setFitHeight(12);
-        return imageView;
-    }
-
-    private void updateViewAllocationPlanButtonVisibility() {
-        // Update button visibility based on whether an allocation plan is available
-        System.out.println("Allocation plan: " + allocationPlan);
-        boolean isAllocationPlanAvailable = allocationPlan != null;
-        viewAllocationPlanButton.setVisible(isAllocationPlanAvailable);
-        viewAllocationPlanButton.setManaged(isAllocationPlanAvailable);
     }
 
     @FXML
@@ -286,5 +236,53 @@ public class FactoryProductionToolbarController {
         boolean isVisible = computePlanVBox.isVisible();
         computePlanVBox.setVisible(!isVisible);
         computePlanVBox.setManaged(!isVisible);
+    }
+
+    // - Toggle Toolbar sections
+    @FXML
+    private void toggleEditConfigurationSection() {
+        toggleSection(editConfigurationContentVBox, toggleEditConfigurationButton);
+    }
+
+    @FXML
+    private void toggleDisplayInfoSection() {
+        toggleSection(displayInfoContentVBox, toggleDisplayInfoButton);
+    }
+
+    @FXML
+    private void toggleResourceAllocationSection() {
+        toggleSection(resourceAllocationContentBox, toggleResourceAllocationButton);
+    }
+
+    @FXML
+    private void toggleSeekResourcesSection() {
+        toggleSection(seekResourcesContentBox, toggleSeekResourcesButton);
+    }
+
+    private void toggleSection(VBox sectionVBox, Button sectionToggleButton) {
+        boolean isVisible = sectionVBox.isVisible();
+        sectionVBox.setVisible(!isVisible);
+        sectionVBox.setManaged(!isVisible);
+        if (isVisible) {
+            sectionToggleButton.setGraphic(createImageView(angleDownImage));
+        } else {
+            sectionToggleButton.setGraphic(createImageView(angleUpImage));
+        }
+    }
+
+    // Utils
+    private ImageView createImageView(Image image) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(12);
+        imageView.setFitHeight(12);
+        return imageView;
+    }
+
+    private void updateViewAllocationPlanButtonVisibility() {
+        // Update button visibility based on whether an allocation plan is available
+        System.out.println("Allocation plan: " + allocationPlan);
+        boolean isAllocationPlanAvailable = allocationPlan != null;
+        viewAllocationPlanButton.setVisible(isAllocationPlanAvailable);
+        viewAllocationPlanButton.setManaged(isAllocationPlanAvailable);
     }
 }
