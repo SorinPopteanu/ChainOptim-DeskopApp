@@ -7,7 +7,7 @@
             fx:id="sidebar"
             styleClass="sidebar">
 
-    <HBox fx:id="dashboardHBox" alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 16px;">
+    <HBox fx:id="dashboardHBox" alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-title-container">
         <Button fx:id="backButton" styleClass="sidebar-button"/>
         <Pane HBox.hgrow="ALWAYS"/>
         <Label text="Dashboard" styleClass="sidebar-title" HBox.hgrow="ALWAYS"/>
@@ -21,7 +21,7 @@
 
     <Region VBox.vgrow="ALWAYS"/>
 
-    <VBox alignment="BOTTOM_LEFT" styleClass="sidebar-inner-container">
+    <VBox fx:id="bottomContainer" alignment="BOTTOM_LEFT" styleClass="sidebar-inner-container">
         <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="sidebar-button"/>
     </VBox>
 

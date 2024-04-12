@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -31,30 +32,11 @@ public class SidebarController {
     private NavigationService navigationService;
     private final AuthenticationService authenticationService;
 
-    @Inject
-    public SidebarController(NavigationService navigationService, AuthenticationService authenticationService) {
-        this.navigationService = navigationService;
-        this.authenticationService = authenticationService;
-    }
-
-    // UI elements
-    @FXML
-    private VBox sidebar;
-    @FXML
-    private HBox dashboardHBox;
-    @FXML
-    private VBox buttonContainer;
-
+    // State
     private final List<SidebarButton> navigationButtons = new ArrayList<>();
-    private static final String ICONS_PATH = "/img/";
-    @FXML
-    public Button toggleButton;
-    @FXML
-    public Button backButton;
-    @FXML
-    public Button logoutButton;
 
-    // Configuration
+    // Constants
+    private static final String ICONS_PATH = "/img/";
     private final List<String> orderedKeys = List.of("Overview", "Organization", "Products", "Factories", "Warehouses", "Suppliers", "Clients", "Settings");
     private final Map<String, String> buttonIconMap = Map.ofEntries(
             Map.entry("Overview", "globe-solid.png"),
@@ -71,13 +53,37 @@ public class SidebarController {
             Map.entry("Toggle", "bars-solid.png"),
             Map.entry("Logout", "right-from-bracket-solid.png")
     );
-    private static final double COLLAPSED_WIDTH = 52;
+    private static final double COLLAPSED_WIDTH = 64;
     private static final double EXPANDED_WIDTH = 256;
     private boolean isSidebarMinimized = false;
+
+    // FXML
+    @FXML
+    private VBox sidebar;
+    @FXML
+    private HBox dashboardHBox;
+    @FXML
+    private VBox buttonContainer;
+    @FXML
+    private Button toggleButton;
+    @FXML
+    private Button backButton;
+    @FXML
+    private VBox bottomContainer;
+    @FXML
+    private Button logoutButton;
+
+    @Inject
+    public SidebarController(NavigationService navigationService, AuthenticationService authenticationService) {
+        this.navigationService = navigationService;
+        this.authenticationService = authenticationService;
+    }
 
     // Initialization
     @FXML
     public void initialize() {
+        sidebar.setMinWidth(EXPANDED_WIDTH);
+        sidebar.setMaxWidth(EXPANDED_WIDTH);
         initializeNavigationButtons();
         createSidebarButtons();
 
@@ -132,30 +138,43 @@ public class SidebarController {
 
     private void collapseSidebar() {
         // Reduce width and hide everything but the icons
-        sidebar.setPrefWidth(COLLAPSED_WIDTH);
+        sidebar.setMinWidth(COLLAPSED_WIDTH);
+        sidebar.setMaxWidth(COLLAPSED_WIDTH);
+
+        dashboardHBox.getStyleClass().setAll("sidebar-title-container-collapsed");
         dashboardHBox.getChildren().forEach(child -> child.setVisible(false));
         dashboardHBox.getChildren().forEach(child -> child.setManaged(false));
         toggleButton.setVisible(true);
         toggleButton.setManaged(true);
 
+        buttonContainer.getStyleClass().setAll("sidebar-inner-container-collapsed");
         buttonContainer.getChildren().forEach(node -> {
             if (node instanceof Button button) {
+                Tooltip tooltip = new Tooltip(button.getText());
+                button.setTooltip(tooltip);
                 button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             }
         });
+        bottomContainer.getStyleClass().setAll("sidebar-inner-container-collapsed");
         logoutButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
     }
 
     private void expandSidebar() {
-        sidebar.setPrefWidth(EXPANDED_WIDTH);
+        sidebar.setMinWidth(EXPANDED_WIDTH);
+        sidebar.setMaxWidth(EXPANDED_WIDTH);
+
+        dashboardHBox.getStyleClass().setAll("sidebar-title-container");
         dashboardHBox.getChildren().forEach(child -> child.setVisible(true));
         dashboardHBox.getChildren().forEach(child -> child.setManaged(true));
 
+        buttonContainer.getStyleClass().setAll("sidebar-inner-container");
         buttonContainer.getChildren().forEach(node -> {
             if (node instanceof Button button) {
                 button.setContentDisplay(ContentDisplay.LEFT);
+                button.setTooltip(null);
             }
         });
+        bottomContainer.getStyleClass().setAll("sidebar-inner-container");
         logoutButton.setContentDisplay(ContentDisplay.LEFT);
     }
 
