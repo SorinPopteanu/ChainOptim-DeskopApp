@@ -1,19 +1,19 @@
 package org.chainoptim.desktop.core.main.controller;
 
+import org.chainoptim.desktop.core.main.model.SidebarButton;
+import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.user.service.AuthenticationService;
+import org.chainoptim.desktop.core.main.service.SceneManager;
+
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
-import org.chainoptim.desktop.core.main.model.SidebarButton;
-import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.core.main.service.SceneManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class SidebarController {
 
     // UI elements
     @FXML
-    private AnchorPane sidebar;
+    private VBox sidebar;
     @FXML
     private HBox dashboardHBox;
     @FXML

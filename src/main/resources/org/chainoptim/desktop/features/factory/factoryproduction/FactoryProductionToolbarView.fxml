@@ -8,9 +8,9 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.FactoryProductionToolbarController"
       prefHeight="400.0" prefWidth="600.0"
-      spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff;">
+      spacing="12" style="-fx-padding: 10; -fx-background-color: #ffffff;">
 
-    <Label text="Toolbar" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
+    <Label text="Toolbar" style="-fx-font-size: 19px; -fx-font-weight: bold"/>
 
     <!-- Section: Edit Configuration -->
     <HBox alignment="CENTER_LEFT" spacing="10">
@@ -71,15 +71,17 @@
     </HBox>
     <VBox spacing="10">
         <VBox fx:id="resourceAllocationContentBox" spacing="10">
-            <Button text="View Active Plan" onAction="#openCurrentAllocationPlan" styleClass="standard-cancel-button"/>
+            <Button fx:id="viewActivePlan" text="View Active Plan" onAction="#openCurrentAllocationPlan" styleClass="standard-action-button"/>
 
-            <Label text="Compute Allocation Plan" styleClass="-fx-font-weight: 600;"/>
-            <Label text="Duration:" style="-fx-font-size: 12px;"/>
-            <!-- Selection of duration container -->
-            <StackPane fx:id="durationInputContainer"/>
-            <Button text="Allocate Resources" onAction="#handleAllocateResources" styleClass="allocate-resources-button"/>
+            <Button text="Compute Allocation Plan" onAction="#toggleComputePlanSubsection" styleClass="standard-action-button"/>
+            <VBox spacing="8" fx:id="computePlanVBox" visible="false" managed="false">
+                <Label text="Duration:" style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+                <!-- Selection of duration container -->
+                <StackPane fx:id="durationInputContainer"/>
+                <Button text="Allocate Resources" onAction="#handleAllocateResources" styleClass="allocate-resources-button"/>
 
-            <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan" styleClass="standard-cancel-button"/>
+                <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan" styleClass="standard-action-button"/>
+            </VBox>
         </VBox>
     </VBox>
 
@@ -90,7 +92,7 @@
     </HBox>
     <VBox spacing="10">
         <VBox fx:id="seekResourcesContentBox" spacing="10">
-            <Button text="Seek Missing Resources"/>
+            <Button text="Seek Missing Resources" styleClass="standard-action-button"/>
         </VBox>
     </VBox>
 </VBox>

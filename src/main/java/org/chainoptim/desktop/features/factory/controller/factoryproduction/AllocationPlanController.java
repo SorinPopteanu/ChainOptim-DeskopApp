@@ -149,13 +149,11 @@ public class AllocationPlanController {
                                    AllocationPlan allocationPlan) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
 
-        System.out.println("Loading confirm dialog with allocation plan: " + allocationPlan);
         try {
             Node view = loader.load();
             GenericConfirmDialogController<AllocationPlan> controller = loader.getController();
             controller.setData(allocationPlan, confirmDialogInput);
             controller.setActionListener(listener);
-            System.out.println("Successfully loaded confirm dialog");
             confirmDialogPane.getChildren().add(view);
         } catch (IOException ex) {
             ex.printStackTrace();

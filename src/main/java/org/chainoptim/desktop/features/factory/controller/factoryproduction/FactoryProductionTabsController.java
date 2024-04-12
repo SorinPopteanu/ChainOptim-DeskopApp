@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class FactoryProductionTabsController implements TabsActionListener {
 
     private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
 
     private WebView webView;
     private FactoryGraphController factoryGraphController;
@@ -40,8 +42,10 @@ public class FactoryProductionTabsController implements TabsActionListener {
     );
 
     @Inject
-    public FactoryProductionTabsController(FXMLLoaderService fxmlLoaderService) {
+    public FactoryProductionTabsController(FXMLLoaderService fxmlLoaderService,
+                                           ControllerFactory controllerFactory) {
         this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
     }
 
     public void initialize(WebView webView, Factory factory) {
@@ -52,8 +56,8 @@ public class FactoryProductionTabsController implements TabsActionListener {
     }
 
     public <T> void addTab(String tabPaneKey, T extraData) {
-        Tab tab = new Tab(tabPaneKey);
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(tabsViewPaths.get(tabPaneKey), MainApplication.injector::getInstance);
+        Tab tab = new Tab(tabPaneKey + "  ");
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(tabsViewPaths.get(tabPaneKey), controllerFactory::createController);
         try {
             Node tabsView = loader.load();
 
@@ -82,11 +86,11 @@ public class FactoryProductionTabsController implements TabsActionListener {
         }
         // Set up Update Stage listener and send factoryStageId and factoryId in case of Update Stage
         if (tabPaneKey.equals("Update Stage")) {
-            System.out.println("Initializing Update Stage tab with factory stage id: " + extraData);
             UpdateFactoryStageController controller = loader.getController();
             controller.setActionListener(this);
             controller.initialize((Integer) extraData, factory.getId());
         }
+        // Pass the Allocation Plan, factoryId and whether it is the current plan
         if (tabPaneKey.equals("Allocation Plan")) {
             AllocationPlanController controller = loader.getController();
             controller.initialize(((Pair<AllocationPlan, Boolean>) extraData).getKey(), factory.getId(), ((Pair<AllocationPlan, Boolean>) extraData).getValue());
@@ -98,14 +102,9 @@ public class FactoryProductionTabsController implements TabsActionListener {
     }
 
     private void selectTab(String tabKey) {
-        Tab selectedTab = productionTabPane.getTabs().stream()
+        productionTabPane.getTabs().stream()
                 .filter(tab -> tabKey.equals(tab.getText()))
-                .findFirst()
-                .orElse(null);
-
-        if (selectedTab != null) {
-            productionTabPane.getSelectionModel().select(selectedTab);
-        }
+                .findFirst().ifPresent(selectedTab -> productionTabPane.getSelectionModel().select(selectedTab));
     }
 
 

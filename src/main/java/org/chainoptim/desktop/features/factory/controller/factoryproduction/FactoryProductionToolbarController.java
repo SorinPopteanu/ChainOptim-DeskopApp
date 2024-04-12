@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import org.chainoptim.desktop.MainApplication;
+import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
@@ -33,6 +34,7 @@ public class FactoryProductionToolbarController {
 
     private final ResourceAllocationService resourceAllocationService;
     private final FXMLLoaderService fxmlLoaderService;
+    private final ControllerFactory controllerFactory;
 
     @Setter
     private ProductionToolbarActionListener actionListener;
@@ -76,6 +78,10 @@ public class FactoryProductionToolbarController {
     @FXML
     private VBox resourceAllocationContentBox;
     @FXML
+    private VBox computePlanVBox;
+    @FXML
+    private Button viewActivePlan;
+    @FXML
     private StackPane durationInputContainer;
     private SelectDurationController selectDurationController;
     @FXML
@@ -93,12 +99,15 @@ public class FactoryProductionToolbarController {
     private Image deleteImage;
     private Image angleUpImage;
     private Image angleDownImage;
+    private Image eyeImage;
 
     @Inject
     public FactoryProductionToolbarController(ResourceAllocationService resourceAllocationService,
-                                              FXMLLoaderService fxmlLoaderService) {
+                                              FXMLLoaderService fxmlLoaderService,
+                                              ControllerFactory controllerFactory) {
         this.resourceAllocationService = resourceAllocationService;
         this.fxmlLoaderService = fxmlLoaderService;
+        this.controllerFactory = controllerFactory;
     }
 
     public void initialize(WebView webView, Factory factory) {
@@ -155,9 +164,12 @@ public class FactoryProductionToolbarController {
         addImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
         updateImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pen-to-square-solid.png")));
         deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
+        eyeImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/eye-solid.png")));
 
         toggleEditConfigurationButton.setGraphic(createImageView(angleUpImage));
         toggleDisplayInfoButton.setGraphic(createImageView(angleUpImage));
+        viewActivePlan.setGraphic(createImageView(eyeImage));
+        viewAllocationPlanButton.setGraphic(createImageView(eyeImage));
         toggleResourceAllocationButton.setGraphic(createImageView(angleUpImage));
         toggleSeekResourcesButton.setGraphic(createImageView(angleUpImage));
         addStageButton.setGraphic(createImageView(addImage));
@@ -172,7 +184,7 @@ public class FactoryProductionToolbarController {
         // Initialize time selection input view
         FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
                 "/org/chainoptim/desktop/shared/common/uielements/SelectDurationView.fxml",
-                MainApplication.injector::getInstance
+                controllerFactory::createController
         );
         try {
             Node timeInputView = timeInputLoader.load();
@@ -261,5 +273,12 @@ public class FactoryProductionToolbarController {
     @FXML
     private void openCurrentAllocationPlan() {
         actionListener.onOpenAllocationPlanRequested(allocationPlan, true);
+    }
+
+    @FXML
+    private void toggleComputePlanSubsection() {
+        boolean isVisible = computePlanVBox.isVisible();
+        computePlanVBox.setVisible(!isVisible);
+        computePlanVBox.setManaged(!isVisible);
     }
 }

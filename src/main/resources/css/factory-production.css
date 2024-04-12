@@ -10,11 +10,15 @@
 
 .custom-tab .tab-label {
     -fx-font-size: 14px !important;
-    -fx-font-weight: 600 !important;
+    -fx-font-weight: 700 !important;
 }
 
 .custom-tab:selected {
-    -fx-background-color: #d0d0d0 !important;
+    -fx-background-color: #d4d4d4 !important;
+}
+
+.tab-pane .tab:hover .tab-close-button {
+    -fx-background-color: #B71011;
 }
 
 .create-stage-form {
@@ -25,17 +29,19 @@
 
 /* Toolbar */
 .section-label {
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 
 .edit-configuration-sublabel {
     -fx-padding: 0 4px 0 0;
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
 .add-button {
+    -fx-pref-height: 24px;
+    -fx-pref-width: 24px;
     -fx-background-color: #0077C7;
     -fx-cursor: hand;
 }
@@ -45,6 +51,8 @@
 }
 
 .update-button {
+    -fx-pref-height: 24px;
+    -fx-pref-width: 24px;
     -fx-background-color: #00A062;
     -fx-cursor: hand;
 }
@@ -54,6 +62,8 @@
 }
 
 .delete-button {
+    -fx-pref-height: 24px;
+    -fx-pref-width: 24px;
     -fx-background-color: #B71011;
     -fx-cursor: hand;
 }
