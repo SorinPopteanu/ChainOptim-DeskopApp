@@ -14,7 +14,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -96,7 +95,6 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    System.out.println("Response: " + response);
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
                         ResourceAllocationPlan allocationPlan = JsonUtil.getObjectMapper().readValue(response.body(), ResourceAllocationPlan.class);
