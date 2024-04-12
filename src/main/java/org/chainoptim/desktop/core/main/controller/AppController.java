@@ -86,7 +86,7 @@ public class AppController {
                 return;
             }
             User user = userOptional.get();
-            user.getOrganization().setSubscriptionPlanTier(Organization.SubscriptionPlanTier.PRO);
+
             // Set user to TenantContext for reuse throughout the app
             TenantContext.setCurrentUser(user);
 

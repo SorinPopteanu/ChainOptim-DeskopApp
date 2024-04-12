@@ -71,3 +71,11 @@
 .custom-combo-box .arrow {
     -fx-background-color: #c0c0c0;
 }
+
+.custom-combo-box .combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #006AEE;
+}
+
+.custom-combo-box .combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #006AEE;
+}

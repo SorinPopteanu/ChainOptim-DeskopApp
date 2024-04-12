@@ -86,6 +86,8 @@ public class FactoryProductionToolbarController {
     private SelectDurationController selectDurationController;
     @FXML
     private Button viewAllocationPlanButton;
+    @FXML
+    private Button viewProductionHistoryButton;
 
     // - Seek Resources
     @FXML
@@ -275,6 +277,10 @@ public class FactoryProductionToolbarController {
         actionListener.onOpenAllocationPlanRequested(allocationPlan, true);
     }
 
+    @FXML
+    private void openProductionHistory() {
+        actionListener.onOpenProductionHistoryRequested();
+    }
     @FXML
     private void toggleComputePlanSubsection() {
         boolean isVisible = computePlanVBox.isVisible();

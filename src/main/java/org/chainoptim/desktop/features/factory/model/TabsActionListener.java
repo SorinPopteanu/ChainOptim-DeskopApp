@@ -6,4 +6,5 @@ public interface TabsActionListener {
 
     void onAddStage(FactoryProductionGraph factoryGraph);
     void onUpdateStage(FactoryProductionGraph factoryGraph);
+    void onAddProductionRecord(Factory factory);
 }

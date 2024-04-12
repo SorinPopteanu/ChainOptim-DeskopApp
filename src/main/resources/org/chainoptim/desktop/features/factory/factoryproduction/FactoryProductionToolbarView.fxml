@@ -82,6 +82,8 @@
 
                 <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan" styleClass="standard-action-button"/>
             </VBox>
+
+            <Button fx:id="viewProductionHistoryButton" text="View Production History" onAction="#openProductionHistory" styleClass="standard-action-button"/>
         </VBox>
     </VBox>
 

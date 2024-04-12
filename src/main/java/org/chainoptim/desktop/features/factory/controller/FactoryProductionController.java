@@ -106,4 +106,9 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     public void onOpenAllocationPlanRequested(AllocationPlan allocationPlan, Boolean isCurrentPlan) {
         productionTabsController.addTab("Allocation Plan", new Pair<AllocationPlan, Boolean>(allocationPlan, isCurrentPlan));
     }
+
+    @Override
+    public void onOpenProductionHistoryRequested() {
+        productionTabsController.addTab("Production History", null);
+    }
 }

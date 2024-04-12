@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
@@ -26,20 +25,22 @@ public class FactoryProductionTabsController implements TabsActionListener {
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
 
-    private WebView webView;
     private FactoryGraphController factoryGraphController;
 
     private Factory factory;
-
-    @FXML
-    private TabPane productionTabPane;
 
     private static final Map<String, String> tabsViewPaths = Map.of(
             "Factory Graph", "/org/chainoptim/desktop/features/factory/factoryproduction/FactoryGraphView.fxml",
             "Add Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/CreateFactoryStageView.fxml",
             "Update Stage", "/org/chainoptim/desktop/features/factory/factoryproduction/UpdateFactoryStageView.fxml",
-                "Allocation Plan", "/org/chainoptim/desktop/features/factory/factoryproduction/AllocationPlanView.fxml"
+            "Allocation Plan", "/org/chainoptim/desktop/features/factory/factoryproduction/AllocationPlanView.fxml",
+            "Production History", "/org/chainoptim/desktop/features/factory/factoryproduction/ProductionHistoryView.fxml",
+            "Add Production Record", "/org/chainoptim/desktop/features/factory/factoryproduction/AddProductionRecordView.fxml"
     );
+
+    @FXML
+    private TabPane productionTabPane;
+    private WebView webView;
 
     @Inject
     public FactoryProductionTabsController(FXMLLoaderService fxmlLoaderService,
@@ -95,6 +96,16 @@ public class FactoryProductionTabsController implements TabsActionListener {
             AllocationPlanController controller = loader.getController();
             controller.initialize(((Pair<AllocationPlan, Boolean>) extraData).getKey(), factory.getId(), ((Pair<AllocationPlan, Boolean>) extraData).getValue());
         }
+        // Pass Factory to ProductionHistory
+        if (tabPaneKey.equals("Production History")) {
+            ProductionHistoryController controller = loader.getController();
+            controller.setActionListener(this);
+            controller.setData(factory);
+        }
+        if (tabPaneKey.equals("Add Production Record")) {
+            AddProductionRecordController controller = loader.getController();
+            controller.setData((Factory) extraData);
+        }
     }
 
     private void closeTab(String tabKey) {
@@ -135,5 +146,10 @@ public class FactoryProductionTabsController implements TabsActionListener {
             closeTab("Update Stage");
             selectTab("Factory Graph");
         });
+    }
+
+    @Override
+    public void onAddProductionRecord(Factory factory) {
+        addTab("Add Production Record", factory);
     }
 }

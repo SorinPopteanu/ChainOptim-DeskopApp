@@ -7,4 +7,5 @@ public interface ProductionToolbarActionListener {
     void onOpenAddStageRequested();
     void onOpenUpdateStageRequested();
     void onOpenAllocationPlanRequested(AllocationPlan allocationPlan, Boolean isCurrentPlan);
+    void onOpenProductionHistoryRequested();
 }
