@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController" spacing="8">
+      fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController" spacing="16">
 
     <VBox styleClass="radio-button-group">
         <RadioButton fx:id="selectExistingRadio" text="Select Existing Location" selected="true" styleClass="radio-button"/>
@@ -15,29 +15,29 @@
     </VBox>
 
     <!-- Select existing location ComboBox -->
-    <ComboBox fx:id="locationComboBox" prefWidth="200"/>
+    <ComboBox fx:id="locationComboBox" prefWidth="200" styleClass="custom-combo-box"/>
 
     <!-- Create New Location subform -->
     <VBox fx:id="createLocationForm" visible="false">
         <Label text="Address" styleClass="form-label"/>
-        <TextField fx:id="addressField"/>
+        <TextField fx:id="addressField" styleClass="custom-text-field"/>
 
         <Label text="City" styleClass="form-label"/>
-        <TextField fx:id="cityField"/>
+        <TextField fx:id="cityField" styleClass="custom-text-field"/>
 
         <Label text="State" styleClass="form-label"/>
-        <TextField fx:id="stateField"/>
+        <TextField fx:id="stateField" styleClass="custom-text-field"/>
 
         <Label text="Country" styleClass="form-label"/>
-        <TextField fx:id="countryField"/>
+        <TextField fx:id="countryField" styleClass="custom-text-field"/>
 
         <Label text="Zip Code" styleClass="form-label"/>
-        <TextField fx:id="zipCodeField"/>
+        <TextField fx:id="zipCodeField" styleClass="custom-text-field"/>
 
         <Label text="Latitude" styleClass="form-label"/>
-        <TextField fx:id="latitudeField"/>
+        <TextField fx:id="latitudeField" styleClass="custom-text-field"/>
 
         <Label text="Longitude" styleClass="form-label"/>
-        <TextField fx:id="longitudeField"/>
+        <TextField fx:id="longitudeField" styleClass="custom-text-field"/>
     </VBox>
 </VBox>

@@ -130,7 +130,7 @@ public class ClientsController implements Initializable {
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
             int clientsLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxClients();
-            headerController.disableCreateButton(totalCount >= clientsLimit, "You have reached the limit of clients allowed by your current subscription plan.");
+            headerController.disableCreateButton(clientsLimit != -1 && totalCount >= clientsLimit, "You have reached the limit of clients allowed by your current subscription plan.");
 
             clientsVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {

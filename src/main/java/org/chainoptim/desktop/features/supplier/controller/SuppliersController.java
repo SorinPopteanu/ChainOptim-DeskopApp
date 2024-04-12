@@ -128,7 +128,7 @@ public class SuppliersController implements Initializable {
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
             int suppliersLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxSuppliers();
-            headerController.disableCreateButton(totalCount >= suppliersLimit, "You have reached the limit of suppliers allowed by your current subscription plan.");
+            headerController.disableCreateButton(suppliersLimit != -1 && totalCount >= suppliersLimit, "You have reached the limit of suppliers allowed by your current subscription plan.");
 
             suppliersVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {

@@ -112,6 +112,7 @@ public class SidebarController {
             button.setOnAction(e -> model.getAction().run());
             setButtonGraphic(button, model.getIconPath());
             button.getStyleClass().add("sidebar-button");
+            button.setStyle("-fx-padding: 10px 18px;");
             button.setMaxWidth(Double.MAX_VALUE);
             buttonContainer.getChildren().add(button);
         });
@@ -153,6 +154,7 @@ public class SidebarController {
                 Tooltip tooltip = new Tooltip(button.getText());
                 button.setTooltip(tooltip);
                 button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                button.setStyle("-fx-padding: 10px;");
             }
         });
         bottomContainer.getStyleClass().setAll("sidebar-inner-container-collapsed");
@@ -172,6 +174,7 @@ public class SidebarController {
             if (node instanceof Button button) {
                 button.setContentDisplay(ContentDisplay.LEFT);
                 button.setTooltip(null);
+                button.setStyle("-fx-padding: 10px 18px;");
             }
         });
         bottomContainer.getStyleClass().setAll("sidebar-inner-container");

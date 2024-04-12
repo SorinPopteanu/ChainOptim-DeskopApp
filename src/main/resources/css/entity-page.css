@@ -3,7 +3,7 @@
 .entity-header-container {
     -fx-padding: 20;
     -fx-background-color: #eeeeee;
-    -fx-border-color: #c0c0c0;
+    -fx-border-color: #c0c0c0 #ffffff #c0c0c0 #ffffff;
 }
 
 .entity-page-title {

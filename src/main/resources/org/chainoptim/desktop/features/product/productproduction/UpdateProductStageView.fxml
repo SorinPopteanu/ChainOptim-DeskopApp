@@ -16,10 +16,10 @@
         </HBox>
 
         <Label text="Stage Name *:" styleClass="form-label"/>
-        <TextField fx:id="stageNameField"/>
+        <TextField fx:id="stageNameField" styleClass="custom-text-field"/>
 
         <Label text="Stage Description:" styleClass="form-label"/>
-        <TextField fx:id="stageDescriptionField"/>
+        <TextField fx:id="stageDescriptionField" styleClass="custom-text-field"/>
 
         <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px 0px;">
             <Button text="Add Stage" onAction="#handleSubmit" styleClass="standard-write-button"/>
