@@ -50,6 +50,8 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
     private DatePicker endDatePicker;
     @FXML
     private VBox allocationsVBox;
+    @FXML
+    private VBox resultsVBox;
 
     @Inject
     public AddProductionRecordController(FactoryProductionHistoryService historyService,
@@ -120,31 +122,27 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
         currentPlanEndDate.setText(planEndDate.toLocalDate().toString());
 
         newRecord = new DailyProductionRecord();
-        newRecord.setPlannedResourceAllocations(
+        newRecord.setAllocations(
                 currentPlan.getAllocationPlan().getAllocations().stream()
                         .sorted(Comparator.comparingInt(ResourceAllocation::getFactoryStageId))
                         .toList()
         );
 
-        String currentStage = newRecord.getPlannedResourceAllocations().getFirst().getStageName();
+        String currentStage = newRecord.getAllocations().getFirst().getStageName();
 
         allocationsVBox.getChildren().clear();
+        allocationsVBox.setSpacing(8);
 
-        for (ResourceAllocation allocation : newRecord.getPlannedResourceAllocations()) {
+        for (ResourceAllocation allocation : newRecord.getAllocations()) {
             VBox allocationVBox = new VBox(8);
 
-            if (!Objects.equals(allocation.getStageName(), currentStage)) {
-                Label stageNameLabel = addStageLabel("Stage: " + currentStage);
+            if (!Objects.equals(allocation.getStageName(), currentStage) || allocationsVBox.getChildren().isEmpty()) {
+                Label stageNameLabel = addStageLabel(currentStage);
+                allocationsVBox.getChildren().add(stageNameLabel);
             }
             currentStage = allocation.getStageName();
 
-            Label componentNameLabel = new Label(allocation.getComponentName());
-            componentNameLabel.getStyleClass().setAll("general-label");
-            componentNameLabel.setStyle("-fx-padding: 4px 0 0 0;");
-            allocationVBox.getChildren().add(componentNameLabel);
-
-            HBox amountsHBox = renderAmounts(allocation);
-
+            HBox amountsHBox = renderInputAmounts(allocation);
             allocationVBox.getChildren().add(amountsHBox);
 
             allocationsVBox.getChildren().add(allocationVBox);
@@ -159,13 +157,20 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
         return stageNameLabel;
     }
 
-    private HBox renderAmounts(ResourceAllocation allocation) {
-        HBox amountsHBox = new HBox();
+    private HBox renderInputAmounts(ResourceAllocation allocation) {
+        HBox amountsHBox = new HBox(8);
         amountsHBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label componentNameLabel = new Label("Component: " + allocation.getComponentName());
+        componentNameLabel.getStyleClass().setAll("general-label");
+        componentNameLabel.setStyle("-fx-padding: 4px;");
+        amountsHBox.getChildren().add(componentNameLabel);
+
+
 
         VBox actualAmountVBox = new VBox(8);
         Label actualAmountLabel = new Label("Allocated Amount");
-        actualAmountLabel.getStyleClass().setAll("form-label");
+        actualAmountLabel.getStyleClass().setAll("general-label");
         TextField actualAmountField = new TextField();
         actualAmountField.getStyleClass().setAll("custom-text-field");
         actualAmountVBox.getChildren().addAll(actualAmountLabel, actualAmountField);
@@ -177,10 +182,10 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
 
         VBox plannedAmountVBox = new VBox(8);
         Label plannedAmountLabel = new Label("Planned Amount");
-        plannedAmountLabel.getStyleClass().setAll("form-label");
+        plannedAmountLabel.getStyleClass().setAll("general-label");
         Label plannedAmountValue = new Label(String.valueOf(allocation.getAllocatedAmount()));
         plannedAmountValue.getStyleClass().setAll("general-label");
-        plannedAmountValue.setStyle("-fx-padding: 4px 0 0 0;");
+        plannedAmountValue.setStyle("-fx-padding: 4px 0 0 0; -fx-text-fill: #121212");
         plannedAmountVBox.getChildren().addAll(plannedAmountLabel, plannedAmountValue);
         amountsHBox.getChildren().add(plannedAmountVBox);
 
@@ -190,9 +195,10 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
 
         VBox neededAmountVBox = new VBox(8);
         Label neededAmountLabel = new Label("Needed Amount");
-        neededAmountLabel.getStyleClass().setAll("form-label");
+        neededAmountLabel.getStyleClass().setAll("general-label");
         Label neededAmountValue = new Label(String.valueOf(allocation.getRequestedAmount()));
         neededAmountValue.getStyleClass().setAll("general-label");
+        neededAmountValue.setStyle("-fx-padding: 4px 0 0 0; -fx-text-fill: #121212");
         neededAmountVBox.getChildren().addAll(neededAmountLabel, neededAmountValue);
         amountsHBox.getChildren().add(neededAmountVBox);
 

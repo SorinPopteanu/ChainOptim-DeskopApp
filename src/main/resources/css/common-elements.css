@@ -13,6 +13,11 @@
     -fx-font-weight: bold;
 }
 
+.general-label-extra-large {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+}
+
 .pseudo-link {
     -fx-background-color: transparent;
     -fx-text-fill: #007aee;
@@ -40,6 +45,7 @@
     -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
+    -fx-cursor: text;
 }
 
 .custom-text-field:focused {

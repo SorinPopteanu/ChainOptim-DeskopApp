@@ -147,7 +147,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
         // Find components
         for (Map.Entry<Float, DailyProductionRecord> entry : history.getDailyProductionRecords().entrySet()) {
-            for (ResourceAllocation allocation : entry.getValue().getActualResourceAllocations()) {
+            for (ResourceAllocation allocation : entry.getValue().getAllocations()) {
                 if (componentsComboBox.getItems().stream().noneMatch(pair -> pair.getKey().equals(allocation.getComponentId()))) {
                     componentsComboBox.getItems().add(new Pair<>(allocation.getComponentId(), allocation.getComponentName()));
                 }
@@ -173,15 +173,15 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             LocalDate recordStartDate = LocalDate.from(history.getStartDate().plusDays(daysSinceStart.longValue()));
             LocalDate recordEndDate = recordStartDate.plusDays((long) dailyProductionRecord.getDurationDays());
 
-            Number requestedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, true, dailyProductionRecord.getDurationDays());
+            Number requestedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, true, dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(2), "custom-area-line-secondary", "custom-area-fill-secondary", "custom-node-secondary",
                     recordStartDate, recordEndDate, requestedValue);
 
-            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
+            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(1), "custom-area-line-primary", "custom-area-fill-primary", "custom-node-primary",
                     recordStartDate, recordEndDate, allocatedValue);
 
-            Number plannedValue = findValueInAllocations(dailyProductionRecord.getPlannedResourceAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
+            Number plannedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary",
                     recordStartDate, recordEndDate, plannedValue);
         }
@@ -369,7 +369,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> {
-                            var allocations = entry.getValue().getActualResourceAllocations().stream()
+                            var allocations = entry.getValue().getAllocations().stream()
                                     .filter(alloc -> alloc.getComponentId().equals(selectedComponentId))
                                     .findFirst()
                                     .orElse(new ResourceAllocation());

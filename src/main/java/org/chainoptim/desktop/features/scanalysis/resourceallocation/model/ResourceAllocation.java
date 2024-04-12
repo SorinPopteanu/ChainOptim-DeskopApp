@@ -16,4 +16,5 @@ public class ResourceAllocation {
     private Integer allocatorInventoryItemId;
     private Float allocatedAmount;
     private Float requestedAmount;
+    private Float actualAmount;
 }

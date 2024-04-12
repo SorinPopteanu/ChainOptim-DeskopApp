@@ -159,7 +159,7 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
 
         // Find components
         for (Map.Entry<Float, DailyProductionRecord> entry : history.getDailyProductionRecords().entrySet()) {
-            for (ResourceAllocation allocation : entry.getValue().getActualResourceAllocations()) {
+            for (ResourceAllocation allocation : entry.getValue().getAllocations()) {
                 if (componentsComboBox.getItems().stream().noneMatch(pair -> pair.getKey().equals(allocation.getComponentId()))) {
                     componentsComboBox.getItems().add(new Pair<>(allocation.getComponentId(), allocation.getComponentName()));
                 }
@@ -186,15 +186,15 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
             LocalDate recordStartDate = LocalDate.from(history.getStartDate().plusDays(daysSinceStart.longValue()));
             LocalDate recordEndDate = recordStartDate.plusDays((long) dailyProductionRecord.getDurationDays());
 
-            Number requestedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, true, dailyProductionRecord.getDurationDays());
+            Number requestedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Requested", dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(2), "custom-area-line-secondary", "custom-area-fill-secondary", "custom-node-secondary",
                     recordStartDate, recordEndDate, requestedValue);
 
-            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getActualResourceAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
+            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Planned", dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(1), "custom-area-line-primary", "custom-area-fill-primary", "custom-node-primary",
                     recordStartDate, recordEndDate, allocatedValue);
 
-            Number plannedValue = findValueInAllocations(dailyProductionRecord.getPlannedResourceAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
+            Number plannedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Actual", dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary",
                     recordStartDate, recordEndDate, plannedValue);
         }
@@ -221,11 +221,16 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
         return chartStart;
     }
 
-    private Number findValueInAllocations(List<ResourceAllocation> allocations, Integer componentId, boolean isRequested, float durationDays) {
+    private Number findValueInAllocations(List<ResourceAllocation> allocations, Integer componentId, String amountType, float durationDays) {
         return allocations.stream()
                 .filter(alloc -> alloc.getComponentId().equals(componentId))
                 .findFirst()
-                .map(alloc -> isRequested ? alloc.getRequestedAmount() : alloc.getAllocatedAmount())
+                .map(alloc -> switch (amountType) {
+                    case "Planned" -> alloc.getAllocatedAmount();
+                    case "Actual" -> alloc.getActualAmount();
+                    case "Requested" -> alloc.getRequestedAmount();
+                    case null, default -> 0f;
+                })
                 .map(value -> durationDays != 0 ? value / durationDays : 0f) // Normalize to daily value
                 .orElse(0f);
     }
