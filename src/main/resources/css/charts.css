@@ -1,4 +1,5 @@
-.chart-series-line {
+/* Line series */
+.series-line {
     -fx-stroke: #006AEE;
 }
 
@@ -24,4 +25,63 @@
 .axis-tick-labels {
     -fx-font-size: 10px;
     -fx-font-family: "Arial";
+}
+
+/* Area series */
+/* Blue */
+.chart-series-line.custom-area-line-primary {
+    -fx-stroke: #111111;
+}
+
+.chart-series-area-fill.custom-area-fill-primary {
+    -fx-fill: #116BFF;
+}
+
+.custom-node-primary {
+    -fx-background-color: #006AEE, white;
+    -fx-background-radius: 3px;
+    -fx-padding: 3px;
+}
+
+/* Red */
+.chart-series-line.custom-area-line-secondary {
+    -fx-stroke: #111111;
+}
+
+.chart-series-area-fill.custom-area-fill-secondary {
+    -fx-fill: #B71011;
+}
+
+.custom-node-secondary {
+    -fx-background-color: #B71011, white;
+    -fx-background-radius: 3px;
+    -fx-padding: 3px;
+}
+
+/* Green */
+.chart-series-line.custom-area-line-tertiary {
+    -fx-stroke: #111111;
+}
+
+.chart-series-area-fill.custom-area-fill-tertiary {
+    -fx-fill: #5DBF62;
+}
+
+.custom-node-tertiary {
+    -fx-background-color: #4CAF50, white;
+    -fx-background-radius: 3px;
+    -fx-padding: 3px;
+}
+
+/* Legend */
+.legend-container {
+    -fx-background-color: #f0f0f0;
+    -fx-padding: 10px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+}
+
+.legend-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
 }

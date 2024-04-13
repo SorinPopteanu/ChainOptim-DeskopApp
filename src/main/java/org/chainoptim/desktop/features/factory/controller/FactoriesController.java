@@ -131,7 +131,7 @@ public class FactoriesController implements Initializable {
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
             int factoriesLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxFactories();
-            headerController.disableCreateButton(totalCount >= factoriesLimit, "You have reached the limit of factories allowed by your current subscription plan.");
+            headerController.disableCreateButton(factoriesLimit != -1 && totalCount >= factoriesLimit, "You have reached the limit of factories allowed by your current subscription plan.");
 
             factoriesVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {

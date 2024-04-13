@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
+import javafx.util.Pair;
 import netscape.javascript.JSObject;
 
 import java.io.IOException;
@@ -95,16 +96,25 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
 
     @Override
     public void onOpenUpdateStageRequested() {
-        System.out.println("Parent listening");
         Integer factoryStageId = javaConnector.getSelectedNodeId();
         if (factoryStageId != null) {
-            System.out.println("Selected factory stage: " + factoryStageId);
             productionTabsController.addTab("Update Stage", factoryStageId);
         }
     }
 
     @Override
-    public void onOpenAllocationPlanRequested(AllocationPlan allocationPlan) {
-        productionTabsController.addTab("Allocation Plan", allocationPlan);
+    public void onOpenAllocationPlanRequested(AllocationPlan allocationPlan, Boolean isCurrentPlan) {
+        productionTabsController.addTab("Allocation Plan", new Pair<AllocationPlan, Boolean>(allocationPlan, isCurrentPlan));
     }
+
+    @Override
+    public void onOpenProductionHistoryRequested() {
+        productionTabsController.addTab("Production History", null);
+    }
+
+    @Override
+    public void onOpenAddRecordRequested() {
+        System.out.println("Adding Record");
+    }
+
 }

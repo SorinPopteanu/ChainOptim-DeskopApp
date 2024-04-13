@@ -2,7 +2,6 @@ package org.chainoptim.desktop.features.scanalysis.supply.service;
 
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.scanalysis.supply.model.SupplierPerformance;
-import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceService;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;

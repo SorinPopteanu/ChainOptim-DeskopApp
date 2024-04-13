@@ -12,6 +12,7 @@ import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.notification.controller.NotificationManager;
 import org.chainoptim.desktop.core.notification.model.Notification;
 import org.chainoptim.desktop.core.notification.service.NotificationWebSocketClient;
+import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;

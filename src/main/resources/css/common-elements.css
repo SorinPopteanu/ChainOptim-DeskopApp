@@ -13,6 +13,11 @@
     -fx-font-weight: bold;
 }
 
+.general-label-extra-large {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+}
+
 .pseudo-link {
     -fx-background-color: transparent;
     -fx-text-fill: #007aee;
@@ -32,8 +37,30 @@
     -fx-background-color: #006AEE;
 }
 
+.custom-text-field {
+    -fx-min-height: 32px;
+    -fx-max-height: 32px;
+    -fx-background-color: #ffffff;
+    -fx-font-weight: bold;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-cursor: text;
+}
+
+.custom-text-field:focused {
+    -fx-border-color: #666666;
+}
+
+.scroll-pane {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 0px;
+}
+
 .custom-combo-box {
     -fx-pref-height: 32px;
+    -fx-max-height: 32px;
     -fx-background-color: #ffffff;
     -fx-font-weight: bold;
     -fx-border-color: #c0c0c0;
@@ -49,4 +76,12 @@
 
 .custom-combo-box .arrow {
     -fx-background-color: #c0c0c0;
+}
+
+.custom-combo-box .combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #006AEE;
+}
+
+.custom-combo-box .combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #006AEE;
 }

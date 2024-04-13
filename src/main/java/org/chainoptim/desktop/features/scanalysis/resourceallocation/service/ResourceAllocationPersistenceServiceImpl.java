@@ -1,10 +1,8 @@
-package org.chainoptim.desktop.features.scanalysis.productionhistory.service;
+package org.chainoptim.desktop.features.scanalysis.resourceallocation.service;
 
 import org.chainoptim.desktop.core.user.util.TokenManager;
-import org.chainoptim.desktop.features.scanalysis.productionhistory.dto.AddDayToFactoryProductionHistoryDTO;
-import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.dto.UpdateAllocationPlanDTO;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocationPlan;
-import org.chainoptim.desktop.features.scanalysis.supply.model.SupplierPerformance;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.util.JsonUtil;
@@ -19,9 +17,9 @@ import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class FactoryProductionHistoryServiceImpl implements FactoryProductionHistoryService {
+public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocationPersistenceService {
 
-    private final CachingService<FactoryProductionHistory> cachingService;
+    private final CachingService<ResourceAllocationPlan> cachingService;
     private final HttpClient client = HttpClient.newHttpClient();
 
     private static final String HEADER_KEY = "Authorization";
@@ -29,13 +27,13 @@ public class FactoryProductionHistoryServiceImpl implements FactoryProductionHis
     private static final int STALE_TIME = 30000;
 
     @Inject
-    public FactoryProductionHistoryServiceImpl(CachingService<FactoryProductionHistory> cachingService) {
+    public ResourceAllocationPersistenceServiceImpl(CachingService<ResourceAllocationPlan> cachingService) {
         this.cachingService = cachingService;
     }
 
-    public CompletableFuture<Optional<FactoryProductionHistory>> getFactoryProductionHistoryByFactoryId(Integer factoryId) {
+    public CompletableFuture<Optional<ResourceAllocationPlan>> getResourceAllocationPlanByFactoryId(Integer factoryId) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("factory-production-histories", "factory", factoryId);
+        String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("active-resource-allocation-plans", "factory", factoryId);
         String routeAddress = rootAddress + cacheKey;
 
         String jwtToken = TokenManager.getToken();
@@ -49,31 +47,31 @@ public class FactoryProductionHistoryServiceImpl implements FactoryProductionHis
                 .build();
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
-            System.out.println("Cache hit:  " + cacheKey + " - FactoryProductionHistory");
+            System.out.println("Cache hit:  " + cacheKey + " - ResourceAllocationPlan");
             return CompletableFuture.completedFuture(Optional.of(cachingService.get(cacheKey)));
         }
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<FactoryProductionHistory>empty();
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<ResourceAllocationPlan>empty();
                     try {
-                        FactoryProductionHistory productionHistory = JsonUtil.getObjectMapper().readValue(response.body(), FactoryProductionHistory.class);
+                        ResourceAllocationPlan allocationPlan = JsonUtil.getObjectMapper().readValue(response.body(), ResourceAllocationPlan.class);
 
                         cachingService.remove(cacheKey);
-                        cachingService.add(cacheKey, productionHistory, STALE_TIME);
+                        cachingService.add(cacheKey, allocationPlan, STALE_TIME);
 
-                        return Optional.of(productionHistory);
+                        return Optional.of(allocationPlan);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<FactoryProductionHistory>empty();
+                        return Optional.<ResourceAllocationPlan>empty();
                     }
                 });
     }
 
-    public CompletableFuture<Optional<FactoryProductionHistory>> addDayToFactoryProductionHistory(AddDayToFactoryProductionHistoryDTO addDayDTO) {
+    public CompletableFuture<Optional<ResourceAllocationPlan>> updateAllocationPlan(UpdateAllocationPlanDTO allocationPlanDTO) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("factory-production-histories", "factory", addDayDTO.getFactoryId());
-        String routeAddress = rootAddress + "factory-production-histories/add-day";
+        String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("active-resource-allocation-plans", "factory", allocationPlanDTO.getFactoryId());
+        String routeAddress = rootAddress + "active-resource-allocation-plans/update";
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -82,7 +80,7 @@ public class FactoryProductionHistoryServiceImpl implements FactoryProductionHis
         // Serialize DTO
         String requestBody = null;
         try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(addDayDTO);
+            requestBody = JsonUtil.getObjectMapper().writeValueAsString(allocationPlanDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,14 +97,14 @@ public class FactoryProductionHistoryServiceImpl implements FactoryProductionHis
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
-                        FactoryProductionHistory productionHistory = JsonUtil.getObjectMapper().readValue(response.body(), FactoryProductionHistory.class);
+                        ResourceAllocationPlan allocationPlan = JsonUtil.getObjectMapper().readValue(response.body(), ResourceAllocationPlan.class);
 
                         cachingService.remove(cacheKey); // Invalidate cache
 
-                        return Optional.of(productionHistory);
+                        return Optional.of(allocationPlan);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Optional.<FactoryProductionHistory>empty();
+                        return Optional.<ResourceAllocationPlan>empty();
                     }
                 });
     }

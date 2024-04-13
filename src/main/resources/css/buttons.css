@@ -27,6 +27,22 @@
     -fx-graphic-text-gap: 8px;
 }
 
+.standard-action-button {
+    -fx-padding: 4px 8px 4px 8px;
+    -fx-background-color: #eeeeee;
+    -fx-border-color: #d0d0d0;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-graphic-text-gap: 8px;
+    -fx-cursor: hand;
+}
+
+.standard-action-button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
 .standard-delete-button {
     -fx-pref-height: 32px;
     -fx-padding: 4px 12px 4px 12px;

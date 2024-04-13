@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.core.main.controller.SidebarController"
             fx:id="sidebar"
             styleClass="sidebar">
 
+    <HBox fx:id="dashboardHBox" alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-title-container">
+        <Button fx:id="backButton" styleClass="sidebar-button"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label text="Dashboard" styleClass="sidebar-title" HBox.hgrow="ALWAYS"/>
+        <Pane HBox.hgrow="ALWAYS" minWidth="4"/>
+        <Button fx:id="toggleButton" styleClass="sidebar-button"/>
+    </HBox>
+
     <VBox fx:id="buttonContainer" styleClass="sidebar-inner-container" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0">
-        <HBox fx:id="dashboardHBox" alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 0 4 0">
-            <Button fx:id="backButton" styleClass="sidebar-button"/>
-            <Pane HBox.hgrow="ALWAYS" minWidth="12"/>
-            <Label text="Dashboard" styleClass="sidebar-title" HBox.hgrow="ALWAYS"/>
-            <Pane HBox.hgrow="ALWAYS" minWidth="16"/>
-            <Button fx:id="toggleButton" styleClass="sidebar-button"/>
-        </HBox>
         <!-- Navigation buttons -->
     </VBox>
 
-    <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" styleClass="sidebar-inner-container">
-        <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="sidebar-button">
-        </Button>
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <VBox fx:id="bottomContainer" alignment="BOTTOM_LEFT" styleClass="sidebar-inner-container">
+        <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="sidebar-button"/>
     </VBox>
 
-</AnchorPane>
+</VBox>

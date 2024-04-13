@@ -1,6 +1,7 @@
-package org.chainoptim.desktop.features.factory.controller;
+package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.DailyProductionRecord;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.ProductionHistory;
@@ -8,23 +9,20 @@ import org.chainoptim.desktop.features.scanalysis.productionhistory.service.Fact
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocation;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
-
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.chart.*;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,25 +30,32 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FactoryPerformanceController implements DataReceiver<Factory> {
+public class ProductionHistoryController implements DataReceiver<Factory> {
 
     // Services
     private final FactoryProductionHistoryService productionHistoryService;
 
+    // Listeners
+    @Setter
+    private TabsActionListener actionListener;
+
     // State
+    private Factory factory;
     private final FallbackManager fallbackManager;
     private FactoryProductionHistory factoryProductionHistory;
     private int selectedComponentId;
     private String selectedDuration = "3 Months";
-    private Map<String, Boolean> seriesVisibilityMap = new HashMap<>();
+    private final Map<String, Boolean> seriesVisibilityMap = new HashMap<>();
 
     // Constants
-    private static final List<String> DURATION_OPTIONS = List.of("1 Week", "1 Month", "3 Months", "1 Year", "2 Years", "5 Years", "All Time");
-    private static final List<String> SERIES_TYPES = List.of("Planned", "Allocated", "Requested");
+    private static final List<String> DURATION_OPTIONS = List.of("1 Week", "1 Month", "3 Months", "1 Year", "2 Years", "5 Years");
+    private static final List<String> SERIES_TYPES = List.of("Actual", "Planned", "Requested");
 
     // FXML
     @FXML
     private ComboBox<Pair<Integer, String>> componentsComboBox; // Component ID, Component Name
+    @FXML
+    private Button addRecordButton;
     @FXML
     private AreaChart<Number, Number> areaChart;
     @FXML
@@ -62,13 +67,14 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     private StackPane legendPane;
 
     @Inject
-    public FactoryPerformanceController(FactoryProductionHistoryService productionHistoryService, FallbackManager fallbackManager) {
+    public ProductionHistoryController(FactoryProductionHistoryService productionHistoryService, FallbackManager fallbackManager) {
         this.productionHistoryService = productionHistoryService;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void setData(Factory factory) {
+        this.factory = factory;
         setUpComponentsComboBox();
         setUpChartDurationComboBox();
         loadProductionHistory(factory.getId());
@@ -96,7 +102,6 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             if (newValue != null) {
                 selectedComponentId = newValue.getKey();
                 updateComponentAreaUI(factoryProductionHistory.getProductionHistory());
-                updateComponentUI(factoryProductionHistory.getProductionHistory());
             }
         });
     }
@@ -109,7 +114,6 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
                 selectedDuration = newValue;
                 updateComponentAreaUI(factoryProductionHistory.getProductionHistory());
                 applySeriesVisibility();
-                updateComponentUI(factoryProductionHistory.getProductionHistory());
             }
         });
     }
@@ -137,12 +141,20 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
         return productionHistoryOptional;
     }
 
+    private Optional<FactoryProductionHistory> handleProductionHistoryException(Throwable ex) {
+        Platform.runLater(() -> {
+            fallbackManager.setErrorMessage("Failed to load production history");
+            ex.printStackTrace();
+        });
+        return Optional.empty();
+    }
+
     private void displayHistory(ProductionHistory history) {
         componentsComboBox.getItems().clear();
 
         // Set up initial visibility of Series Types
-        seriesVisibilityMap.put(SERIES_TYPES.get(0), false);
-        seriesVisibilityMap.put(SERIES_TYPES.get(1), true);
+        seriesVisibilityMap.put(SERIES_TYPES.get(0), true);
+        seriesVisibilityMap.put(SERIES_TYPES.get(1), false);
         seriesVisibilityMap.put(SERIES_TYPES.get(2), true);
 
         // Find components
@@ -162,6 +174,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     private void updateComponentAreaUI(ProductionHistory history) {
         areaChart.getData().clear();
+        areaChart.setLegendVisible(false);
 
         float chartStart = determineChartStart();
 
@@ -173,17 +186,17 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             LocalDate recordStartDate = LocalDate.from(history.getStartDate().plusDays(daysSinceStart.longValue()));
             LocalDate recordEndDate = recordStartDate.plusDays((long) dailyProductionRecord.getDurationDays());
 
-            Number requestedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, true, dailyProductionRecord.getDurationDays());
+            Number requestedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Requested", dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(2), "custom-area-line-secondary", "custom-area-fill-secondary", "custom-node-secondary",
                     recordStartDate, recordEndDate, requestedValue);
 
-            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
+            Number plannedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Planned", dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(1), "custom-area-line-primary", "custom-area-fill-primary", "custom-node-primary",
-                    recordStartDate, recordEndDate, allocatedValue);
-
-            Number plannedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, false, dailyProductionRecord.getDurationDays());
-            createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary",
                     recordStartDate, recordEndDate, plannedValue);
+
+            Number actualValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Actual", dailyProductionRecord.getDurationDays());
+            createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary",
+                    recordStartDate, recordEndDate, actualValue);
         }
 
         Platform.runLater(this::setupCustomLegend);
@@ -201,18 +214,22 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             case "1 Year" -> endDate.minusYears(1).toEpochDay();
             case "2 Years" -> endDate.minusYears(2).toEpochDay();
             case "5 Years" -> endDate.minusYears(5).toEpochDay();
-            case "All Time" -> 0;
             default -> chartStart;
         };
 
         return chartStart;
     }
 
-    private Number findValueInAllocations(List<ResourceAllocation> allocations, Integer componentId, boolean isRequested, float durationDays) {
+    private Number findValueInAllocations(List<ResourceAllocation> allocations, Integer componentId, String amountType, float durationDays) {
         return allocations.stream()
                 .filter(alloc -> alloc.getComponentId().equals(componentId))
                 .findFirst()
-                .map(alloc -> isRequested ? alloc.getRequestedAmount() : alloc.getAllocatedAmount())
+                .map(alloc -> switch (amountType) {
+                    case "Actual" -> alloc.getActualAmount();
+                    case "Planned" -> alloc.getAllocatedAmount();
+                    case "Requested" -> alloc.getRequestedAmount();
+                    case null, default -> 0f;
+                })
                 .map(value -> durationDays != 0 ? value / durationDays : 0f) // Normalize to daily value
                 .orElse(0f);
     }
@@ -354,127 +371,17 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
         updateLegendCircleColor(seriesType, newVisibility);
     }
 
+    @FXML
+    private void addProductionRecord() {
+        actionListener.onOpenAddRecordRequested(factory);
+    }
+
     private Color getColorByLabel(String label) {
         return switch (label) {
-            case "Planned" -> Color.valueOf("#4CAF50");
-            case "Allocated" -> Color.valueOf("#006AEE");
-            case "Requested" -> Color.valueOf("#FF9800");
+            case "Actual" -> Color.valueOf("#4CAF50");
+            case "Planned" -> Color.valueOf("#006AEE");
+            case "Requested" -> Color.valueOf("#B71011");
             default -> Color.BLACK;
         };
-    }
-
-    // Line Chart
-    private void updateComponentUI(ProductionHistory history) {
-        Map<Float, Pair<Float, Float>> dataOverTime = history.getDailyProductionRecords().entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> {
-                            var allocations = entry.getValue().getAllocations().stream()
-                                    .filter(alloc -> alloc.getComponentId().equals(selectedComponentId))
-                                    .findFirst()
-                                    .orElse(new ResourceAllocation());
-
-                            float requestedAmount = allocations.getRequestedAmount();
-                            float allocatedAmount = allocations.getAllocatedAmount();
-                            return new Pair<>(requestedAmount, allocatedAmount);
-                        }));
-        plotData(history.getStartDate(), dataOverTime);
-    }
-
-
-    private void plotData(LocalDateTime firstDeliveryDate, Map<Float, Pair<Float, Float>> dataOverTime) {
-        lineChart.getData().clear();
-        lineChart.setLegendVisible(true);
-
-        // Create two series for the two types of data
-        XYChart.Series<String, Number> requestedSeries = new XYChart.Series<>();
-        requestedSeries.setName("Needed Amount");
-        XYChart.Series<String, Number> allocatedSeries = new XYChart.Series<>();
-        allocatedSeries.setName("Allocated Amount");
-
-        LocalDate startDate = firstDeliveryDate.toLocalDate();
-        float maxDays = dataOverTime.keySet().stream().max(Float::compare).orElse(0f);
-        LocalDate endDate = startDate.plusDays((long) maxDays);
-
-        // Prepare the list of all month-year labels to be used as categories
-        List<String> allLabels = new ArrayList<>();
-        LocalDate currentMonth = startDate.withDayOfMonth(1);
-        while (!currentMonth.isAfter(endDate)) {
-            String monthYear = currentMonth.format(DateTimeFormatter.ofPattern("MMM yyyy"));
-            allLabels.add(monthYear);
-            currentMonth = currentMonth.plusMonths(1);
-        }
-
-        CategoryAxis xAxis = (CategoryAxis) lineChart.getXAxis();
-        xAxis.setCategories(FXCollections.observableArrayList(allLabels));
-
-        // Plot the data for both requested and allocated amounts
-        currentMonth = startDate.withDayOfMonth(1);
-        for (String label : allLabels) {
-            LocalDate nextMonth = currentMonth.plusMonths(1);
-            Pair<Float, Float> sumValuesForMonth = new Pair<>(0f, 0f);
-            int count = 0;
-            for (Map.Entry<Float, Pair<Float, Float>> entry : dataOverTime.entrySet()) {
-                LocalDate entryDate = startDate.plusDays(entry.getKey().longValue());
-                if (!entryDate.isBefore(currentMonth) && entryDate.isBefore(nextMonth)) {
-                    sumValuesForMonth = new Pair<>(sumValuesForMonth.getKey() + entry.getValue().getKey(), sumValuesForMonth.getValue() + entry.getValue().getValue());
-                    count++;
-                }
-            }
-            float averageRequested = count > 0 ? sumValuesForMonth.getKey() / count : 0;
-            float averageAllocated = count > 0 ? sumValuesForMonth.getValue() / count : 0;
-            requestedSeries.getData().add(new XYChart.Data<>(label, averageRequested));
-            allocatedSeries.getData().add(new XYChart.Data<>(label, averageAllocated));
-
-            currentMonth = nextMonth; // Advance to the next month
-        }
-
-        // Add both series to the chart
-        lineChart.getData().addAll(requestedSeries, allocatedSeries);
-
-        applyCustomSeriesStyles();
-    }
-
-    private void applyCustomSeriesStyles() {
-        Platform.runLater(() -> {
-            for (int i = 0; i < lineChart.getData().size(); i++) {
-                XYChart.Series<String, Number> series = lineChart.getData().get(i);
-                switch (series.getName()) {
-                    case "Needed Amount":
-                        series.getNode().setStyle("-fx-stroke: blue;");
-                        break;
-                    case "Allocated Amount":
-                        series.getNode().setStyle("-fx-stroke: orange;");
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            // Add event listener on legend items to toggle visibility of series
-            for (Node node : lineChart.lookupAll(".chart-legend-item")) {
-                node.setOnMouseClicked(mouseEvent -> {
-                    for (XYChart.Series<String, Number> s : lineChart.getData()) {
-                        if (s.getName().equals(((Label) node).getText())) {
-                            s.getNode().setVisible(!s.getNode().isVisible());
-                            s.getData().forEach(data -> {
-                                Node dataNode = data.getNode();
-                                if (dataNode != null) {
-                                    dataNode.setVisible(s.getNode().isVisible());
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    private Optional<FactoryProductionHistory> handleProductionHistoryException(Throwable ex) {
-        Platform.runLater(() -> {
-            fallbackManager.setErrorMessage("Failed to load production history");
-            ex.printStackTrace();
-        });
-        return Optional.empty();
     }
 }

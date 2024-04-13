@@ -37,8 +37,12 @@ import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryPr
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphServiceImpl;
+import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryService;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryServiceImpl;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocationPlan;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationPersistenceService;
+import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationPersistenceServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceService;
@@ -144,6 +148,7 @@ public class AppModule extends AbstractModule {
         bind(ProductProductionGraphService.class).to(ProductProductionGraphServiceImpl.class);
         bind(FactoryProductionGraphService.class).to(FactoryProductionGraphServiceImpl.class);
         bind(ResourceAllocationService.class).to(ResourceAllocationServiceImpl.class);
+        bind(ResourceAllocationPersistenceService.class).to(ResourceAllocationPersistenceServiceImpl.class);
 
         bind(FactoryProductionHistoryService.class).to(FactoryProductionHistoryServiceImpl.class);
         bind(SupplierPerformanceService.class).to(SupplierPerformanceServiceImpl.class);
@@ -169,5 +174,11 @@ public class AppModule extends AbstractModule {
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Supplier>>>() {});
         bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {});
+        bind(new TypeLiteral<CachingService<ResourceAllocationPlan>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<ResourceAllocationPlan>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<FactoryProductionHistory>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<FactoryProductionHistory>>() {})
+                .in(Singleton.class);
     }
 }

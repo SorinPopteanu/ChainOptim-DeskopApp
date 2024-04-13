@@ -1,6 +1,6 @@
 .form-container {
     -fx-background-color: white;
-    -fx-padding: 40px 60px;
+    -fx-padding: 40px 80px;
 }
 
 .title-container {
@@ -10,11 +10,9 @@
 
 .form-label {
     -fx-width: 100%;
-    -fx-margin-top: 8px;
-    -fx-margin-bottom: 4px;
-    -fx-font-size: 18px;
+    -fx-padding: 16px 0px 8px 4px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-padding: 4px;
 }
 
 .form-title {

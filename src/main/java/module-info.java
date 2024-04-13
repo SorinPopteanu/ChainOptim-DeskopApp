@@ -120,10 +120,12 @@ module org.chainoptim.desktop {
     // -- Factory
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.service to com.google.guice;
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind, javafx.base;
+    opens org.chainoptim.desktop.features.scanalysis.resourceallocation.dto to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
     opens org.chainoptim.desktop.features.scanalysis.productionhistory.model to com.fasterxml.jackson.databind, javafx.base;
     opens org.chainoptim.desktop.features.scanalysis.productionhistory.service to com.google.guice;
+    opens org.chainoptim.desktop.features.scanalysis.productionhistory.dto to com.fasterxml.jackson.databind;
 
     // -- Supplier
     opens org.chainoptim.desktop.features.scanalysis.supply.model to com.fasterxml.jackson.databind, javafx.base;
