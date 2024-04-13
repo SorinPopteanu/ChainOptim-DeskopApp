@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
+import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
@@ -104,6 +105,7 @@ public class FactoryProductionTabsController implements TabsActionListener {
         }
         if (tabPaneKey.equals("Add Production Record")) {
             AddProductionRecordController controller = loader.getController();
+            controller.setActionListener(this);
             controller.setData((Factory) extraData);
         }
     }
@@ -149,7 +151,17 @@ public class FactoryProductionTabsController implements TabsActionListener {
     }
 
     @Override
-    public void onAddProductionRecord(Factory factory) {
+    public void onOpenAddRecordRequested(Factory factory) {
         addTab("Add Production Record", factory);
+    }
+
+    @Override
+    public void onAddProductionRecord(FactoryProductionHistory factoryProductionHistory) {
+        Platform.runLater(() -> {
+            closeTab("Add Production Record");
+            closeTab("Production History");
+            addTab("Production History", factoryProductionHistory);
+            selectTab("Production History");
+        });
     }
 }

@@ -111,4 +111,10 @@ public class FactoryProductionController implements DataReceiver<Factory>, Produ
     public void onOpenProductionHistoryRequested() {
         productionTabsController.addTab("Production History", null);
     }
+
+    @Override
+    public void onOpenAddRecordRequested() {
+        System.out.println("Adding Record");
+    }
+
 }

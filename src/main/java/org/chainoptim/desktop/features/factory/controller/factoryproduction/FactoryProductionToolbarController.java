@@ -231,6 +231,7 @@ public class FactoryProductionToolbarController {
     private void openProductionHistory() {
         actionListener.onOpenProductionHistoryRequested();
     }
+
     @FXML
     private void toggleComputePlanSubsection() {
         boolean isVisible = computePlanVBox.isVisible();

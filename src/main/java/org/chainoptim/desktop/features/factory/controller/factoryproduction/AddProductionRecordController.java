@@ -1,6 +1,8 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
+import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.dto.AddDayToFactoryProductionHistoryDTO;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.DailyProductionRecord;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
@@ -22,6 +24,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -31,6 +34,10 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
     // Services
     private final FactoryProductionHistoryService historyService;
     private final ResourceAllocationPersistenceService allocationPersistenceService;
+
+    // Listeners
+    @Setter
+    private TabsActionListener actionListener;
 
     // State
     private final FallbackManager fallbackManager;
@@ -320,8 +327,9 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
             }
             fallbackManager.setLoading(false);
 
-            // Handle
-            System.out.println("Record added: " + historyOptional.get());
+            if (actionListener != null) {
+                actionListener.onAddProductionRecord(historyOptional.get());
+            }
         });
         return historyOptional;
     }

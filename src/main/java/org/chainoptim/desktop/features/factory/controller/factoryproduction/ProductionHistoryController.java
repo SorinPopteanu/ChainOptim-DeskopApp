@@ -48,8 +48,8 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
     private final Map<String, Boolean> seriesVisibilityMap = new HashMap<>();
 
     // Constants
-    private static final List<String> DURATION_OPTIONS = List.of("1 Week", "1 Month", "3 Months", "1 Year", "2 Years", "5 Years", "All Time");
-    private static final List<String> SERIES_TYPES = List.of("Planned", "Allocated", "Requested");
+    private static final List<String> DURATION_OPTIONS = List.of("1 Week", "1 Month", "3 Months", "1 Year", "2 Years", "5 Years");
+    private static final List<String> SERIES_TYPES = List.of("Actual", "Planned", "Requested");
 
     // FXML
     @FXML
@@ -153,8 +153,8 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
         componentsComboBox.getItems().clear();
 
         // Set up initial visibility of Series Types
-        seriesVisibilityMap.put(SERIES_TYPES.get(0), false);
-        seriesVisibilityMap.put(SERIES_TYPES.get(1), true);
+        seriesVisibilityMap.put(SERIES_TYPES.get(0), true);
+        seriesVisibilityMap.put(SERIES_TYPES.get(1), false);
         seriesVisibilityMap.put(SERIES_TYPES.get(2), true);
 
         // Find components
@@ -190,13 +190,13 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
             createAndStyleSeries(SERIES_TYPES.get(2), "custom-area-line-secondary", "custom-area-fill-secondary", "custom-node-secondary",
                     recordStartDate, recordEndDate, requestedValue);
 
-            Number allocatedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Planned", dailyProductionRecord.getDurationDays());
+            Number plannedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Planned", dailyProductionRecord.getDurationDays());
             createAndStyleSeries(SERIES_TYPES.get(1), "custom-area-line-primary", "custom-area-fill-primary", "custom-node-primary",
-                    recordStartDate, recordEndDate, allocatedValue);
-
-            Number plannedValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Actual", dailyProductionRecord.getDurationDays());
-            createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary",
                     recordStartDate, recordEndDate, plannedValue);
+
+            Number actualValue = findValueInAllocations(dailyProductionRecord.getAllocations(), selectedComponentId, "Actual", dailyProductionRecord.getDurationDays());
+            createAndStyleSeries(SERIES_TYPES.get(0), "custom-area-line-tertiary", "custom-area-fill-tertiary", "custom-node-tertiary",
+                    recordStartDate, recordEndDate, actualValue);
         }
 
         Platform.runLater(this::setupCustomLegend);
@@ -214,7 +214,6 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
             case "1 Year" -> endDate.minusYears(1).toEpochDay();
             case "2 Years" -> endDate.minusYears(2).toEpochDay();
             case "5 Years" -> endDate.minusYears(5).toEpochDay();
-            case "All Time" -> 0;
             default -> chartStart;
         };
 
@@ -226,8 +225,8 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
                 .filter(alloc -> alloc.getComponentId().equals(componentId))
                 .findFirst()
                 .map(alloc -> switch (amountType) {
-                    case "Planned" -> alloc.getAllocatedAmount();
                     case "Actual" -> alloc.getActualAmount();
+                    case "Planned" -> alloc.getAllocatedAmount();
                     case "Requested" -> alloc.getRequestedAmount();
                     case null, default -> 0f;
                 })
@@ -374,14 +373,14 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
 
     @FXML
     private void addProductionRecord() {
-        actionListener.onAddProductionRecord(factory);
+        actionListener.onOpenAddRecordRequested(factory);
     }
 
     private Color getColorByLabel(String label) {
         return switch (label) {
-            case "Planned" -> Color.valueOf("#4CAF50");
-            case "Allocated" -> Color.valueOf("#006AEE");
-            case "Requested" -> Color.valueOf("#FF9800");
+            case "Actual" -> Color.valueOf("#4CAF50");
+            case "Planned" -> Color.valueOf("#006AEE");
+            case "Requested" -> Color.valueOf("#B71011");
             default -> Color.BLACK;
         };
     }
