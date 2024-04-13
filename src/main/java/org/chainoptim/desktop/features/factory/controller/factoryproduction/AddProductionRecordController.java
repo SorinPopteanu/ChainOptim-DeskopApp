@@ -1,7 +1,9 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
 import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.scanalysis.productionhistory.dto.AddDayToFactoryProductionHistoryDTO;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.DailyProductionRecord;
+import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryService;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationResult;
@@ -10,13 +12,12 @@ import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.Resou
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationPersistenceService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
-import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -30,15 +31,15 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
     // Services
     private final FactoryProductionHistoryService historyService;
     private final ResourceAllocationPersistenceService allocationPersistenceService;
-    private final CommonViewsLoader commonViewsLoader;
 
     // State
     private final FallbackManager fallbackManager;
     private ResourceAllocationPlan currentPlan;
     private Factory factory;
-    private DailyProductionRecord newRecord;
-    private Map<Integer, DailyProductionRecord> recordsByStageId;
+    private Map<Integer, DailyProductionRecord> recordsByStageId; // Key: Stage ID
     private float previousDuration = 1;
+    private final Map<Integer, Integer> layoutIndexToStageId = new HashMap<>(); // Key: Index in stageInputs(/Outputs)GridPanes, Value: Stage ID
+    private FactoryProductionHistory productionHistory;
 
     @FXML
     private Label currentPlanStartDate;
@@ -59,11 +60,9 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
     @Inject
     public AddProductionRecordController(FactoryProductionHistoryService historyService,
                                          ResourceAllocationPersistenceService allocationPersistenceService,
-                                         CommonViewsLoader commonViewsLoader,
                                          FallbackManager fallbackManager) {
         this.historyService = historyService;
         this.allocationPersistenceService = allocationPersistenceService;
-        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
     }
 
@@ -72,6 +71,7 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
         this.factory = factory;
         setUpListeners();
         loadCurrentPlan(factory.getId());
+        loadHistoryId(factory.getId());
     }
 
     private void setUpListeners() {
@@ -140,12 +140,18 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
 
         groupRecordsByStageId(allocationPlan);
 
+        int index = 0;
+
         for (Map.Entry<Integer, DailyProductionRecord> entry : recordsByStageId.entrySet()) {
             renderStageLabel(entry.getValue().getAllocations().getFirst().getStageName());
 
             renderStageInputs(entry.getValue().getAllocations());
 
             renderStageOutputs(entry.getValue().getResults());
+
+            // Keep track of the  stage IDs for gathering the record DTO
+            layoutIndexToStageId.put(index, entry.getKey());
+            index++;
         }
     }
 
@@ -204,7 +210,7 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
 
         // - Rows
         for (int i = 0; i < allocations.size(); i++) {
-            renderStageInputGridPane(stageInputGridPane, allocations.get(i), i + 1);
+            renderStageInputRow(stageInputGridPane, allocations.get(i), i + 1);
         }
 
         stageInputsGridPanes.add(stageInputGridPane);
@@ -234,7 +240,7 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
 
         // - Rows
         for (int i = 0; i < results.size(); i++) {
-            renderStageOutputGridPane(stageOutputGridPane, results.get(i), i + 1);
+            renderStageOutputRow(stageOutputGridPane, results.get(i), i + 1);
         }
 
         stageOutputsGridPanes.add(stageOutputGridPane);
@@ -252,7 +258,7 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
         stageGridPane.add(headerLabel, columnIndex, 0);
     }
 
-    private void renderStageInputGridPane(GridPane stageGridPane, ResourceAllocation allocation, int rowIndex) {
+    private void renderStageInputRow(GridPane stageGridPane, ResourceAllocation allocation, int rowIndex) {
         renderLabel(stageGridPane, allocation.getComponentName(), rowIndex, 0);
 
         TextField actualAmountField = new TextField();
@@ -263,7 +269,7 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
         renderLabel(stageGridPane, String.valueOf(allocation.getRequestedAmount()), rowIndex, 3);
     }
 
-    private void renderStageOutputGridPane(GridPane stageGridPane, AllocationResult allocationResult, int rowIndex) {
+    private void renderStageOutputRow(GridPane stageGridPane, AllocationResult allocationResult, int rowIndex) {
         renderLabel(stageGridPane, allocationResult.getComponentName(), rowIndex, 0);
 
         TextField actualAmountField = new TextField();
@@ -278,5 +284,141 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
         Label label = new Label(text);
         label.getStyleClass().setAll("general-label");
         stageGridPane.add(label, columnIndex, rowIndex);
+    }
+
+    // Submitting
+    private void loadHistoryId(Integer factoryId) {
+        historyService.getFactoryProductionHistoryByFactoryId(factoryId)
+                .thenApply(historyOptional -> {
+                    if (historyOptional.isEmpty()) {
+                        return historyOptional;
+                    }
+                    productionHistory = historyOptional.get();
+                    return historyOptional;
+                });
+    }
+
+    @FXML
+    private void handleSubmit() {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        if (productionHistory == null) return;
+
+        AddDayToFactoryProductionHistoryDTO recordDTO = gatherRecordDTO();
+
+        historyService.addDayToFactoryProductionHistory(recordDTO)
+                .thenApply(this::handleRecordAddition)
+                .exceptionally(this::handleRecordAdditionException);
+    }
+
+    private Optional<FactoryProductionHistory> handleRecordAddition(Optional<FactoryProductionHistory> historyOptional) {
+        Platform.runLater(() -> {
+            if (historyOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to add production record.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            // Handle
+            System.out.println("Record added: " + historyOptional.get());
+        });
+        return historyOptional;
+    }
+
+    private Optional<FactoryProductionHistory> handleRecordAdditionException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to add production record."));
+        return Optional.empty();
+    }
+
+    private AddDayToFactoryProductionHistoryDTO gatherRecordDTO() {
+        AddDayToFactoryProductionHistoryDTO recordDTO = new AddDayToFactoryProductionHistoryDTO();
+        recordDTO.setId(productionHistory.getId());
+        recordDTO.setFactoryId(factory.getId());
+
+        float daysSinceStart = (float) startDatePicker.getValue().toEpochDay() - productionHistory.getProductionHistory().getStartDate().toLocalDate().toEpochDay();
+        recordDTO.setDaysSinceStart(daysSinceStart);
+
+        DailyProductionRecord newRecord = new DailyProductionRecord();
+        newRecord.setDurationDays(previousDuration);
+
+        List<ResourceAllocation> recordAllocations = currentPlan.getAllocationPlan().getAllocations();
+        List<AllocationResult> recordResults = currentPlan.getAllocationPlan().getResults();
+
+        for (int index = 0; index < stageInputsGridPanes.size(); index++) {
+            gatherStageInputAmounts(index);
+        }
+
+        for (int index = 0; index < stageOutputsGridPanes.size(); index++) {
+            gatherStageOutputAmounts(index);
+        }
+
+        newRecord.setAllocations(recordAllocations);
+        newRecord.setResults(recordResults);
+        System.out.println("Record: " + newRecord);
+
+        recordDTO.setDailyProductionRecord(newRecord);
+        return recordDTO;
+    }
+
+    private void gatherStageInputAmounts(int index) {
+        GridPane stageInputPane = stageInputsGridPanes.get(index);
+        Integer factoryStageId = layoutIndexToStageId.get(index);
+        List<ResourceAllocation> stageAllocations = recordsByStageId.get(factoryStageId).getAllocations();
+
+        for (int i = 0; i < stageAllocations.size(); i++) {
+            Node actualAmountNode = getNodeByRowColumnIndex(stageInputPane, i + 1, 1);
+
+            if (actualAmountNode instanceof TextField actualAmountField) {
+                Integer stageInputId = stageAllocations.get(i).getStageInputId();
+                ResourceAllocation allocation = findAllocationByStageAndStageInputId(factoryStageId, stageInputId);
+                if (allocation == null) continue;
+
+                allocation.setActualAmount(Float.parseFloat(actualAmountField.getText()));
+            }
+        }
+    }
+
+    private void gatherStageOutputAmounts(int index) {
+        GridPane stageOutputPane = stageOutputsGridPanes.get(index);
+        Integer factoryStageId = layoutIndexToStageId.get(index);
+        List<AllocationResult> stageResults = recordsByStageId.get(factoryStageId).getResults();
+
+        for (int i = 0; i < stageResults.size(); i++) {
+            Node actualAmountNode = getNodeByRowColumnIndex(stageOutputPane, i + 1, 1);
+
+            if (actualAmountNode instanceof TextField actualAmountField) {
+                Integer stageOutputId = stageResults.get(i).getStageOutputId();
+                AllocationResult result = findResultByStageAndStageOutputId(factoryStageId, stageOutputId);
+                if (result == null) continue;
+
+                result.setActualAmount(Float.parseFloat(actualAmountField.getText()));
+            }
+        }
+    }
+
+    private ResourceAllocation findAllocationByStageAndStageInputId(Integer stageId, Integer stageInputId) {
+        return currentPlan.getAllocationPlan().getAllocations().stream()
+                .filter(allocation -> allocation.getFactoryStageId().equals(stageId) && allocation.getStageInputId().equals(stageInputId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private AllocationResult findResultByStageAndStageOutputId(Integer stageId, Integer stageOutputId) {
+        return currentPlan.getAllocationPlan().getResults().stream()
+                .filter(result -> result.getFactoryStageId().equals(stageId) && result.getStageOutputId().equals(stageOutputId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Node getNodeByRowColumnIndex(GridPane gridPane, final int row, final int column) {
+        Node result = null;
+        for (Node node : gridPane.getChildren()) {
+            if(GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
+                result = node;
+                break;
+            }
+        }
+        return result;
     }
 }
