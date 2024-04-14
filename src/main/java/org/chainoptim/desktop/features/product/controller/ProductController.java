@@ -1,8 +1,11 @@
 package org.chainoptim.desktop.features.product.controller;
 
+import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
+import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
 import com.google.inject.Inject;
@@ -21,16 +24,22 @@ import java.util.ResourceBundle;
 
 public class ProductController implements Initializable {
 
+    // Services
     private final ProductService productService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
-    private final FallbackManager fallbackManager;
 
+    // State
+    private final FallbackManager fallbackManager;
     private Product product;
 
+    // FXML
     @FXML
-    private StackPane fallbackContainer;
-
+    private Label productName;
+    @FXML
+    private Label productDescription;
+    @FXML
+    private InfoLabel productInfoLabel;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -39,11 +48,8 @@ public class ProductController implements Initializable {
     private Tab productionTab;
     @FXML
     private Tab evaluationTab;
-
     @FXML
-    private Label productName;
-    @FXML
-    private Label productDescription;
+    private StackPane fallbackContainer;
 
     @Inject
     public ProductController(ProductService productService,
@@ -60,6 +66,8 @@ public class ProductController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
+        productInfoLabel.setFeatureAndLevel(Feature.PRODUCT,
+                TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel());
 
         Integer productId = currentSelectionService.getSelectedId();
         if (productId != null) {
