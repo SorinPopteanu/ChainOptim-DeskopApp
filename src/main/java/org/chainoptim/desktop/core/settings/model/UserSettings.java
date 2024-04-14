@@ -11,5 +11,6 @@ public class UserSettings {
 
     private Integer id;
     private String userId;
+    private GeneralSettings generalSettings;
     private NotificationSettings notificationSettings;
 }

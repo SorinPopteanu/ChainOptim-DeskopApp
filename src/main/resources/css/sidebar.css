@@ -17,7 +17,7 @@
 }
 
 .sidebar-title-container {
-    -fx-padding: 16px;
+    -fx-padding: 16px 12px 24px 12px;
 }
 
 .sidebar-title-container-collapsed {
