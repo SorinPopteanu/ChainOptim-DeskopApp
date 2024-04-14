@@ -13,6 +13,7 @@ import java.util.Map;
 public class FactoryStagePerformanceReport {
 
     private Integer factoryStageId;
+    private String stageName;
 
     private Float totalExecutedStages;
     private Float totalTimeDays;

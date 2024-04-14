@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.scanalysis.productionperformance.model.FactoryPerformance;
+import org.chainoptim.desktop.features.scanalysis.productionperformance.model.FactoryStagePerformanceReport;
 import org.chainoptim.desktop.features.scanalysis.productionperformance.service.FactoryPerformanceService;
 import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -10,11 +11,13 @@ import org.chainoptim.desktop.shared.util.DataReceiver;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.util.*;
 
@@ -33,12 +36,20 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     @FXML
     private ScoreDisplay overallScoreDisplay;
     @FXML
+    private ScoreDisplay resourceDistributionScoreDisplay;
+    @FXML
     private ScoreDisplay resourceReadinessScoreDisplay;
     @FXML
     private ScoreDisplay resourceUtilizationScoreDisplay;
+    @FXML
+    private VBox stagesVBox;
+    @FXML
+    private Map<Integer, VBox> stageVBoxes = new HashMap<>();
 
     // Icons
     private Image refreshIcon;
+    private Image angleUpIcon;
+    private Image angleDownIcon;
 
     @Inject
     public FactoryPerformanceController(FactoryPerformanceService factoryPerformanceService, FallbackManager fallbackManager) {
@@ -55,6 +66,8 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     private void initializeIcons() {
         refreshIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/rotate-right-solid.png")));
+        angleUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-up-solid.png")));
+        angleDownIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/angle-down-solid.png")));
     }
 
     private void initializeButtons() {
@@ -80,11 +93,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             factoryPerformance = performanceOptional.get();
             fallbackManager.setLoading(false);
 
-            System.out.println("Factory Performance: " + factoryPerformance.getReport());
-
-            overallScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getOverallScore()));
-            resourceReadinessScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getResourceReadinessScore()));
-            resourceUtilizationScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getResourceUtilizationScore()));
+            displayReport();
         });
         return performanceOptional;
     }
@@ -95,6 +104,108 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
             ex.printStackTrace();
         });
         return Optional.empty();
+    }
+
+    private void displayReport() {
+        overallScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getOverallScore()));
+        resourceDistributionScoreDisplay.setScore(0);
+        resourceReadinessScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getResourceReadinessScore()));
+        resourceUtilizationScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getResourceUtilizationScore()));
+
+        stagesVBox.getChildren().clear();
+        stagesVBox.setSpacing(10);
+
+        for (Map.Entry<Integer, FactoryStagePerformanceReport> entry : factoryPerformance.getReport().getStageReports().entrySet()) {
+            displayStageReport(entry.getValue());
+        }
+    }
+
+    private void displayStageReport(FactoryStagePerformanceReport stageReport) {
+        VBox stageVBox = new VBox(8);
+
+        addStageTitle(stageReport.getStageName(), stageReport.getFactoryStageId());
+
+        stageVBox.getChildren().add(
+                getScoreDisplay("Overall Score:", (int) Math.floor(stageReport.getOverallScore()))
+        );
+        addScoreFlowPane(
+                stageVBox,
+                (int) Math.floor(0.0f),
+                (int) Math.floor(stageReport.getResourceReadinessScore()),
+                (int) Math.floor(stageReport.getResourceUtilizationScore())
+        );
+
+        addStageField(stageVBox, "• Total Executed Stages:", String.valueOf(stageReport.getTotalExecutedStages()));
+        addStageField(stageVBox, "• Average Executed Stages Per Day:", String.valueOf(stageReport.getAverageExecutedStagesPerDay()));
+        addStageField(stageVBox, "• Minimum Executed Capacity Per Day:", String.valueOf(stageReport.getMinimumExecutedCapacityPerDay()));
+        addStageField(stageVBox, "• Days Under Capacity Percentage:", String.valueOf(stageReport.getDaysUnderCapacityPercentage()));
+
+        stagesVBox.getChildren().add(stageVBox);
+        stageVBoxes.put(stageReport.getFactoryStageId(), stageVBox);
+    }
+
+    private void addStageTitle(String stageName, Integer factoryStageId) {
+        HBox hBox = new HBox(16);
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        Label stageLabel = new Label("Stage: " + stageName);
+        stageLabel.getStyleClass().setAll("general-label-large");
+        stageLabel.setStyle("-fx-padding: 10px 0px;");
+        hBox.getChildren().add(stageLabel);
+
+        Button toggleButton = new Button();
+        toggleButton.setGraphic(createImageView(angleDownIcon));
+        toggleButton.getStyleClass().setAll("no-style-button");
+        toggleButton.setOnAction(event -> {
+            VBox stageBox = stageVBoxes.get(factoryStageId);
+            if (stageBox.isVisible()) {
+                stageBox.setVisible(false);
+                stageBox.setManaged(false);
+                toggleButton.setGraphic(createImageView(angleDownIcon));
+            } else {
+                stageBox.setVisible(true);
+                stageBox.setManaged(true);
+                toggleButton.setGraphic(createImageView(angleUpIcon));
+            }
+        });
+        hBox.getChildren().add(toggleButton);
+
+        stagesVBox.getChildren().add(hBox);
+    }
+
+    private void addScoreFlowPane(VBox stageVBox, int resourceDistributionScore, int resourceReadinessScore, int resourceUtilizationScore) {
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(16);
+
+        flowPane.getChildren().addAll(
+                getScoreDisplay("Resource Distribution:", resourceDistributionScore),
+                getScoreDisplay("Resource Readiness:", resourceReadinessScore),
+                getScoreDisplay("Resource Utilization:", resourceUtilizationScore)
+        );
+
+        stageVBox.getChildren().add(flowPane);
+    }
+
+    private HBox getScoreDisplay(String scoreLabel, int score) {
+        HBox hBox = new HBox(4);
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        Label label = new Label(scoreLabel);
+        label.getStyleClass().setAll("general-label-medium-large");
+        ScoreDisplay scoreDisplay = new ScoreDisplay();
+        scoreDisplay.setScore(score);
+        hBox.getChildren().addAll(label, scoreDisplay);
+
+        return hBox;
+    }
+
+    private void addStageField(VBox stageVBox, String label, String value) {
+        HBox hBox = new HBox(4);
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        Label labelLabel = new Label(label);
+        labelLabel.getStyleClass().setAll("general-label");
+        Label valueLabel = new Label(value);
+        valueLabel.getStyleClass().setAll("count-label");
+        hBox.getChildren().addAll(labelLabel, valueLabel);
+        stageVBox.getChildren().add(hBox);
     }
 
     // Utils

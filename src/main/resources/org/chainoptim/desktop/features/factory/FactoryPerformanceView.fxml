@@ -2,29 +2,43 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-
 <?import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay?>
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.factory.controller.FactoryPerformanceController"
-      style="-fx-padding: 10px 20px;" spacing="10">
 
-    <HBox alignment="CENTER_LEFT" style="-fx-padding: 0px 10px 0px 0px;">
-        <HBox alignment="CENTER_LEFT" spacing="4">
-            <Label text="Overall Score: " styleClass="general-label-large"/>
-            <ScoreDisplay fx:id="overallScoreDisplay"/>
+<?import javafx.scene.control.ScrollPane?>
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.factory.controller.FactoryPerformanceController"
+            fitToHeight="true" fitToWidth="true">
+
+    <VBox style="-fx-padding: 10px 20px;" spacing="16">
+        <HBox alignment="CENTER_LEFT">
+            <HBox alignment="CENTER_LEFT" spacing="4">
+                <Label text="Overall Score: " styleClass="general-label-medium-large"/>
+                <ScoreDisplay fx:id="overallScoreDisplay"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="refreshReportButton" text="Refresh Report" styleClass="standard-cancel-button"/>
         </HBox>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="refreshReportButton" text="Refresh Report" styleClass="standard-cancel-button"/>
-    </HBox>
 
-    <HBox alignment="CENTER_LEFT" spacing="4">
-        <Label text="Resource Readiness: " styleClass="general-label-large"/>
-        <ScoreDisplay fx:id="resourceReadinessScoreDisplay"/>
-    </HBox>
+        <FlowPane hgap="16">
+            <HBox alignment="CENTER_LEFT" spacing="4">
+                <Label text="Resource Distribution: " styleClass="general-label-medium-large"/>
+                <ScoreDisplay fx:id="resourceDistributionScoreDisplay"/>
+            </HBox>
 
-    <HBox alignment="CENTER_LEFT" spacing="4">
-        <Label text="Resource Utilization: " styleClass="general-label-large"/>
-        <ScoreDisplay fx:id="resourceUtilizationScoreDisplay"/>
-    </HBox>
-</VBox>
+            <HBox alignment="CENTER_LEFT" spacing="4">
+                <Label text="Resource Readiness: " styleClass="general-label-medium-large"/>
+                <ScoreDisplay fx:id="resourceReadinessScoreDisplay"/>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="4">
+                <Label text="Resource Utilization: " styleClass="general-label-medium-large"/>
+                <ScoreDisplay fx:id="resourceUtilizationScoreDisplay"/>
+            </HBox>
+        </FlowPane>
+
+        <VBox fx:id="stagesVBox">
+            <!-- Stage reports -->
+        </VBox>
+    </VBox>
+</ScrollPane>
