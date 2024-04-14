@@ -126,6 +126,8 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.scanalysis.productionhistory.model to com.fasterxml.jackson.databind, javafx.base;
     opens org.chainoptim.desktop.features.scanalysis.productionhistory.service to com.google.guice;
     opens org.chainoptim.desktop.features.scanalysis.productionhistory.dto to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.scanalysis.productionperformance.model to com.fasterxml.jackson.databind, javafx.base;
+    opens org.chainoptim.desktop.features.scanalysis.productionperformance.service to com.google.guice;
 
     // -- Supplier
     opens org.chainoptim.desktop.features.scanalysis.supply.model to com.fasterxml.jackson.databind, javafx.base;
