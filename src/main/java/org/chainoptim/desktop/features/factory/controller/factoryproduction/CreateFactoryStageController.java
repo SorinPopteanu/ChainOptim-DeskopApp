@@ -1,18 +1,16 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.dto.CreateFactoryStageDTO;
-import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.factory.service.FactoryStageWriteService;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
-import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
-import org.chainoptim.desktop.shared.common.uielements.SelectFactoryController;
-import org.chainoptim.desktop.shared.common.uielements.SelectStageController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectFactoryController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectStageController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -21,13 +19,10 @@ import lombok.Setter;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;

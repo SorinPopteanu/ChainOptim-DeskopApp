@@ -7,7 +7,7 @@ import org.chainoptim.desktop.features.warehouse.dto.UpdateWarehouseDTO;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
-import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 

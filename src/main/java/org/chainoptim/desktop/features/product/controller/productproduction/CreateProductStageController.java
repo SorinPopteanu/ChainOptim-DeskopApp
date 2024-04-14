@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.product.controller.productproduction;
 
-import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
@@ -9,7 +8,7 @@ import org.chainoptim.desktop.features.productpipeline.dto.CreateStageDTO;
 import org.chainoptim.desktop.features.productpipeline.model.Stage;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteService;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
-import org.chainoptim.desktop.shared.common.uielements.SelectProductController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectProductController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 

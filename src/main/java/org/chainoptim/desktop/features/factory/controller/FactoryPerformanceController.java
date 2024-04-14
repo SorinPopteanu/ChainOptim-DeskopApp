@@ -1,38 +1,22 @@
 package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.features.factory.model.Factory;
-import org.chainoptim.desktop.features.scanalysis.productionhistory.model.DailyProductionRecord;
-import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
-import org.chainoptim.desktop.features.scanalysis.productionhistory.model.ProductionHistory;
-import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryService;
 import org.chainoptim.desktop.features.scanalysis.productionperformance.model.FactoryPerformance;
 import org.chainoptim.desktop.features.scanalysis.productionperformance.service.FactoryPerformanceService;
-import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocation;
+import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.chart.*;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.util.Pair;
-import javafx.util.StringConverter;
+import javafx.scene.shape.Arc;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FactoryPerformanceController implements DataReceiver<Factory> {
 
@@ -43,6 +27,19 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     private final FallbackManager fallbackManager;
     private FactoryPerformance factoryPerformance;
 
+    // FXML
+    @FXML
+    private Button refreshReportButton;
+    @FXML
+    private ScoreDisplay overallScoreDisplay;
+    @FXML
+    private ScoreDisplay resourceReadinessScoreDisplay;
+    @FXML
+    private ScoreDisplay resourceUtilizationScoreDisplay;
+
+    // Icons
+    private Image refreshIcon;
+
     @Inject
     public FactoryPerformanceController(FactoryPerformanceService factoryPerformanceService, FallbackManager fallbackManager) {
         this.factoryPerformanceService = factoryPerformanceService;
@@ -51,10 +48,19 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
     @Override
     public void setData(Factory factory) {
+        initializeIcons();
+        initializeButtons();
         loadFactoryPerformance(factory.getId(), false);
     }
 
+    private void initializeIcons() {
+        refreshIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/rotate-right-solid.png")));
+    }
 
+    private void initializeButtons() {
+        refreshReportButton.setGraphic(createImageView(refreshIcon));
+        refreshReportButton.setOnAction(event -> loadFactoryPerformance(factoryPerformance.getFactoryId(), true));
+    }
 
     private void loadFactoryPerformance(Integer factoryId, boolean refresh) {
         fallbackManager.reset();
@@ -76,6 +82,9 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
 
             System.out.println("Factory Performance: " + factoryPerformance.getReport());
 
+            overallScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getOverallScore()));
+            resourceReadinessScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getResourceReadinessScore()));
+            resourceUtilizationScoreDisplay.setScore((int) Math.floor(factoryPerformance.getReport().getResourceUtilizationScore()));
         });
         return performanceOptional;
     }
@@ -87,7 +96,21 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
         });
         return Optional.empty();
     }
+
+    // Utils
+    private ImageView createImageView(Image image) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(12);
+        imageView.setFitHeight(12);
+        return imageView;
+    }
 }
+
+
+
+
+
+
 
 // Line Chart
 //private void updateComponentUI(ProductionHistory history) {

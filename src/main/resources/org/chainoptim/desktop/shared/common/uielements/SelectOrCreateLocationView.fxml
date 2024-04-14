@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController" spacing="16">
+      fx:controller="org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController" spacing="16">
 
     <VBox styleClass="radio-button-group">
         <RadioButton fx:id="selectExistingRadio" text="Select Existing Location" selected="true" styleClass="radio-button"/>

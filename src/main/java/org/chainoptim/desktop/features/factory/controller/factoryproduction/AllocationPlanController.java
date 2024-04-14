@@ -436,11 +436,4 @@ public class AllocationPlanController {
         button.setVisible(isVisible);
         button.setManaged(isVisible);
     }
-
-    private ImageView createImageView(Image image) {
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(12);
-        imageView.setFitHeight(12);
-        return imageView;
-    }
 }

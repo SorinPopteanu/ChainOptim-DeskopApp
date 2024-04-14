@@ -7,7 +7,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.dto.CreateFactoryDTO;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryWriteService;
-import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 

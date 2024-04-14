@@ -10,7 +10,7 @@ import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.factory.service.FactoryStageService;
 import org.chainoptim.desktop.features.factory.service.FactoryStageWriteService;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
-import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 

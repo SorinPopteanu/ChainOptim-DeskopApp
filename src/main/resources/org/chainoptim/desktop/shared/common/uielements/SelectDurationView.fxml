@@ -7,7 +7,7 @@
 <?import java.lang.String?>
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectDurationController">
+            fx:controller="org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController">
 
     <HBox spacing="10">
         <TextField fx:id="timeInput" promptText="Enter number" style="-fx-pref-width: 100px;" styleClass="custom-text-field"/>

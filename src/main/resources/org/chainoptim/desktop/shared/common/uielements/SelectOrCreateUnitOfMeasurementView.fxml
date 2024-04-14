@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController" spacing="16">
+      fx:controller="org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateUnitOfMeasurementController" spacing="16">
 
     <VBox styleClass="radio-button-group">
         <RadioButton fx:id="selectExistingRadio" text="Select Existing Unit of Measurement" selected="true" styleClass="radio-button"/>

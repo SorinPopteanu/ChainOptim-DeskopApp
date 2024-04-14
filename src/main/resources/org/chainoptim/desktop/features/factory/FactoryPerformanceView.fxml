@@ -1,46 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
-
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.control.Button?>
+
+<?import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.features.factory.controller.FactoryPerformanceController"
-      prefHeight="400.0" prefWidth="600.0" spacing="10">
+      style="-fx-padding: 10px 20px;" spacing="10">
 
-    <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 10px;">
-        <Label text="Component: " styleClass="general-label"/>
-        <ComboBox fx:id="componentsComboBox" prefWidth="150.0" styleClass="custom-combo-box"/>
+    <HBox alignment="CENTER_LEFT" style="-fx-padding: 0px 10px 0px 0px;">
+        <HBox alignment="CENTER_LEFT" spacing="4">
+            <Label text="Overall Score: " styleClass="general-label-large"/>
+            <ScoreDisplay fx:id="overallScoreDisplay"/>
+        </HBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="refreshReportButton" text="Refresh Report" styleClass="standard-cancel-button"/>
     </HBox>
 
-    <HBox alignment="CENTER_LEFT" spacing="16">
-        <VBox spacing="8">
-            <AreaChart fx:id="areaChart">
-                <xAxis>
-                    <NumberAxis/>
-                </xAxis>
-                <yAxis>
-                    <NumberAxis/>
-                </yAxis>
-            </AreaChart>
-
-            <StackPane fx:id="legendPane"/>
-        </VBox>
-
-        <ComboBox fx:id="chartDurationComboBox" prefWidth="150.0" styleClass="custom-combo-box"/>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="Resource Readiness: " styleClass="general-label-large"/>
+        <ScoreDisplay fx:id="resourceReadinessScoreDisplay"/>
     </HBox>
 
-
-    <LineChart fx:id="lineChart" maxWidth="420.0" minHeight="240.0">
-        <xAxis>
-            <CategoryAxis/>
-        </xAxis>
-        <yAxis>
-            <NumberAxis label="Allocations Over Time" styleClass="general-label"/>
-        </yAxis>
-    </LineChart>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="Resource Utilization: " styleClass="general-label-large"/>
+        <ScoreDisplay fx:id="resourceUtilizationScoreDisplay"/>
+    </HBox>
 </VBox>

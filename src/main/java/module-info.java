@@ -135,7 +135,8 @@ module org.chainoptim.desktop {
 
     // Shared
     // - Common UI elements
-    opens org.chainoptim.desktop.shared.common.uielements to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.common.uielements.select to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.common.uielements.performance to javafx.fxml, com.google.guice;
 
     // - Table
     opens org.chainoptim.desktop.shared.table to javafx.fxml, com.google.guice;
