@@ -176,6 +176,14 @@ public class TableToolbarController {
         toggleButtonVisibility(editSelectedRowsButton, !isEditing);
     }
 
+    public void toggleButtonVisibilityOnCreate(boolean isNewOrderMode) {
+        toggleButtonVisibility(createNewOrderButton, isNewOrderMode);
+        toggleButtonVisibility(saveChangesButton, isNewOrderMode);
+        toggleButtonVisibility(cancelRowSelectionButton, isNewOrderMode);
+        toggleButtonVisibility(deleteSelectedRowsButton, !isNewOrderMode);
+        toggleButtonVisibility(editSelectedRowsButton, !isNewOrderMode);
+    }
+
     public void toggleButtonVisibilityOnCancel() {
         toggleButtonVisibility(cancelRowSelectionButton, false);
         toggleButtonVisibility(deleteSelectedRowsButton, false);

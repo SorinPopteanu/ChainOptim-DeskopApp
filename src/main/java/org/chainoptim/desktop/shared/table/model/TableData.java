@@ -40,4 +40,5 @@ public class TableData<T> {
     public void setSelected(boolean isSelected) {
         this.isSelected.set(isSelected);
     }
+
 }

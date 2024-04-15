@@ -5,6 +5,7 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.features.supplier.dto.CreateSupplierOrderDTO;
 import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierOrderDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
@@ -56,6 +57,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private PageSelectorController pageSelectorController;
     private GenericConfirmDialogController<List<SupplierOrder>> confirmSupplierOrderUpdateController;
     private GenericConfirmDialogController<List<SupplierOrder>> confirmSupplierOrderDeleteController;
+    private GenericConfirmDialogController<List<SupplierOrder>> confirmSupplierOrderCreateController;
 
     // State
     private final FallbackManager fallbackManager;
@@ -65,6 +67,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private final List<Integer> selectedRowsIndices = new ArrayList<>();
     private final SimpleIntegerProperty selectedCount = new SimpleIntegerProperty(0);
     private final BooleanProperty isEditMode = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty isNewOrderMode = new SimpleBooleanProperty(false);
+    private int newOrderCount = 0;
 
     // Confirm Dialog Listeners
     private RunnableConfirmDialogActionListener<List<SupplierOrder>> confirmDialogUpdateListener;
@@ -104,6 +108,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private StackPane confirmUpdateDialogContainer;
     @FXML
     private StackPane confirmDeleteDialogContainer;
+    @FXML
+    private StackPane confirmCreateDialogContainer;
 
 
     @Inject
@@ -139,17 +145,22 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         loadSupplierOrders(supplier.getId());
         loadConfirmDeleteDialog();
         loadConfirmUpdateDialog();
+        loadConfirmCreateDialog();
     }
 
     private void configureTableColumns() {
         // Bind columns to data
         selectRowColumn.setCellValueFactory(data -> data.getValue().isSelectedProperty());
         orderIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getId()));
-        companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(
-                data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"
-        ));
+        companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"));
         supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.supplier.getName()));
-        componentNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getComponent().getName()));
+        componentNameColumn.setCellValueFactory(data -> {
+            if (data.getValue().getData().getComponent() != null) {
+                return new SimpleObjectProperty<>(data.getValue().getData().getComponent().getName());
+            } else {
+                return new SimpleObjectProperty<>("N/A");
+            }
+        });
         quantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getQuantity()));
         statusColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getStatus() != null ? data.getValue().getData().getStatus().name() : "N/A"));
         orderDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getOrderDate()));
@@ -211,6 +222,31 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             }
         });
 
+        statusColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, String>(isEditMode, selectedRowsIndices) {
+            @Override
+            public void commitEdit(String newValue) {
+                try {
+                    SupplierOrder.Status parsedValue = SupplierOrder.Status.valueOf(newValue);
+                    super.commitEdit(parsedValue.name());
+                    SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
+                    order.setStatus(parsedValue);
+                    getTableView().refresh();
+                } catch (Exception e) {
+                    System.out.println("Invalid status value: " + newValue);
+                }
+            }
+        });
+
+        componentNameColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, String>(isEditMode, selectedRowsIndices) {
+            @Override
+            public void commitEdit(String newValue) {
+                super.commitEdit(newValue);
+                SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
+                order.getComponent().setName(newValue);
+                getTableView().refresh();
+                System.out.println("Storing updated value: " + newValue);
+            }
+        });
 
     }
 
@@ -244,8 +280,15 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         // Listen to the toolbar buttons
         tableToolbarController.getCancelRowSelectionButton().setOnAction(e -> cancelSelectionsAndEdit());
         tableToolbarController.getEditSelectedRowsButton().setOnAction(e -> editSelectedRows());
-        tableToolbarController.getSaveChangesButton().setOnAction(e -> openConfirmUpdateDialog(selectedRowsIndices));
+        tableToolbarController.getSaveChangesButton().setOnAction(e -> {
+                if (isNewOrderMode.get()) {
+                    openConfirmCreateDialog();
+                } else {
+                    openConfirmUpdateDialog(selectedRowsIndices);
+                }
+        });
         tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
+        tableToolbarController.getCreateNewOrderButton().setOnAction(e -> addNewOrder());
     }
 
     private void loadSupplierOrders(Integer supplierId) {
@@ -333,6 +376,15 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             tableRow.setSelected(false);
         }
         selectedRowsIndices.clear();
+
+//      // Delete created new orders
+        if (isNewOrderMode.get()) {
+            for (int i = 0; i < newOrderCount; i++) {
+                tableView.getItems().remove(0);
+            }
+        isNewOrderMode.set(false);
+        newOrderCount = 0;
+        }
         tableView.refresh();
     }
 
@@ -367,6 +419,23 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             confirmSupplierOrderUpdateController.setActionListener(confirmDialogUpdateListener);
             confirmUpdateDialogContainer.getChildren().add(confirmDialogView);
             closeConfirmUpdateDialog();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void loadConfirmCreateDialog() {
+        // Load create dialog
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml",
+                controllerFactory::createController);
+
+        try {
+            Node confirmDialogView = loader.load();
+            confirmSupplierOrderCreateController = loader.getController();
+            confirmSupplierOrderCreateController.setActionListener(confirmDialogCreateListener);
+            confirmCreateDialogContainer.getChildren().add(confirmDialogView);
+            closeConfirmCreateDialog();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -449,7 +518,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             updateSupplierOrderDTOs.add(updateSupplierOrderDTO);
         }
 
-
         supplierOrdersService.updateSupplierOrdersInBulk(updateSupplierOrderDTOs)
                 .thenAccept(updatedOrders -> {
                     if (updatedOrders != null) {
@@ -474,19 +542,65 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         for (Integer index : selectedRowsIndices) {
             selectedOrders.add(tableView.getItems().get(index).getData());
         }
-        confirmSupplierOrderUpdateController.setData(selectedOrders, confirmDialogInput);
-        confirmUpdateDialogContainer.setVisible(true);
-        confirmUpdateDialogContainer.setManaged(true);
+        confirmSupplierOrderCreateController.setData(selectedOrders, confirmDialogInput);
+        confirmCreateDialogContainer.setVisible(true);
+        confirmCreateDialogContainer.setManaged(true);
     }
 
     private void closeConfirmCreateDialog() {
-        confirmUpdateDialogContainer.setVisible(false);
-        confirmUpdateDialogContainer.setManaged(false);
+        confirmCreateDialogContainer.setVisible(false);
+        confirmCreateDialogContainer.setManaged(false);
     }
 
     private void handleCreateOrders(List<SupplierOrder> supplierOrders) {
+        List<CreateSupplierOrderDTO> createSupplierOrderDTOs = new ArrayList<>();
 
+        for (SupplierOrder supplierOrder : supplierOrders) {
+            CreateSupplierOrderDTO createSupplierOrderDTO = new CreateSupplierOrderDTO();
+            createSupplierOrderDTO.setOrganizationId(1);
+            createSupplierOrderDTO.setSupplierId(supplierOrder.getSupplierId());
+            createSupplierOrderDTO.setComponentId(1);
+            createSupplierOrderDTO.setQuantity(supplierOrder.getQuantity());
+            createSupplierOrderDTO.setOrderDate(supplierOrder.getOrderDate());
+            createSupplierOrderDTO.setEstimatedDeliveryDate(supplierOrder.getEstimatedDeliveryDate());
+            createSupplierOrderDTO.setDeliveryDate(supplierOrder.getDeliveryDate());
+            createSupplierOrderDTO.setStatus(supplierOrder.getStatus());
+            createSupplierOrderDTO.setCompanyId(supplierOrder.getCompanyId());
+
+            createSupplierOrderDTOs.add(createSupplierOrderDTO);
+        }
+
+        supplierOrdersService.createSupplierOrdersInBulk(createSupplierOrderDTOs)
+                .thenAccept(createdOrders -> {
+                    if (createdOrders != null) {
+                        System.out.println("Orders created successfully: " + createdOrders);
+                    } else {
+                        System.out.println("Error creating orders");
+                    }
+                });
+        closeConfirmUpdateDialog();
+        cancelSelectionsAndEdit();
+        isEditMode.set(false);
+        tableView.refresh();
+        selectedRowsIndices.clear();
     }
 
+    private void addNewOrder() {
+        isNewOrderMode.set(true);
+        tableToolbarController.toggleButtonVisibilityOnCreate(isNewOrderMode.get());
+
+        SupplierOrder newOrder = new SupplierOrder();
+        TableData<SupplierOrder> newOrderRow = new TableData<>(newOrder, newOrder, new SimpleBooleanProperty(false));
+        tableView.getItems().add(0, newOrderRow);
+        newOrderRow.setSelected(true);
+
+        selectedRowsIndices.clear();
+        for (int i = 0; i <= newOrderCount; i++) {
+            selectedRowsIndices.add(i);
+        }
+        newOrderCount++;
+        isEditMode.set(true);
+        tableView.refresh();
+    }
 
 }

@@ -33,5 +33,6 @@
 
     <StackPane fx:id="confirmUpdateDialogContainer" />
     <StackPane fx:id="confirmDeleteDialogContainer" />
+    <StackPane fx:id="confirmCreateDialogContainer" />
 
 </StackPane>

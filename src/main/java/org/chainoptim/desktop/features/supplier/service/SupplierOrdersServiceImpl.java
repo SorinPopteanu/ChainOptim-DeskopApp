@@ -126,41 +126,6 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
 
     }
 
-    public CompletableFuture<List<SupplierOrder>> createSupplierOrderInBulk(List<CreateSupplierOrderDTO> orderDTO) {
-        String routeAddress = "http://localhost:8080/api/v1/supplier-orders/create/bulk";
-
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
-
-        //SerializeDTO
-        String requestBody = null;
-        try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(orderDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        assert requestBody != null;
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
-                .headers(HEADER_KEY, headerValue)
-                .header("Content-Type", "application/json")
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply (response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return null;
-                    try {
-                        JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<SupplierOrder>>() {});
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                });
-    }
-
     public CompletableFuture<List<Integer>> deleteSupplierOrderInBulk(List<Integer> orderIds) {
         String routeAddress = "http://localhost:8080/api/v1/supplier-orders/delete/bulk";
 
@@ -229,6 +194,50 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
                         // Print the updatedOrders to check if they contain the updated data
                         System.out.println("Updated SupplierOrders: " + updatedOrders);
                         return updatedOrders;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierOrder>> createSupplierOrdersInBulk(List<CreateSupplierOrderDTO> orderDTOs) {
+        System.out.println("Creating SupplierOrders: " + orderDTOs);
+
+        String routeAddress = "http://localhost:8080/api/v1/supplier-orders/create/bulk";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + " " + jwtToken;
+
+        String requestBody = null;
+        try {
+            requestBody = JsonUtil.getObjectMapper().writeValueAsString(orderDTOs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assert requestBody != null;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .header(HEADER_KEY, headerValue)
+                .header("Content-Type", "application/json")
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) {
+                        System.out.println("Error creating orders. HTTP status code: " + response.statusCode());
+                        System.out.println("Response body: " + response.body());
+                        return null;
+                    }
+                    try {
+                        List<SupplierOrder> createdOrders = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<SupplierOrder>>() {});
+                        // Print the createdOrders to check if they contain the created data
+                        System.out.println("Created SupplierOrders: " + createdOrders);
+                        return createdOrders;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return null;
