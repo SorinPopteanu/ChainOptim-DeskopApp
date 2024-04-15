@@ -94,7 +94,6 @@ public class AppController {
             userSettingsService.getUserSettings(user.getId())
                     .thenAccept(userSettingsOptional -> {
                         if (userSettingsOptional.isEmpty()) return;
-                        System.out.println("User settings loaded: " + userSettingsOptional.get());
                         TenantSettingsContext.setCurrentUserSettings(userSettingsOptional.get());
                     });
 

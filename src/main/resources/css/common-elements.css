@@ -105,20 +105,20 @@
 }
 
 .select-item {
+    -fx-padding: 6px 12px;
     -fx-background-color: #ffffff;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-alignment: center;
-    -fx-padding: 4px 12px;
     -fx-cursor: hand;
 }
 
 .select-item-selected {
+    -fx-padding: 6px 12px;
     -fx-background-color: #006AEE;
     -fx-text-fill: white;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-alignment: center;
-    -fx-padding: 8px 16px;
     -fx-cursor: hand;
 }

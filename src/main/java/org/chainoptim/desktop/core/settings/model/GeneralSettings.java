@@ -12,5 +12,8 @@ public class GeneralSettings {
 
     private InfoLevel infoLevel;
 
+    public GeneralSettings deepCopy() {
+        return new GeneralSettings(infoLevel);
+    }
 
 }

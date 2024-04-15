@@ -13,4 +13,8 @@ public class UserSettings {
     private String userId;
     private GeneralSettings generalSettings;
     private NotificationSettings notificationSettings;
+
+    public UserSettings deepCopy() {
+        return new UserSettings(id, userId, generalSettings.deepCopy(), notificationSettings.deepCopy());
+    }
 }

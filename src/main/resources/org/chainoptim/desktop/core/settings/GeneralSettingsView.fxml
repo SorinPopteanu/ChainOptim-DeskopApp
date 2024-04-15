@@ -2,10 +2,12 @@
 <?import javafx.scene.layout.*?>
 <?import org.chainoptim.desktop.shared.common.uielements.settings.EnumSelector?>
 
+<?import javafx.scene.control.Label?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.settings.controller.GeneralSettingsController"
-            prefHeight="400.0" prefWidth="600.0" style="-fx-padding: 40px;">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.core.settings.controller.GeneralSettingsController"
+      prefHeight="400.0" prefWidth="600.0" styleClass="settings-tab-container" spacing="12">
 
+    <Label text="Info Level" styleClass="general-label-large"/>
     <EnumSelector fx:id="infoLevelSelector"/>
 </VBox>

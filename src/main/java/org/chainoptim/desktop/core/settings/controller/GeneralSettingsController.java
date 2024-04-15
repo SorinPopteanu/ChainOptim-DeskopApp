@@ -17,7 +17,6 @@ public class GeneralSettingsController implements DataReceiver<UserSettings> {
 
     // State
     private UserSettings userSettings;
-    private final ObservableList<String> changedSettings = FXCollections.observableArrayList();
 
     // FXML
     @FXML
@@ -36,15 +35,13 @@ public class GeneralSettingsController implements DataReceiver<UserSettings> {
         infoLevelSelector.getValueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 userSettings.getGeneralSettings().setInfoLevel(newValue);
-                changedSettings.add("infoLevel");
                 settingsListener.handleSettingsChanged(true);
             }
-            System.out.println("Changed settings: " + changedSettings);
+            System.out.println("Changed settings");
         });
     }
 
     public void cancelChanges(UserSettings originalUserSettings) {
         infoLevelSelector.selectValue(originalUserSettings.getGeneralSettings().getInfoLevel());
-        changedSettings.clear();
     }
 }

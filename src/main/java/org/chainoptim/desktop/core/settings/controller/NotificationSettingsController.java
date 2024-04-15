@@ -3,9 +3,10 @@ package org.chainoptim.desktop.core.settings.controller;
 import org.chainoptim.desktop.core.settings.model.UserSettings;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
@@ -22,11 +23,13 @@ import java.util.Map;
 public class NotificationSettingsController implements DataReceiver<UserSettings> {
 
     // State
-    private final ObservableList<String> changedSettings = FXCollections.observableArrayList();
+    private UserSettings userSettings;
+    private final BooleanProperty haveSettingsChanged = new SimpleBooleanProperty(false);
 
     // Listeners
     @Setter
     private SettingsListener settingsListener;
+    private ChangeListener<Boolean> overallChangeListener;
 
     // Constants
     private static final List<String> notificationFeatures = List.of("Supplier Orders", "Client Orders", "Factory Inventory", "Warehouse Inventory");
@@ -39,35 +42,25 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
 
     @Override
     public void setData(UserSettings userSettings) {
-        initializeUI(userSettings);
+        this.userSettings = userSettings;
+        initializeUI();
     }
 
-    public void cancelChanges(UserSettings originalUserSettings) {
-        System.out.println("Canceling changes " + originalUserSettings);
-        toggleOverallButton.setSelected(aggregateNotificationSettings(originalUserSettings));
-        toggleOverallButton.setText(aggregateNotificationSettings(originalUserSettings) ? "On" : "Off");
-        for (String feature : notificationFeatures) {
-            ToggleButton toggleButton = featureToggleButtons.get(feature);
-            toggleButton.setSelected(getFeatureSetting(originalUserSettings, feature));
-            toggleButton.setText(getFeatureSetting(originalUserSettings, feature) ? "On" : "Off");
-        }
-        changedSettings.clear();
-    }
-
-    private void initializeUI(UserSettings userSettings) {
+    private void initializeUI() {
+        contentVBox.getChildren().clear();
         contentVBox.setSpacing(10);
 
-        renderOverallHBox(userSettings);
+        renderOverallHBox();
 
         for (String feature : notificationFeatures) {
-            renderFeatureHBox(userSettings, feature);
+            renderFeatureHBox(feature);
         }
 
-        changedSettings.addListener((ListChangeListener<String>) change ->
-                settingsListener.handleSettingsChanged(!changedSettings.isEmpty()));
+        haveSettingsChanged.addListener(change ->
+                settingsListener.handleSettingsChanged(haveSettingsChanged.getValue()));
     }
 
-    private void renderOverallHBox(UserSettings userSettings) {
+    private void renderOverallHBox() {
         HBox overallHBox = new HBox();
         Label overallLabel = new Label("Overall");
         overallLabel.getStyleClass().add("settings-section-label");
@@ -81,14 +74,18 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         boolean overallSetting = aggregateNotificationSettings(userSettings);
         toggleOverallButton.setText(overallSetting ? "On" : "Off");
         toggleOverallButton.setSelected(overallSetting);
-        toggleOverallButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-                handleToggleOverallButton(userSettings));
+        overallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            handleToggleOverallButton(userSettings);
+        };
+
+        // Add the listener to the toggle button
+        toggleOverallButton.selectedProperty().addListener(overallChangeListener);
         overallHBox.getChildren().add(toggleOverallButton);
 
         contentVBox.getChildren().add(overallHBox);
     }
 
-    private void renderFeatureHBox(UserSettings userSettings, String feature) {
+    private void renderFeatureHBox(String feature) {
         HBox featureHBox = new HBox();
         Label featureLabel = new Label(feature);
         featureLabel.getStyleClass().add("settings-label");
@@ -126,14 +123,17 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     private void handleToggleFeatureButton(UserSettings userSettings, ToggleButton toggleButton, String feature, Boolean isOn) {
         toggleButton.setSelected(isOn);
         toggleButton.setText(Boolean.TRUE.equals(isOn) ? "On" : "Off");
-        if (!changedSettings.contains(feature)) {
-            changedSettings.add(feature);
-        } else {
-            changedSettings.remove(feature);
-        }
+        haveSettingsChanged.setValue(true);
         setFeatureSetting(userSettings, feature, isOn);
     }
 
+    public void cancelChanges(UserSettings originalUserSettings) {
+        toggleOverallButton.selectedProperty().removeListener(overallChangeListener);
+        setData(originalUserSettings);
+        haveSettingsChanged.setValue(false);
+    }
+
+    // Utils
     private boolean aggregateNotificationSettings(UserSettings userSettings) {
         return userSettings.getNotificationSettings().isClientOrdersOn() ||
                 userSettings.getNotificationSettings().isSupplierOrdersOn() ||

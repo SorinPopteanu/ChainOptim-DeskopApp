@@ -9,6 +9,7 @@ import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
@@ -32,15 +33,15 @@ public class SettingsController implements Initializable, SettingsListener {
 
     // Services
     private final UserSettingsService userSettingsService;
-    private final FXMLLoaderService fxmlLoaderService;
+    private final CommonViewsLoader commonViewsLoader;
     private final ControllerFactory controllerFactory;
-    private final FallbackManager fallbackManager;
 
     // Controllers
     private GeneralSettingsController generalSettingsController;
     private NotificationSettingsController notificationSettingsController;
 
     // State
+    private final FallbackManager fallbackManager;
     private User currentUser;
     private UserSettings userSettings;
 
@@ -65,18 +66,18 @@ public class SettingsController implements Initializable, SettingsListener {
 
     @Inject
     public SettingsController(UserSettingsService userSettingsService,
-                              FXMLLoaderService fxmlLoaderService,
+                              CommonViewsLoader commonViewsLoader,
                               ControllerFactory controllerFactory,
                               FallbackManager fallbackManager) {
         this.userSettingsService = userSettingsService;
-        this.fxmlLoaderService = fxmlLoaderService;
+        this.commonViewsLoader = commonViewsLoader;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
 
         currentUser = TenantContext.getCurrentUser();
@@ -85,21 +86,12 @@ public class SettingsController implements Initializable, SettingsListener {
         usernameLabel.setText(currentUser.getUsername());
         handleSettingsChanged(false);
 
-        userSettings = TenantSettingsContext.getCurrentUserSettings();
+        userSettings = TenantSettingsContext.getCurrentUserSettings().deepCopy(); // Deep copy to avoid modifying the original on edit settings
         if (userSettings == null) {
             loadUserSettings(currentUser.getId());
         } else {
             loadTabContent(generalTab, "/org/chainoptim/desktop/core/settings/GeneralSettingsView.fxml", userSettings);
         }
-    }
-
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void setupListeners() {
@@ -132,6 +124,7 @@ public class SettingsController implements Initializable, SettingsListener {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
             loader.setControllerFactory(controllerFactory::createController);
             Node content = loader.load();
+
             DataReceiver<UserSettings> controller = loader.getController();
             controller.setData(userSettings);
             handleSpecialTabLoading(controller);
@@ -229,11 +222,11 @@ public class SettingsController implements Initializable, SettingsListener {
     private void handleCancel() {
         // Reselect based on original settings
         if (generalSettingsController != null) {
-            generalSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings());
+            generalSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings().deepCopy());
         }
 
         if (notificationSettingsController != null) {
-            notificationSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings());
+            notificationSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings().deepCopy());
         }
         handleSettingsChanged(false);
     }
