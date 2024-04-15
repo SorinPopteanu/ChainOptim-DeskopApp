@@ -37,6 +37,7 @@ public class SettingsController implements Initializable, SettingsListener {
     private final FallbackManager fallbackManager;
 
     // Controllers
+    private GeneralSettingsController generalSettingsController;
     private NotificationSettingsController notificationSettingsController;
 
     // State
@@ -133,13 +134,22 @@ public class SettingsController implements Initializable, SettingsListener {
             Node content = loader.load();
             DataReceiver<UserSettings> controller = loader.getController();
             controller.setData(userSettings);
-            if (controller instanceof NotificationSettingsController notificationController) {
-                notificationSettingsController = notificationController;
-                notificationSettingsController.setSettingsListener(this);
-            }
+            handleSpecialTabLoading(controller);
+
             tab.setContent(content);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void handleSpecialTabLoading(DataReceiver<UserSettings> controller) {
+        if (controller instanceof NotificationSettingsController notificationController) {
+            notificationSettingsController = notificationController;
+            notificationSettingsController.setSettingsListener(this);
+        }
+        if (controller instanceof GeneralSettingsController generalController) {
+            generalSettingsController = generalController;
+            generalSettingsController.setSettingsListener(this);
         }
     }
 
@@ -218,7 +228,13 @@ public class SettingsController implements Initializable, SettingsListener {
     @FXML
     private void handleCancel() {
         // Reselect based on original settings
-        notificationSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings());
+        if (generalSettingsController != null) {
+            generalSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings());
+        }
+
+        if (notificationSettingsController != null) {
+            notificationSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings());
+        }
         handleSettingsChanged(false);
     }
 }

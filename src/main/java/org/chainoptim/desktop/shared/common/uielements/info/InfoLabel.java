@@ -30,6 +30,7 @@ public class InfoLabel extends Label {
     public void setFeatureAndLevel(Feature feature, InfoLevel userSettingsLevel) {
         FeatureInfo featureInfo = FeatureInfoMapper.getFeatureInfo(feature);
         if (featureInfo == null) return;
+        if (userSettingsLevel == null) return;
 
         CustomTooltip customTooltip = new CustomTooltip(featureInfo.getTooltipText());
         customTooltip.attachToNode(this);

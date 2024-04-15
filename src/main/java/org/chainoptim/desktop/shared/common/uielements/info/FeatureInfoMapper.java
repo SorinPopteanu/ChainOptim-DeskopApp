@@ -15,7 +15,7 @@ public class FeatureInfoMapper {
         // Products
         featureInfoMap.put(Feature.PRODUCT, new FeatureInfo(
                 "A Product is any item that is manufactured and/or sold by your organization.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.PRODUCT_STAGE, new FeatureInfo(
                 "A Product Stage is any step in the manufacturing process of a product. " +
                 "You can define any number of Stage Inputs and Stage Outputs, consisting of " +
@@ -32,7 +32,7 @@ public class FeatureInfoMapper {
         // Factories
         featureInfoMap.put(Feature.FACTORY, new FeatureInfo(
                 "A Factory is any organization site where manufacturing takes place.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.FACTORY_STAGE, new FeatureInfo(
                 "A Factory Stage is any manufacturing process taking place in a Factory. " +
                 "You can define the underlying Product Stage, " +
@@ -47,7 +47,7 @@ public class FeatureInfoMapper {
                 InfoLevel.ADVANCED));
         featureInfoMap.put(Feature.FACTORY_INVENTORY, new FeatureInfo(
                 "A Factory Inventory is a record of all the Products and Components currently stored within a Factory.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.FACTORY_PRODUCTION_HISTORY, new FeatureInfo(
                 "A Factory Production History is a record of all the Factory Stages executed by a Factory over time. " +
                 "You can add records over any given time period, along with the planned allocations during that time. " +
@@ -57,54 +57,54 @@ public class FeatureInfoMapper {
                 "A Factory Performance Report is a detailed analysis of the Production Performance of a Factory over time. " +
                 "It measures the efficiency of resource distribution, readiness and utilization, as well as several other key performance indicators. " +
                 "You can refresh the report at any time with the most up-to-date Factory Production History.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
 
         // Warehouses
         featureInfoMap.put(Feature.WAREHOUSE, new FeatureInfo(
                 "A Warehouse is any organization site where storage and distribution of goods takes place.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.WAREHOUSE_INVENTORY, new FeatureInfo(
                 "A Warehouse Inventory is a record of all the Products and Components currently stored within a Warehouse.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
 
         // Supplier
         featureInfoMap.put(Feature.SUPPLIER, new FeatureInfo(
                 "A Supplier is any organization that provides goods to your organization.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.SUPPLIER_ORDER, new FeatureInfo(
                 "A Supplier Order is a request for goods from a Supplier. " +
                 "You can create an Order for any Supplier, specifying the Product or Component you need, as well as the quantities. " +
                 "You can also set up a Delivery Date and a Delivery Location.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.SUPPLIER_SHIPMENT, new FeatureInfo(
                 "A Supplier Shipment is any delivery of goods from a Supplier to your organization. " +
                 "You can create a Shipment for any Supplier Order, specifying the quantities delivered, as well as the actual Delivery Date.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.SUPPLIER_PERFORMANCE, new FeatureInfo(
                 "A Supplier Performance Report is a detailed analysis of the Performance of a Supplier over time. " +
                 "It measures the reliability of deliveries, the quality of goods, as well as several other key performance indicators. " +
                 "You can refresh the report at any time with the most up-to-date Supplier Orders.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
 
 
         // Clients
         featureInfoMap.put(Feature.CLIENT, new FeatureInfo(
                 "A Client is any organization that receives goods from your organization.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.CLIENT_ORDER, new FeatureInfo(
                 "A Client Order is a request for goods from a Client. " +
                 "You can create an Order for any Client, specifying the Product you need, as well as the quantities. " +
                 "You can also set up a Delivery Date and a Delivery Location.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.CLIENT_SHIPMENT, new FeatureInfo(
                 "A Client Shipment is any delivery of goods from your organization to a Client. " +
                 "You can create a Shipment for any Client Order, specifying the quantities delivered, as well as the actual Delivery Date.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
         featureInfoMap.put(Feature.CLIENT_EVALUATION, new FeatureInfo(
                 "A Client Evaluation Report is a detailed analysis of the Client over time. " +
                 "It measures the demand, reliability, as well as several other key performance indicators. " +
                 "You can refresh the report at any time with the most up-to-date Client Orders.",
-                InfoLevel.ADVANCED));
+                InfoLevel.ALL));
     }
 
     public static FeatureInfo getFeatureInfo(Feature feature) {
