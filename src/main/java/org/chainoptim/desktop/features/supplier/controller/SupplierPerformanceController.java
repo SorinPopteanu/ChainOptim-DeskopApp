@@ -1,10 +1,13 @@
 package org.chainoptim.desktop.features.supplier.controller;
 
+import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.features.scanalysis.supply.model.ComponentDeliveryPerformance;
 import org.chainoptim.desktop.features.scanalysis.supply.model.SupplierPerformance;
 import org.chainoptim.desktop.features.scanalysis.supply.model.SupplierPerformanceReport;
 import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceService;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.ChartUtils;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -44,6 +47,8 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
 
     // FXML
     @FXML
+    private InfoLabel supplierPerformanceInfoLabel;
+    @FXML
     private Button refreshReportButton;
     @FXML
     private Label totalDeliveredOrders;
@@ -81,9 +86,15 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
 
     @Override
     public void setData(Supplier supplier) {
+        setUpInfoLabel();
         setUpRefreshButton(supplier.getId());
         setUpComponentsComboBox();
         loadSupplierPerformance(supplier.getId(), false);
+    }
+
+    private void setUpInfoLabel() {
+        supplierPerformanceInfoLabel.setFeatureAndLevel(Feature.SUPPLIER_PERFORMANCE,
+                TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel());
     }
 
     private void setUpRefreshButton(Integer supplierId) {

@@ -17,13 +17,13 @@ public class ScoreDisplay extends StackPane {
 
     private void initializeComponents() {
         arcDisplay = new Arc();
-        arcDisplay.setCenterX(16);
-        arcDisplay.setCenterY(16);
-        arcDisplay.setRadiusX(16);
-        arcDisplay.setRadiusY(16);
+        arcDisplay.setCenterX(15);
+        arcDisplay.setCenterY(15);
+        arcDisplay.setRadiusX(15);
+        arcDisplay.setRadiusY(15);
         arcDisplay.setStartAngle(90);
         arcDisplay.setLength(360);
-        arcDisplay.setStrokeWidth(5);
+        arcDisplay.setStrokeWidth(4);
         arcDisplay.setStroke(Color.LIGHTGRAY);
         arcDisplay.setFill(null);
 
