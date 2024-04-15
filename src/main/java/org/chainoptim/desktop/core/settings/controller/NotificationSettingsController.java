@@ -29,6 +29,7 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     // Listeners
     @Setter
     private SettingsListener settingsListener;
+    private ChangeListener<Boolean> hasChangedListener;
     private ChangeListener<Boolean> overallChangeListener;
 
     // Constants
@@ -50,14 +51,41 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         contentVBox.getChildren().clear();
         contentVBox.setSpacing(10);
 
+        cleanUpGlobalListeners();
+
         renderOverallHBox();
 
         for (String feature : notificationFeatures) {
             renderFeatureHBox(feature);
         }
 
-        haveSettingsChanged.addListener(change ->
-                settingsListener.handleSettingsChanged(haveSettingsChanged.getValue()));
+        setUpGlobalListeners();
+    }
+
+    private void cleanUpGlobalListeners() {
+        haveSettingsChanged.setValue(false);
+        if (hasChangedListener != null) {
+            haveSettingsChanged.removeListener(hasChangedListener);
+        }
+        if (overallChangeListener != null) {
+            toggleOverallButton.selectedProperty().removeListener(overallChangeListener);
+        }
+    }
+
+    private void setUpGlobalListeners() {
+        // Any change listener
+        hasChangedListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (settingsListener != null) {
+                settingsListener.handleSettingsChanged(newValue);
+            }
+        };
+        haveSettingsChanged.addListener(hasChangedListener);
+
+        // Overall change listener
+        overallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            handleToggleOverallButton(userSettings);
+        };
+        toggleOverallButton.selectedProperty().addListener(overallChangeListener);
     }
 
     private void renderOverallHBox() {
@@ -71,15 +99,9 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         HBox.setHgrow(region, Priority.ALWAYS);
 
         toggleOverallButton.getStyleClass().setAll("toggle-button");
-        boolean overallSetting = aggregateNotificationSettings(userSettings);
+        boolean overallSetting = aggregateNotificationSettings();
         toggleOverallButton.setText(overallSetting ? "On" : "Off");
         toggleOverallButton.setSelected(overallSetting);
-        overallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            handleToggleOverallButton(userSettings);
-        };
-
-        // Add the listener to the toggle button
-        toggleOverallButton.selectedProperty().addListener(overallChangeListener);
         overallHBox.getChildren().add(toggleOverallButton);
 
         contentVBox.getChildren().add(overallHBox);
@@ -96,7 +118,7 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         HBox.setHgrow(region, Priority.ALWAYS);
 
         ToggleButton toggleButton = new ToggleButton();
-        boolean featureSetting = getFeatureSetting(userSettings, feature);
+        boolean featureSetting = getFeatureSetting(feature);
         toggleButton.setText(featureSetting ? "On" : "Off");
         toggleButton.setSelected(featureSetting);
         toggleButton.getStyleClass().setAll("toggle-button");
@@ -124,7 +146,7 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         toggleButton.setSelected(isOn);
         toggleButton.setText(Boolean.TRUE.equals(isOn) ? "On" : "Off");
         haveSettingsChanged.setValue(true);
-        setFeatureSetting(userSettings, feature, isOn);
+        setFeatureSetting(feature, isOn);
     }
 
     public void cancelChanges(UserSettings originalUserSettings) {
@@ -134,14 +156,14 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     }
 
     // Utils
-    private boolean aggregateNotificationSettings(UserSettings userSettings) {
-        return userSettings.getNotificationSettings().isClientOrdersOn() ||
-                userSettings.getNotificationSettings().isSupplierOrdersOn() ||
-                userSettings.getNotificationSettings().isFactoryInventoryOn() ||
+    private boolean aggregateNotificationSettings() {
+        return userSettings.getNotificationSettings().isClientOrdersOn() &&
+                userSettings.getNotificationSettings().isSupplierOrdersOn() &&
+                userSettings.getNotificationSettings().isFactoryInventoryOn() &&
                 userSettings.getNotificationSettings().isWarehouseInventoryOn();
     }
 
-    private boolean getFeatureSetting(UserSettings userSettings, String feature) {
+    private boolean getFeatureSetting(String feature) {
         return switch (feature) {
             case "Supplier Orders" -> userSettings.getNotificationSettings().isSupplierOrdersOn();
             case "Client Orders" -> userSettings.getNotificationSettings().isClientOrdersOn();
@@ -151,7 +173,7 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         };
     }
 
-    private void setFeatureSetting(UserSettings userSettings, String feature, boolean isOn) {
+    private void setFeatureSetting(String feature, boolean isOn) {
         switch (feature) {
             case "Supplier Orders" -> userSettings.getNotificationSettings().setSupplierOrdersOn(isOn);
             case "Client Orders" -> userSettings.getNotificationSettings().setClientOrdersOn(isOn);

@@ -21,6 +21,7 @@ public class EnumSelector<T extends Enum<T>> extends HBox {
     }
 
     public void initializeSelector(Class<T> enumType, T selectedValue) {
+        if (selectedValue == null) return;
         this.selectedValueProperty.setValue(selectedValue);
 
         for (T value : enumType.getEnumConstants()) {

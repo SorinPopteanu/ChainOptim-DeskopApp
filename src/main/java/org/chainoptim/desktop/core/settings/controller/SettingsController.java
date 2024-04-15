@@ -189,7 +189,7 @@ public class SettingsController implements Initializable, SettingsListener {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        UpdateUserSettingsDTO userSettingsDTO = new UpdateUserSettingsDTO(userSettings.getId(), userSettings.getUserId(), userSettings.getNotificationSettings());
+        UpdateUserSettingsDTO userSettingsDTO = new UpdateUserSettingsDTO(userSettings.getId(), userSettings.getUserId(), userSettings.getGeneralSettings(), userSettings.getNotificationSettings());
 
         // Save the user settings
         userSettingsService.saveUserSettings(userSettingsDTO)
@@ -204,7 +204,14 @@ public class SettingsController implements Initializable, SettingsListener {
                 return;
             }
             userSettings = userSettingsOptional.get();
-            TenantSettingsContext.setCurrentUserSettings(userSettings);
+            TenantSettingsContext.setCurrentUserSettings(userSettings.deepCopy());
+
+            if (generalSettingsController != null) {
+                generalSettingsController.setData(userSettings);
+            }
+            if (notificationSettingsController != null) {
+                notificationSettingsController.setData(userSettings);
+            }
 
             fallbackManager.setLoading(false);
             handleSettingsChanged(false);
