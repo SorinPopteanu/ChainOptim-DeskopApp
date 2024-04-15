@@ -31,8 +31,7 @@ module org.chainoptim.desktop {
     requires jdk.jsobject;
     requires org.java_websocket;
 
-
-    opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core;
+    opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core, javafx.graphics;
 
     // Core
     // - Main
