@@ -17,7 +17,7 @@
 }
 
 .sidebar-title-container {
-    -fx-padding: 16px;
+    -fx-padding: 16px 12px 24px 12px;
 }
 
 .sidebar-title-container-collapsed {
@@ -41,7 +41,7 @@
     -fx-min-height: 40;
     -fx-max-height: 48;
     -fx-alignment: baseline-left;
-    -fx-graphic-text-gap: 16px;
+    -fx-graphic-text-gap: 20px;
     -fx-cursor: hand;
 }
 

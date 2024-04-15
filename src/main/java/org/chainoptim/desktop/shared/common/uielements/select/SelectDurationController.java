@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.common.uielements;
+package org.chainoptim.desktop.shared.common.uielements.select;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;

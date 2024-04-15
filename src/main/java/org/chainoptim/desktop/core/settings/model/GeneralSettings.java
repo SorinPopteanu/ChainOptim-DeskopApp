@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.settings.model;
 
+import org.chainoptim.desktop.shared.enums.InfoLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserSettings {
+public class GeneralSettings {
 
-    private Integer id;
-    private String userId;
-    private GeneralSettings generalSettings;
-    private NotificationSettings notificationSettings;
+    private InfoLevel infoLevel;
+
+
 }

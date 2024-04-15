@@ -1,16 +1,12 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
-import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -23,7 +19,6 @@ import javafx.scene.web.WebView;
 import lombok.Setter;
 import com.google.inject.Inject;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 

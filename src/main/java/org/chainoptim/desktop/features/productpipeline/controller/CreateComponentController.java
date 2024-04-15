@@ -8,7 +8,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.productpipeline.dto.CreateComponentDTO;
 import org.chainoptim.desktop.features.productpipeline.model.Component;
 import org.chainoptim.desktop.features.productpipeline.service.ComponentService;
-import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateUnitOfMeasurementController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 

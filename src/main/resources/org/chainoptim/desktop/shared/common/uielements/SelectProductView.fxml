@@ -4,7 +4,7 @@
 <?import javafx.scene.control.ComboBox?>
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectProductController">
+            fx:controller="org.chainoptim.desktop.shared.common.uielements.select.SelectProductController">
 
 
     <ComboBox fx:id="productComboBox" layoutX="100" layoutY="100" prefWidth="200" styleClass="custom-combo-box"/>
