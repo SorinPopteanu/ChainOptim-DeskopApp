@@ -8,6 +8,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -79,7 +80,7 @@ public class ClientsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Clients", "/img/truck-arrow-right-solid.png", sortOptions, this::loadClients, "Client", "Create-Client");
+        headerController.initializeHeader(searchParams, "Clients", "/img/truck-arrow-right-solid.png", Feature.CLIENT, sortOptions, this::loadClients, "Client", "Create-Client");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadClients();

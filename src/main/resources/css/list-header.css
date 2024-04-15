@@ -9,11 +9,13 @@
     -fx-padding: 0px 32px 32px 32px;
 }
 
+.list-title-container {
+    -fx-padding: 20px 32px 0px 32px;
+}
+
 .list-title {
     -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-padding: 20px 32px 0px 32px;
-    -fx-spacing: 20px;
     -fx-graphic-text-gap: 12px;
 }
 

@@ -16,6 +16,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -80,7 +81,7 @@ public class FactoriesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resourceBundle) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Factories", "/img/industry-solid.png", sortOptions, this::loadFactories, "Factory", "Create-Factory");
+        headerController.initializeHeader(searchParams, "Factories", "/img/industry-solid.png", Feature.FACTORY, sortOptions, this::loadFactories, "Factory", "Create-Factory");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadFactories();

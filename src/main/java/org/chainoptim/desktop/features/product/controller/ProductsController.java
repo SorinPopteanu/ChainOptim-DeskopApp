@@ -7,6 +7,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -76,7 +77,7 @@ public class ProductsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Products", "/img/box-solid.png", sortOptions, this::loadProducts, "Product", "Create-Product");
+        headerController.initializeHeader(searchParams, "Products", "/img/box-solid.png", Feature.PRODUCT, sortOptions, this::loadProducts, "Product", "Create-Product");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadProducts();

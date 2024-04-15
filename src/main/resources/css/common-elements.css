@@ -92,11 +92,14 @@
 }
 
 .custom-tooltip {
-    -fx-padding: 6px 12px;
+    -fx-padding: 8px 12px;
     -fx-background-color: #171717;
     -fx-background-radius: 5;
     -fx-border-radius: 5;
+}
+
+.custom-tooltip-text {
     -fx-font-size: 14px;
     -fx-font-weight: 600;
-    -fx-text-fill: #E8E8E8;
+    -fx-fill: #EAEAEA;
 }

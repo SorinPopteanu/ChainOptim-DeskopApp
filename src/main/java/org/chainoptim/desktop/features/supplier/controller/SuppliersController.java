@@ -7,6 +7,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -78,7 +79,7 @@ public class SuppliersController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Suppliers", "/img/truck-arrow-right-solid.png", sortOptions, this::loadSuppliers, "Supplier", "Create-Supplier");
+        headerController.initializeHeader(searchParams, "Suppliers", "/img/truck-arrow-right-solid.png", Feature.SUPPLIER, sortOptions, this::loadSuppliers, "Supplier", "Create-Supplier");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadSuppliers();
