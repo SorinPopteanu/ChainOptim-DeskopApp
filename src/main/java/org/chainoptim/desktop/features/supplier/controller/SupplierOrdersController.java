@@ -187,7 +187,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                     SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
                     order.setQuantity(parsedValue);
                     getTableView().refresh();
-                    System.out.println("Storing updated value: " + newValue);
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid float value: " + newValue);
                 }
@@ -244,7 +243,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
                 order.getComponent().setName(newValue);
                 getTableView().refresh();
-                System.out.println("Storing updated value: " + newValue);
             }
         });
 
@@ -256,6 +254,11 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             supplierOrdersScrollPane.setVisible(newValue);
             supplierOrdersScrollPane.setManaged(newValue);
         });
+
+        //Listen to searchParams
+        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSupplierOrders(supplier.getId()));
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
 
         // Listen to selectedCount property
         selectedCount.addListener((obs, oldCount, newCount) -> {
@@ -275,7 +278,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         Consumer<List<SupplierOrder>> onConfirmCreate = this::handleCreateOrders;
         Runnable onCancelCreate = this::closeConfirmCreateDialog;
         confirmDialogCreateListener = new RunnableConfirmDialogActionListener<>(onConfirmCreate, onCancelCreate);
-
 
         // Listen to the toolbar buttons
         tableToolbarController.getCancelRowSelectionButton().setOnAction(e -> cancelSelectionsAndEdit());
@@ -359,6 +361,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             TableData<SupplierOrder> tableRow = tableView.getItems().get(index);
             tableRow.setOldData(new SupplierOrder(tableRow.getData()));
         }
+        selectRowColumn.setEditable(false);
         tableView.refresh();
     }
 
@@ -377,7 +380,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         }
         selectedRowsIndices.clear();
 
-//      // Delete created new orders
+        // Delete created new orders
         if (isNewOrderMode.get()) {
             for (int i = 0; i < newOrderCount; i++) {
                 tableView.getItems().remove(0);
@@ -385,6 +388,21 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         isNewOrderMode.set(false);
         newOrderCount = 0;
         }
+        selectRowColumn.setEditable(true);
+        tableView.refresh();
+    }
+
+    private void closeConfirmDialogsOnConfirmation() {
+        isEditMode.set(false);
+        tableView.getSelectionModel().clearSelection();
+        tableToolbarController.toggleButtonVisibilityOnCancel();
+        List<Integer> indicesToClear = new ArrayList<>(selectedRowsIndices);
+        for (Integer rowIndex : indicesToClear) {
+            TableData<SupplierOrder> tableRow = tableView.getItems().get(rowIndex);
+            tableRow.setSelected(false);
+        }
+        selectRowColumn.setEditable(true);
+        selectedRowsIndices.clear();
         tableView.refresh();
     }
 
@@ -527,10 +545,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                     }
                 });
         closeConfirmUpdateDialog();
-        cancelSelectionsAndEdit();
-        isEditMode.set(false);
-        tableView.refresh();
-        selectedRowsIndices.clear();
+        closeConfirmDialogsOnConfirmation();
     }
 
     private void openConfirmCreateDialog() {
@@ -554,11 +569,16 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private void handleCreateOrders(List<SupplierOrder> supplierOrders) {
         List<CreateSupplierOrderDTO> createSupplierOrderDTOs = new ArrayList<>();
+        User currentUser = TenantContext.getCurrentUser();
 
         for (SupplierOrder supplierOrder : supplierOrders) {
             CreateSupplierOrderDTO createSupplierOrderDTO = new CreateSupplierOrderDTO();
-            createSupplierOrderDTO.setOrganizationId(1);
-            createSupplierOrderDTO.setSupplierId(supplierOrder.getSupplierId());
+            if (currentUser != null && currentUser.getOrganization() != null) {
+                createSupplierOrderDTO.setOrganizationId(currentUser.getOrganization().getId());
+            }
+            if (this.supplier != null) {
+                createSupplierOrderDTO.setSupplierId(this.supplier.getId());
+            }
             createSupplierOrderDTO.setComponentId(1);
             createSupplierOrderDTO.setQuantity(supplierOrder.getQuantity());
             createSupplierOrderDTO.setOrderDate(supplierOrder.getOrderDate());
@@ -578,16 +598,15 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                         System.out.println("Error creating orders");
                     }
                 });
-        closeConfirmUpdateDialog();
-        cancelSelectionsAndEdit();
-        isEditMode.set(false);
-        tableView.refresh();
-        selectedRowsIndices.clear();
+        isNewOrderMode.set(false);
+        closeConfirmCreateDialog();
+        closeConfirmDialogsOnConfirmation();
     }
 
     private void addNewOrder() {
         isNewOrderMode.set(true);
         tableToolbarController.toggleButtonVisibilityOnCreate(isNewOrderMode.get());
+
 
         SupplierOrder newOrder = new SupplierOrder();
         TableData<SupplierOrder> newOrderRow = new TableData<>(newOrder, newOrder, new SimpleBooleanProperty(false));
@@ -600,6 +619,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         }
         newOrderCount++;
         isEditMode.set(true);
+        selectRowColumn.setEditable(false);
         tableView.refresh();
     }
 

@@ -19,12 +19,12 @@ import lombok.Getter;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class TableToolbarController {
 
     // State
     private final SearchParams searchParams;
-
     private final Map<String, String> sortOptionsMap = Map.of(
             "createdAt", "Created At",
             "updatedAt", "Updated At"
