@@ -14,10 +14,10 @@
     </HBox>
 
     <Label text="Name *:" styleClass="form-label"/>
-    <TextField fx:id="nameField"/>
+    <TextField fx:id="nameField" styleClass="custom-text-field"/>
 
     <Label text="Description:" styleClass="form-label"/>
-    <TextField fx:id="descriptionField"/>
+    <TextField fx:id="descriptionField" styleClass="custom-text-field"/>
 
     <Label text="Unit of Measurement:" styleClass="form-label"/>
     <StackPane fx:id="unitOfMeasurementContainer"/>

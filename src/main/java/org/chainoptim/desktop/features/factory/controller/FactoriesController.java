@@ -16,6 +16,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -80,7 +81,7 @@ public class FactoriesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resourceBundle) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Factories", "/img/industry-solid.png", sortOptions, this::loadFactories, "Factory", "Create-Factory");
+        headerController.initializeHeader(searchParams, "Factories", "/img/industry-solid.png", Feature.FACTORY, sortOptions, this::loadFactories, "Factory", "Create-Factory");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadFactories();
@@ -131,7 +132,7 @@ public class FactoriesController implements Initializable {
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
             int factoriesLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxFactories();
-            headerController.disableCreateButton(totalCount >= factoriesLimit, "You have reached the limit of factories allowed by your current subscription plan.");
+            headerController.disableCreateButton(factoriesLimit != -1 && totalCount >= factoriesLimit, "You have reached the limit of factories allowed by your current subscription plan.");
 
             factoriesVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {

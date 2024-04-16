@@ -1,10 +1,10 @@
 package org.chainoptim.desktop.shared.util.resourceloader;
 
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
-import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
-import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController;
+import org.chainoptim.desktop.shared.common.uielements.select.*;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
+
 import javafx.scene.control.Tab;
 import javafx.scene.layout.StackPane;
 
@@ -19,5 +19,7 @@ public interface CommonViewsLoader {
 
     SelectOrCreateLocationController loadSelectOrCreateLocation(StackPane selectOrCreateLocationContainer);
     SelectOrCreateUnitOfMeasurementController loadSelectOrCreateUnitOfMeasurement(StackPane unitOfMeasurementContainer);
-
+    SelectDurationController loadSelectDurationView(StackPane durationInputContainer);
+    SelectStageController loadSelectStageView(StackPane selectStageContainer);
+    SelectFactoryController loadSelectFactoryView(StackPane selectFactoryContainer);
 }

@@ -1,9 +1,9 @@
 package org.chainoptim.desktop.shared.util.resourceloader;
 
+import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
-import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateLocationController;
-import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController;
+import org.chainoptim.desktop.shared.common.uielements.select.*;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -64,6 +64,21 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
         }
     }
 
+    public TableToolbarController initializeTableToolbar(StackPane tableToolbarContainer) {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/table/TableToolbarView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node tableToolbarView = loader.load();
+            tableToolbarContainer.getChildren().add(tableToolbarView);
+            return loader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public <T> void loadTabContent(Tab tab, String fxmlFilepath, T data) {
         try {
             FXMLLoader loader = fxmlLoaderService.setUpLoader(fxmlFilepath, controllerFactory::createController);
@@ -106,15 +121,47 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
         }
     }
 
-    public TableToolbarController initializeTableToolbar(StackPane tableToolbarContainer) {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/table/TableToolbarView.fxml",
+    public SelectDurationController loadSelectDurationView(StackPane durationInputContainer) {
+        FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/common/uielements/SelectDurationView.fxml",
                 controllerFactory::createController
         );
         try {
-            Node tableToolbarView = loader.load();
-            tableToolbarContainer.getChildren().add(tableToolbarView);
-            return loader.getController();
+            Node timeInputView = timeInputLoader.load();
+            durationInputContainer.getChildren().add(timeInputView);
+            return timeInputLoader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public SelectStageController loadSelectStageView(StackPane selectStageContainer) {
+        // Initialize time selection input view
+        FXMLLoader selectStageLoader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/common/uielements/SelectStageView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node selectStageView = selectStageLoader.load();
+            selectStageContainer.getChildren().add(selectStageView);
+            return selectStageLoader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public SelectFactoryController loadSelectFactoryView(StackPane selectFactoryContainer) {
+        // Initialize time selection input view
+        FXMLLoader selectFactoryLoader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/common/uielements/SelectFactoryView.fxml",
+                MainApplication.injector::getInstance
+        );
+        try {
+            Node selectFactoryView = selectFactoryLoader.load();
+            selectFactoryContainer.getChildren().add(selectFactoryView);
+            return selectFactoryLoader.getController();
         } catch (IOException e) {
             e.printStackTrace();
             return null;

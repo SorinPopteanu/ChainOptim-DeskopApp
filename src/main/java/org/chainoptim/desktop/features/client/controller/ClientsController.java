@@ -8,6 +8,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -79,7 +80,7 @@ public class ClientsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Clients", "/img/truck-arrow-right-solid.png", sortOptions, this::loadClients, "Client", "Create-Client");
+        headerController.initializeHeader(searchParams, "Clients", "/img/truck-arrow-right-solid.png", Feature.CLIENT, sortOptions, this::loadClients, "Client", "Create-Client");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadClients();
@@ -130,7 +131,7 @@ public class ClientsController implements Initializable {
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
             int clientsLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxClients();
-            headerController.disableCreateButton(totalCount >= clientsLimit, "You have reached the limit of clients allowed by your current subscription plan.");
+            headerController.disableCreateButton(clientsLimit != -1 && totalCount >= clientsLimit, "You have reached the limit of clients allowed by your current subscription plan.");
 
             clientsVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {

@@ -4,13 +4,14 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Tooltip?>
+<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.FactoryProductionToolbarController"
       prefHeight="400.0" prefWidth="600.0"
-      spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff;">
+      spacing="12" style="-fx-padding: 10; -fx-background-color: #ffffff;">
 
-    <Label text="Toolbar" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
+    <Label text="Toolbar" style="-fx-font-size: 19px; -fx-font-weight: bold"/>
 
     <!-- Section: Edit Configuration -->
     <HBox alignment="CENTER_LEFT" spacing="10">
@@ -19,7 +20,10 @@
     </HBox>
     <VBox fx:id="editConfigurationContentVBox" spacing="10">
         <HBox alignment="CENTER_LEFT" spacing="6">
-            <Label text="Stages" styleClass="edit-configuration-sublabel"/>
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Label text="Stages" styleClass="edit-configuration-sublabel"/>
+                <InfoLabel fx:id="stageInfoLabel"/>
+            </HBox>
             <Button fx:id="addStageButton" onAction="#openAddStageAction" styleClass="add-button">
                 <tooltip>
                     <Tooltip text="Add a new stage"/>
@@ -71,12 +75,25 @@
     </HBox>
     <VBox spacing="10">
         <VBox fx:id="resourceAllocationContentBox" spacing="10">
-            <Label text="From Inventory" style="-fx-font-size: 12px;"/>
-            <Label text="For Duration:" style="-fx-font-size: 12px;"/>
-            <!-- Selection of duration container -->
-            <StackPane fx:id="durationInputContainer"/>
-            <Button text="Allocate Resources" onAction="#handleAllocateResources" styleClass="allocate-resources-button"/>
-            <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan"/>
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Button fx:id="viewActivePlan" text="View Active Plan" onAction="#openCurrentAllocationPlan" styleClass="standard-action-button"/>
+                <InfoLabel fx:id="resourceAllocationInfoLabel"/>
+            </HBox>
+
+            <Button text="Compute Allocation Plan" onAction="#toggleComputePlanSubsection" styleClass="standard-action-button"/>
+            <VBox spacing="8" fx:id="computePlanVBox" visible="false" managed="false">
+                <Label text="Duration:" style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+                <!-- Selection of duration container -->
+                <StackPane fx:id="durationInputContainer"/>
+                <Button text="Allocate Resources" onAction="#handleAllocateResources" styleClass="allocate-resources-button"/>
+
+                <Button fx:id="viewAllocationPlanButton" text="View Allocation Plan" onAction="#openAllocationPlan" styleClass="standard-action-button"/>
+            </VBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Button fx:id="viewProductionHistoryButton" text="View Production History" onAction="#openProductionHistory" styleClass="standard-action-button"/>
+                <InfoLabel fx:id="productionHistoryInfoLabel"/>
+            </HBox>
         </VBox>
     </VBox>
 
@@ -87,7 +104,7 @@
     </HBox>
     <VBox spacing="10">
         <VBox fx:id="seekResourcesContentBox" spacing="10">
-            <Button text="Seek Missing Resources"/>
+            <Button text="Seek Missing Resources" styleClass="standard-action-button"/>
         </VBox>
     </VBox>
 </VBox>

@@ -3,11 +3,25 @@
     -fx-background-radius: 0px 6px 6px 0px;
     -fx-border-color: #333;
     -fx-border-radius: 0px 6px 6px 0px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.16), 5, 0, 0, 2);
 }
 
 .sidebar-inner-container {
-    -fx-padding: 16px;
-    -fx-spacing: 14px;
+    -fx-padding: 0px 16px 16px 16px;
+    -fx-spacing: 16px;
+}
+
+.sidebar-inner-container-collapsed {
+    -fx-padding: 0px 12px 16px 12px;
+    -fx-spacing: 16px;
+}
+
+.sidebar-title-container {
+    -fx-padding: 16px 12px 24px 12px;
+}
+
+.sidebar-title-container-collapsed {
+    -fx-padding: 16px 12px;
 }
 
 .sidebar-title {
@@ -27,7 +41,7 @@
     -fx-min-height: 40;
     -fx-max-height: 48;
     -fx-alignment: baseline-left;
-    -fx-graphic-text-gap: 16px;
+    -fx-graphic-text-gap: 20px;
     -fx-cursor: hand;
 }
 

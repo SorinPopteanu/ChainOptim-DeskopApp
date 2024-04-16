@@ -31,8 +31,7 @@ module org.chainoptim.desktop {
     requires jdk.jsobject;
     requires org.java_websocket;
 
-
-    opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core;
+    opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core, javafx.graphics;
 
     // Core
     // - Main
@@ -120,10 +119,14 @@ module org.chainoptim.desktop {
     // -- Factory
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.service to com.google.guice;
     opens org.chainoptim.desktop.features.scanalysis.resourceallocation.model to com.fasterxml.jackson.databind, javafx.base;
+    opens org.chainoptim.desktop.features.scanalysis.resourceallocation.dto to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.model to com.fasterxml.jackson.databind, java.base;
     opens org.chainoptim.desktop.features.scanalysis.factorygraph.service to com.google.guice, javafx.web;
     opens org.chainoptim.desktop.features.scanalysis.productionhistory.model to com.fasterxml.jackson.databind, javafx.base;
     opens org.chainoptim.desktop.features.scanalysis.productionhistory.service to com.google.guice;
+    opens org.chainoptim.desktop.features.scanalysis.productionhistory.dto to com.fasterxml.jackson.databind;
+    opens org.chainoptim.desktop.features.scanalysis.productionperformance.model to com.fasterxml.jackson.databind, javafx.base;
+    opens org.chainoptim.desktop.features.scanalysis.productionperformance.service to com.google.guice;
 
     // -- Supplier
     opens org.chainoptim.desktop.features.scanalysis.supply.model to com.fasterxml.jackson.databind, javafx.base;
@@ -131,7 +134,13 @@ module org.chainoptim.desktop {
 
     // Shared
     // - Common UI elements
-    opens org.chainoptim.desktop.shared.common.uielements to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.common.uielements.select to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.common.uielements.performance to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.common.uielements.info to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.common.uielements.settings to javafx.fxml, com.google.guice;
+
+    // - Enums
+    opens org.chainoptim.desktop.shared.enums to com.fasterxml.jackson.databind;
 
     // - Table
     opens org.chainoptim.desktop.shared.table to javafx.fxml, com.google.guice;

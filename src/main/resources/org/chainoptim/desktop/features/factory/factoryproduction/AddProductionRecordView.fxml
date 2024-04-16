@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.DatePicker?>
+
+<?import javafx.scene.control.Button?>
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.factory.controller.factoryproduction.AddProductionRecordController"
+            fitToWidth="true">
+
+    <VBox styleClass="create-stage-form">
+
+        <HBox styleClass="title-container">
+            <Text text="Add Production Record" styleClass="form-title"/>
+        </HBox>
+
+        <Label text="Active Allocation Plan" styleClass="general-label-extra-large" style="-fx-padding: 16px 0px 0px 0px;"/>
+        <HBox alignment="CENTER_LEFT" spacing="160">
+            <VBox spacing="8">
+                <Label text="Start Date" styleClass="form-label"/>
+                <Label fx:id="currentPlanStartDate" style="-fx-padding: 0px 4px; -fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #121212"/>
+            </VBox>
+            <VBox spacing="8">
+                <Label text="End Date" styleClass="form-label"/>
+                <Label fx:id="currentPlanEndDate" style="-fx-padding: 0px 4px; -fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #121212"/>
+            </VBox>
+        </HBox>
+
+        <Label text="Record" styleClass="general-label-extra-large" style="-fx-padding: 16px 0px 0px 0px;"/>
+        <HBox alignment="CENTER_LEFT" spacing="80">
+            <VBox spacing="8">
+                <Label text="Start Date *:" styleClass="form-label"/>
+                <DatePicker fx:id="startDatePicker" styleClass="custom-date-picker"/>
+            </VBox>
+            <VBox spacing="8">
+                <Label text="End Date *:" styleClass="form-label"/>
+                <DatePicker fx:id="endDatePicker" styleClass="custom-date-picker"/>
+            </VBox>
+        </HBox>
+
+        <Label text="Allocations" styleClass="general-label-extra-large" style="-fx-padding: 16px 0px 0px 0px;"/>
+        <VBox fx:id="allocationsVBox"/>
+
+        <HBox alignment="TOP_RIGHT" style="-fx-padding: 16px 0px 0px 0px;">
+            <Button text="Add Record" onAction="#handleSubmit" styleClass="standard-write-button"/>
+        </HBox>
+    </VBox>
+</ScrollPane>

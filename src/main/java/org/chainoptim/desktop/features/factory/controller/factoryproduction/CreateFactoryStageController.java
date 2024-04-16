@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
@@ -9,24 +8,23 @@ import org.chainoptim.desktop.features.factory.model.FactoryStage;
 import org.chainoptim.desktop.features.factory.model.TabsActionListener;
 import org.chainoptim.desktop.features.factory.service.FactoryStageWriteService;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
-import org.chainoptim.desktop.shared.common.uielements.SelectDurationController;
-import org.chainoptim.desktop.shared.common.uielements.SelectFactoryController;
-import org.chainoptim.desktop.shared.common.uielements.SelectStageController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectFactoryController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectStageController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import lombok.Setter;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
-import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static java.lang.Float.parseFloat;
@@ -34,15 +32,21 @@ import static java.lang.Integer.parseInt;
 
 public class CreateFactoryStageController implements Initializable {
 
+    // Services
     private final FactoryStageWriteService factoryStageWriteService;
     private final FactoryProductionGraphService graphService;
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
-    private final FallbackManager fallbackManager;
+    private final CommonViewsLoader commonViewsLoader;
 
+    // Listeners
     @Setter
     private TabsActionListener actionListener;
 
+    // State
+    private final FallbackManager fallbackManager;
+
+    // FXML
     @FXML
     private StackPane fallbackContainer;
 
@@ -68,76 +72,25 @@ public class CreateFactoryStageController implements Initializable {
             FactoryProductionGraphService graphService,
             FallbackManager fallbackManager,
             FXMLLoaderService fxmlLoaderService,
-            ControllerFactory controllerFactory
+            ControllerFactory controllerFactory,
+            CommonViewsLoader commonViewsLoader
     ) {
         this.factoryStageWriteService = factoryStageWriteService;
         this.graphService = graphService;
         this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
-        loadSelectStageView();
-        loadSelectFactoryView();
-        loadSelectDurationView();
-    }
-
-    private void loadFallbackManager() {
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
-    private void loadSelectStageView() {
-        // Initialize time selection input view
-        FXMLLoader selectStageLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectStageView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node selectStageView = selectStageLoader.load();
-            selectStageController = selectStageLoader.getController();
-            selectStageController.initialize();
-            selectStageContainer.getChildren().add(selectStageView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadSelectFactoryView() {
-        // Initialize time selection input view
-        FXMLLoader selectFactoryLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectFactoryView.fxml",
-                MainApplication.injector::getInstance
-        );
-        try {
-            Node selectFactoryView = selectFactoryLoader.load();
-            selectFactoryController = selectFactoryLoader.getController();
-            selectFactoryController.initialize();
-            selectFactoryContainer.getChildren().add(selectFactoryView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadSelectDurationView() {
-        // Initialize time selection input view
-        FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectDurationView.fxml",
-                MainApplication.injector::getInstance
-        );
-        try {
-            Node timeInputView = timeInputLoader.load();
-            selectDurationController = timeInputLoader.getController();
-            durationInputContainer.getChildren().add(timeInputView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
+        selectStageController = commonViewsLoader.loadSelectStageView(selectStageContainer);
+        selectStageController.initialize();
+        selectFactoryController = commonViewsLoader.loadSelectFactoryView(selectFactoryContainer);
+        selectFactoryController.initialize();
+        selectDurationController = commonViewsLoader.loadSelectDurationView(durationInputContainer);
     }
 
     @FXML
@@ -152,35 +105,42 @@ public class CreateFactoryStageController implements Initializable {
 
         CreateFactoryStageDTO stageDTO = getStageDTO();
 
-        System.out.println(stageDTO);
-
         factoryStageWriteService.createFactoryStage(stageDTO, true)
-                .thenAccept(stageOptional ->
-                    Platform.runLater(() -> {
-                        if (stageOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create stage.");
-                            return;
-                        }
-                        FactoryStage stage = stageOptional.get();
-                        fallbackManager.setLoading(false);
+                .thenApply(this::handleCreateStageResponse)
+                .exceptionally(this::handleCreateStageException);
+    }
 
-                        graphService.refreshFactoryGraph(stageDTO.getFactoryId()).thenApply(productionGraphOptional -> {
-                            Platform.runLater(() -> {
-                                if (productionGraphOptional.isEmpty()) {
-                                    fallbackManager.setErrorMessage("Failed to refresh factory graph");
-                                }
-                                if (actionListener != null && productionGraphOptional.isPresent()) {
-                                    actionListener.onAddStage(productionGraphOptional.get());
-                                }
-                            });
-                            return productionGraphOptional;
+    private Optional<FactoryStage> handleCreateStageResponse(Optional<FactoryStage> stageOptional) {
+        Platform.runLater(() -> {
+            if (stageOptional.isEmpty()) {
+                fallbackManager.setErrorMessage("Failed to create stage.");
+                return;
+            }
+            FactoryStage stage = stageOptional.get();
+            fallbackManager.setLoading(false);
+
+            graphService.refreshFactoryGraph(selectFactoryController.getSelectedFactory().getId())
+                    .thenApply(productionGraphOptional -> {
+                        Platform.runLater(() -> {
+                            if (productionGraphOptional.isEmpty()) {
+                                fallbackManager.setErrorMessage("Failed to refresh factory graph");
+                            }
+                            if (actionListener != null && productionGraphOptional.isPresent()) {
+                                actionListener.onAddStage(productionGraphOptional.get());
+                            }
                         });
-                    })
-                )
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return null;
-                });
+                return productionGraphOptional;
+            });
+        });
+        return stageOptional;
+    }
+
+    private Optional<FactoryStage> handleCreateStageException(Throwable ex) {
+        Platform.runLater(() -> {
+            fallbackManager.setErrorMessage("Failed to create stage.");
+            fallbackManager.setLoading(false);
+        });
+        return Optional.empty();
     }
 
     private CreateFactoryStageDTO getStageDTO() {

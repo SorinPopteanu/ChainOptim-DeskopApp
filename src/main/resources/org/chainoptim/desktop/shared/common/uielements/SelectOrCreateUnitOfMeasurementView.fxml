@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController" spacing="8">
+      fx:controller="org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateUnitOfMeasurementController" spacing="16">
 
     <VBox styleClass="radio-button-group">
         <RadioButton fx:id="selectExistingRadio" text="Select Existing Unit of Measurement" selected="true" styleClass="radio-button"/>
@@ -15,14 +15,14 @@
     </VBox>
 
     <!-- Select existing unit ComboBox -->
-    <ComboBox fx:id="unitComboBox" prefWidth="200"/>
+    <ComboBox fx:id="unitComboBox" prefWidth="200" styleClass="custom-combo-box"/>
 
     <!-- Create New Unit subform -->
     <VBox fx:id="createUnitForm" visible="false">
         <Label text="Name *" styleClass="form-label"/>
-        <TextField fx:id="nameField"/>
+        <TextField fx:id="nameField" styleClass="custom-text-field"/>
 
         <Label text="Unit Type" styleClass="form-label"/>
-        <TextField fx:id="unitTypeField"/>
+        <TextField fx:id="unitTypeField" styleClass="custom-text-field"/>
     </VBox>
 </VBox>

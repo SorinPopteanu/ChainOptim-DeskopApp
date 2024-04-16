@@ -1,0 +1,41 @@
+
+.custom-date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #BDBDBD;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.custom-date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.custom-date-picker .arrow {
+    -fx-background-color: #5C6BC0;
+    -fx-shape: "M0 0 L1 0 L0.5 0.5 z";
+}
+
+.custom-date-picker .month-year-pane {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+}
+
+.custom-date-picker .day-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #616161;
+    -fx-border-color: transparent;
+}
+
+.custom-date-picker .day-cell:today {
+    -fx-background-color: #5C6BC0;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: transparent;
+}
+
+.custom-date-picker .day-cell:selected {
+    -fx-background-color: #3949AB;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: transparent;
+}

@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.common.uielements;
+package org.chainoptim.desktop.shared.common.uielements.select;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;

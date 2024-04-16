@@ -23,9 +23,11 @@ import java.util.function.Consumer;
  */
 public class ConfirmDialogUsageExample implements DataReceiver<OrganizationViewData> {
 
+    // Services
     private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
 
+    // State
     private OrganizationViewData organizationViewData;
 
     // Listeners

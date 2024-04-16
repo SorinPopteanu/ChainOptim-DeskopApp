@@ -7,6 +7,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -82,7 +83,7 @@ public class WarehousesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Warehouses", "/img/warehouse-solid.png", sortOptions, this::loadWarehouses, "Warehouse", "Create-Warehouse");
+        headerController.initializeHeader(searchParams, "Warehouses", "/img/warehouse-solid.png", Feature.WAREHOUSE, sortOptions, this::loadWarehouses, "Warehouse", "Create-Warehouse");
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadWarehouses();
@@ -132,7 +133,7 @@ public class WarehousesController implements Initializable {
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
             int warehousesLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxWarehouses();
-            headerController.disableCreateButton(totalCount >= warehousesLimit, "You have reached the limit of warehouses allowed by your current subscription plan.");
+            headerController.disableCreateButton(warehousesLimit != -1 && totalCount >= warehousesLimit, "You have reached the limit of warehouses allowed by your current subscription plan.");
 
             warehousesVBox.getChildren().clear();
             if(paginatedResults.results.isEmpty()) {

@@ -1,26 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
-
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<VBox xmlns="http://javafx.com/javafx"
+<?import javafx.scene.control.Button?>
+<?import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay?>
+<?import javafx.scene.control.ScrollPane?>
+<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
+
+<ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.factory.controller.FactoryPerformanceController"
-            prefHeight="400.0" prefWidth="600.0" spacing="10">
+            fitToHeight="true" fitToWidth="true">
 
-    <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 10px;">
-        <Label text="Component: " styleClass="general-label"/>
-        <ComboBox fx:id="componentsComboBox" prefWidth="150.0" styleClass="custom-combo-box"/>
-    </HBox>
-    <LineChart fx:id="lineChart" maxWidth="420.0" minHeight="240.0">
-        <xAxis>
-            <CategoryAxis/>
-        </xAxis>
-        <yAxis>
-            <NumberAxis label="Allocations Over Time" styleClass="general-label"/>
-        </yAxis>
-    </LineChart>
-</VBox>
+    <VBox style="-fx-padding: 10px 20px;" spacing="16">
+        <HBox alignment="CENTER_LEFT" spacing="6">
+            <Label text="Performance Report" styleClass="general-label-extra-large"/>
+            <InfoLabel fx:id="factoryPerformanceInfoLabel"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="refreshReportButton" text="Refresh Report" styleClass="standard-cancel-button"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="4">
+            <Label text="Overall Score: " styleClass="general-label-medium-large"/>
+            <ScoreDisplay fx:id="overallScoreDisplay"/>
+        </HBox>
+
+        <FlowPane hgap="16">
+            <HBox alignment="CENTER_LEFT" spacing="4">
+                <Label text="Resource Distribution: " styleClass="general-label-medium-large"/>
+                <ScoreDisplay fx:id="resourceDistributionScoreDisplay"/>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="4">
+                <Label text="Resource Readiness: " styleClass="general-label-medium-large"/>
+                <ScoreDisplay fx:id="resourceReadinessScoreDisplay"/>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="4">
+                <Label text="Resource Utilization: " styleClass="general-label-medium-large"/>
+                <ScoreDisplay fx:id="resourceUtilizationScoreDisplay"/>
+            </HBox>
+        </FlowPane>
+
+        <VBox fx:id="stagesVBox">
+            <!-- Stage reports -->
+        </VBox>
+    </VBox>
+</ScrollPane>

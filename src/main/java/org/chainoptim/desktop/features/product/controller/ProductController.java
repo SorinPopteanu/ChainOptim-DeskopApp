@@ -21,16 +21,20 @@ import java.util.ResourceBundle;
 
 public class ProductController implements Initializable {
 
+    // Services
     private final ProductService productService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
-    private final FallbackManager fallbackManager;
 
+    // State
+    private final FallbackManager fallbackManager;
     private Product product;
 
+    // FXML
     @FXML
-    private StackPane fallbackContainer;
-
+    private Label productName;
+    @FXML
+    private Label productDescription;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -39,11 +43,8 @@ public class ProductController implements Initializable {
     private Tab productionTab;
     @FXML
     private Tab evaluationTab;
-
     @FXML
-    private Label productName;
-    @FXML
-    private Label productDescription;
+    private StackPane fallbackContainer;
 
     @Inject
     public ProductController(ProductService productService,

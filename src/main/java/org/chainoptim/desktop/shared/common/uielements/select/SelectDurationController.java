@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.common.uielements;
+package org.chainoptim.desktop.shared.common.uielements.select;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -16,6 +16,11 @@ public class SelectDurationController {
     private TextField timeInput;
     @FXML
     private ComboBox<String> timePeriodSelect;
+
+    @FXML
+    private void initialize() {
+        timePeriodSelect.getSelectionModel().select("Hours");
+    }
 
     public Float getTimeSeconds() {
         if (timeInput != null && !Objects.equals(timeInput.getText(), "") && timePeriodSelect.getValue() != null) {

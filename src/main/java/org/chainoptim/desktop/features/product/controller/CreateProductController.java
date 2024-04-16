@@ -7,7 +7,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.dto.CreateProductDTO;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductWriteService;
-import org.chainoptim.desktop.shared.common.uielements.SelectOrCreateUnitOfMeasurementController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateUnitOfMeasurementController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 

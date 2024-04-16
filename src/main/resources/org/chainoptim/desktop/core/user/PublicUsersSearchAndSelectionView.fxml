@@ -12,7 +12,7 @@
     <Label text="Invite Existing Users" styleClass="general-label"/>
 
     <HBox>
-        <TextField promptText="Search for Existing Users" fx:id="searchInput" HBox.hgrow="ALWAYS" style="-fx-pref-height: 32px; -fx-pref-width: 240px;"/>
+        <TextField promptText="Search for Existing Users" fx:id="searchInput" HBox.hgrow="ALWAYS" style="-fx-pref-height: 32px; -fx-pref-width: 240px;" styleClass="custom-text-field"/>
         <Button fx:id="searchButton" />
     </HBox>
 

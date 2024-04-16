@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
-    private static final int STALE_TIME = 300;
+    private static final int STALE_TIME = 30000;
 
     @Inject
     public ProductServiceImpl(CachingService<PaginatedResults<Product>> cachingService) {

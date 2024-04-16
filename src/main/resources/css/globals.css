@@ -18,6 +18,7 @@
 @import url("settings.css");
 @import url("charts.css");
 @import url("reports.css");
+@import url("dates.css");
 
 .root {
     -fx-font-family: 'Roboto';

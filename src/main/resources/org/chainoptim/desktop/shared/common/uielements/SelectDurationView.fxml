@@ -7,11 +7,11 @@
 <?import java.lang.String?>
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectDurationController">
+            fx:controller="org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController">
 
     <HBox spacing="10">
-        <TextField fx:id="timeInput" promptText="Enter number" style="-fx-pref-width: 100px;" />
-        <ComboBox fx:id="timePeriodSelect" style="-fx-pref-width: 150px;">
+        <TextField fx:id="timeInput" promptText="Enter number" style="-fx-pref-width: 100px;" styleClass="custom-text-field"/>
+        <ComboBox fx:id="timePeriodSelect" styleClass="custom-combo-box">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Hours"/>
