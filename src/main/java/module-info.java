@@ -31,8 +31,7 @@ module org.chainoptim.desktop {
     requires jdk.jsobject;
     requires org.java_websocket;
 
-
-    opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core;
+    opens org.chainoptim.desktop to javafx.fxml, gs.ui.javafx, gs.core, javafx.graphics;
 
     // Core
     // - Main
@@ -138,6 +137,7 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.shared.common.uielements.select to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.shared.common.uielements.performance to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.shared.common.uielements.info to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.common.uielements.settings to javafx.fxml, com.google.guice;
 
     // - Enums
     opens org.chainoptim.desktop.shared.enums to com.fasterxml.jackson.databind;

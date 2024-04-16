@@ -2,12 +2,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.main.controller.ListHeaderController"
-            styleClass="header">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.core.main.controller.ListHeaderController"
+      styleClass="header">
 
-    <Label fx:id="title" styleClass="list-title"/>
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="list-title-container">
+        <Label fx:id="title" styleClass="list-title"/>
+        <InfoLabel fx:id="productInfoLabel"/>
+    </HBox>
 
     <ToolBar styleClass="toolbar">
         <HBox alignment="CENTER" HBox.hgrow="ALWAYS">

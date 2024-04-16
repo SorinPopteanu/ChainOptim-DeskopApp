@@ -3,7 +3,6 @@ package org.chainoptim.desktop.shared.common.uielements.info;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.InfoLevel;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,8 +29,11 @@ public class InfoLabel extends Label {
 
     public void setFeatureAndLevel(Feature feature, InfoLevel userSettingsLevel) {
         FeatureInfo featureInfo = FeatureInfoMapper.getFeatureInfo(feature);
-        Tooltip tooltip = new Tooltip(featureInfo.getTooltipText());
-        Tooltip.install(this, tooltip);
+        if (featureInfo == null) return;
+        if (userSettingsLevel == null) return;
+
+        CustomTooltip customTooltip = new CustomTooltip(featureInfo.getTooltipText());
+        customTooltip.attachToNode(this);
 
         // Only show the info label if the feature info level is <= than the user settings level
         boolean shouldBeVisible = featureInfo.getInfoLevel().compareTo(userSettingsLevel) <= 0;

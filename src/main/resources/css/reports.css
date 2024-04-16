@@ -12,20 +12,20 @@
 
 .good-arc {
     -fx-stroke: #4CAF50;
-    -fx-stroke-width: 5;
+    -fx-stroke-width: 4;
 }
 
 .below-average-arc {
     -fx-stroke: #FF7934;
-    -fx-stroke-width: 5;
+    -fx-stroke-width: 4;
 }
 
 .above-average-arc {
     -fx-stroke: #FFC107;
-    -fx-stroke-width: 5;
+    -fx-stroke-width: 4;
 }
 
 .bad-arc {
     -fx-stroke: #F44336;
-    -fx-stroke-width: 5;
+    -fx-stroke-width: 4;
 }

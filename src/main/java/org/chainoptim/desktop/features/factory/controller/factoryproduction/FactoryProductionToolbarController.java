@@ -1,10 +1,14 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
+import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationService;
+import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController;
+import org.chainoptim.desktop.shared.enums.Feature;
+import org.chainoptim.desktop.shared.enums.InfoLevel;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import javafx.scene.layout.StackPane;
@@ -92,6 +96,14 @@ public class FactoryProductionToolbarController {
     @FXML
     private VBox seekResourcesContentBox;
 
+    // Info Labels
+    @FXML
+    private InfoLabel stageInfoLabel;
+    @FXML
+    private InfoLabel resourceAllocationInfoLabel;
+    @FXML
+    private InfoLabel productionHistoryInfoLabel;
+
     // - Icons
     private Image addImage;
     private Image updateImage;
@@ -119,6 +131,7 @@ public class FactoryProductionToolbarController {
     private void initializeToolbarUI() {
         initializeIcons();
         initializeButtons();
+        initializeInfoLabels();
 
         selectDurationController = commonViewsLoader.loadSelectDurationView(durationInputContainer);
     }
@@ -147,6 +160,13 @@ public class FactoryProductionToolbarController {
 
         viewAllocationPlanButton.setVisible(false);
         viewAllocationPlanButton.setManaged(false);
+    }
+
+    private void initializeInfoLabels() {
+        InfoLevel currentLevel = TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel();
+        stageInfoLabel.setFeatureAndLevel(Feature.FACTORY_STAGE, currentLevel);
+        resourceAllocationInfoLabel.setFeatureAndLevel(Feature.RESOURCE_ALLOCATION_PLAN, currentLevel);
+        productionHistoryInfoLabel.setFeatureAndLevel(Feature.FACTORY_PRODUCTION_HISTORY, currentLevel);
     }
 
     private void setupCheckboxListeners() {

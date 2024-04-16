@@ -1,10 +1,13 @@
 package org.chainoptim.desktop.features.factory.controller;
 
+import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.scanalysis.productionperformance.model.FactoryPerformance;
 import org.chainoptim.desktop.features.scanalysis.productionperformance.model.FactoryStagePerformanceReport;
 import org.chainoptim.desktop.features.scanalysis.productionperformance.service.FactoryPerformanceService;
+import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
@@ -31,6 +34,8 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     private FactoryPerformance factoryPerformance;
 
     // FXML
+    @FXML
+    private InfoLabel factoryPerformanceInfoLabel;
     @FXML
     private Button refreshReportButton;
     @FXML
@@ -61,6 +66,7 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     public void setData(Factory factory) {
         initializeIcons();
         initializeButtons();
+        setUpInfoLabel();
         loadFactoryPerformance(factory.getId(), false);
     }
 
@@ -73,6 +79,11 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
     private void initializeButtons() {
         refreshReportButton.setGraphic(createImageView(refreshIcon));
         refreshReportButton.setOnAction(event -> loadFactoryPerformance(factoryPerformance.getFactoryId(), true));
+    }
+
+    private void setUpInfoLabel() {
+        factoryPerformanceInfoLabel.setFeatureAndLevel(Feature.FACTORY_PERFORMANCE,
+                TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel());
     }
 
     private void loadFactoryPerformance(Integer factoryId, boolean refresh) {

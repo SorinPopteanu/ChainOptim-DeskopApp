@@ -9,7 +9,10 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
 import java.util.ArrayList;
@@ -19,12 +22,19 @@ import java.util.Objects;
 
 public class ListHeaderController {
 
+    // Services
     private final NavigationService navigationService;
+
+    // State
     private SearchParams searchParams;
+    private Map<String,String> sortOptionsMap;
     private String createNewItem;
 
+    // FXML
     @FXML
     private Label title;
+    @FXML
+    private InfoLabel productInfoLabel;
     @FXML
     private TextField searchBar;
     @FXML
@@ -38,8 +48,7 @@ public class ListHeaderController {
     @FXML
     private Button createNewItemButton;
 
-    private Map<String,String> sortOptionsMap;
-
+    // Icons
     private final Image sortUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/sort-up.png")));
     private final Image sortDownIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/sort-down.png")));
     private final ImageView sortUpImageView = new ImageView(sortUpIcon);
@@ -53,13 +62,14 @@ public class ListHeaderController {
     }
 
     public void initializeHeader(SearchParams searchParams,
-                                 String titleText, String titleIconPath,
+                                 String titleText, String titleIconPath, Feature feature,
                                  Map<String, String> sortOptionsMap,
                                  Runnable refreshAction,
                                  String createNewItemButtonText, String createNewItem) {
         this.searchParams = searchParams;
         this.sortOptionsMap = sortOptionsMap;
         setTitle(titleText, titleIconPath);
+        setInfoLabel(feature);
         setSearchButton();
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
@@ -91,6 +101,11 @@ public class ListHeaderController {
         titleIconView.setEffect(colorAdjust);
         title.setGraphic(titleIconView);
         title.setContentDisplay(ContentDisplay.LEFT);
+    }
+
+    private void setInfoLabel(Feature feature) {
+        productInfoLabel.setFeatureAndLevel(feature,
+                TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel());
     }
 
     private void setSearchButton() {

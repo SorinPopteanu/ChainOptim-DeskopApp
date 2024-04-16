@@ -5,7 +5,6 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.Button?>
 
-<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.features.product.controller.ProductController">
@@ -14,10 +13,7 @@
     <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" style="-fx-background-color: #ffffff;">
         <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
-                <HBox alignment="CENTER_LEFT" spacing="8">
-                    <Label fx:id="productName" styleClass="entity-page-title"/>
-                    <InfoLabel fx:id="productInfoLabel"/>
-                </HBox>
+                <Label fx:id="productName" styleClass="entity-page-title"/>
                 <Label fx:id="productDescription" styleClass="entity-page-description"/>
             </VBox>
             <Button text="Edit Product" onAction="#handleEditProduct" styleClass="standard-write-button"/>

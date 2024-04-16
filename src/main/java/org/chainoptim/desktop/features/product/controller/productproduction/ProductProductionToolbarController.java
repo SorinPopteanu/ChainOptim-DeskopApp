@@ -1,7 +1,10 @@
 package org.chainoptim.desktop.features.product.controller.productproduction;
 
+import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.features.product.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.product.model.Product;
+import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
@@ -19,15 +22,16 @@ import java.util.Objects;
 
 public class ProductProductionToolbarController {
 
-    private final FXMLLoaderService fxmlLoaderService;
-
+    // Listeners
     @Setter
     private ProductionToolbarActionListener actionListener;
 
+    // State
     private Product product;
 
     private WebView webView;
 
+    // FXML
     // - Edit Configuration
     @FXML
     private Button toggleEditConfigurationButton;
@@ -43,6 +47,8 @@ public class ProductProductionToolbarController {
     private Button addConnectionButton;
     @FXML
     private Button deleteConnectionButton;
+    @FXML
+    private InfoLabel stageInfoLabel;
 
     // - Display Info
     @FXML
@@ -52,17 +58,12 @@ public class ProductProductionToolbarController {
     @FXML
     private CheckBox quantitiesCheckBox;
 
-    // - Icons
+    // Icons
     private Image addImage;
     private Image updateImage;
     private Image deleteImage;
     private Image angleUpImage;
     private Image angleDownImage;
-
-    @Inject
-    public ProductProductionToolbarController(FXMLLoaderService fxmlLoaderService) {
-        this.fxmlLoaderService = fxmlLoaderService;
-    }
 
     public void initialize(WebView webView, Product product) {
         this.webView = webView;
@@ -92,6 +93,9 @@ public class ProductProductionToolbarController {
         deleteStageButton.setGraphic(createImageView(deleteImage));
         addConnectionButton.setGraphic(createImageView(addImage));
         deleteConnectionButton.setGraphic(createImageView(deleteImage));
+
+        stageInfoLabel.setFeatureAndLevel(Feature.PRODUCT_STAGE,
+                TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel());
     }
 
     // Toggle Toolbar sections

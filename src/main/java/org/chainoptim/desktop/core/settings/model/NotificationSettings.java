@@ -13,4 +13,8 @@ public class NotificationSettings {
     private boolean clientOrdersOn;
     private boolean factoryInventoryOn;
     private boolean warehouseInventoryOn;
+
+    public NotificationSettings deepCopy() {
+        return new NotificationSettings(supplierOrdersOn, clientOrdersOn, factoryInventoryOn, warehouseInventoryOn);
+    }
 }

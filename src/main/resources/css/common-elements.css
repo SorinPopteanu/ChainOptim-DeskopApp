@@ -90,3 +90,35 @@
 .custom-combo-box .combo-box-popup .list-view .list-cell:selected {
     -fx-background-color: #006AEE;
 }
+
+.custom-tooltip {
+    -fx-padding: 8px 12px;
+    -fx-background-color: #171717;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+.custom-tooltip-text {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-fill: #EAEAEA;
+}
+
+.select-item {
+    -fx-padding: 6px 12px;
+    -fx-background-color: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
+
+.select-item-selected {
+    -fx-padding: 6px 12px;
+    -fx-background-color: #006AEE;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
