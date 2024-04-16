@@ -11,10 +11,9 @@ import java.util.Map;
 
 public abstract class EditableCell<S, T> extends TableCell<S, T> {
 
-    private final BooleanProperty isEditMode;
+    protected final BooleanProperty isEditMode;
     private TextField textField;
-    private final List<Integer> editableRows;
-    private T oldValue;
+    protected final List<Integer> editableRows;
 
     public EditableCell(BooleanProperty isEditMode, List<Integer> editableRows) {
         this.isEditMode = isEditMode;
@@ -41,14 +40,13 @@ public abstract class EditableCell<S, T> extends TableCell<S, T> {
         }
     }
 
-    private String getString() {
+    protected String getString() {
         return getItem() == null ? "" : getItem().toString();
     }
 
     @Override
     public void startEdit() {
         if (!isEmpty() && isEditMode.get() && editableRows.contains(getIndex())) {
-            oldValue = getItem();
             super.startEdit();
             setText(null);
             setGraphic(textField);
@@ -68,12 +66,10 @@ public abstract class EditableCell<S, T> extends TableCell<S, T> {
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         textField.setOnAction(e -> {
             commitEdit(textField.getText());
-            System.out.println("Committing edit: " + textField.getText());
         });
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused && getIndex() >= 0){
                 commitEdit(textField.getText());
-                System.out.println("Committing edit on focus: " + textField.getText());
             }
         });
     }
