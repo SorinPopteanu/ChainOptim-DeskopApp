@@ -58,6 +58,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     // State
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
+    private final Map<String, String> sortOptions = Map.of(
+            "orderDate", "Order Date",
+            "estimatedDeliveryDate", "Estimated Delivery Date",
+            "deliveryDate", "Delivery Date",
+            "quantity", "Quantity"
+    );
     private Supplier supplier;
     private final List<SupplierOrder.Status> statusOptions = Arrays.asList(SupplierOrder.Status.values());
     private long totalRowsCount;
@@ -130,13 +136,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(searchParams, () -> loadSupplierOrders(supplier.getId()));
+        tableToolbarController.initialize(searchParams, sortOptions, () -> loadSupplierOrders(supplier.getId()));
         selectComponentLoader.initialize();
-
-        loadConfirmDialogs();
 
         TableConfigurer.configureTableView(tableView, selectRowColumn);
         configureTableColumns();
+        loadConfirmDialogs();
         setUpListeners();
 
         loadSupplierOrders(supplier.getId());
@@ -236,6 +241,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private void setUpSearchListeners() {
         searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSupplierOrders(supplier.getId()));
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
     }

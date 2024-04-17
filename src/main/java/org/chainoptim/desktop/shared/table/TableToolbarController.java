@@ -17,6 +17,8 @@ import javafx.util.Duration;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -25,10 +27,7 @@ public class TableToolbarController {
 
     // State
     private SearchParams searchParams;
-    private final Map<String, String> sortOptionsMap = Map.of(
-            "createdAt", "Created At",
-            "updatedAt", "Updated At"
-    );
+    private Map<String,String> sortOptionsMap;
 
     // FXMl
     @FXML
@@ -68,11 +67,15 @@ public class TableToolbarController {
     private Image saveIcon;
     private Image plusIcon;
 
-    public void initialize(SearchParams searchParams, Runnable refreshAction) {
+    public void initialize(SearchParams searchParams,
+                           Map<String, String> sortOptionsMap,
+                           Runnable refreshAction) {
         this.searchParams = searchParams;
+        this.sortOptionsMap = sortOptionsMap;
         initializeIcons();
         setSearchButton();
         setOrderingButton();
+        setSortOptions(new ArrayList<>(sortOptionsMap.values()));
         setRefreshButton(refreshAction);
         setCancelRowSelectionButton();
         setDeleteSelectedRowsButton();
@@ -99,6 +102,10 @@ public class TableToolbarController {
         colorAdjust.setBrightness(1);
         searchImageView.setEffect(colorAdjust);
         searchButton.setGraphic(searchImageView);
+    }
+
+    private void setSortOptions(List<String> sortOptions) {
+        this.sortOptions.getItems().addAll(sortOptions);
     }
 
     private void setOrderingButton() {
@@ -203,7 +210,7 @@ public class TableToolbarController {
             ImageView sortUpImageView = createImageView(sortUpIcon, 16, 16);
             orderingButton.setGraphic(sortUpImageView);
         } else {
-            ImageView sortDownImageView = createImageView(sortUpIcon, 16, 16);
+            ImageView sortDownImageView = createImageView(sortDownIcon, 16, 16);
             orderingButton.setGraphic(sortDownImageView);
         }
     }
