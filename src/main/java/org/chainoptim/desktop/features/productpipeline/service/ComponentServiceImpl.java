@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.productpipeline.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.features.productpipeline.dto.ComponentsSearchDTO;
 import org.chainoptim.desktop.features.productpipeline.dto.CreateComponentDTO;
 import org.chainoptim.desktop.features.productpipeline.dto.UpdateComponentDTO;
 import org.chainoptim.desktop.features.productpipeline.model.Component;
@@ -13,7 +14,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -46,6 +49,33 @@ public class ComponentServiceImpl implements ComponentService {
                     } catch (Exception e) {
                         e.printStackTrace();
                         return Optional.<List<Component>>empty();
+                    }
+                });
+    }
+
+    @Override
+    public CompletableFuture<Optional<List<ComponentsSearchDTO>>> getComponentsByOrganizationIdSmall(Integer organizationId) {
+        String routeAddress = "http://localhost:8080/api/v1/components/organization/" + organizationId.toString() + "/small";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .GET()
+                .headers(HEADER_KEY, headerValue)
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<ComponentsSearchDTO>>empty();
+                    try {
+                        List<ComponentsSearchDTO> components = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<ComponentsSearchDTO>>() {});
+                        return Optional.of(components);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Optional.<List<ComponentsSearchDTO>>empty();
                     }
                 });
     }

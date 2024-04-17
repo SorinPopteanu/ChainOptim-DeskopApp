@@ -19,12 +19,12 @@ import lombok.Getter;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class TableToolbarController {
 
     // State
     private final SearchParams searchParams;
-
     private final Map<String, String> sortOptionsMap = Map.of(
             "createdAt", "Created At",
             "updatedAt", "Updated At"
@@ -174,6 +174,14 @@ public class TableToolbarController {
         toggleButtonVisibility(saveChangesButton, isEditing);
         toggleButtonVisibility(deleteSelectedRowsButton, !isEditing);
         toggleButtonVisibility(editSelectedRowsButton, !isEditing);
+    }
+
+    public void toggleButtonVisibilityOnCreate(boolean isNewOrderMode) {
+        toggleButtonVisibility(createNewOrderButton, isNewOrderMode);
+        toggleButtonVisibility(saveChangesButton, isNewOrderMode);
+        toggleButtonVisibility(cancelRowSelectionButton, isNewOrderMode);
+        toggleButtonVisibility(deleteSelectedRowsButton, !isNewOrderMode);
+        toggleButtonVisibility(editSelectedRowsButton, !isNewOrderMode);
     }
 
     public void toggleButtonVisibilityOnCancel() {

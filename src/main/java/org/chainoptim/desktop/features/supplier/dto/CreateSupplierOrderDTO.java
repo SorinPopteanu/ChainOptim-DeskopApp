@@ -9,10 +9,12 @@ import java.time.LocalDateTime;
 public class CreateSupplierOrderDTO {
 
     private Integer supplierId;
+    private Integer organizationId;
     private Integer componentId;
     private Float quantity;
     private LocalDateTime orderDate;
     private LocalDateTime estimatedDeliveryDate;
     private LocalDateTime deliveryDate;
     private SupplierOrder.Status status;
+    private String companyId;
 }

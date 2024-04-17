@@ -29,10 +29,7 @@ import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.*;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.*;
-import org.chainoptim.desktop.features.productpipeline.service.StageService;
-import org.chainoptim.desktop.features.productpipeline.service.StageServiceImpl;
-import org.chainoptim.desktop.features.productpipeline.service.StageWriteService;
-import org.chainoptim.desktop.features.productpipeline.service.StageWriteServiceImpl;
+import org.chainoptim.desktop.features.productpipeline.service.*;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphServiceImpl;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
@@ -140,6 +137,9 @@ public class AppModule extends AbstractModule {
         bind(SupplierService.class).to(SupplierServiceImpl.class);
         bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
         bind(SupplierOrdersService.class).to(SupplierOrdersServiceImpl.class);
+
+        // - Components
+        bind(ComponentService.class).to(ComponentServiceImpl.class);
 
         // - Client
         bind(ClientService.class).to(ClientServiceImpl.class);

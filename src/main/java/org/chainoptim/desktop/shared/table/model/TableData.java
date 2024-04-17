@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class TableData<T> {
 
     private T data;
+    private T oldData;
     private BooleanProperty isSelected;
 
     public T getData() {
@@ -19,6 +20,10 @@ public class TableData<T> {
     public void setData(T data) {
         this.data = data;
     }
+
+    public T getOldData() { return oldData; }
+
+    public void setOldData(T oldData) { this.oldData = oldData; }
 
     public BooleanProperty isSelectedProperty() {
         return isSelected;
@@ -35,4 +40,5 @@ public class TableData<T> {
     public void setSelected(boolean isSelected) {
         this.isSelected.set(isSelected);
     }
+
 }

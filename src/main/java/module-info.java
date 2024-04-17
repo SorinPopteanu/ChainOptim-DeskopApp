@@ -86,6 +86,7 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.features.productpipeline.dto to com.fasterxml.jackson.databind;
     opens org.chainoptim.desktop.features.productpipeline.controller to com.google.guice, javafx.fxml;
 
+
     // - Factory
     opens org.chainoptim.desktop.features.factory.controller to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.features.factory.service to com.google.guice;
@@ -138,6 +139,7 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.shared.common.uielements.performance to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.shared.common.uielements.info to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.shared.common.uielements.settings to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.common.uielements to com.google.guice;
 
     // - Enums
     opens org.chainoptim.desktop.shared.enums to com.fasterxml.jackson.databind;

@@ -12,6 +12,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SupplierOrder {
 
+    public SupplierOrder(SupplierOrder data) {
+        this.id = data.id;
+        this.supplierId = data.supplierId;
+        this.createdAt = data.createdAt;
+        this.updatedAt = data.updatedAt;
+        this.component = data.component;
+        this.organizationId = data.organizationId;
+        this.quantity = data.quantity;
+        this.orderDate = data.orderDate;
+        this.estimatedDeliveryDate = data.estimatedDeliveryDate;
+        this.deliveryDate = data.deliveryDate;
+        this.companyId = data.companyId;
+        this.status = data.status;
+    }
+
     public enum Status {
         Initiated,
         Negociated,
