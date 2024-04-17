@@ -8,10 +8,13 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.shared.enums.Feature;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -32,6 +35,7 @@ public class ProductsController implements Initializable {
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+    private final ToastManager toastManager;
 
     // State
     private final FallbackManager fallbackManager;
@@ -63,6 +67,7 @@ public class ProductsController implements Initializable {
                               NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
                               CommonViewsLoader commonViewsLoader,
+                              ToastManager toastManager,
                               FallbackManager fallbackManager,
                               SearchParams searchParams
     ) {
@@ -70,8 +75,15 @@ public class ProductsController implements Initializable {
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.commonViewsLoader = commonViewsLoader;
+        this.toastManager = toastManager;
         this.fallbackManager = fallbackManager;
         this.searchParams = searchParams;
+    }
+
+    @FXML
+    private void addToast() {
+        ToastInfo toastInfo = new ToastInfo("Title", "Message", OperationOutcome.SUCCESS);
+        toastManager.addToast(toastInfo);
     }
 
     @Override

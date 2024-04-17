@@ -2,12 +2,14 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="main-container"
       fx:controller="org.chainoptim.desktop.features.product.controller.ProductsController">
 
     <StackPane fx:id="headerContainer"/>
+    <Button onAction="#addToast"/>
 
     <StackPane VBox.vgrow="ALWAYS">
         <ScrollPane fx:id="productsScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">

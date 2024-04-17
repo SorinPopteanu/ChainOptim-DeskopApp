@@ -31,7 +31,7 @@ public class NotificationManager {
     private final Queue<Stage> activeNotifications = new LinkedList<>();
 
     public void showNotification(Notification notification) {
-        System.out.println("Showing notification: " + notification.getMessage());
+        System.out.println("Showing notification: " + notification);
         Platform.runLater(() -> {
             Stage popupStage = createNotificationStage(notification);
             positionAndShow(popupStage);

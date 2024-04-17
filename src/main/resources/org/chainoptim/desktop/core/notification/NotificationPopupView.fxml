@@ -3,11 +3,12 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.text.TextFlow?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.notification.controller.NotificationPopupController"
-            prefHeight="400.0" prefWidth="600.0" spacing="10"
-            styleClass="notification-card">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.core.notification.controller.NotificationPopupController"
+      prefHeight="400.0" prefWidth="600.0" spacing="10"
+      styleClass="notification-card">
 
     <HBox>
         <Label fx:id="titleLabel" styleClass="notification-card-title"/>
@@ -15,5 +16,5 @@
         <Button fx:id="closeButton" styleClass="notification-card-close-button"/>
     </HBox>
 
-    <Label fx:id="messageLabel" styleClass="notification-card-message"/>
+    <TextFlow fx:id="titleTextFlow" styleClass="notification-card-message"/>
 </VBox>
