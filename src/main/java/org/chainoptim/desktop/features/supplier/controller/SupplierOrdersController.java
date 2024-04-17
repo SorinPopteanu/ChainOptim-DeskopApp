@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.supplier.controller;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.productpipeline.model.Component;
@@ -10,7 +9,6 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersWriteService;
-import org.chainoptim.desktop.shared.common.uielements.SelectComponentController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
@@ -19,13 +17,14 @@ import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
-import org.chainoptim.desktop.shared.table.edit.cells.ComboBoxEditableCell;
-import org.chainoptim.desktop.shared.table.edit.cells.EditableCell;
+import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
+import org.chainoptim.desktop.shared.table.edit.cell.EditableCell;
 import org.chainoptim.desktop.shared.table.model.TableData;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
+import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
+
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -51,7 +50,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     // Controllers
     private TableToolbarController tableToolbarController;
     private PageSelectorController pageSelectorController;
-    private final SelectComponentController selectComponentController;
+    private final SelectComponentLoader selectComponentLoader;
     private GenericConfirmDialogController<List<SupplierOrder>> confirmSupplierOrderUpdateController;
     private GenericConfirmDialogController<List<SupplierOrder>> confirmSupplierOrderDeleteController;
     private GenericConfirmDialogController<List<SupplierOrder>> confirmSupplierOrderCreateController;
@@ -116,13 +115,13 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                                     CommonViewsLoader commonViewsLoader,
                                     FallbackManager fallbackManager,
                                     SearchParams searchParams,
-                                    SelectComponentController selectComponentController) {
+                                    SelectComponentLoader selectComponentLoader) {
         this.supplierOrdersService = supplierOrdersService;
         this.supplierOrdersWriteService = supplierOrdersWriteService;
         this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
         this.searchParams = searchParams;
-        this.selectComponentController = selectComponentController;
+        this.selectComponentLoader = selectComponentLoader;
     }
 
     @Override
@@ -131,7 +130,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
         tableToolbarController.initialize(() -> loadSupplierOrders(supplier.getId()));
-        selectComponentController.initialize();
+        selectComponentLoader.initialize();
 
         TableConfigurer.configureTableView(tableView, selectRowColumn);
         configureTableColumns();
@@ -158,84 +157,57 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         estimatedDeliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getEstimatedDeliveryDate()));
         deliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getDeliveryDate()));
 
-        // Configure columns to use custom editable cells
-        companyIdColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, String>(isEditMode, selectedRowsIndices) {
+        configureColumnCellFactories();
+    }
+
+    private void configureColumnCellFactories() {
+        companyIdColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, String>(
+                isEditMode, selectedRowsIndices, String::toString) {
             @Override
-            public void commitEdit(String newValue) {
-                super.commitEdit(newValue);
-                SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
-                order.setCompanyId(newValue);
-                getTableView().refresh();
+            protected void commitChange(TableData<SupplierOrder> item, String newValue) {
+                item.getData().setCompanyId(newValue);
             }
         });
-        quantityColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, Float>(isEditMode, selectedRowsIndices) {
+        quantityColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, Float>(
+                isEditMode, selectedRowsIndices, Float::parseFloat) {
             @Override
-            public void commitEdit(String newValue) {
-                try {
-                    Float parsedValue = Float.parseFloat(newValue);
-                    super.commitEdit(parsedValue);
-                    SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
-                    order.setQuantity(parsedValue);
-                    getTableView().refresh();
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid float value: " + newValue);
-                }
+            protected void commitChange(TableData<SupplierOrder> item, Float newValue) {
+                item.getData().setQuantity(newValue);
             }
         });
-        estimatedDeliveryDateColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, LocalDateTime>(isEditMode, selectedRowsIndices) {
+        estimatedDeliveryDateColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, LocalDateTime>(
+                isEditMode, selectedRowsIndices, LocalDateTime::parse) {
             @Override
-            public void commitEdit(String newValue) {
-                try {
-                    LocalDateTime parsedValue = LocalDateTime.parse(newValue);
-                    super.commitEdit(parsedValue);
-                    SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
-                    order.setEstimatedDeliveryDate(parsedValue);
-                    getTableView().refresh();
-                } catch (Exception e) {
-                    System.out.println("Invalid date value: " + newValue);
-                }
+            protected void commitChange(TableData<SupplierOrder> item, LocalDateTime newValue) {
+                item.getData().setEstimatedDeliveryDate(newValue);
             }
         });
-        deliveryDateColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, LocalDateTime>(isEditMode, selectedRowsIndices) {
+        deliveryDateColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, LocalDateTime>(
+                isEditMode, selectedRowsIndices, LocalDateTime::parse) {
             @Override
-            public void commitEdit(String newValue) {
-                try {
-                    LocalDateTime parsedValue = LocalDateTime.parse(newValue);
-                    super.commitEdit(parsedValue);
-                    SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
-                    order.setDeliveryDate(parsedValue);
-                    getTableView().refresh();
-                } catch (Exception e) {
-                    System.out.println("Invalid date value: " + newValue);
-                }
+            protected void commitChange(TableData<SupplierOrder> item, LocalDateTime newValue) {
+                item.getData().setDeliveryDate(newValue);
             }
         });
 
-        statusColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierOrder>, SupplierOrder.Status>(isEditMode, selectedRowsIndices, statusOptions) {
+        statusColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierOrder>, SupplierOrder.Status>(
+                isEditMode, selectedRowsIndices, null, statusOptions) {
             @Override
-            public void commitEdit(SupplierOrder.Status newValue) {
-                SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
-                order.setStatus(newValue);
-                getTableView().refresh();
+            protected void commitChange(TableData<SupplierOrder> item, SupplierOrder.Status newValue) {
+                item.getData().setStatus(newValue);
             }
         });
 
-        componentNameColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierOrder>, String>(isEditMode, selectedRowsIndices, selectComponentController.getComponentsName()) {
+        componentNameColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierOrder>, String>(
+                isEditMode, selectedRowsIndices, null, selectComponentLoader.getComponentsName()) {
             @Override
-            public void commitEdit(String newValue) {
-                super.commitEdit(newValue);
-                SupplierOrder order = getTableView().getItems().get(getIndex()).getData();
-                Integer componentId = selectComponentController.getComponentIdByName(newValue);
-                if (componentId != null) {
-                    Component component = new Component();
-                    component.setId(componentId);
-                    component.setName(newValue);
-                    order.setComponent(component);
-                    getTableView().refresh();
-                }
+            protected void commitChange(TableData<SupplierOrder> item, String newValue) {
+                Component component = new Component();
+                component.setId(selectComponentLoader.getComponentIdByName(newValue));
+                component.setName(newValue);
+                item.getData().setComponent(component);
             }
         });
-
     }
 
     private void setUpListeners() {

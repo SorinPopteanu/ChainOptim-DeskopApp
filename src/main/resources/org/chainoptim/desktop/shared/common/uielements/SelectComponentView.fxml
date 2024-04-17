@@ -8,7 +8,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.shared.common.uielements.SelectComponentController">
+            fx:controller="org.chainoptim.desktop.shared.table.util.SelectComponentLoader">
 
     <ComboBox fx:id="componentComboBox" />
 </AnchorPane>

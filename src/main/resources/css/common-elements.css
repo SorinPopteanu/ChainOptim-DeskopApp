@@ -45,6 +45,7 @@
 .custom-text-field {
     -fx-min-height: 32px;
     -fx-max-height: 32px;
+    -fx-padding: 0px 4px;
     -fx-background-color: #ffffff;
     -fx-font-weight: bold;
     -fx-border-color: #c0c0c0;
