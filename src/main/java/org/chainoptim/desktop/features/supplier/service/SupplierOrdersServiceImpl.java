@@ -1,8 +1,12 @@
 package org.chainoptim.desktop.features.supplier.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.inject.Inject;
 import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
+import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
+import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.JsonUtil;
@@ -18,9 +22,16 @@ import java.util.concurrent.CompletableFuture;
 
 public class SupplierOrdersServiceImpl implements SupplierOrdersService {
 
+    private final CachingService<PaginatedResults<SupplierOrder>> cachingService;
     private final HttpClient client = HttpClient.newHttpClient();
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
+    private static final int STALE_TIME = 30000;
+
+    @Inject
+    public SupplierOrdersServiceImpl(CachingService<PaginatedResults<SupplierOrder>> cachingService) {
+        this.cachingService = cachingService;
+    }
 
     public CompletableFuture<Optional<List<SupplierOrder>>> getSupplierOrdersByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/supplier-orders/organization/" + organizationId.toString();
@@ -54,12 +65,9 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
             Integer supplierId,
             SearchParams searchParams
     ) {
-        String routeAddress = "http://localhost:8080/api/v1/supplier-orders/organization/advanced/" + supplierId.toString()
-                + "?searchQuery=" + searchParams.getSearchQuery()
-                + "&sortBy=" + searchParams.getSortOption()
-                + "&ascending=" + searchParams.getAscending()
-                + "&page=" + searchParams.getPage()
-                + "&itemsPerPage=" + searchParams.getItemsPerPage();
+        String rootAddress = "http://localhost:8080/api/v1/";
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("supplier-orders", "organization", supplierId, searchParams);
+        String routeAddress = rootAddress + cacheKey;
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();
@@ -71,6 +79,10 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
                 .headers(HEADER_KEY, headerValue)
                 .build();
 
+        if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
+            return CompletableFuture.completedFuture(Optional.of(cachingService.get(cacheKey)));
+        }
+
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) {
@@ -78,6 +90,10 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
                     }
                     try {
                         PaginatedResults<SupplierOrder> supplierOrders = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<SupplierOrder>>() {});
+
+                        cachingService.remove(cacheKey); // Ensure there isn't a stale cache entry
+                        cachingService.add(cacheKey, supplierOrders, STALE_TIME);
+
                         return Optional.of(supplierOrders);
                     } catch (Exception e) {
                         e.printStackTrace();

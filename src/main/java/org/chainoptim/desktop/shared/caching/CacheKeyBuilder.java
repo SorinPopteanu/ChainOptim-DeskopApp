@@ -6,8 +6,8 @@ public class CacheKeyBuilder {
 
     private CacheKeyBuilder() {}
 
-    public static String buildAdvancedSearchKey(String feature, Integer organizationId, SearchParams searchParams) {
-        return feature + "/organization/advanced/" + organizationId.toString()
+    public static String buildAdvancedSearchKey(String feature, String secondaryFeature, Integer secondaryId, SearchParams searchParams) {
+        return feature + "/" + secondaryFeature + "/advanced/" + secondaryId.toString()
                 + "?searchQuery=" + searchParams.getSearchQuery()
                 + "&sortBy=" + searchParams.getSortOption()
                 + "&ascending=" + searchParams.getAscending()

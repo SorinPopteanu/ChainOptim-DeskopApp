@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 public class TableToolbarController {
 
     // State
-    private final SearchParams searchParams;
+    private SearchParams searchParams;
     private final Map<String, String> sortOptionsMap = Map.of(
             "createdAt", "Created At",
             "updatedAt", "Updated At"
@@ -68,14 +68,8 @@ public class TableToolbarController {
     private Image saveIcon;
     private Image plusIcon;
 
-    @Inject
-    public TableToolbarController(
-            SearchParams searchParams
-    ) {
+    public void initialize(SearchParams searchParams, Runnable refreshAction) {
         this.searchParams = searchParams;
-    }
-
-    public void initialize(Runnable refreshAction) {
         initializeIcons();
         setSearchButton();
         setOrderingButton();
@@ -108,7 +102,8 @@ public class TableToolbarController {
     }
 
     private void setOrderingButton() {
-        ImageView sortUpImageView = createImageView(sortUpIcon, 16, 16);
+        ImageView sortUpImageView = createImageView(
+                Boolean.TRUE.equals(searchParams.getAscending()) ? sortUpIcon : sortDownIcon, 16, 16);
         orderingButton.setGraphic(sortUpImageView);
     }
 
