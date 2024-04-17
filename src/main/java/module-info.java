@@ -139,13 +139,13 @@ module org.chainoptim.desktop {
     opens org.chainoptim.desktop.shared.common.uielements.performance to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.shared.common.uielements.info to javafx.fxml, com.google.guice;
     opens org.chainoptim.desktop.shared.common.uielements.settings to javafx.fxml, com.google.guice;
-    opens org.chainoptim.desktop.shared.common.uielements to com.google.guice;
 
     // - Enums
     opens org.chainoptim.desktop.shared.enums to com.fasterxml.jackson.databind;
 
     // - Table
     opens org.chainoptim.desktop.shared.table to javafx.fxml, com.google.guice;
+    opens org.chainoptim.desktop.shared.table.util to com.google.guice;
 
     // - Location
     opens org.chainoptim.desktop.shared.features.location.model to com.fasterxml.jackson.databind;

@@ -64,7 +64,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             SearchParams searchParams
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("warehouses", organizationId, searchParams);
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("warehouses", "organization", organizationId, searchParams);
         String routeAddress = rootAddress + cacheKey;
 
         String jwtToken = TokenManager.getToken();

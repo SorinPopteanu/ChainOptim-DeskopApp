@@ -3,7 +3,10 @@ package org.chainoptim.desktop.shared.util.resourceloader;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.shared.common.uielements.select.*;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -14,6 +17,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
+import java.util.List;
 
 public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
@@ -88,6 +92,21 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
             tab.setContent(content);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public <T> GenericConfirmDialogController<T> loadConfirmDialog(StackPane confirmDialogContainer) {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml",
+                controllerFactory::createController);
+
+        try {
+            Node confirmDialogView = loader.load();
+            confirmDialogContainer.getChildren().add(confirmDialogView);
+            return loader.getController();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
         }
     }
 

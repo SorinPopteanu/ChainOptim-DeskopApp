@@ -1,11 +1,15 @@
 package org.chainoptim.desktop.features.supplier.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.supplier.dto.CreateSupplierDTO;
 import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.shared.caching.CachingService;
+import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.util.JsonUtil;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.inject.Inject;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -18,10 +22,16 @@ import java.util.concurrent.CompletableFuture;
 
 public class SupplierWriteServiceImpl implements SupplierWriteService {
 
+    private final CachingService<PaginatedResults<Supplier>> cachingService;
     private final HttpClient client = HttpClient.newHttpClient();
 
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
+
+    @Inject
+    public SupplierWriteServiceImpl(CachingService<PaginatedResults<Supplier>> cachingService) {
+        this.cachingService = cachingService;
+    }
 
     public CompletableFuture<Optional<Supplier>> createSupplier(CreateSupplierDTO supplierDTO) {
         String routeAddress = "http://localhost:8080/api/v1/suppliers/create";
@@ -51,6 +61,9 @@ public class SupplierWriteServiceImpl implements SupplierWriteService {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
                         Supplier supplier = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Supplier>() {});
+
+                        cachingService.clear(); // Invalidate cache
+
                         return Optional.of(supplier);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -87,6 +100,9 @@ public class SupplierWriteServiceImpl implements SupplierWriteService {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
                         Supplier supplier = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Supplier>() {});
+
+                        cachingService.clear(); // Invalidate cache
+
                         return Optional.of(supplier);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -111,6 +127,9 @@ public class SupplierWriteServiceImpl implements SupplierWriteService {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
+
+                    cachingService.clear(); // Invalidate cache
+
                     return Optional.of(supplierId);
                 });
     }
