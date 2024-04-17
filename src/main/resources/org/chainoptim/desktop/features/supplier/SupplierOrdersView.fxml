@@ -31,8 +31,8 @@
         </ScrollPane>
     </VBox>
 
-    <StackPane fx:id="confirmUpdateDialogContainer" />
-    <StackPane fx:id="confirmDeleteDialogContainer" />
-    <StackPane fx:id="confirmCreateDialogContainer" />
+    <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px;"/>
+    <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
+    <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
 
 </StackPane>

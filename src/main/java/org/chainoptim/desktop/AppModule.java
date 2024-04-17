@@ -47,6 +47,7 @@ import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.Res
 import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceService;
 import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceServiceImpl;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.features.supplier.service.*;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
@@ -137,6 +138,7 @@ public class AppModule extends AbstractModule {
         bind(SupplierService.class).to(SupplierServiceImpl.class);
         bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
         bind(SupplierOrdersService.class).to(SupplierOrdersServiceImpl.class);
+        bind(SupplierOrdersWriteService.class).to(SupplierOrdersWriteServiceImpl.class);
 
         // - Components
         bind(ComponentService.class).to(ComponentServiceImpl.class);
@@ -168,15 +170,23 @@ public class AppModule extends AbstractModule {
 
         // - Caching
         bind(new TypeLiteral<CachingService<PaginatedResults<Product>>>() {})
-                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Product>>>() {});
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Product>>>() {})
+                .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Factory>>>() {})
-                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Factory>>>() {});
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Factory>>>() {})
+                .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Warehouse>>>() {})
-                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Warehouse>>>() {});
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Warehouse>>>() {})
+                .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Supplier>>>() {})
-                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Supplier>>>() {});
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Supplier>>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<PaginatedResults<SupplierOrder>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<SupplierOrder>>>() {})
+                .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
-                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {});
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {})
+                .in(Singleton.class);
         bind(new TypeLiteral<CachingService<ResourceAllocationPlan>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<ResourceAllocationPlan>>() {})
                 .in(Singleton.class);

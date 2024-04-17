@@ -46,23 +46,28 @@ public class SearchParamsImpl implements SearchParams {
     public Integer getPage() {
         return page.get();
     }
+    public Integer getItemsPerPage() {
+        return itemsPerPage.get();
+    }
+
     public void setSearchQuery(String searchQuery) {
+        this.page.set(1);
         this.searchQuery.set(searchQuery);
     }
     public void setSortOption(String sortOption) {
+        this.page.set(1);
         this.sortOption.set(sortOption);
     }
     public void setAscending(Boolean ascending) {
+        this.page.set(1);
         this.ascending.set(ascending);
     }
     public void setPage(Integer page) {
         this.page.set(page);
     }
     public void setItemsPerPage(Integer itemsPerPage) {
+        this.page.set(1);
         this.itemsPerPage.set(itemsPerPage);
-    }
-    public Integer getItemsPerPage() {
-        return itemsPerPage.get();
     }
 
 }

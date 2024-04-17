@@ -92,7 +92,7 @@ public class FactoryServiceImpl implements FactoryService {
             SearchParams searchParams
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("factories", organizationId, searchParams);
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("factories", "organization", organizationId, searchParams);
         String routeAddress = rootAddress + cacheKey;
 
         String jwtToken = TokenManager.getToken();
