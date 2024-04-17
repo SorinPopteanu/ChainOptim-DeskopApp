@@ -137,6 +137,7 @@ public class AppModule extends AbstractModule {
         bind(SupplierService.class).to(SupplierServiceImpl.class);
         bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
         bind(SupplierOrdersService.class).to(SupplierOrdersServiceImpl.class);
+        bind(SupplierOrdersWriteService.class).to(SupplierOrdersWriteServiceImpl.class);
 
         // - Components
         bind(ComponentService.class).to(ComponentServiceImpl.class);

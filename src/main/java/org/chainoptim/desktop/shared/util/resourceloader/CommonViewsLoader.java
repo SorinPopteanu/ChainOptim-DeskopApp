@@ -2,6 +2,7 @@ package org.chainoptim.desktop.shared.util.resourceloader;
 
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.shared.common.uielements.select.*;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 
@@ -16,6 +17,8 @@ public interface CommonViewsLoader {
     TableToolbarController initializeTableToolbar(StackPane tableToolbarContainer);
 
     <T> void loadTabContent(Tab tab, String fxmlFilepath, T data);
+
+    <T> GenericConfirmDialogController<T> loadConfirmDialog(StackPane confirmDialogContainer);
 
     SelectOrCreateLocationController loadSelectOrCreateLocation(StackPane selectOrCreateLocationContainer);
     SelectOrCreateUnitOfMeasurementController loadSelectOrCreateUnitOfMeasurement(StackPane unitOfMeasurementContainer);
