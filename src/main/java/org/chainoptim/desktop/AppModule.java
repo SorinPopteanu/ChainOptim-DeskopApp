@@ -9,6 +9,7 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.notification.controller.NotificationManager;
+import org.chainoptim.desktop.core.notification.model.NotificationUser;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceServiceImpl;
 import org.chainoptim.desktop.core.organization.service.CustomRoleService;
@@ -178,6 +179,9 @@ public class AppModule extends AbstractModule {
         bind(ToastManager.class).to(ToastManagerImpl.class);
 
         // - Caching
+        bind(new TypeLiteral<CachingService<PaginatedResults<NotificationUser>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<NotificationUser>>>() {})
+                .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Product>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Product>>>() {})
                 .in(Singleton.class);

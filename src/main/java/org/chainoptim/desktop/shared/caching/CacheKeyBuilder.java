@@ -6,13 +6,13 @@ public class CacheKeyBuilder {
 
     private CacheKeyBuilder() {}
 
-    public static String buildAdvancedSearchKey(String feature, String secondaryFeature, Integer secondaryId, SearchParams searchParams) {
-        return feature + "/" + secondaryFeature + "/advanced/" + secondaryId.toString()
-                + "?searchQuery=" + searchParams.getSearchQuery()
-                + "&sortBy=" + searchParams.getSortOption()
-                + "&ascending=" + searchParams.getAscending()
-                + "&page=" + searchParams.getPage()
-                + "&itemsPerPage=" + searchParams.getItemsPerPage();
+    public static String buildAdvancedSearchKey(String feature, String secondaryFeature, String secondaryId, SearchParams searchParams) {
+        return feature + "/" + secondaryFeature + "/advanced/" + secondaryId +
+                "?searchQuery=" + searchParams.getSearchQuery() +
+                "&sortBy=" + searchParams.getSortOption() +
+                "&ascending=" + searchParams.getAscending() +
+                "&page=" + searchParams.getPage() +
+                "&itemsPerPage=" + searchParams.getItemsPerPage();
     }
 
     public static String buildSecondaryFeatureKey(String mainFeature, String secondaryFeature, Integer secondaryFeatureId) {

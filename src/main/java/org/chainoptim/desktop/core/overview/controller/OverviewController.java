@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.notification.model.NotificationExtraInfo;
 import org.chainoptim.desktop.core.notification.model.NotificationUser;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
 import org.chainoptim.desktop.core.overview.model.Snapshot;
@@ -11,10 +12,14 @@ import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.search.model.PaginatedResults;
+import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -27,10 +32,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Controller for the initial overview screen of the application.
@@ -43,13 +45,21 @@ public class OverviewController implements Initializable {
     private final SupplyChainSnapshotService supplyChainSnapshotService;
     private final NotificationPersistenceService notificationPersistenceService;
     private final NavigationService navigationService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
-    private final FallbackManager fallbackManager;
+    private final CommonViewsLoader commonViewsLoader;
 
     // State
+    private SearchParams searchParams;
+    private final FallbackManager fallbackManager;
     private Snapshot snapshot;
-    private SupplyChainSnapshotContext snapshotContext;
+    private final SupplyChainSnapshotContext snapshotContext;
+    private long totalCount;
+    private int lastPage = 1;
+    private boolean clearNotifications = true;
+    private Button currentLoadMoreButton;
+    private final Map<String, String> sortOptions = Map.of(
+            "createdAt", "Created At",
+            "updatedAt", "Updated At"
+    );
 
     // FXML
     @FXML
@@ -76,41 +86,31 @@ public class OverviewController implements Initializable {
     public OverviewController(SupplyChainSnapshotService supplyChainSnapshotService,
                               NotificationPersistenceService notificationPersistenceService,
                               NavigationService navigationService,
-                              FXMLLoaderService fxmlLoaderService,
-                              ControllerFactory controllerFactory,
+                              CommonViewsLoader commonViewsLoader,
+                              SearchParams searchParams,
                               FallbackManager fallbackManager,
                               SupplyChainSnapshotContext snapshotContext) {
         this.supplyChainSnapshotService = supplyChainSnapshotService;
         this.notificationPersistenceService = notificationPersistenceService;
         this.navigationService = navigationService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
+        this.searchParams = searchParams;
         this.fallbackManager = fallbackManager;
         this.snapshotContext = snapshotContext;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         initializeUI();
-    }
-
-    // Initialization
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void setUpListeners() {
         // Listen to empty fallback state
         fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
-            contentStackPane.setVisible(newValue);
-            contentStackPane.setManaged(newValue);
+            contentContainer.setVisible(newValue);
+            contentContainer.setManaged(newValue);
             fallbackContainer.setVisible(!newValue);
             fallbackContainer.setManaged(!newValue);
         });
@@ -145,7 +145,7 @@ public class OverviewController implements Initializable {
                     return Optional.empty();
                 });
 
-        notificationPersistenceService.getNotificationsByUserId(currentUser.getId())
+        notificationPersistenceService.getNotificationsByUserIdAdvanced(currentUser.getId(), searchParams)
                 .thenApply(this::handleNotificationsResponse)
                 .exceptionally(ex -> {
                     Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load notifications."));
@@ -169,15 +169,16 @@ public class OverviewController implements Initializable {
         return snapshotOptional;
     }
 
-    private Optional<List<NotificationUser>> handleNotificationsResponse(Optional<List<NotificationUser>> notificationsOptional) {
+    private Optional<PaginatedResults<NotificationUser>> handleNotificationsResponse(Optional<PaginatedResults<NotificationUser>> notificationsOptional) {
         Platform.runLater(() -> {
             if (notificationsOptional.isEmpty()) {
                 return;
             }
-            List<NotificationUser> notifications = notificationsOptional.get();
+            PaginatedResults<NotificationUser> notifications = notificationsOptional.get();
             fallbackManager.setLoading(false);
 
-            renderNotificationsVBox(notifications);
+            totalCount = notifications.getTotalCount();
+            renderNotificationsVBox(notifications.getResults());
         });
 
         return notificationsOptional;
@@ -222,36 +223,78 @@ public class OverviewController implements Initializable {
     }
 
     private void renderNotificationsVBox(List<NotificationUser> notifications) {
-        notificationsLabel.setText("Notifications (" + notifications.size() + ")");
+        notificationsLabel.setText("Notifications (" + totalCount + ")");
 
-        notificationsVBox.getChildren().clear();
+        if (clearNotifications) {
+            notificationsVBox.getChildren().clear();
+        }
 
-        notifications.forEach(notification -> {
-            HBox notificationHBox = new HBox(0);
-            notificationHBox.setAlignment(Pos.CENTER_LEFT);
-            notificationHBox.getStyleClass().add("notification-container");
+        notifications.forEach(this::renderNotification);
 
-            Label notificationLabel = new Label(notification.getNotification().getMessage());
-            notificationLabel.getStyleClass().add("notification-message");
-            notificationHBox.getChildren().add(notificationLabel);
+        addLoadMoreButton();
+    }
 
-            Region separator = new Region();
-            HBox.setHgrow(separator, Priority.ALWAYS);
-            notificationHBox.getChildren().add(separator);
+    private void renderNotification(NotificationUser notification) {
+        HBox notificationHBox = new HBox(0);
+        notificationHBox.setAlignment(Pos.CENTER_LEFT);
+        notificationHBox.getStyleClass().add("notification-container");
 
-            // Alert indicator
+        VBox titleMessageVBox = new VBox(6);
+        Label notificationTitleLabel = new Label(notification.getNotification().getTitle());
+        notificationTitleLabel.getStyleClass().add("notification-title");
+        titleMessageVBox.getChildren().add(notificationTitleLabel);
+
+        Label notificationMessageLabel = new Label(notification.getNotification().getMessage());
+        notificationMessageLabel.getStyleClass().add("notification-message");
+        titleMessageVBox.getChildren().add(notificationMessageLabel);
+
+        notificationHBox.getChildren().add(titleMessageVBox);
+
+        Region separator = new Region();
+        HBox.setHgrow(separator, Priority.ALWAYS);
+        notificationHBox.getChildren().add(separator);
+
+        // Alert indicator
 
 
-            // Read indicator
-            Circle indicator = new Circle(4);
-            indicator.setFill(Color.TRANSPARENT);
+        // Extra details
+        NotificationExtraInfo extraInfo = notification.getNotification().getExtraInfo();
+        if (extraInfo != null && !extraInfo.getExtraMessages().isEmpty()) {
+            Button extraInfoButton = new Button("View Details");
+            extraInfoButton.getStyleClass().add("pseudo-link");
+            extraInfoButton.setStyle("-fx-padding: 0px 8px;");
+            notificationHBox.getChildren().add(extraInfoButton);
+        }
 
-            if (Boolean.FALSE.equals(notification.getReadStatus())) {
-                indicator.setFill(Color.web("#006AEE"));
-            }
-            notificationHBox.getChildren().add(indicator);
+        // Read indicator
+        Circle indicator = new Circle(4);
+        indicator.setFill(Color.TRANSPARENT);
 
-            notificationsVBox.getChildren().add(notificationHBox);
+        if (Boolean.FALSE.equals(notification.getReadStatus())) {
+            indicator.setFill(Color.web("#006AEE"));
+        }
+        notificationHBox.getChildren().add(indicator);
+
+        notificationsVBox.getChildren().add(notificationHBox);
+    }
+
+    private void addLoadMoreButton() {
+        notificationsVBox.getChildren().remove(currentLoadMoreButton);
+        if (totalCount <= notificationsVBox.getChildren().size()) return;
+
+        currentLoadMoreButton = new Button("Load More");
+        currentLoadMoreButton.getStyleClass().add("pseudo-link");
+        currentLoadMoreButton.setStyle("-fx-padding: 4px;");
+        currentLoadMoreButton.setOnAction(event -> {
+            searchParams.setPage(++lastPage);
+            clearNotifications = false;
+            notificationPersistenceService.getNotificationsByUserIdAdvanced(TenantContext.getCurrentUser().getId(), searchParams)
+                    .thenApply(this::handleNotificationsResponse)
+                    .exceptionally(ex -> {
+                        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load more notifications."));
+                        return Optional.empty();
+                    });
         });
+        notificationsVBox.getChildren().add(currentLoadMoreButton);
     }
 }
