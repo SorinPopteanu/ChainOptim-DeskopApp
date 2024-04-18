@@ -20,7 +20,7 @@ import javafx.scene.layout.*;
 
 import java.util.Objects;
 
-/*
+/**
  * Controller for the organization subscription plan view.
  * Displays the current organization feature counts vs plan limits
  * and allows user to preview and change plans.

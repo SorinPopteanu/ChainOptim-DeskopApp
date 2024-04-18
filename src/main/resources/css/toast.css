@@ -1,0 +1,37 @@
+.custom-toast-container {
+    -fx-padding: 8px 16px;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+}
+.success-outcome-icon-wrapper {
+    -fx-fill: #4CAF50; /* A more muted, pastel green */
+}
+
+.error-outcome-icon-wrapper {
+    -fx-fill: #E53935; /* A slightly deeper, less bright red */
+}
+
+.info-outcome-icon-wrapper {
+    -fx-fill: #607D8B; /* A blue-gray, modern and less intense than pure blue */
+}
+
+
+.close-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-cursor: hand;
+}
+
+.close-button:hover {
+    -fx-background-color: transparent;
+}
+
+.close-button:pressed {
+    -fx-background-color: transparent;
+}

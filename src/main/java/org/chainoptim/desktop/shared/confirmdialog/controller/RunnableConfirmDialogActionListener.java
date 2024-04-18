@@ -2,7 +2,7 @@ package org.chainoptim.desktop.shared.confirmdialog.controller;
 
 import java.util.function.Consumer;
 
-/*
+/**
  * A generic implementation of GenericConfirmDialogActionListener
  * that receives methods to be run from parent controller, for maximum flexibility.
  */

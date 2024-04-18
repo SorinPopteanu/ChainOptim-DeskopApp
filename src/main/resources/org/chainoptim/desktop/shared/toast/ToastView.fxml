@@ -3,13 +3,24 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.Label?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.shared.toast.controller.ToastController"
-            prefHeight="400.0" prefWidth="600.0">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.shape.Circle?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.shared.toast.controller.ToastController"
+      styleClass="custom-toast-container" minWidth="300" maxWidth="300">
 
-    <HBox>
-        <Label text="Toast Test"/>
-        <Label fx:id="titleLabel"/>
+    <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS" spacing="8">
+        <StackPane>
+            <Circle fx:id="outcomeIconWrapper" radius="20"/>
+            <Label fx:id="outcomeIcon"/>
+        </StackPane>
+
+        <HBox HBox.hgrow="ALWAYS">
+            <Label text="Toast Test"/>
+            <Label fx:id="titleLabel"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="closeButton" styleClass="notification-card-close-button"/>
+        </HBox>
     </HBox>
-</AnchorPane>
+</VBox>

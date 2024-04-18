@@ -77,9 +77,9 @@ import javafx.stage.Stage;
 
 import java.net.http.HttpClient;
 
-/*
- * Module configuring Dependency Injections
- *
+
+/**
+ * Guice Module configuring Dependency Injections
  */
 public class AppModule extends AbstractModule {
 

@@ -19,7 +19,7 @@ import lombok.Setter;
 
 import java.io.IOException;
 
-/*
+/**
  * Generic controller for a confirm dialog. It receives a listener from a parent controller
  * along with data to be used by the listener on confirm,
  * a dialog input and message, and an optional extra view to be displayed in the dialog.

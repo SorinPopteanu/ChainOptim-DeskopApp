@@ -5,7 +5,6 @@ import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -15,14 +14,19 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
+/**
+ * Manager of Toast Display throughout the application.
+ * Usage: Inject the interface with Guice and call addToast(ToastInfo) to display a toast.
+ */
 public class ToastManagerImpl implements ToastManager {
 
     private final Stage mainStage;
 
-    private static final int TOAST_WIDTH = 300;
-    private static final int TOAST_MIN_HEIGHT = 100;
+    private static final int TOAST_WIDTH = 360;
+    private static final int TOAST_MIN_HEIGHT = 120;
     private static final int TOAST_MAX_HEIGHT = 300;
     private static final int SPACE_BETWEEN = 20;
 
@@ -57,12 +61,14 @@ public class ToastManagerImpl implements ToastManager {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.NONE);
         popupStage.initStyle(StageStyle.TRANSPARENT);
+        popupStage.setAlwaysOnTop(true);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/chainoptim/desktop/shared/toast/ToastView.fxml"));
         try {
             Parent root = loader.load();
+            root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/toast.css")).toExternalForm());
             ToastController popupController = loader.getController();
-            popupController.setToastInfo(toastInfo);
+            popupController.initialize(toastInfo, () -> closeToast(popupStage));
 
             Scene scene = new Scene(root, TOAST_WIDTH, TOAST_MIN_HEIGHT);
             scene.setFill(Color.TRANSPARENT);
@@ -75,8 +81,8 @@ public class ToastManagerImpl implements ToastManager {
     }
 
     private void positionAndShow(Stage popupStage) {
-        double baseX = mainStage.getX() + mainStage.getWidth() - TOAST_WIDTH - SPACE_BETWEEN - 40;
-        double baseY = mainStage.getY() + mainStage.getHeight() - ((TOAST_MIN_HEIGHT + SPACE_BETWEEN) * (activeToasts.size()) + 1);
+        double baseX = mainStage.getX() + mainStage.getWidth() - TOAST_WIDTH - SPACE_BETWEEN - 60;
+        double baseY = mainStage.getY() + mainStage.getHeight() - ((TOAST_MIN_HEIGHT + SPACE_BETWEEN) * (activeToasts.size()) + 1) - 140;
 
         popupStage.setX(baseX);
         popupStage.setY(baseY);
@@ -100,12 +106,16 @@ public class ToastManagerImpl implements ToastManager {
         new Thread(() -> {
             try {
                 Thread.sleep(delayMillis);
-                activeToasts.remove(popupStage);
-                Platform.runLater(popupStage::close);
+                closeToast(popupStage);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private void closeToast(Stage popupStage) {
+        activeToasts.remove(popupStage);
+        Platform.runLater(popupStage::close);
     }
 
 }
