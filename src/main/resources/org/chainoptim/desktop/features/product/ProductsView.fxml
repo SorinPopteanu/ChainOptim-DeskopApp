@@ -10,6 +10,9 @@
 
     <StackPane fx:id="headerContainer"/>
     <Button onAction="#addToast"/>
+    <Button onAction="#addToastError"/>
+    <Button onAction="#addToastInfo"/>
+    <Button onAction="#addToastWarning"/>
 
     <StackPane VBox.vgrow="ALWAYS">
         <ScrollPane fx:id="productsScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">

@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.shared.toast.controller;
 
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 
 import com.google.inject.Inject;
@@ -14,6 +15,7 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 
@@ -26,9 +28,15 @@ public class ToastManagerImpl implements ToastManager {
     private final Stage mainStage;
 
     private static final int TOAST_WIDTH = 360;
-    private static final int TOAST_MIN_HEIGHT = 120;
+    private static final int TOAST_MIN_HEIGHT = 100;
     private static final int TOAST_MAX_HEIGHT = 300;
     private static final int SPACE_BETWEEN = 20;
+    private static final Map<OperationOutcome, Integer> timeToCloseSeconds = Map.of(
+            OperationOutcome.SUCCESS, 5,
+            OperationOutcome.ERROR, 120,
+            OperationOutcome.WARNING, 10,
+            OperationOutcome.INFO, 10
+    );
 
     private final Queue<Stage> activeToasts = new LinkedList<>();
 
@@ -48,7 +56,8 @@ public class ToastManagerImpl implements ToastManager {
     private Stage createToastStage(ToastInfo toastInfo) {
         Stage popupStage = initializeToastView(toastInfo);
 
-        popupStage.setOnShown(e -> autoClose(popupStage, 10000));
+        popupStage.setOnShown(e -> autoClose(popupStage,
+                timeToCloseSeconds.get(toastInfo.getOperationOutcome()) * 1000));
         popupStage.setOnHidden(e -> {
             activeToasts.remove(popupStage);
             adjustToastsPositions();
@@ -81,8 +90,8 @@ public class ToastManagerImpl implements ToastManager {
     }
 
     private void positionAndShow(Stage popupStage) {
-        double baseX = mainStage.getX() + mainStage.getWidth() - TOAST_WIDTH - SPACE_BETWEEN - 60;
-        double baseY = mainStage.getY() + mainStage.getHeight() - ((TOAST_MIN_HEIGHT + SPACE_BETWEEN) * (activeToasts.size()) + 1) - 140;
+        double baseX = mainStage.getX() + mainStage.getWidth() - TOAST_WIDTH - SPACE_BETWEEN - 30;
+        double baseY = mainStage.getY() + mainStage.getHeight() - ((TOAST_MIN_HEIGHT + SPACE_BETWEEN) * (activeToasts.size()) + 1) - 150;
 
         popupStage.setX(baseX);
         popupStage.setY(baseY);

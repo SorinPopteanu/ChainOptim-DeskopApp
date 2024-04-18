@@ -82,7 +82,25 @@ public class ProductsController implements Initializable {
 
     @FXML
     private void addToast() {
-        ToastInfo toastInfo = new ToastInfo("Title", "Message", OperationOutcome.SUCCESS);
+        ToastInfo toastInfo = new ToastInfo("Success", "The product has been created successfully", OperationOutcome.SUCCESS);
+        toastManager.addToast(toastInfo);
+    }
+
+    @FXML
+    private void addToastError() {
+        ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the product", OperationOutcome.ERROR);
+        toastManager.addToast(toastInfo);
+    }
+
+    @FXML
+    private void addToastInfo() {
+        ToastInfo toastInfo = new ToastInfo("Info", "A Product is any good manufactured by your organization", OperationOutcome.INFO);
+        toastManager.addToast(toastInfo);
+    }
+
+    @FXML
+    private void addToastWarning() {
+        ToastInfo toastInfo = new ToastInfo("Warning", "You are about to delete a product", OperationOutcome.WARNING);
         toastManager.addToast(toastInfo);
     }
 

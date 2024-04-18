@@ -6,18 +6,32 @@
     -fx-border-width: 1;
     -fx-border-radius: 5;
 }
+
 .success-outcome-icon-wrapper {
-    -fx-fill: #4CAF50; /* A more muted, pastel green */
+    -fx-fill: #4CAF50;
 }
 
 .error-outcome-icon-wrapper {
-    -fx-fill: #E53935; /* A slightly deeper, less bright red */
+    -fx-fill: #E53935;
 }
 
 .info-outcome-icon-wrapper {
-    -fx-fill: #607D8B; /* A blue-gray, modern and less intense than pure blue */
+    -fx-fill: #CECECE;
 }
 
+.warning-outcome-icon-wrapper {
+    -fx-fill: #FFB300;
+}
+
+.toast-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.toast-message {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+}
 
 .close-button {
     -fx-background-color: transparent;
