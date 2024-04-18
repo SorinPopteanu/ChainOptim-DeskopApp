@@ -32,7 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-/*
+/**
  * Controller for the initial overview screen of the application.
  * Loads and displays a snapshot of the organization's supply chain
  * and the current user's notifications history.

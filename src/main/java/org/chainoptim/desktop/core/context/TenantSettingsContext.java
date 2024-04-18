@@ -5,7 +5,7 @@ import org.chainoptim.desktop.core.settings.model.UserSettings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-/*
+/**
  * Context for holding tenant's data across the app
  *
  */

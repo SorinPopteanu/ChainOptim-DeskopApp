@@ -17,7 +17,7 @@ import javafx.scene.layout.StackPane;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-/*
+/**
  * Controller for the organization subscription plan view.
  * Currently only exemplifies the Generic Confirm Dialog implementation pattern.
  */

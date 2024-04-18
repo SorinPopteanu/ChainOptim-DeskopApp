@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.user.model.User;
 
-/*
+/**
  * Context for holding tenant's data across the app
  *
  */

@@ -183,7 +183,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         }
     }
 
-    /*
+    /**
      * Grid Layout:
      * C. Role 1 | Read | Create | Update | Delete | Expand | Edit/Cancel | Save | Delete
      * Feature 1 | Read | Create | Update | Delete

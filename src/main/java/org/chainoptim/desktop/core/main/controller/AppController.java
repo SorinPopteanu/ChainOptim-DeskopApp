@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import static org.chainoptim.desktop.core.organization.model.Organization.SubscriptionPlanTier.PRO;
 
-/*
+/**
  * Root controller managing the currently displayed main content
  * through sidebarController and navigationService.
  * It is also responsible for loading the current user details, user settings,

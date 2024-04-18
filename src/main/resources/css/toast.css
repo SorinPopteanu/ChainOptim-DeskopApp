@@ -1,0 +1,51 @@
+.custom-toast-container {
+    -fx-padding: 8px 16px;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+}
+
+.success-outcome-icon-wrapper {
+    -fx-fill: #4CAF50;
+}
+
+.error-outcome-icon-wrapper {
+    -fx-fill: #E53935;
+}
+
+.info-outcome-icon-wrapper {
+    -fx-fill: #CECECE;
+}
+
+.warning-outcome-icon-wrapper {
+    -fx-fill: #FFB300;
+}
+
+.toast-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.toast-message {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+}
+
+.close-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-cursor: hand;
+}
+
+.close-button:hover {
+    -fx-background-color: transparent;
+}
+
+.close-button:pressed {
+    -fx-background-color: transparent;
+}
