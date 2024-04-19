@@ -28,9 +28,11 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        System.out.println("Starting ChainOptim Desktop Application");
         AppModule.setStage(primaryStage);
         SceneManager.setPrimaryStage(primaryStage);
         FontLoaderService.loadRobotoFonts();
+        System.out.println("Initialization complete");
 
         // Show Login Scene or Main Scene depending on whether a valid JWT token exists
         String jwtToken = TokenManager.getToken();
@@ -44,7 +46,7 @@ public class MainApplication extends Application {
     }
 
     public static void main(String[] args) {
-        System.setProperty("org.graphstream.ui", "javafx");
+        System.out.println("Launching ChainOptim Desktop Application");
         launch(args);
     }
 }
