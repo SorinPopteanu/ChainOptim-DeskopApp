@@ -21,4 +21,5 @@ public class Notification {
     private Boolean readStatus;
     private String type;
 
+    private NotificationExtraInfo extraInfo;
 }

@@ -62,22 +62,29 @@ import org.chainoptim.desktop.shared.features.location.service.LocationServiceIm
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.controller.ToastManagerImpl;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoaderImpl;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderServiceImpl;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import javafx.stage.Stage;
 
 import java.net.http.HttpClient;
 
-/*
- * Module configuring Dependency Injections
- *
+
+/**
+ * Guice Module configuring Dependency Injections
  */
 public class AppModule extends AbstractModule {
+
+    private static Stage mainStage;
+
     @Override
     protected void configure() {
         // Singletons
@@ -86,7 +93,6 @@ public class AppModule extends AbstractModule {
         bind(CurrentSelectionService.class).in(Singleton.class);
         bind(NotificationManager.class).in(Singleton.class);
         bind(SupplyChainSnapshotContext.class).in(Singleton.class);
-
         bind(HttpClient.class).toInstance(HttpClient.newHttpClient());
 
         // Bind interfaces to implementations
@@ -168,6 +174,9 @@ public class AppModule extends AbstractModule {
         // - Search
         bind(SearchParams.class).to(SearchParamsImpl.class);
 
+        // - Toast
+        bind(ToastManager.class).to(ToastManagerImpl.class);
+
         // - Caching
         bind(new TypeLiteral<CachingService<PaginatedResults<Product>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Product>>>() {})
@@ -193,5 +202,17 @@ public class AppModule extends AbstractModule {
         bind(new TypeLiteral<CachingService<FactoryProductionHistory>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<FactoryProductionHistory>>() {})
                 .in(Singleton.class);
+    }
+
+    public static void setStage(Stage mainStage) {
+        AppModule.mainStage = mainStage;
+    }
+
+    @Provides
+    public Stage provideStage() {
+        if (mainStage == null) {
+            throw new IllegalStateException("Stage has not been initialized.");
+        }
+        return mainStage;
     }
 }

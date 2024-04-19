@@ -14,7 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-/*
+/**
  * Manager of Authentication. Uses API endpoints to validate credentials on login
  * or validate JWT token on demand
  *

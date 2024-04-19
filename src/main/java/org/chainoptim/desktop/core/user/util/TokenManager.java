@@ -2,10 +2,11 @@ package org.chainoptim.desktop.core.user.util;
 
 import java.util.prefs.Preferences;
 
-/*
+/**
  * Manager of JWT Token. Uses Preferences API to store and access it securely
  */
 public class TokenManager {
+
     private static final String JWT_KEY = "jwtToken";
 
     public static void saveToken(String token) {

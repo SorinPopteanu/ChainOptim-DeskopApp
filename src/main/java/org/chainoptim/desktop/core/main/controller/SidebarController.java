@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/*
+/**
  * Controller for Sidebar
  * Responsible for creating its buttons with NavigationService, img/ icons and sidebar.css
  * and toggling its expanded/collapsed view

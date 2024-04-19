@@ -169,5 +169,8 @@ module org.chainoptim.desktop {
     // - Caching
     opens org.chainoptim.desktop.shared.caching to com.google.guice;
 
+    // - Toast
+    opens org.chainoptim.desktop.shared.toast.controller to com.google.guice, javafx.fxml;
+
     exports org.chainoptim.desktop;
 }
