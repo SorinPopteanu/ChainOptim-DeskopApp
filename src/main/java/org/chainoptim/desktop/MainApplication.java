@@ -1,13 +1,12 @@
 package org.chainoptim.desktop;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.chainoptim.desktop.core.main.service.SceneManager;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
-import org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController;
-import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.util.resourceloader.FontLoaderService;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -44,7 +43,7 @@ public class MainApplication extends Application {
     }
 
     public static void main(String[] args) {
-        System.setProperty("org.graphstream.ui", "javafx");
+        System.out.println("Launching ChainOptim Desktop Application");
         launch(args);
     }
 }

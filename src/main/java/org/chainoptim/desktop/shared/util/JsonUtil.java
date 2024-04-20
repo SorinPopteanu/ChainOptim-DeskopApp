@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Getter;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 /**
  * Util to configure Json (de)serialization
  *
@@ -37,8 +35,30 @@ public class JsonUtil {
         } catch (JsonProcessingException ex) {
             ex.printStackTrace();
         }
-        String finalJsonString = jsonString;
-        return StringEscapeUtils.escapeEcmaScript(finalJsonString);
+        return escapeEcmaScript(jsonString);
+    }
+
+    public static String escapeEcmaScript(String input) {
+        StringBuilder builder = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            switch (c) {
+                case '"': builder.append("\\\""); break;
+                case '\\': builder.append("\\\\"); break;
+                case '\b': builder.append("\\b"); break;
+                case '\f': builder.append("\\f"); break;
+                case '\n': builder.append("\\n"); break;
+                case '\r': builder.append("\\r"); break;
+                case '\t': builder.append("\\t"); break;
+                default:
+                    if (c < ' ') {
+                        String t = "000" + Integer.toHexString(c);
+                        builder.append("\\u" + t.substring(t.length() - 4));
+                    } else {
+                        builder.append(c);
+                    }
+            }
+        }
+        return builder.toString();
     }
 
 }

@@ -6,4 +6,5 @@
             fx:controller="org.chainoptim.desktop.features.product.controller.ProductOverviewController"
             prefHeight="400.0" prefWidth="600.0">
 
+    <VBox fx:id="entitiesVBox"/>
 </AnchorPane>

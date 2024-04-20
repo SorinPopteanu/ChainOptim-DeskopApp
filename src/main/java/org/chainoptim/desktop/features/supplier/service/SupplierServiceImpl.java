@@ -65,7 +65,7 @@ public class SupplierServiceImpl implements SupplierService {
             SearchParams searchParams
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("suppliers", "organization", organizationId, searchParams);
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("suppliers", "organization", organizationId.toString(), searchParams);
         String routeAddress = rootAddress + cacheKey;
 
         String jwtToken = TokenManager.getToken();

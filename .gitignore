@@ -39,3 +39,7 @@ build/
 
 ### Node modules ###
 node_modules/
+
+### Runtime and Output ###
+myapp-runtime/
+output/
