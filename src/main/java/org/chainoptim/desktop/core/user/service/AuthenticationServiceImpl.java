@@ -1,11 +1,12 @@
 package org.chainoptim.desktop.core.user.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 
-import org.json.JSONObject;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -40,8 +41,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             if (response.statusCode() == HttpURLConnection.HTTP_OK) {
                 String responseBody = response.body();
-                JSONObject jsonResponse = new JSONObject(responseBody);
-                String jwtToken = jsonResponse.getString("accessToken");
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonResponse = mapper.readTree(responseBody);
+                String jwtToken = jsonResponse.get("accessToken").asText();
                 TokenManager.saveToken(jwtToken);
                 return true;
             } else {

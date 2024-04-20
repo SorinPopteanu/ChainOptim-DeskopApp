@@ -24,7 +24,7 @@
                 </HBox>
 
                 <ScrollPane prefHeight="400" fitToWidth="true">
-                    <VBox fx:id="notificationsVBox" styleClass="notifications-box-content" spacing="16"/>
+                    <VBox fx:id="notificationsVBox"/>
                 </ScrollPane>
             </VBox>
         </VBox>

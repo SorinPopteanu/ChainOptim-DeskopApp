@@ -14,9 +14,9 @@ public class SearchParamsImpl implements SearchParams {
     public SearchParamsImpl() {
         searchQuery = new SimpleStringProperty("");
         sortOption = new SimpleStringProperty("createdAt");
-        ascending = new SimpleBooleanProperty(true);
+        ascending = new SimpleBooleanProperty(false);
         page = new SimpleIntegerProperty(1);
-        itemsPerPage = new SimpleIntegerProperty(5);
+        itemsPerPage = new SimpleIntegerProperty(10);
     }
 
     public BooleanProperty getAscendingProperty() {
