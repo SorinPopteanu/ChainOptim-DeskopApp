@@ -13,6 +13,7 @@ import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDial
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
+import org.chainoptim.desktop.shared.enums.OrderStatus;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -69,7 +70,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             "quantity", "Quantity"
     );
     private Supplier supplier;
-    private final List<SupplierOrder.Status> statusOptions = Arrays.asList(SupplierOrder.Status.values());
+    private final List<OrderStatus> statusOptions = Arrays.asList(OrderStatus.values());
     private long totalRowsCount;
     private int newOrderCount = 0;
     private final List<Integer> selectedRowsIndices = new ArrayList<>();
@@ -102,7 +103,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     @FXML
     private TableColumn<TableData<SupplierOrder>, Float> quantityColumn;
     @FXML
-    private TableColumn<TableData<SupplierOrder>, SupplierOrder.Status> statusColumn;
+    private TableColumn<TableData<SupplierOrder>, OrderStatus> statusColumn;
     @FXML
     private TableColumn<TableData<SupplierOrder>, LocalDateTime> orderDateColumn;
     @FXML
@@ -147,8 +148,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
         TableConfigurer.configureTableView(tableView, selectRowColumn);
         configureTableColumns();
-        loadConfirmDialogs();
         setUpListeners();
+        loadConfirmDialogs();
 
         loadSupplierOrders(supplier.getId());
     }
@@ -166,6 +167,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         confirmSupplierOrderDeleteController = commonViewsLoader.loadConfirmDialog(confirmDeleteDialogContainer);
         confirmSupplierOrderDeleteController.setActionListener(confirmDialogDeleteListener);
         closeConfirmDeleteDialog();
+        System.out.println("Confirm Dialogs loaded");
     }
 
     // Configuration
@@ -219,10 +221,10 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 item.getData().setDeliveryDate(newValue);
             }
         });
-        statusColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierOrder>, SupplierOrder.Status>(
+        statusColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierOrder>, OrderStatus>(
                 isEditMode, selectedRowsIndices, null, statusOptions) {
             @Override
-            protected void commitChange(TableData<SupplierOrder> item, SupplierOrder.Status newValue) {
+            protected void commitChange(TableData<SupplierOrder> item, OrderStatus newValue) {
                 item.getData().setStatus(newValue);
             }
         });
@@ -286,6 +288,18 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         confirmDialogCreateListener = new RunnableConfirmDialogActionListener<>(onConfirmCreate, onCancelCreate);
     }
 
+    private void setUpRowListeners(TableData<SupplierOrder> supplierOrder) {
+        // Add listener to the selectedProperty
+        supplierOrder.isSelectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (Boolean.TRUE.equals(isSelected)) {
+                selectedRowsIndices.add(tableView.getItems().indexOf(supplierOrder));
+            } else {
+                selectedRowsIndices.remove(Integer.valueOf(tableView.getItems().indexOf(supplierOrder)));
+            }
+            selectedCount.set(selectedRowsIndices.size());
+        });
+    }
+
     // Data loading
     private void loadSupplierOrders(Integer supplierId) {
         fallbackManager.reset();
@@ -334,18 +348,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private Optional<PaginatedResults<SupplierOrder>> handleOrdersException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supplier orders."));
         return Optional.empty();
-    }
-
-    private void setUpRowListeners(TableData<SupplierOrder> supplierOrder) {
-        // Add listener to the selectedProperty
-        supplierOrder.isSelectedProperty().addListener((obs, wasSelected, isSelected) -> {
-            if (Boolean.TRUE.equals(isSelected)) {
-                selectedRowsIndices.add(tableView.getItems().indexOf(supplierOrder));
-            } else {
-                selectedRowsIndices.remove(Integer.valueOf(tableView.getItems().indexOf(supplierOrder)));
-            }
-            selectedCount.set(selectedRowsIndices.size());
-        });
     }
 
     // UI Actions
@@ -454,6 +456,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         }
         confirmSupplierOrderDeleteController.setData(selectedOrders, confirmDialogInput);
         toggleDialogVisibility(confirmDeleteDialogContainer, true);
+        addToastWarning();
     }
 
     private void closeConfirmDeleteDialog() {
@@ -467,25 +470,30 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     // Backend calls
     private void handleCreateOrders(List<SupplierOrder> supplierOrders) {
-        List<CreateSupplierOrderDTO> createSupplierOrderDTOs = new ArrayList<>();
+        try {
+            List<CreateSupplierOrderDTO> createSupplierOrderDTOs = new ArrayList<>();
 
-        for (SupplierOrder order : supplierOrders) {
-            CreateSupplierOrderDTO createSupplierOrderDTO = getCreateSupplierOrderDTO(order);
+            for (SupplierOrder order : supplierOrders) {
+                CreateSupplierOrderDTO createSupplierOrderDTO = getCreateSupplierOrderDTO(order);
 
-            createSupplierOrderDTOs.add(createSupplierOrderDTO);
+                createSupplierOrderDTOs.add(createSupplierOrderDTO);
+            }
+
+            supplierOrdersWriteService.createSupplierOrdersInBulk(createSupplierOrderDTOs)
+                    .thenAccept(createdOrders -> {
+                        if (createdOrders != null) {
+                            System.out.println("Orders created successfully: " + createdOrders);
+                        } else {
+                            System.out.println("Error creating orders");
+                        }
+                    });
+            isNewOrderMode.set(false);
+            closeConfirmCreateDialog();
+            updateUIOnSuccessfulOperation();
+            addToast();
+        } catch (Exception e) {
+            addToastError();
         }
-
-        supplierOrdersWriteService.createSupplierOrdersInBulk(createSupplierOrderDTOs)
-                .thenAccept(createdOrders -> {
-                    if (createdOrders != null) {
-                        System.out.println("Orders created successfully: " + createdOrders);
-                    } else {
-                        System.out.println("Error creating orders");
-                    }
-                });
-        isNewOrderMode.set(false);
-        closeConfirmCreateDialog();
-        updateUIOnSuccessfulOperation();
     }
 
     private CreateSupplierOrderDTO getCreateSupplierOrderDTO(SupplierOrder order) {
@@ -516,15 +524,10 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         }
 
         supplierOrdersWriteService.updateSupplierOrdersInBulk(updateSupplierOrderDTOs)
-                .thenAccept(updatedOrders -> {
-                    if (updatedOrders != null) {
-                        System.out.println("Orders updated successfully: " + updatedOrders);
-                    } else {
-                        System.out.println("Error updating orders");
-                    }
-                });
+                .thenAccept(updatedOrders -> {});
         closeConfirmUpdateDialog();
         updateUIOnSuccessfulOperation();
+        addToastUpdate();
     }
 
     private UpdateSupplierOrderDTO getUpdateSupplierOrderDTO(SupplierOrder order) {
@@ -578,5 +581,31 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         selectRowColumn.setEditable(true);
         selectedRowsIndices.clear();
         tableView.refresh();
+    }
+
+    // Toasts
+    private void addToast() {
+        ToastInfo toastInfo = new ToastInfo("Success", "The supplier order has been created successfully", OperationOutcome.SUCCESS);
+        toastManager.addToast(toastInfo);
+    }
+
+    private void addToastUpdate() {
+        ToastInfo toastInfo = new ToastInfo("Success", "The supplier order has been updated successfully", OperationOutcome.SUCCESS);
+        toastManager.addToast(toastInfo);
+    }
+
+    private void addToastError() {
+        ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the supplier order", OperationOutcome.ERROR);
+        toastManager.addToast(toastInfo);
+    }
+
+    private void addToastInfo() {
+        ToastInfo toastInfo = new ToastInfo("Info", "A Supplier Order is a request for a product from a supplier", OperationOutcome.INFO);
+        toastManager.addToast(toastInfo);
+    }
+
+    private void addToastWarning() {
+        ToastInfo toastInfo = new ToastInfo("Warning", "You are about to delete a supplier order", OperationOutcome.WARNING);
+        toastManager.addToast(toastInfo);
     }
 }
