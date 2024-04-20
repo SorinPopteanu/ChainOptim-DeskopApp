@@ -3,6 +3,7 @@ package org.chainoptim.desktop.features.product.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.features.product.dto.ProductOverviewDTO;
 import org.chainoptim.desktop.features.product.dto.ProductsSearchDTO;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
@@ -123,6 +124,31 @@ public class ProductServiceImpl implements ProductService {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         return empty();
+                    }
+                });
+    }
+
+    public CompletableFuture<ProductOverviewDTO> getProductOverview(Integer productId) {
+        String routeAddress = "http://localhost:8080/api/v1/products/" + productId.toString() + "/overview";
+
+        String jwtToken = TokenManager.getToken();
+        if (jwtToken == null) return new CompletableFuture<>();
+        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeAddress))
+                .GET()
+                .headers(HEADER_KEY, headerValue)
+                .build();
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return null;
+                    try {
+                        return JsonUtil.getObjectMapper().readValue(response.body(), ProductOverviewDTO.class);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return null;
                     }
                 });
     }
