@@ -11,6 +11,8 @@ import org.chainoptim.desktop.core.overview.model.Snapshot;
 import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.shared.common.uielements.badge.BadgeData;
+import org.chainoptim.desktop.shared.common.uielements.badge.FeatureCountBadge;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -188,38 +190,15 @@ public class OverviewController implements Initializable {
     private void renderEntityCountsVBox(Snapshot snapshot) {
         entityCountsHBox.getChildren().clear();
 
-        HBox productsCountLabel = getFeatureCountBadge("Products", snapshot.getProductsCount());
-        HBox factoriesCountLabel = getFeatureCountBadge("Factories", snapshot.getFactoriesCount());
-        HBox warehousesCountLabel = getFeatureCountBadge("Warehouses", snapshot.getWarehousesCount());
-        HBox suppliersCountLabel = getFeatureCountBadge("Suppliers", snapshot.getSuppliersCount());
-        HBox clientsCountLabel = getFeatureCountBadge("Clients", snapshot.getClientsCount());
+        FeatureCountBadge productsCountLabel = new FeatureCountBadge(new BadgeData("Products", snapshot.getProductsCount(), () -> navigationService.switchView("Products", true)));
+        FeatureCountBadge factoriesCountLabel = new FeatureCountBadge(new BadgeData("Factories", snapshot.getFactoriesCount(), () -> navigationService.switchView("Factories", true)));
+        FeatureCountBadge warehousesCountLabel = new FeatureCountBadge(new BadgeData("Warehouses", snapshot.getWarehousesCount(), () -> navigationService.switchView("Warehouses", true)));
+        FeatureCountBadge suppliersCountLabel = new FeatureCountBadge(new BadgeData("Suppliers", snapshot.getSuppliersCount(), () -> navigationService.switchView("Suppliers", true)));
+        FeatureCountBadge clientsCountLabel = new FeatureCountBadge(new BadgeData("Clients", snapshot.getClientsCount(), () -> navigationService.switchView("Clients", true)));
 
         entityCountsHBox.getChildren().addAll(productsCountLabel, factoriesCountLabel, warehousesCountLabel, suppliersCountLabel, clientsCountLabel);
         entityCountsHBox.setSpacing(40);
         entityCountsHBox.setAlignment(Pos.CENTER);
-    }
-
-    private HBox getFeatureCountBadge(String featureName, long count) {
-        HBox badgeContainer = new HBox(0);
-        badgeContainer.setAlignment(Pos.CENTER_LEFT);
-        badgeContainer.getStyleClass().add("badge-container");
-
-        Label featureLabel = new Label(featureName);
-        featureLabel.getStyleClass().add("feature-count-label");
-
-        // Creating a region to act as a separator
-        Region separator = new Region();
-        separator.setPrefWidth(1);
-        separator.setMinHeight(20);
-        separator.setStyle("-fx-background-color: #d3d6d4;");
-
-        Label countLabel = new Label(String.valueOf(count));
-        countLabel.getStyleClass().add("count-label");
-
-        badgeContainer.getChildren().addAll(featureLabel, separator, countLabel);
-        badgeContainer.setOnMouseClicked(event -> navigationService.switchView(featureName, true));
-
-        return badgeContainer;
     }
 
     private void renderNotificationsVBox(List<NotificationUser> notifications) {
