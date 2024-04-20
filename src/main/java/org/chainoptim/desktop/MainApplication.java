@@ -1,13 +1,12 @@
 package org.chainoptim.desktop;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.chainoptim.desktop.core.main.service.SceneManager;
 import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.chainoptim.desktop.core.user.util.TokenManager;
-import org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController;
-import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.util.resourceloader.FontLoaderService;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -28,11 +27,9 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        System.out.println("Starting ChainOptim Desktop Application");
         AppModule.setStage(primaryStage);
         SceneManager.setPrimaryStage(primaryStage);
         FontLoaderService.loadRobotoFonts();
-        System.out.println("Initialization complete");
 
         // Show Login Scene or Main Scene depending on whether a valid JWT token exists
         String jwtToken = TokenManager.getToken();
