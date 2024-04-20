@@ -28,10 +28,11 @@ public class SupplierOrder {
     }
 
     public enum Status {
-        Initiated,
-        Negociated,
-        Placed,
-        Delivered
+        INITIATED,
+        NEGOTIATED,
+        PLACED,
+        DELIVERED,
+        CANCELED
     }
 
     private Integer id;

@@ -12,6 +12,7 @@ import org.chainoptim.desktop.features.supplier.service.SupplierOrdersWriteServi
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -23,6 +24,8 @@ import org.chainoptim.desktop.shared.table.model.TableData;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
 import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
 
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
@@ -46,6 +49,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private final SupplierOrdersService supplierOrdersService;
     private final SupplierOrdersWriteService supplierOrdersWriteService;
     private final CommonViewsLoader commonViewsLoader;
+    private final ToastManager toastManager;
 
     // Controllers
     private TableToolbarController tableToolbarController;
@@ -119,12 +123,14 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     public SupplierOrdersController(SupplierOrdersService supplierOrdersService,
                                     SupplierOrdersWriteService supplierOrdersWriteService,
                                     CommonViewsLoader commonViewsLoader,
+                                    ToastManager toastManager,
                                     FallbackManager fallbackManager,
                                     SearchParams searchParams,
                                     SelectComponentLoader selectComponentLoader) {
         this.supplierOrdersService = supplierOrdersService;
         this.supplierOrdersWriteService = supplierOrdersWriteService;
         this.commonViewsLoader = commonViewsLoader;
+        this.toastManager = toastManager;
         this.fallbackManager = fallbackManager;
         this.searchParams = searchParams;
         this.selectComponentLoader = selectComponentLoader;
