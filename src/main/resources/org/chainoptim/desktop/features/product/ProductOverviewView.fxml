@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.TextFlow?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.product.controller.ProductOverviewController"
-            prefHeight="400.0" prefWidth="600.0" style="-fx-padding: 20px;" >
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.product.controller.ProductOverviewController"
+      prefHeight="400.0" prefWidth="600.0" style="-fx-padding: 20px;" spacing="20">
+
+    <FlowPane hgap="8" alignment="CENTER_LEFT">
+        <Label text="Description:" styleClass="general-label-medium-large"/>
+        <TextFlow fx:id="descriptionTextFlow"/>
+    </FlowPane>
+
+    <FlowPane hgap="8" alignment="CENTER_LEFT">
+        <Label text="Unit of Measurement:" styleClass="general-label-medium-large"/>
+        <Label fx:id="unitOfMeasurementLabel"/>
+    </FlowPane>
 
     <VBox fx:id="entitiesVBox"/>
 </VBox>
