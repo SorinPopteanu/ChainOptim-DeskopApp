@@ -128,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
                 });
     }
 
-    public CompletableFuture<ProductOverviewDTO> getProductOverview(Integer productId) {
+    public CompletableFuture<Optional<ProductOverviewDTO>> getProductOverview(Integer productId) {
         String routeAddress = "http://localhost:8080/api/v1/products/" + productId.toString() + "/overview";
 
         String jwtToken = TokenManager.getToken();
@@ -143,12 +143,13 @@ public class ProductServiceImpl implements ProductService {
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return null;
+                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
                     try {
-                        return JsonUtil.getObjectMapper().readValue(response.body(), ProductOverviewDTO.class);
+                        ProductOverviewDTO overviewDTO = JsonUtil.getObjectMapper().readValue(response.body(), ProductOverviewDTO.class);
+                        return Optional.of(overviewDTO);
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        return null;
+                        return Optional.empty();
                     }
                 });
     }

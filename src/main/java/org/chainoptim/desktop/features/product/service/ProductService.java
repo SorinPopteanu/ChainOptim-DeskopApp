@@ -19,5 +19,5 @@ public interface ProductService {
             SearchParams searchParams
     );
     CompletableFuture<Optional<Product>> getProductWithStages(Integer productId);
-    CompletableFuture<ProductOverviewDTO> getProductOverview(Integer productId);
+    CompletableFuture<Optional<ProductOverviewDTO>> getProductOverview(Integer productId);
 }
