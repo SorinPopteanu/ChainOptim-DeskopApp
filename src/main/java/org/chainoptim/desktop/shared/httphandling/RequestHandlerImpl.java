@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.result;
+package org.chainoptim.desktop.shared.httphandling;
 
 import org.chainoptim.desktop.shared.util.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -50,5 +50,10 @@ public class RequestHandlerImpl implements RequestHandler {
                         return new Result<>(null, error, response.statusCode());
                     }
                 });
+    }
+
+    public <T> CompletableFuture<Result<T>> getParsingErrorResult() {
+        return CompletableFuture.completedFuture(
+                new Result<>(null, new Error(new Date(), "An error occurred while processing the data.", ""), 0));
     }
 }

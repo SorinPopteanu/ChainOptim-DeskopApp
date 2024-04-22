@@ -60,8 +60,10 @@ import org.chainoptim.desktop.shared.caching.CachingServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
 import org.chainoptim.desktop.shared.features.location.service.LocationServiceImpl;
-import org.chainoptim.desktop.shared.result.RequestHandler;
-import org.chainoptim.desktop.shared.result.RequestHandlerImpl;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilderImpl;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.RequestHandlerImpl;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
@@ -168,7 +170,8 @@ public class AppModule extends AbstractModule {
         bind(SupplierPerformanceService.class).to(SupplierPerformanceServiceImpl.class);
 
         // Shared
-        // - Request Handler
+        // - Http Handling
+        bind(RequestBuilder.class).to(RequestBuilderImpl.class);
         bind(RequestHandler.class).to(RequestHandlerImpl.class);
 
         // - Location

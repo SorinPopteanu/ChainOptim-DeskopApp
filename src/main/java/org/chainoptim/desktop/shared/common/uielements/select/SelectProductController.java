@@ -4,7 +4,7 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.dto.ProductsSearchDTO;
 import org.chainoptim.desktop.features.product.service.ProductService;
-import org.chainoptim.desktop.shared.result.Result;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -13,7 +13,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 
 import java.util.List;
-import java.util.Optional;
 
 public class SelectProductController {
 

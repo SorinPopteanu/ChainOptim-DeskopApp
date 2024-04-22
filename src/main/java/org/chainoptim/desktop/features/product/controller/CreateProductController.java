@@ -77,14 +77,14 @@ public class CreateProductController implements Initializable {
         System.out.println("CreateProduct: " + productDTO.getUnitDTO());
 
         productWriteService.createProduct(productDTO)
-                .thenAccept(productOptional ->
+                .thenAccept(result ->
                     // Navigate to product page
                     Platform.runLater(() -> {
-                        if (productOptional.isEmpty()) {
+                        if (result.getError() != null) {
                             fallbackManager.setErrorMessage("Failed to create product.");
                             return;
                         }
-                        Product product = productOptional.get();
+                        Product product = result.getData();
                         fallbackManager.setLoading(false);
                         currentSelectionService.setSelectedId(product.getId());
                         navigationService.switchView("Product?id=" + product.getId(), true);

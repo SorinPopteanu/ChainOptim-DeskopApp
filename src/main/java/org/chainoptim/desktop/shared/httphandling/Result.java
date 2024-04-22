@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.result;
+package org.chainoptim.desktop.shared.httphandling;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -15,12 +15,11 @@ import org.chainoptim.desktop.features.product.dto.ProductOverviewDTO;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
-import org.chainoptim.desktop.shared.result.Result;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.dto.SmallEntityDTO;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ProductOverviewController implements DataReceiver<Product> {
 

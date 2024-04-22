@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.result;
+package org.chainoptim.desktop.shared.httphandling;
 
 import org.chainoptim.desktop.shared.util.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;

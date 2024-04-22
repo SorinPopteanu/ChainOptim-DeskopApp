@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.result;
+package org.chainoptim.desktop.shared.httphandling;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -10,4 +10,5 @@ public interface RequestHandler {
 
     <T> CompletableFuture<Result<T>> sendRequest(HttpRequest request, TypeReference<T> typeReference);
     <T> CompletableFuture<Result<T>> sendRequest(HttpRequest request, TypeReference<T> typeReference, Consumer<T> successHandler);
+    <T> CompletableFuture<Result<T>> getParsingErrorResult();
 }
