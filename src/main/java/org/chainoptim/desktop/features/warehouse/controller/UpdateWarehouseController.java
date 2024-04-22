@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -77,24 +78,23 @@ public class UpdateWarehouseController implements Initializable {
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Warehouse> handleWarehouseResponse(Optional<Warehouse> warehouseOptional) {
+    private Result<Warehouse> handleWarehouseResponse(Result<Warehouse> result) {
         Platform.runLater(() -> {
-            if (warehouseOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load warehouse.");
                 return;
             }
-            warehouse = warehouseOptional.get();
+            warehouse = result.getData();
 
             nameField.setText(warehouse.getName());
             selectOrCreateLocationController.setSelectedLocation(warehouse.getLocation());
         });
-
-        return warehouseOptional;
+        return result;
     }
 
-    private Optional<Warehouse> handleWarehouseException(Throwable ex) {
+    private Result<Warehouse> handleWarehouseException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load warehouse."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML
@@ -106,26 +106,29 @@ public class UpdateWarehouseController implements Initializable {
         System.out.println(warehouseDTO);
 
         warehouseWriteService.updateWarehouse(warehouseDTO)
-                .thenAccept(warehouseOptional ->
-                    Platform.runLater(() -> {
-                        if (warehouseOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create warehouse.");
-                            return;
-                        }
-                        fallbackManager.setLoading(false);
-
-                        // Manage navigation, invalidating previous warehouse cache
-                        Warehouse updatedWarehouse = warehouseOptional.get();
-                        String warehousePage = "Warehouse?id=" + updatedWarehouse.getId();
-                        NavigationServiceImpl.invalidateViewCache(warehousePage);
-                        currentSelectionService.setSelectedId(updatedWarehouse.getId());
-                        navigationService.switchView(warehousePage, true);
-                    })
-                )
+                .thenApply(this::handleUpdateWarehouseResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Warehouse> handleUpdateWarehouseResponse(Result<Warehouse> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create warehouse.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            // Manage navigation, invalidating previous warehouse cache
+            Warehouse updatedWarehouse = result.getData();
+            String warehousePage = "Warehouse?id=" + updatedWarehouse.getId();
+            NavigationServiceImpl.invalidateViewCache(warehousePage);
+            currentSelectionService.setSelectedId(updatedWarehouse.getId());
+            navigationService.switchView(warehousePage, true);
+        });
+        return result;
     }
 
     private UpdateWarehouseDTO getUpdateWarehouseDTO() {

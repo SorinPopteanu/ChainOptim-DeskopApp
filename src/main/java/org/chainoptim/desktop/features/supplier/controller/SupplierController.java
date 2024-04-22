@@ -16,6 +16,7 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
@@ -130,13 +131,13 @@ public class SupplierController implements Initializable {
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Supplier> handleSupplierResponse(Optional<Supplier> supplierOptional) {
+    private Result<Supplier> handleSupplierResponse(Result<Supplier> result) {
         Platform.runLater(() -> {
-            if (supplierOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load supplier.");
                 return;
             }
-            this.supplier = supplierOptional.get();
+            this.supplier = result.getData();
             supplierName.setText(supplier.getName());
 
             if (supplier.getLocation() != null) {
@@ -147,19 +148,18 @@ public class SupplierController implements Initializable {
 
             loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
         });
-
-        return supplierOptional;
+        return result;
     }
 
-    private Optional<Supplier> handleSupplierException(Throwable ex) {
+    private Result<Supplier> handleSupplierException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supplier."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void loadTabContent(Tab tab, String fxmlFilepath, Supplier supplier) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
-            loader.setControllerFactory(MainApplication.injector::getInstance);
+            loader.setControllerFactory(controllerFactory::createController);
             Node content = loader.load();
             DataReceiver<Supplier> controller = loader.getController();
             controller.setData(supplier);

@@ -50,6 +50,7 @@ public class FactoryStageWriteServiceImpl implements FactoryStageWriteService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.PUT, routeAddress, TokenManager.getToken(), stageDTO);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<FactoryStage>() {});
     }

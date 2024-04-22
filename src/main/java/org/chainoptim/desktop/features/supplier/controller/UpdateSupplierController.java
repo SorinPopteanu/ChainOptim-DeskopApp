@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.supplier.service.SupplierService;
 import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -18,7 +19,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class UpdateSupplierController implements Initializable {
@@ -72,28 +72,27 @@ public class UpdateSupplierController implements Initializable {
 
         supplierService.getSupplierById(supplierId)
                 .thenApply(this::handleSupplierResponse)
-                .exceptionally(this::handleSupplierException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+                .exceptionally(this::handleSupplierException);
     }
 
-    private Optional<Supplier> handleSupplierResponse(Optional<Supplier> supplierOptional) {
+    private Result<Supplier> handleSupplierResponse(Result<Supplier> result) {
         Platform.runLater(() -> {
-            if (supplierOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load supplier.");
                 return;
             }
-            supplier = supplierOptional.get();
+            supplier = result.getData();
+            fallbackManager.setLoading(false);
 
             nameField.setText(supplier.getName());
             selectOrCreateLocationController.setSelectedLocation(supplier.getLocation());
         });
-
-        return supplierOptional;
+        return result;
     }
 
-    private Optional<Supplier> handleSupplierException(Throwable ex) {
+    private Result<Supplier> handleSupplierException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supplier."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML
@@ -104,26 +103,29 @@ public class UpdateSupplierController implements Initializable {
         UpdateSupplierDTO supplierDTO = getUpdateSupplierDTO();
 
         supplierWriteService.updateSupplier(supplierDTO)
-                .thenAccept(supplierOptional ->
-                    Platform.runLater(() -> {
-                        if (supplierOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create supplier.");
-                            return;
-                        }
-                        fallbackManager.setLoading(false);
-
-                        // Manage navigation, invalidating previous supplier cache
-                        Supplier updatedSupplier = supplierOptional.get();
-                        String supplierPage = "Supplier?id=" + updatedSupplier.getId();
-                        NavigationServiceImpl.invalidateViewCache(supplierPage);
-                        currentSelectionService.setSelectedId(updatedSupplier.getId());
-                        navigationService.switchView(supplierPage, true);
-                    })
-                )
+                .thenApply(this::handleUpdateSupplierResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Supplier> handleUpdateSupplierResponse(Result<Supplier> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create supplier.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            // Manage navigation, invalidating previous supplier cache
+            Supplier updatedSupplier = result.getData();
+            String supplierPage = "Supplier?id=" + updatedSupplier.getId();
+            NavigationServiceImpl.invalidateViewCache(supplierPage);
+            currentSelectionService.setSelectedId(updatedSupplier.getId());
+            navigationService.switchView(supplierPage, true);
+        });
+        return result;
     }
 
     private UpdateSupplierDTO getUpdateSupplierDTO() {

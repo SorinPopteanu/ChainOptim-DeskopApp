@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.supplier.service;
 
 import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
@@ -10,10 +11,10 @@ import java.util.concurrent.CompletableFuture;
 
 public interface SupplierService {
 
-    CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationId(Integer organizationId);
-    CompletableFuture<Optional<PaginatedResults<Supplier>>> getSuppliersByOrganizationIdAdvanced(
+    CompletableFuture<Result<List<Supplier>>> getSuppliersByOrganizationId(Integer organizationId);
+    CompletableFuture<Result<PaginatedResults<Supplier>>> getSuppliersByOrganizationIdAdvanced(
             Integer organizationId,
             SearchParams searchParams
     );
-    CompletableFuture<Optional<Supplier>> getSupplierById(Integer supplierId);
+    CompletableFuture<Result<Supplier>> getSupplierById(Integer supplierId);
 }
