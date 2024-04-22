@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.productpipeline.dto.ComponentsSearchDTO;
 import org.chainoptim.desktop.features.productpipeline.service.ComponentService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 
@@ -49,18 +50,18 @@ public class SelectComponentLoader {
                 .exceptionally(this::handleComponentsException);
     }
 
-    private Optional<List<ComponentsSearchDTO>> handleComponentsResponse(Optional<List<ComponentsSearchDTO>> componentsOptional) {
+    private Result<List<ComponentsSearchDTO>> handleComponentsResponse(Result<List<ComponentsSearchDTO>> result) {
         Platform.runLater(() -> {
-            if (componentsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
             componentsMap.clear();
-            componentsOptional.get().forEach(component -> componentsMap.put(component.getId(), component.getName()));
+            result.getData().forEach(component -> componentsMap.put(component.getId(), component.getName()));
         });
-        return componentsOptional;
+        return result;
     }
 
-    private Optional<List<ComponentsSearchDTO>> handleComponentsException(Throwable ex) {
-        return Optional.empty();
+    private Result<List<ComponentsSearchDTO>> handleComponentsException(Throwable ex) {
+        return new Result<>();
     }
 }

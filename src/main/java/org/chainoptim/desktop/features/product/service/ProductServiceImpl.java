@@ -40,9 +40,6 @@ public class ProductServiceImpl implements ProductService {
         String routeAddress = "http://localhost:8080/api/v1/products/organization/" + organizationId.toString() + (small ? "/small" : "");
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
-        if (request == null) {
-            return requestHandler.getParsingErrorResult();
-        }
 
         return requestHandler.sendRequest(request, new TypeReference<List<ProductsSearchDTO>>() {});
     }
@@ -56,9 +53,6 @@ public class ProductServiceImpl implements ProductService {
         String routeAddress = rootAddress + cacheKey;
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
-        if (request == null) {
-            return requestHandler.getParsingErrorResult();
-        }
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
             return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
@@ -74,9 +68,6 @@ public class ProductServiceImpl implements ProductService {
         String routeAddress = "http://localhost:8080/api/v1/products/" + productId.toString() + "/stages";
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
-        if (request == null) {
-            return requestHandler.getParsingErrorResult();
-        }
 
         return requestHandler.sendRequest(request, new TypeReference<Product>() {});
     }
@@ -85,9 +76,6 @@ public class ProductServiceImpl implements ProductService {
         String routeAddress = "http://localhost:8080/api/v1/products/" + productId.toString() + "/overview";
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
-        if (request == null) {
-            return requestHandler.getParsingErrorResult();
-        }
 
         return requestHandler.sendRequest(request, new TypeReference<ProductOverviewDTO>() {});
     }

@@ -10,6 +10,7 @@ import org.chainoptim.desktop.features.productpipeline.service.StageWriteService
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectProductController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
@@ -105,32 +106,38 @@ public class CreateProductStageController implements Initializable {
         System.out.println(stageDTO);
 
         stageWriteService.createStage(stageDTO)
-                .thenAccept(stageOptional ->
-                    Platform.runLater(() -> {
-                        if (stageOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create stage.");
-                            return;
-                        }
-                        Stage stage = stageOptional.get();
-                        fallbackManager.setLoading(false);
-
-                        graphService.refreshProductGraph(stageDTO.getProductId()).thenApply(productionGraphOptional -> {
-                            Platform.runLater(() -> {
-                                if (productionGraphOptional.isEmpty()) {
-                                    fallbackManager.setErrorMessage("Failed to refresh product graph");
-                                }
-                                if (actionListener != null && productionGraphOptional.isPresent()) {
-                                    actionListener.onAddStage(productionGraphOptional.get());
-                                }
-                            });
-                            return productionGraphOptional;
-                        });
-                    })
-                )
+                .thenApply(this::handleCreateStageResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Stage> handleCreateStageResponse(Result<Stage> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create stage.");
+                return;
+            }
+            Stage stage = result.getData();
+            fallbackManager.setLoading(false);
+
+            // Refresh product graph
+            graphService.refreshProductGraph(stage.getProductId()).thenApply(productionGraphOptional -> {
+                Platform.runLater(() -> {
+                    if (productionGraphOptional.isEmpty()) {
+                        fallbackManager.setErrorMessage("Failed to refresh product graph");
+                    }
+
+                    if (actionListener != null && productionGraphOptional.isPresent()) {
+                        actionListener.onAddStage(productionGraphOptional.get());
+                    }
+                });
+                return productionGraphOptional;
+            });
+        });
+
+        return result;
     }
 
     private CreateStageDTO getStageDTO(Integer organizationId) {

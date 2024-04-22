@@ -7,6 +7,7 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.productpipeline.dto.StagesSearchDTO;
 import org.chainoptim.desktop.features.productpipeline.service.StageService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -68,18 +69,18 @@ public class SelectStageController {
                 .exceptionally(this::handleStagesException);
     }
 
-    private Optional<List<StagesSearchDTO>> handleStagesResponse(Optional<List<StagesSearchDTO>> stagesOptional) {
+    private Result<List<StagesSearchDTO>> handleStagesResponse(Result<List<StagesSearchDTO>> result) {
         Platform.runLater(() -> {
-            if (stagesOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
-            stageComboBox.getItems().setAll(stagesOptional.get());
+            stageComboBox.getItems().setAll(result.getData());
 
         });
-        return stagesOptional;
+        return result;
     }
 
-    private Optional<List<StagesSearchDTO>> handleStagesException(Throwable ex) {
-        return Optional.empty();
+    private Result<List<StagesSearchDTO>> handleStagesException(Throwable ex) {
+        return new Result<>();
     }
 }
