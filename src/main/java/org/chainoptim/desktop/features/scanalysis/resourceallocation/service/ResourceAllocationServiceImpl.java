@@ -2,8 +2,13 @@ package org.chainoptim.desktop.features.scanalysis.resourceallocation.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.inject.Inject;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.AllocationPlan;
+import org.chainoptim.desktop.shared.httphandling.HttpMethod;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -17,44 +22,23 @@ import java.util.concurrent.CompletableFuture;
 
 public class ResourceAllocationServiceImpl implements ResourceAllocationService {
 
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final RequestHandler requestHandler;
+    private final RequestBuilder requestBuilder;
 
-    private static final String HEADER_KEY = "Authorization";
-    private static final String HEADER_VALUE_PREFIX = "Bearer ";
+    @Inject
+    public ResourceAllocationServiceImpl(RequestHandler requestHandler,
+                                         RequestBuilder requestBuilder) {
+        this.requestHandler = requestHandler;
+        this.requestBuilder = requestBuilder;
+    }
 
 
-    public CompletableFuture<Optional<AllocationPlan>> allocateFactoryResources(Integer factoryId, Float duration) {
+    public CompletableFuture<Result<AllocationPlan>> allocateFactoryResources(Integer factoryId, Float duration) {
         String routeAddress = "http://localhost:8080/api/v1/factories/allocate-resources/" + factoryId;
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildWriteRequest(
+                HttpMethod.POST, routeAddress, TokenManager.getToken(), duration);
 
-        String jsonPayload = null;
-        try {
-            jsonPayload = JsonUtil.getObjectMapper().writeValueAsString(duration);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        assert jsonPayload != null;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .header("Content-Type", "application/json") // Set Content-Type header to application/json
-                .header(HEADER_KEY, headerValue)
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8))
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<AllocationPlan>empty();
-                    try {
-                        AllocationPlan allocationPlan = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<AllocationPlan>() {});
-                        return Optional.of(allocationPlan);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<AllocationPlan>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<AllocationPlan>() {});
     }
 }

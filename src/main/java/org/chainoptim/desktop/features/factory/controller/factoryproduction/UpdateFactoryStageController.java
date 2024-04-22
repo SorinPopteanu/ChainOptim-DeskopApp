@@ -136,14 +136,14 @@ public class UpdateFactoryStageController {
             FactoryStage stage = result.getData();
             fallbackManager.setLoading(false);
 
-            graphService.refreshFactoryGraph(factoryId).thenApply(productionGraphOptional -> {
-                if (productionGraphOptional.isEmpty()) {
+            graphService.refreshFactoryGraph(factoryId).thenApply(graphResult -> {
+                if (graphResult.getError() != null) {
                     fallbackManager.setErrorMessage("Failed to refresh factory graph");
                 }
-                if (actionListener != null) {
-                    actionListener.onUpdateStage(productionGraphOptional.get());
+                if (actionListener != null && graphResult.getData() != null) {
+                    actionListener.onUpdateStage(graphResult.getData());
                 }
-                return productionGraphOptional;
+                return graphResult;
             });
         });
         return result;

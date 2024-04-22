@@ -5,107 +5,63 @@ import org.chainoptim.desktop.features.scanalysis.resourceallocation.dto.UpdateA
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocationPlan;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
-import org.chainoptim.desktop.shared.util.JsonUtil;
+import org.chainoptim.desktop.shared.httphandling.HttpMethod;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocationPersistenceService {
 
     private final CachingService<ResourceAllocationPlan> cachingService;
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final RequestHandler requestHandler;
+    private final RequestBuilder requestBuilder;
 
-    private static final String HEADER_KEY = "Authorization";
-    private static final String HEADER_VALUE_PREFIX = "Bearer ";
     private static final int STALE_TIME = 30000;
 
     @Inject
-    public ResourceAllocationPersistenceServiceImpl(CachingService<ResourceAllocationPlan> cachingService) {
+    public ResourceAllocationPersistenceServiceImpl(CachingService<ResourceAllocationPlan> cachingService,
+                                                    RequestHandler requestHandler,
+                                                    RequestBuilder requestBuilder) {
         this.cachingService = cachingService;
+        this.requestHandler = requestHandler;
+        this.requestBuilder = requestBuilder;
     }
 
-    public CompletableFuture<Optional<ResourceAllocationPlan>> getResourceAllocationPlanByFactoryId(Integer factoryId) {
+    public CompletableFuture<Result<ResourceAllocationPlan>> getResourceAllocationPlanByFactoryId(Integer factoryId) {
         String rootAddress = "http://localhost:8080/api/v1/";
         String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("active-resource-allocation-plans", "factory", factoryId);
         String routeAddress = rootAddress + cacheKey;
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
-            System.out.println("Cache hit:  " + cacheKey + " - ResourceAllocationPlan");
-            return CompletableFuture.completedFuture(Optional.of(cachingService.get(cacheKey)));
+            return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
         }
 
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<ResourceAllocationPlan>empty();
-                    try {
-                        ResourceAllocationPlan allocationPlan = JsonUtil.getObjectMapper().readValue(response.body(), ResourceAllocationPlan.class);
-
-                        cachingService.remove(cacheKey);
-                        cachingService.add(cacheKey, allocationPlan, STALE_TIME);
-
-                        return Optional.of(allocationPlan);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<ResourceAllocationPlan>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<ResourceAllocationPlan>() {}, allocationPlan -> {
+            cachingService.remove(cacheKey);
+            cachingService.add(cacheKey, allocationPlan, STALE_TIME);
+        });
     }
 
-    public CompletableFuture<Optional<ResourceAllocationPlan>> updateAllocationPlan(UpdateAllocationPlanDTO allocationPlanDTO) {
+    public CompletableFuture<Result<ResourceAllocationPlan>> updateAllocationPlan(UpdateAllocationPlanDTO allocationPlanDTO) {
         String rootAddress = "http://localhost:8080/api/v1/";
         String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("active-resource-allocation-plans", "factory", allocationPlanDTO.getFactoryId());
         String routeAddress = rootAddress + "active-resource-allocation-plans/update";
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildWriteRequest(HttpMethod.PUT, routeAddress, TokenManager.getToken(), allocationPlanDTO);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
-        // Serialize DTO
-        String requestBody = null;
-        try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(allocationPlanDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assert requestBody != null;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
-                .headers(HEADER_KEY, headerValue)
-                .headers("Content-Type", "application/json")
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    try {
-                        ResourceAllocationPlan allocationPlan = JsonUtil.getObjectMapper().readValue(response.body(), ResourceAllocationPlan.class);
-
-                        cachingService.remove(cacheKey); // Invalidate cache
-
-                        return Optional.of(allocationPlan);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<ResourceAllocationPlan>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<ResourceAllocationPlan>() {}, allocationPlan -> {
+            cachingService.remove(cacheKey);
+            cachingService.add(cacheKey, allocationPlan, STALE_TIME);
+        });
     }
 }

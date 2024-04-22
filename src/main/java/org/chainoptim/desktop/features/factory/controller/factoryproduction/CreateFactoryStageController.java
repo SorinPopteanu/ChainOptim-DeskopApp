@@ -112,16 +112,16 @@ public class CreateFactoryStageController implements Initializable {
             fallbackManager.setLoading(false);
 
             graphService.refreshFactoryGraph(selectFactoryController.getSelectedFactory().getId())
-                    .thenApply(productionGraphOptional -> {
+                    .thenApply(graphResult -> {
                         Platform.runLater(() -> {
-                            if (productionGraphOptional.isEmpty()) {
+                            if (graphResult.getError() != null) {
                                 fallbackManager.setErrorMessage("Failed to refresh factory graph");
                             }
-                            if (actionListener != null && productionGraphOptional.isPresent()) {
-                                actionListener.onAddStage(productionGraphOptional.get());
+                            if (actionListener != null && graphResult.getData() != null) {
+                                actionListener.onAddStage(graphResult.getData());
                             }
                         });
-                return productionGraphOptional;
+                return graphResult;
             });
         });
         return result;

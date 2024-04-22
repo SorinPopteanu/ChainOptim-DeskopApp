@@ -123,18 +123,19 @@ public class CreateProductStageController implements Initializable {
             fallbackManager.setLoading(false);
 
             // Refresh product graph
-            graphService.refreshProductGraph(stage.getProductId()).thenApply(productionGraphOptional -> {
-                Platform.runLater(() -> {
-                    if (productionGraphOptional.isEmpty()) {
-                        fallbackManager.setErrorMessage("Failed to refresh product graph");
-                    }
+            graphService.refreshProductGraph(stage.getProductId())
+                    .thenApply(graphResult -> {
+                        Platform.runLater(() -> {
+                            if (graphResult.getError() != null) {
+                                fallbackManager.setErrorMessage("Failed to refresh product graph");
+                            }
 
-                    if (actionListener != null && productionGraphOptional.isPresent()) {
-                        actionListener.onAddStage(productionGraphOptional.get());
-                    }
-                });
-                return productionGraphOptional;
-            });
+                            if (actionListener != null && graphResult.getData() != null) {
+                                actionListener.onAddStage(graphResult.getData());
+                            }
+                        });
+                        return graphResult;
+                    });
         });
 
         return result;

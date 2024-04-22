@@ -131,15 +131,16 @@ public class UpdateProductStageController {
             Stage stage = result.getData();
             fallbackManager.setLoading(false);
 
-            graphService.refreshProductGraph(productId).thenApply(productionGraphOptional -> {
-                if (productionGraphOptional.isEmpty()) {
-                    fallbackManager.setErrorMessage("Failed to refresh product graph");
-                }
-                if (actionListener != null) {
-                    actionListener.onUpdateStage(productionGraphOptional.get());
-                }
-                return productionGraphOptional;
-            });
+            graphService.refreshProductGraph(productId)
+                    .thenApply(graphResult -> {
+                        if (graphResult.getError() != null) {
+                            fallbackManager.setErrorMessage("Failed to refresh product graph");
+                        }
+                        if (actionListener != null && graphResult.getData() != null) {
+                            actionListener.onUpdateStage(graphResult.getData());
+                        }
+                        return graphResult;
+                    });
         });
         return result;
     }
