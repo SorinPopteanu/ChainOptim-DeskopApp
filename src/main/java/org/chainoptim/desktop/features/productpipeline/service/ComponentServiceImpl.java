@@ -52,6 +52,7 @@ public class ComponentServiceImpl implements ComponentService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.POST, routeAddress, TokenManager.getToken(), componentDTO);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Component>() {});
     }
@@ -62,6 +63,7 @@ public class ComponentServiceImpl implements ComponentService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.PUT, routeAddress, TokenManager.getToken(), componentDTO);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Component>() {});
     }
@@ -72,6 +74,7 @@ public class ComponentServiceImpl implements ComponentService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.DELETE, routeAddress, TokenManager.getToken(), null);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Integer>() {});
     }

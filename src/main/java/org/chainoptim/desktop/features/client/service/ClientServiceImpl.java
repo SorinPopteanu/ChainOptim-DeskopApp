@@ -4,124 +4,70 @@ import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
-import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class ClientServiceImpl implements ClientService {
 
     private final CachingService<PaginatedResults<Client>> cachingService;
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final RequestHandler requestHandler;
+    private final RequestBuilder requestBuilder;
 
-    private static final String HEADER_KEY = "Authorization";
-    private static final String HEADER_VALUE_PREFIX = "Bearer ";
     private static final int STALE_TIME = 30000;
 
     @Inject
-    public ClientServiceImpl(CachingService<PaginatedResults<Client>> cachingService) {
+    public ClientServiceImpl(CachingService<PaginatedResults<Client>> cachingService,
+                             RequestHandler requestHandler,
+                             RequestBuilder requestBuilder) {
         this.cachingService = cachingService;
+        this.requestHandler = requestHandler;
+        this.requestBuilder = requestBuilder;
     }
 
-    public CompletableFuture<Optional<List<Client>>> getClientsByOrganizationId(Integer organizationId) {
+    public CompletableFuture<Result<List<Client>>> getClientsByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/clients/organization/" + organizationId.toString();
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Client>>empty();
-                    try {
-                        List<Client> clients = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Client>>() {});
-                        return Optional.of(clients);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<List<Client>>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<List<Client>>() {});
     }
 
 
-    public CompletableFuture<Optional<PaginatedResults<Client>>> getClientsByOrganizationIdAdvanced(
+    public CompletableFuture<Result<PaginatedResults<Client>>> getClientsByOrganizationIdAdvanced(
             Integer organizationId,
             SearchParams searchParams
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("products", "organization", organizationId.toString(), searchParams);
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("clients", "organization", organizationId.toString(), searchParams);
         String routeAddress = rootAddress + cacheKey;
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
-            return CompletableFuture.completedFuture(Optional.of(cachingService.get(cacheKey)));
+            return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
         }
 
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<PaginatedResults<Client>>empty();
-                    try {
-                        PaginatedResults<Client> clients = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<Client>>() {});
-
-                        cachingService.remove(cacheKey); // Ensure there isn't a stale cache entry
-                        cachingService.add(cacheKey, clients, STALE_TIME);
-
-                        return Optional.of(clients);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<PaginatedResults<Client>>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<PaginatedResults<Client>>() {}, clients -> {
+            cachingService.remove(cacheKey); // Ensure there isn't a stale cache entry
+            cachingService.add(cacheKey, clients, STALE_TIME);
+        });
     }
 
-    public CompletableFuture<Optional<Client>> getClientById(Integer clientId) {
+    public CompletableFuture<Result<Client>> getClientById(Integer clientId) {
         String routeAddress = "http://localhost:8080/api/v1/clients/" + clientId.toString();
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    try {
-                        Client client = JsonUtil.getObjectMapper().readValue(response.body(), Client.class);
-                        return Optional.of(client);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        return Optional.empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<Client>() {});
     }
 }

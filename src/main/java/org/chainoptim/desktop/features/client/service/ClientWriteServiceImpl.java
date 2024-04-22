@@ -1,10 +1,15 @@
 package org.chainoptim.desktop.features.client.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.inject.Inject;
 import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.features.client.dto.CreateClientDTO;
 import org.chainoptim.desktop.features.client.dto.UpdateClientDTO;
 import org.chainoptim.desktop.features.client.model.Client;
+import org.chainoptim.desktop.shared.httphandling.HttpMethod;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.HttpURLConnection;
@@ -18,100 +23,43 @@ import java.util.concurrent.CompletableFuture;
 
 public class ClientWriteServiceImpl implements ClientWriteService {
 
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final RequestHandler requestHandler;
+    private final RequestBuilder requestBuilder;
 
-    private static final String HEADER_KEY = "Authorization";
-    private static final String HEADER_VALUE_PREFIX = "Bearer ";
+    @Inject
+    public ClientWriteServiceImpl(RequestHandler requestHandler,
+                                  RequestBuilder requestBuilder) {
+        this.requestHandler = requestHandler;
+        this.requestBuilder = requestBuilder;
+    }
 
-    public CompletableFuture<Optional<Client>> createClient(CreateClientDTO clientDTO) {
+    public CompletableFuture<Result<Client>> createClient(CreateClientDTO clientDTO) {
         String routeAddress = "http://localhost:8080/api/v1/clients/create";
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildWriteRequest(
+                HttpMethod.POST, routeAddress, TokenManager.getToken(), clientDTO);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
-        // Serialize DTO
-        String requestBody = null;
-        try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(clientDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assert requestBody != null;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
-                .headers(HEADER_KEY, headerValue)
-                .headers("Content-Type", "application/json")
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    try {
-                        Client client = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Client>() {});
-                        return Optional.of(client);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<Client>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<Client>() {});
     }
 
-    public CompletableFuture<Optional<Client>> updateClient(UpdateClientDTO clientDTO) {
+    public CompletableFuture<Result<Client>> updateClient(UpdateClientDTO clientDTO) {
         String routeAddress = "http://localhost:8080/api/v1/clients/update";
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildWriteRequest(
+                HttpMethod.PUT, routeAddress, TokenManager.getToken(), clientDTO);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
-        // Serialize DTO
-        String requestBody = null;
-        try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(clientDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assert requestBody != null;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .PUT(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
-                .headers(HEADER_KEY, headerValue)
-                .headers("Content-Type", "application/json")
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    try {
-                        Client client = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<Client>() {});
-                        return Optional.of(client);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<Client>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<Client>() {});
     }
 
-    public CompletableFuture<Optional<Integer>> deleteClient(Integer clientId) {
+    public CompletableFuture<Result<Integer>> deleteClient(Integer clientId) {
         String routeAddress = "http://localhost:8080/api/v1/clients/delete/" + clientId;
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .POST(HttpRequest.BodyPublishers.ofString("", StandardCharsets.UTF_8))
-                .headers(HEADER_KEY, headerValue)
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    return Optional.of(clientId);
-                });
+        HttpRequest request = requestBuilder.buildWriteRequest(
+                HttpMethod.DELETE, routeAddress, TokenManager.getToken(), null);
+        if (request == null) return requestHandler.getParsingErrorResult();
+        
+        return requestHandler.sendRequest(request, new TypeReference<Integer>() {});
     }
 }

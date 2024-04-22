@@ -18,6 +18,7 @@ import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -120,13 +121,13 @@ public class FactoriesController implements Initializable {
                 .exceptionally(this::handleFactoryException);
     }
 
-    private Optional<PaginatedResults<Factory>> handleFactoryResponse(Optional<PaginatedResults<Factory>> factoriesOptional) {
+    private Result<PaginatedResults<Factory>> handleFactoryResponse(Result<PaginatedResults<Factory>> result) {
         Platform.runLater(() -> {
-            if (factoriesOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load factories.");
                 return;
             }
-            PaginatedResults<Factory> paginatedResults = factoriesOptional.get();
+            PaginatedResults<Factory> paginatedResults = result.getData();
             fallbackManager.setLoading(false);
 
             totalCount = paginatedResults.getTotalCount();
@@ -145,7 +146,12 @@ public class FactoriesController implements Initializable {
             }
             fallbackManager.setNoResults(false);
         });
-        return factoriesOptional;
+        return result;
+    }
+
+    private Result<PaginatedResults<Factory>> handleFactoryException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factories."));
+        return new Result<>();
     }
 
     private void loadFactoryCardUI(Factory factory) {
@@ -168,11 +174,6 @@ public class FactoriesController implements Initializable {
         factoryButton.setOnAction(event -> openFactoryDetails(factory.getId()));
 
         factoriesVBox.getChildren().add(factoryButton);
-    }
-
-    private Optional<PaginatedResults<Factory>> handleFactoryException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factories."));
-        return Optional.empty();
     }
 
     private void openFactoryDetails(Integer factoryId) {

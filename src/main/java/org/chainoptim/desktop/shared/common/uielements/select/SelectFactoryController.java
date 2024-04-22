@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.dto.FactoriesSearchDTO;
 import org.chainoptim.desktop.features.factory.service.FactoryService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -66,18 +67,18 @@ public class SelectFactoryController {
                 .exceptionally(this::handleFactoriesException);
     }
 
-    private Optional<List<FactoriesSearchDTO>> handleFactoriesResponse(Optional<List<FactoriesSearchDTO>> factoriesOptional) {
+    private Result<List<FactoriesSearchDTO>> handleFactoriesResponse(Result<List<FactoriesSearchDTO>> result) {
         Platform.runLater(() -> {
-            if (factoriesOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
-            factoryComboBox.getItems().setAll(factoriesOptional.get());
+            factoryComboBox.getItems().setAll(result.getData());
 
         });
-        return factoriesOptional;
+        return result;
     }
 
-    private Optional<List<FactoriesSearchDTO>> handleFactoriesException(Throwable ex) {
-        return Optional.empty();
+    private Result<List<FactoriesSearchDTO>> handleFactoriesException(Throwable ex) {
+        return new Result<>();
     }
 }

@@ -38,6 +38,7 @@ public class StageWriteServiceImpl implements StageWriteService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.POST, routeAddress, TokenManager.getToken(), stageDTO);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Stage>() {});
     }
@@ -47,6 +48,7 @@ public class StageWriteServiceImpl implements StageWriteService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.PUT, routeAddress, TokenManager.getToken(), stageDTO);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Stage>() {});
     }
@@ -56,6 +58,7 @@ public class StageWriteServiceImpl implements StageWriteService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.DELETE, routeAddress, TokenManager.getToken(), null);
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Integer>() {});
     }

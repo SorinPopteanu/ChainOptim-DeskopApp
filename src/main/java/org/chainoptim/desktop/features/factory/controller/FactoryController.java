@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.factory.model.Factory;
@@ -86,26 +87,25 @@ public class FactoryController implements Initializable {
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Factory> handleFactoryResponse(Optional<Factory> factoryOptional) {
+    private Result<Factory> handleFactoryResponse(Result<Factory> result) {
         Platform.runLater(() -> {
-            if (factoryOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load factory.");
                 return;
             }
-            this.factory = factoryOptional.get();
+            this.factory = result.getData();
             factoryName.setText(factory.getName());
             factoryLocation.setText(factory.getLocation().getFormattedLocation());
 
             // Load overview tab
             commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/factory/FactoryOverviewView.fxml", this.factory);
         });
-
-        return factoryOptional;
+        return result;
     }
 
-    private Optional<Factory> handleFactoryException(Throwable ex) {
+    private Result<Factory> handleFactoryException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factory."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void setupListeners() {

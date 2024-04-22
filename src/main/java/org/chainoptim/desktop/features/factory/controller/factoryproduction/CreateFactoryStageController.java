@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.factory.dto.CreateFactoryStageDTO;
@@ -12,8 +11,8 @@ import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationCont
 import org.chainoptim.desktop.shared.common.uielements.select.SelectFactoryController;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectStageController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import lombok.Setter;
 import com.google.inject.Inject;
@@ -24,7 +23,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static java.lang.Float.parseFloat;
@@ -35,8 +33,6 @@ public class CreateFactoryStageController implements Initializable {
     // Services
     private final FactoryStageWriteService factoryStageWriteService;
     private final FactoryProductionGraphService graphService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
     private final CommonViewsLoader commonViewsLoader;
 
     // Listeners
@@ -71,14 +67,10 @@ public class CreateFactoryStageController implements Initializable {
             FactoryStageWriteService factoryStageWriteService,
             FactoryProductionGraphService graphService,
             FallbackManager fallbackManager,
-            FXMLLoaderService fxmlLoaderService,
-            ControllerFactory controllerFactory,
             CommonViewsLoader commonViewsLoader
     ) {
         this.factoryStageWriteService = factoryStageWriteService;
         this.graphService = graphService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
         this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
     }
@@ -110,13 +102,13 @@ public class CreateFactoryStageController implements Initializable {
                 .exceptionally(this::handleCreateStageException);
     }
 
-    private Optional<FactoryStage> handleCreateStageResponse(Optional<FactoryStage> stageOptional) {
+    private Result<FactoryStage> handleCreateStageResponse(Result<FactoryStage> result) {
         Platform.runLater(() -> {
-            if (stageOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to create stage.");
                 return;
             }
-            FactoryStage stage = stageOptional.get();
+            FactoryStage stage = result.getData();
             fallbackManager.setLoading(false);
 
             graphService.refreshFactoryGraph(selectFactoryController.getSelectedFactory().getId())
@@ -132,15 +124,14 @@ public class CreateFactoryStageController implements Initializable {
                 return productionGraphOptional;
             });
         });
-        return stageOptional;
+        return result;
     }
 
-    private Optional<FactoryStage> handleCreateStageException(Throwable ex) {
+    private Result<FactoryStage> handleCreateStageException(Throwable ex) {
         Platform.runLater(() -> {
             fallbackManager.setErrorMessage("Failed to create stage.");
-            fallbackManager.setLoading(false);
         });
-        return Optional.empty();
+        return new Result<>();
     }
 
     private CreateFactoryStageDTO getStageDTO() {

@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.FactoryWriteService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -75,22 +76,25 @@ public class CreateFactoryController implements Initializable {
         CreateFactoryDTO factoryDTO = getCreateFactoryDTO(organizationId);
 
         factoryWriteService.createFactory(factoryDTO)
-                .thenAccept(factoryOptional ->
-                    Platform.runLater(() -> {
-                        if (factoryOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create factory.");
-                            return;
-                        }
-                        Factory factory = factoryOptional.get();
-                        fallbackManager.setLoading(false);
-                        currentSelectionService.setSelectedId(factory.getId());
-                        navigationService.switchView("Factory?id=" + factory.getId(), true);
-                    })
-                )
+                .thenApply(this::handleCreateFactoryResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Factory> handleCreateFactoryResponse(Result<Factory> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create factory.");
+                return;
+            }
+            Factory factory = result.getData();
+            fallbackManager.setLoading(false);
+            currentSelectionService.setSelectedId(factory.getId());
+            navigationService.switchView("Factory?id=" + factory.getId(), true);
+        });
+        return result;
     }
 
     private CreateFactoryDTO getCreateFactoryDTO(Integer organizationId) {

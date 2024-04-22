@@ -31,9 +31,7 @@ public class ProductWriteServiceImpl implements ProductWriteService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.POST, routeAddress, TokenManager.getToken(), productDTO);
-        if (request == null) {
-            return requestHandler.getParsingErrorResult();
-        }
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Product>() {});
     }
@@ -43,9 +41,7 @@ public class ProductWriteServiceImpl implements ProductWriteService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.PUT, routeAddress, TokenManager.getToken(), productDTO);
-        if (request == null) {
-            return requestHandler.getParsingErrorResult();
-        }
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Product>() {});
     }
@@ -55,9 +51,7 @@ public class ProductWriteServiceImpl implements ProductWriteService {
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.DELETE, routeAddress, TokenManager.getToken(), null);
-        if (request == null) {
-            return requestHandler.getParsingErrorResult();
-        }
+        if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Integer>() {});
     }

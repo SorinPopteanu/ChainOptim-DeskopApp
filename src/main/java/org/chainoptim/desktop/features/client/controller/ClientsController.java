@@ -10,6 +10,7 @@ import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -119,13 +120,13 @@ public class ClientsController implements Initializable {
                 .exceptionally(this::handleClientException);
     }
 
-    private Optional<PaginatedResults<Client>> handleClientResponse(Optional<PaginatedResults<Client>> clientsOptional) {
+    private Result<PaginatedResults<Client>> handleClientResponse(Result<PaginatedResults<Client>> result) {
         Platform.runLater(() -> {
-            if (clientsOptional.isEmpty()) {
+            if (result.getError() != null) {
                fallbackManager.setErrorMessage("Failed to load clients.");
                return;
             }
-            PaginatedResults<Client> paginatedResults = clientsOptional.get();
+            PaginatedResults<Client> paginatedResults = result.getData();
             fallbackManager.setLoading(false);
 
             totalCount = paginatedResults.getTotalCount();
@@ -144,7 +145,12 @@ public class ClientsController implements Initializable {
             }
             fallbackManager.setNoResults(false);
         });
-        return clientsOptional;
+        return result;
+    }
+
+    private Result<PaginatedResults<Client>> handleClientException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load clients."));
+        return new Result<>();
     }
 
     private void loadClientCardUI(Client client) {
@@ -167,11 +173,6 @@ public class ClientsController implements Initializable {
         clientButton.setOnAction(event -> openClientDetails(client.getId()));
 
         clientsVBox.getChildren().add(clientButton);
-    }
-
-    private Optional<PaginatedResults<Client>> handleClientException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load clients."));
-        return Optional.empty();
     }
 
     private void openClientDetails(Integer clientId) {
