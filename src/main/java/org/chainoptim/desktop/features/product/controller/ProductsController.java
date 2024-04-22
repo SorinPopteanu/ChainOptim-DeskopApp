@@ -10,6 +10,7 @@ import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.result.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -146,13 +147,13 @@ public class ProductsController implements Initializable {
                 .exceptionally(this::handleProductException);
     }
 
-    private Optional<PaginatedResults<Product>> handleProductResponse(Optional<PaginatedResults<Product>> productsOptional) {
+    private Result<PaginatedResults<Product>> handleProductResponse(Result<PaginatedResults<Product>> result) {
         Platform.runLater(() -> {
-            if (productsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load products.");
                 return;
             }
-            PaginatedResults<Product> paginatedResults = productsOptional.get();
+            PaginatedResults<Product> paginatedResults = result.getData();
             fallbackManager.setLoading(false);
 
             totalCount = paginatedResults.getTotalCount();
@@ -171,7 +172,7 @@ public class ProductsController implements Initializable {
             }
             fallbackManager.setNoResults(false);
         });
-        return productsOptional;
+        return result;
     }
 
     private void loadProductCardUI(Product product) {
@@ -189,9 +190,9 @@ public class ProductsController implements Initializable {
         productsVBox.getChildren().add(productButton);
     }
 
-    private Optional<PaginatedResults<Product>> handleProductException(Throwable ex) {
+    private Result<PaginatedResults<Product>> handleProductException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load products."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void openProductDetails(Integer productId) {

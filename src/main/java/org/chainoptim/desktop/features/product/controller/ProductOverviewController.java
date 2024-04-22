@@ -15,6 +15,7 @@ import org.chainoptim.desktop.features.product.dto.ProductOverviewDTO;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.result.Result;
 import org.chainoptim.desktop.shared.search.dto.SmallEntityDTO;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
@@ -61,22 +62,27 @@ public class ProductOverviewController implements DataReceiver<Product> {
         fallbackManager.setLoading(false);
 
         productService.getProductOverview(product.getId())
-                .thenApply(this::handleProductOverviewResponse);
+                .thenApply(this::handleProductOverviewResponse)
+                .exceptionally(this::handleProductOverviewException);
     }
 
-    private Optional<ProductOverviewDTO> handleProductOverviewResponse(Optional<ProductOverviewDTO> overviewDTO) {
+    private Result<ProductOverviewDTO> handleProductOverviewResponse(Result<ProductOverviewDTO> result) {
         Platform.runLater(() -> {
-            if (overviewDTO.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load product overview");
                 return;
             }
-            this.productOverview = overviewDTO.get();
-            System.out.println("Product Overview: " + productOverview);
+            this.productOverview = result.getData();
 
             renderUI();
         });
 
-        return overviewDTO;
+        return result;
+    }
+
+    private Result<ProductOverviewDTO> handleProductOverviewException(Throwable throwable) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load product overview"));
+        return new Result<>();
     }
 
     private void renderUI() {

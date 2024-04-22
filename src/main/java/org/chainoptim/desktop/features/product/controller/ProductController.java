@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
+import org.chainoptim.desktop.shared.result.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import java.net.URL;
@@ -106,13 +107,13 @@ public class ProductController implements Initializable {
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Product> handleProductResponse(Optional<Product> productOptional) {
+    private Result<Product> handleProductResponse(Result<Product> result) {
         Platform.runLater(() -> {
-            if (productOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load product.");
                 return;
             }
-            this.product = productOptional.get();
+            this.product = result.getData();
             productName.setText(product.getName());
             productDescription.setText(product.getDescription());
             System.out.println("Product: " + product);
@@ -121,12 +122,12 @@ public class ProductController implements Initializable {
             commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/product/ProductOverviewView.fxml", this.product);
         });
 
-        return productOptional;
+        return result;
     }
 
-    private Optional<Product> handleProductException(Throwable ex) {
+    private Result<Product> handleProductException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load product."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML
