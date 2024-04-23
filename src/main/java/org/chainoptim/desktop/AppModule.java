@@ -111,7 +111,7 @@ public class AppModule extends AbstractModule {
         // - User
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(UserService.class).to(UserServiceImpl.class);
-        bind(TokenManager.class).to(TokenManagerImpl.class);
+        bind(TokenManager.class).to(TokenManagerImpl.class).in(Singleton.class);
 
         // - Organization
         bind(OrganizationService.class).to(OrganizationServiceImpl.class);
