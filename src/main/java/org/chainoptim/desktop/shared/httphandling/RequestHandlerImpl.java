@@ -2,6 +2,7 @@ package org.chainoptim.desktop.shared.httphandling;
 
 import org.chainoptim.desktop.shared.util.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.inject.Inject;
 
 import java.net.HttpURLConnection;
 import java.net.http.HttpClient;
@@ -13,7 +14,12 @@ import java.util.function.Consumer;
 
 public class RequestHandlerImpl implements RequestHandler {
 
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final HttpClient client;
+
+    @Inject
+    public RequestHandlerImpl(HttpClient client) {
+        this.client = client;
+    }
 
     public <T> CompletableFuture<Result<T>> sendRequest(HttpRequest request, TypeReference<T> typeReference) {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())

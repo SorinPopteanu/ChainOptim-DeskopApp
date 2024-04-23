@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.shared.httphandling;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
 import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import java.net.URI;

@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.features.client.controller;
 
-import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
@@ -28,7 +27,6 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ClientsController implements Initializable {
