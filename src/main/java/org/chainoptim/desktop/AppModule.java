@@ -20,10 +20,7 @@ import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotServiceImpl;
 import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.settings.service.UserSettingsServiceImpl;
-import org.chainoptim.desktop.core.user.service.UserService;
-import org.chainoptim.desktop.core.user.service.UserServiceImpl;
-import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
+import org.chainoptim.desktop.core.user.service.*;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.*;
 import org.chainoptim.desktop.features.factory.model.Factory;
@@ -108,11 +105,12 @@ public class AppModule extends AbstractModule {
         // - Abstraction
         bind(ControllerFactory.class).to(GuiceControllerFactory.class);
         bind(ThreadRunner.class).to(JavaFXThreadRunner.class);
-        bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class);
+        bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class).in(Singleton.class);
 
         // - User
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(UserService.class).to(UserServiceImpl.class);
+        bind(TokenManager.class).to(TokenManagerImpl.class);
 
         // - Organization
         bind(OrganizationService.class).to(OrganizationServiceImpl.class);

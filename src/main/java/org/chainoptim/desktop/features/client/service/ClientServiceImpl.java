@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.client.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
@@ -22,22 +22,25 @@ public class ClientServiceImpl implements ClientService {
     private final CachingService<PaginatedResults<Client>> cachingService;
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
+    private final TokenManager tokenManager;
 
     private static final int STALE_TIME = 30000;
 
     @Inject
     public ClientServiceImpl(CachingService<PaginatedResults<Client>> cachingService,
                              RequestHandler requestHandler,
-                             RequestBuilder requestBuilder) {
+                             RequestBuilder requestBuilder,
+                             TokenManager tokenManager) {
         this.cachingService = cachingService;
         this.requestHandler = requestHandler;
         this.requestBuilder = requestBuilder;
+        this.tokenManager = tokenManager;
     }
 
     public CompletableFuture<Result<List<Client>>> getClientsByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/clients/organization/" + organizationId.toString();
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<List<Client>>() {});
     }
@@ -49,9 +52,10 @@ public class ClientServiceImpl implements ClientService {
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("clients", "organization", organizationId.toString(), searchParams);
+        System.out.println("Service cache key: " + cacheKey);
         String routeAddress = rootAddress + cacheKey;
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
             return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
@@ -66,7 +70,7 @@ public class ClientServiceImpl implements ClientService {
     public CompletableFuture<Result<Client>> getClientById(Integer clientId) {
         String routeAddress = "http://localhost:8080/api/v1/clients/" + clientId.toString();
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<Client>() {});
     }
