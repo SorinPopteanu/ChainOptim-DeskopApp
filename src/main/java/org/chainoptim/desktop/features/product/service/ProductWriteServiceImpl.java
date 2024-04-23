@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.product.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.product.dto.CreateProductDTO;
 import org.chainoptim.desktop.features.product.dto.UpdateProductDTO;
 import org.chainoptim.desktop.features.product.model.Product;
@@ -18,19 +18,22 @@ public class ProductWriteServiceImpl implements ProductWriteService {
 
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
+    private final TokenManager tokenManager;
 
     @Inject
     public ProductWriteServiceImpl(RequestHandler requestHandler,
-                                   RequestBuilder requestBuilder) {
+                                   RequestBuilder requestBuilder,
+                                   TokenManager tokenManager) {
         this.requestHandler = requestHandler;
         this.requestBuilder = requestBuilder;
+        this.tokenManager = tokenManager;
     }
 
     public CompletableFuture<Result<Product>> createProduct(CreateProductDTO productDTO) {
         String routeAddress = "http://localhost:8080/api/v1/products/create";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.POST, routeAddress, TokenManager.getToken(), productDTO);
+                HttpMethod.POST, routeAddress, tokenManager.getToken(), productDTO);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Product>() {});
@@ -40,7 +43,7 @@ public class ProductWriteServiceImpl implements ProductWriteService {
         String routeAddress = "http://localhost:8080/api/v1/products/update";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.PUT, routeAddress, TokenManager.getToken(), productDTO);
+                HttpMethod.PUT, routeAddress, tokenManager.getToken(), productDTO);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Product>() {});
@@ -50,7 +53,7 @@ public class ProductWriteServiceImpl implements ProductWriteService {
         String routeAddress = "http://localhost:8080/api/v1/products/delete/" + productId;
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.DELETE, routeAddress, TokenManager.getToken(), null);
+                HttpMethod.DELETE, routeAddress, tokenManager.getToken(), null);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Integer>() {});

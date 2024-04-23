@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.warehouse.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
@@ -22,22 +22,25 @@ public class WarehouseServiceImpl implements WarehouseService {
     private final CachingService<PaginatedResults<Warehouse>> cachingService;
     private final RequestBuilder requestBuilder;
     private final RequestHandler requestHandler;
+    private final TokenManager tokenManager;
 
     private static final int STALE_TIME = 30000;
 
     @Inject
     public WarehouseServiceImpl(CachingService<PaginatedResults<Warehouse>> cachingService,
                                 RequestBuilder requestBuilder,
-                                RequestHandler requestHandler) {
+                                RequestHandler requestHandler,
+                                TokenManager tokenManager) {
         this.cachingService = cachingService;
         this.requestBuilder = requestBuilder;
         this.requestHandler = requestHandler;
+        this.tokenManager = tokenManager;
     }
 
     public CompletableFuture<Result<List<Warehouse>>> getWarehousesByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/warehouses/organization/" + organizationId.toString();
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<List<Warehouse>>() {});
     }
@@ -50,7 +53,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("warehouses", "organization", organizationId.toString(), searchParams);
         String routeAddress = rootAddress + cacheKey;
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
             return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
@@ -65,7 +68,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     public CompletableFuture<Result<Warehouse>> getWarehouseById(Integer warehouseId) {
         String routeAddress = "http://localhost:8080/api/v1/warehouses/" + warehouseId.toString();
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<Warehouse>() {});
     }

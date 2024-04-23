@@ -8,6 +8,7 @@ import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
@@ -44,12 +45,13 @@ class ClientWriteServiceTest {
     @Test
     void createClient_Successful() throws Exception {
         // Arrange
-        CreateClientDTO clientDTO = new CreateClientDTO(); // Populate as needed
+        CreateClientDTO clientDTO = new CreateClientDTO();
+        String clientDTOString = JsonUtil.getObjectMapper().writeValueAsString(clientDTO);
         String fakeToken = "test-token";
         HttpRequest fakeRequest = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/api/v1/clients/create"))
                 .header("Authorization", "Bearer " + fakeToken)
-                .POST(HttpRequest.BodyPublishers.ofString(clientDTO.toString())) // Assuming toString is overridden appropriately
+                .POST(HttpRequest.BodyPublishers.ofString(clientDTOString))
                 .build();
         Client expectedClient = new Client();
         CompletableFuture<Result<Client>> expectedFuture = CompletableFuture.completedFuture(new Result<>(expectedClient, null, HttpURLConnection.HTTP_CREATED));
@@ -71,12 +73,13 @@ class ClientWriteServiceTest {
     @Test
     void updateClient_Successful() throws Exception {
         // Arrange
-        UpdateClientDTO clientDTO = new UpdateClientDTO(); // Populate as needed
+        UpdateClientDTO clientDTO = new UpdateClientDTO();
+        String clientDTOString = JsonUtil.getObjectMapper().writeValueAsString(clientDTO);
         String fakeToken = "test-token";
         HttpRequest fakeRequest = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/api/v1/clients/update"))
                 .header("Authorization", "Bearer " + fakeToken)
-                .PUT(HttpRequest.BodyPublishers.ofString(clientDTO.toString())) // Assuming toString is overridden appropriately
+                .PUT(HttpRequest.BodyPublishers.ofString(clientDTOString))
                 .build();
         Client expectedClient = new Client();
         CompletableFuture<Result<Client>> expectedFuture = CompletableFuture.completedFuture(new Result<>(expectedClient, null, HttpURLConnection.HTTP_OK));

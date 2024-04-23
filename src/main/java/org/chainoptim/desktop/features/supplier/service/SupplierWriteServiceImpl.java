@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.supplier.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.supplier.dto.CreateSupplierDTO;
 import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
@@ -21,21 +21,24 @@ public class SupplierWriteServiceImpl implements SupplierWriteService {
     private final CachingService<PaginatedResults<Supplier>> cachingService;
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
+    private final TokenManager tokenManager;
 
     @Inject
     public SupplierWriteServiceImpl(CachingService<PaginatedResults<Supplier>> cachingService,
                                     RequestHandler requestHandler,
-                                    RequestBuilder requestBuilder) {
+                                    RequestBuilder requestBuilder,
+                                    TokenManager tokenManager) {
         this.cachingService = cachingService;
         this.requestHandler = requestHandler;
         this.requestBuilder = requestBuilder;
+        this.tokenManager = tokenManager;
     }
 
     public CompletableFuture<Result<Supplier>> createSupplier(CreateSupplierDTO supplierDTO) {
         String routeAddress = "http://localhost:8080/api/v1/suppliers/create";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.POST, routeAddress, TokenManager.getToken(), supplierDTO);
+                HttpMethod.POST, routeAddress, tokenManager.getToken(), supplierDTO);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Supplier>() {},
@@ -46,7 +49,7 @@ public class SupplierWriteServiceImpl implements SupplierWriteService {
         String routeAddress = "http://localhost:8080/api/v1/suppliers/update";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.PUT, routeAddress, TokenManager.getToken(), supplierDTO);
+                HttpMethod.PUT, routeAddress, tokenManager.getToken(), supplierDTO);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Supplier>() {},
@@ -57,7 +60,7 @@ public class SupplierWriteServiceImpl implements SupplierWriteService {
         String routeAddress = "http://localhost:8080/api/v1/suppliers/delete/" + supplierId;
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.DELETE, routeAddress, TokenManager.getToken(), null);
+                HttpMethod.DELETE, routeAddress, tokenManager.getToken(), null);
 
         return requestHandler.sendRequest(request, new TypeReference<Integer>() {},
                 supplier -> cachingService.clear());

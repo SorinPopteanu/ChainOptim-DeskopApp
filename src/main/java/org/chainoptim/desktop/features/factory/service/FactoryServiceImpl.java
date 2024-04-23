@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.factory.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.factory.dto.FactoriesSearchDTO;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
@@ -23,22 +23,25 @@ public class FactoryServiceImpl implements FactoryService {
     private final CachingService<PaginatedResults<Factory>> cachingService;
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
+    private final TokenManager tokenManager;
 
     private static final int STALE_TIME = 30000;
 
     @Inject
     public FactoryServiceImpl(CachingService<PaginatedResults<Factory>> cachingService,
                               RequestHandler requestHandler,
-                              RequestBuilder requestBuilder) {
+                              RequestBuilder requestBuilder,
+                              TokenManager tokenManager) {
         this.cachingService = cachingService;
         this.requestHandler = requestHandler;
         this.requestBuilder = requestBuilder;
+        this.tokenManager = tokenManager;
     }
 
     public CompletableFuture<Result<List<FactoriesSearchDTO>>> getFactoriesByOrganizationIdSmall(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/factories/organization/" + organizationId.toString() + "/small";
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<List<FactoriesSearchDTO>>() {});
     }
@@ -46,7 +49,7 @@ public class FactoryServiceImpl implements FactoryService {
     public CompletableFuture<Result<List<Factory>>> getFactoriesByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/factories/organization/" + organizationId.toString();
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<List<Factory>>() {});
     }
@@ -59,7 +62,7 @@ public class FactoryServiceImpl implements FactoryService {
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("factories", "organization", organizationId.toString(), searchParams);
         String routeAddress = rootAddress + cacheKey;
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
             return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
@@ -74,7 +77,7 @@ public class FactoryServiceImpl implements FactoryService {
     public CompletableFuture<Result<Factory>> getFactoryById(Integer factoryId) {
         String routeAddress = "http://localhost:8080/api/v1/factories/" + factoryId.toString();
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<Factory>() {});
     }
