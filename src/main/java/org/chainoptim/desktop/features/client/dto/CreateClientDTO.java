@@ -1,9 +1,13 @@
 package org.chainoptim.desktop.features.client.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.chainoptim.desktop.shared.features.location.dto.CreateLocationDTO;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateClientDTO {
 
     private String name;

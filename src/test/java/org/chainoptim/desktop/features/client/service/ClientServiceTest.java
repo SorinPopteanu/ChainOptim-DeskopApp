@@ -121,4 +121,32 @@ class ClientServiceTest {
         assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
         assertSame(fetchedResults, resultFuture.get().getData());
     }
+
+    @Test
+    void getClientById_ValidResponse() throws Exception {
+        // Arrange
+        int clientId = 1;
+        String fakeToken = "test-token";
+        HttpRequest fakeRequest = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/clients/" + clientId))
+                .headers("Authorization", "Bearer " + fakeToken)
+                .GET()
+                .build();
+
+        CompletableFuture<Result<Client>> expectedFuture = CompletableFuture.completedFuture(new Result<>(new Client(), null, 200));
+
+        when(mockRequestBuilder.buildReadRequest(anyString(), anyString())).thenReturn(fakeRequest);
+        when(mockRequestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<Client>>any())).thenReturn(expectedFuture);
+        when(mockTokenManager.getToken()).thenReturn(fakeToken);
+
+        // Act
+        CompletableFuture<Result<Client>> resultFuture = clientService.getClientById(clientId);
+
+        // Assert
+        verify(mockRequestBuilder).buildReadRequest(contains("clients/" + clientId), anyString());
+        verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<Client>>any());
+        assertNotNull(resultFuture);
+        assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
+
+    }
 }
