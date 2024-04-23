@@ -5,6 +5,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -113,13 +114,13 @@ public class ClientController implements Initializable {
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Client> handleClientResponse(Optional<Client> clientOptional) {
+    private Result<Client> handleClientResponse(Result<Client> result) {
         Platform.runLater(() -> {
-            if (clientOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load client.");
                 return;
             }
-            this.client = clientOptional.get();
+            this.client = result.getData();
 
             clientName.setText(client.getName());
             if (client.getLocation() != null) {
@@ -132,12 +133,12 @@ public class ClientController implements Initializable {
             commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
         });
 
-        return clientOptional;
+        return result;
     }
 
-    private Optional<Client> handleClientException(Throwable ex) {
+    private Result<Client> handleClientException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load client."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML

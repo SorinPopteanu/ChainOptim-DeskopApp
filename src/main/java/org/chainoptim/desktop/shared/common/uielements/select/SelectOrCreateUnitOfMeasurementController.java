@@ -10,6 +10,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.dto.CreateUnitOfMeasurementDTO;
 import org.chainoptim.desktop.features.product.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.product.service.UnitOfMeasurementService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import java.util.List;
 import java.util.Optional;
@@ -85,19 +86,19 @@ public class SelectOrCreateUnitOfMeasurementController {
                 .exceptionally(this::handleUnitsException);
     }
 
-    private Optional<List<UnitOfMeasurement>> handleUnitsResponse(Optional<List<UnitOfMeasurement>> unitsOptional) {
+    private Result<List<UnitOfMeasurement>> handleUnitsResponse(Result<List<UnitOfMeasurement>> result) {
         Platform.runLater(() -> {
-            if (unitsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
-            unitComboBox.getItems().setAll(unitsOptional.get());
+            unitComboBox.getItems().setAll(result.getData());
 
         });
-        return unitsOptional;
+        return result;
     }
 
-    private Optional<List<UnitOfMeasurement>> handleUnitsException(Throwable ex) {
-        return Optional.empty();
+    private Result<List<UnitOfMeasurement>> handleUnitsException(Throwable ex) {
+        return new Result<>();
     }
 
     private void toggleVisibilityBasedOnSelection() {

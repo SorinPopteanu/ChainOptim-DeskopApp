@@ -9,6 +9,7 @@ import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import com.google.inject.Inject;
@@ -95,26 +96,24 @@ public class FactoryPerformanceController implements DataReceiver<Factory> {
                 .exceptionally(this::handleFactoryPerformanceException);
     }
 
-    private Optional<FactoryPerformance> handleFactoryPerformanceResponse(Optional<FactoryPerformance> performanceOptional) {
+    private Result<FactoryPerformance> handleFactoryPerformanceResponse(Result<FactoryPerformance> result) {
         Platform.runLater(() -> {
-            if (performanceOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load factory performance");
                 return;
             }
-            factoryPerformance = performanceOptional.get();
+            factoryPerformance = result.getData();
             fallbackManager.setLoading(false);
 
             displayReport();
         });
-        return performanceOptional;
+        return result;
     }
 
-    private Optional<FactoryPerformance> handleFactoryPerformanceException(Throwable ex) {
-        Platform.runLater(() -> {
-            fallbackManager.setErrorMessage("Failed to load factory performance");
-            ex.printStackTrace();
-        });
-        return Optional.empty();
+    private Result<FactoryPerformance> handleFactoryPerformanceException(Throwable ex) {
+        Platform.runLater(() ->
+            fallbackManager.setErrorMessage("Failed to load factory performance"));
+        return new Result<>();
     }
 
     private void displayReport() {

@@ -10,6 +10,7 @@ import org.chainoptim.desktop.features.productpipeline.service.StageService;
 import org.chainoptim.desktop.features.productpipeline.service.StageWriteService;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
@@ -77,24 +78,26 @@ public class UpdateProductStageController {
 
     private void loadStageIntoForm(Integer stageId) {
         stageService.getStageById(stageId)
-                .thenAccept(stageOptional -> {
-                    if (stageOptional.isEmpty()) {
-                        fallbackManager.setErrorMessage("Failed to load product stage");
-                        return;
-                    }
-                    Stage stage = stageOptional.get();
-                    System.out.println("Stage: " + stage);
-                    Platform.runLater(() -> {
-                        this.stage = stage;
-
-                        stageNameField.setText(String.valueOf(stage.getName()));
-                        stageDescriptionField.setText(String.valueOf(stage.getDescription()));
-                    });
-                })
+                .thenApply(this::handleStageResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
                     return null;
                 });
+    }
+
+    private Result<Stage> handleStageResponse(Result<Stage> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to load product stage");
+                return;
+            }
+            this.stage = result.getData();
+            System.out.println("Stage: " + stage);
+
+            stageNameField.setText(String.valueOf(stage.getName()));
+            stageDescriptionField.setText(String.valueOf(stage.getDescription()));
+        });
+        return result;
     }
 
     @FXML
@@ -112,30 +115,34 @@ public class UpdateProductStageController {
         System.out.println(stageDTO);
 
         stageWriteService.updateStage(stageDTO)
-                .thenAccept(stageOptional ->
-                    Platform.runLater(() -> {
-                        if (stageOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create stage.");
-                            return;
-                        }
-                        Stage stage = stageOptional.get();
-                        fallbackManager.setLoading(false);
-
-                        graphService.refreshProductGraph(productId).thenApply(productionGraphOptional -> {
-                            if (productionGraphOptional.isEmpty()) {
-                                fallbackManager.setErrorMessage("Failed to refresh product graph");
-                            }
-                            if (actionListener != null) {
-                                actionListener.onUpdateStage(productionGraphOptional.get());
-                            }
-                            return productionGraphOptional;
-                        });
-                    })
-                )
+                .thenApply(this::handleUpdateStageResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Stage> handleUpdateStageResponse(Result<Stage> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create stage.");
+                return;
+            }
+            Stage stage = result.getData();
+            fallbackManager.setLoading(false);
+
+            graphService.refreshProductGraph(productId)
+                    .thenApply(graphResult -> {
+                        if (graphResult.getError() != null) {
+                            fallbackManager.setErrorMessage("Failed to refresh product graph");
+                        }
+                        if (actionListener != null && graphResult.getData() != null) {
+                            actionListener.onUpdateStage(graphResult.getData());
+                        }
+                        return graphResult;
+                    });
+        });
+        return result;
     }
 
     private UpdateStageDTO getStageDTO() {

@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientWriteService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import javafx.scene.layout.StackPane;
@@ -40,13 +41,11 @@ public class CreateClientController implements Initializable {
 
 
     @Inject
-    public CreateClientController(
-            ClientWriteService clientWriteService,
-            NavigationService navigationService,
-            CurrentSelectionService currentSelectionService,
-            FallbackManager fallbackManager,
-            CommonViewsLoader commonViewsLoader
-    ) {
+    public CreateClientController(ClientWriteService clientWriteService,
+                                  NavigationService navigationService,
+                                  CurrentSelectionService currentSelectionService,
+                                  FallbackManager fallbackManager,
+                                  CommonViewsLoader commonViewsLoader) {
         this.clientWriteService = clientWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
@@ -75,22 +74,25 @@ public class CreateClientController implements Initializable {
         CreateClientDTO clientDTO = getCreateClientDTO(organizationId);
 
         clientWriteService.createClient(clientDTO)
-                .thenAccept(clientOptional ->
-                    Platform.runLater(() -> {
-                        if (clientOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create client.");
-                            return;
-                        }
-                        Client client = clientOptional.get();
-                        fallbackManager.setLoading(false);
-                        currentSelectionService.setSelectedId(client.getId());
-                        navigationService.switchView("Client?id=" + client.getId(), true);
-                    })
-                )
+                .thenApply(this::handleCreateClientResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Client> handleCreateClientResponse(Result<Client> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create client.");
+                return;
+            }
+            Client client = result.getData();
+            fallbackManager.setLoading(false);
+            currentSelectionService.setSelectedId(client.getId());
+            navigationService.switchView("Client?id=" + client.getId(), true);
+        });
+        return result;
     }
 
     private CreateClientDTO getCreateClientDTO(Integer organizationId) {

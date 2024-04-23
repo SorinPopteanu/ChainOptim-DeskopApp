@@ -8,6 +8,7 @@ import org.chainoptim.desktop.features.scanalysis.productionhistory.model.Produc
 import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryService;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocation;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -127,26 +128,24 @@ public class ProductionHistoryController implements DataReceiver<Factory> {
                 .exceptionally(this::handleProductionHistoryException);
     }
 
-    private Optional<FactoryProductionHistory> handleProductionHistoryResponse(Optional<FactoryProductionHistory> productionHistoryOptional) {
+    private Result<FactoryProductionHistory> handleProductionHistoryResponse(Result<FactoryProductionHistory> result) {
         Platform.runLater(() -> {
-            if (productionHistoryOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load production history");
                 return;
             }
-            factoryProductionHistory = productionHistoryOptional.get();
+            factoryProductionHistory = result.getData();
             fallbackManager.setLoading(false);
 
             displayHistory(factoryProductionHistory.getProductionHistory());
         });
-        return productionHistoryOptional;
+        return result;
     }
 
-    private Optional<FactoryProductionHistory> handleProductionHistoryException(Throwable ex) {
-        Platform.runLater(() -> {
-            fallbackManager.setErrorMessage("Failed to load production history");
-            ex.printStackTrace();
-        });
-        return Optional.empty();
+    private Result<FactoryProductionHistory> handleProductionHistoryException(Throwable ex) {
+        Platform.runLater(() ->
+            fallbackManager.setErrorMessage("Failed to load production history"));
+        return new Result<>();
     }
 
     private void displayHistory(ProductionHistory history) {

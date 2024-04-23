@@ -3,6 +3,7 @@ package org.chainoptim.desktop.features.product.controller.productproduction;
 import org.chainoptim.desktop.features.scanalysis.productgraph.model.ProductProductionGraph;
 import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -40,27 +41,27 @@ public class ProductGraphController {
     }
 
     private void loadGraphData() {
-        graphService.getProductGraphById(21).thenApply(this::handleProductResponse)
+        graphService.getProductGraphById(21)
+                .thenApply(this::handleProductResponse)
                 .exceptionally(this::handleProductException)
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private List<ProductProductionGraph> handleProductResponse(List<ProductProductionGraph> productionGraphs) {
+    private Result<List<ProductProductionGraph>> handleProductResponse(Result<List<ProductProductionGraph>> result) {
         Platform.runLater(() -> {
-            if (productionGraphs.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load graph.");
                 return;
             }
-            ProductProductionGraph productionGraph = productionGraphs.getFirst();
+            ProductProductionGraph productionGraph = result.getData().getFirst();
             displayGraph(productionGraph);
         });
-
-        return productionGraphs;
+        return result;
     }
 
-    private List<ProductProductionGraph> handleProductException(Throwable ex) {
+    private Result<List<ProductProductionGraph>> handleProductException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load graph."));
-        return new ArrayList<>();
+        return new Result<>();
     }
 
     private void displayGraph(ProductProductionGraph productionGraph) {

@@ -4,6 +4,7 @@ import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.model.FactoryProductionHistory;
 import org.chainoptim.desktop.features.scanalysis.productionhistory.service.FactoryProductionHistoryService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -39,26 +40,24 @@ public class FactoryPerformanceControllerTBC implements DataReceiver<Factory> {
                 .exceptionally(this::handleProductionHistoryException);
     }
 
-    private Optional<FactoryProductionHistory> handleProductionHistoryResponse(Optional<FactoryProductionHistory> productionHistoryOptional) {
+    private Result<FactoryProductionHistory> handleProductionHistoryResponse(Result<FactoryProductionHistory> result) {
         Platform.runLater(() -> {
-            if (productionHistoryOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load production history");
                 return;
             }
-            productionHistory = productionHistoryOptional.get();
+            productionHistory = result.getData();
             fallbackManager.setLoading(false);
 
             System.out.println("Production History: " + productionHistory);
 
         });
-        return productionHistoryOptional;
+        return result;
     }
 
-    private Optional<FactoryProductionHistory> handleProductionHistoryException(Throwable ex) {
-        Platform.runLater(() -> {
-            fallbackManager.setErrorMessage("Failed to load production history");
-            ex.printStackTrace();
-        });
-        return Optional.empty();
+    private Result<FactoryProductionHistory> handleProductionHistoryException(Throwable ex) {
+        Platform.runLater(() ->
+            fallbackManager.setErrorMessage("Failed to load production history"));
+        return new Result<>();
     }
 }

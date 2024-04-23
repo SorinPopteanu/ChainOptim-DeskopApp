@@ -5,6 +5,7 @@ import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -99,25 +100,24 @@ public class WarehouseController implements Initializable {
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Warehouse> handleWarehouseResponse(Optional<Warehouse> warehouseOptional) {
+    private Result<Warehouse> handleWarehouseResponse(Result<Warehouse> result) {
         Platform.runLater(() -> {
-            if (warehouseOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load warehouse.");
                 return;
             }
-            this.warehouse = warehouseOptional.get();
+            this.warehouse = result.getData();
             warehouseName.setText(warehouse.getName());
             warehouseLocation.setText(warehouse.getLocation().getFormattedLocation());
 
             commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/warehouse/WarehouseOverviewView.fxml", this.warehouse);
         });
-
-        return warehouseOptional;
+        return result;
     }
 
-    private Optional<Warehouse> handleWarehouseException(Throwable ex) {
+    private Result<Warehouse> handleWarehouseException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load warehouse."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML

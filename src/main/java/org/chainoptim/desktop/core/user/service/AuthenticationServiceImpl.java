@@ -23,10 +23,13 @@ import java.util.Optional;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final HttpClient client;
+    // New TokenManager service (injected along with old static TokenManager until all references are updated)
+    private final org.chainoptim.desktop.core.user.service.TokenManager tokenManagerService;
 
     @Inject
-    public AuthenticationServiceImpl(HttpClient client) {
+    public AuthenticationServiceImpl(HttpClient client, org.chainoptim.desktop.core.user.service.TokenManager tokenManagerService) {
         this.client = client;
+        this.tokenManagerService = tokenManagerService;
     }
 
     public boolean login(String username, String password) {
@@ -45,6 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 JsonNode jsonResponse = mapper.readTree(responseBody);
                 String jwtToken = jsonResponse.get("accessToken").asText();
                 TokenManager.saveToken(jwtToken);
+                tokenManagerService.saveToken(jwtToken);
                 return true;
             } else {
                 return false;
@@ -96,6 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void logout() {
         // Clear JWT Token from storage, TenantContext and ViewCache from memory
         TokenManager.removeToken();
+        tokenManagerService.removeToken();
         TenantContext.setCurrentUser(null);
         NavigationServiceImpl.invalidateViewCache();
     }

@@ -3,6 +3,7 @@ package org.chainoptim.desktop.features.factory.controller.factoryproduction;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryProductionGraph;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.service.FactoryProductionGraphService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -41,28 +42,29 @@ public class FactoryGraphController {
     }
 
     private void loadGraphData() {
-        graphService.getFactoryGraphById(3).thenApply(this::handleFactoryResponse)
-                .exceptionally(this::handleFactoryException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+        graphService.getFactoryGraphById(3)
+                .thenApply(this::handleFactoryResponse)
+                .exceptionally(this::handleFactoryException);
     }
 
-    private List<FactoryProductionGraph> handleFactoryResponse(List<FactoryProductionGraph> productionGraphs) {
+    private Result<List<FactoryProductionGraph>> handleFactoryResponse(Result<List<FactoryProductionGraph>> result) {
         Platform.runLater(() -> {
-            if (productionGraphs.isEmpty()) {
+            if (result.getError() != null || result.getData().isEmpty()) {
                 fallbackManager.setErrorMessage("Failed to load graph.");
                 return;
             }
-            FactoryProductionGraph productionGraph = productionGraphs.getFirst();
+            FactoryProductionGraph productionGraph = result.getData().getFirst();
+            fallbackManager.setLoading(false);
             System.out.println("Graph: " + productionGraph);
+
             displayGraph(productionGraph);
         });
-
-        return productionGraphs;
+        return result;
     }
 
-    private List<FactoryProductionGraph> handleFactoryException(Throwable ex) {
+    private Result<List<FactoryProductionGraph>> handleFactoryException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load graph."));
-        return new ArrayList<>();
+        return new Result<>();
     }
 
     private void displayGraph(FactoryProductionGraph productionGraph) {

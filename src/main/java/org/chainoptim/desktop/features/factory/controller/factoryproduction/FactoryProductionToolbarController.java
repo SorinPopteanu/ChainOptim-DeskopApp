@@ -9,6 +9,7 @@ import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.InfoLevel;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import javafx.scene.layout.StackPane;
@@ -188,25 +189,24 @@ public class FactoryProductionToolbarController {
                 .thenApply(this::handleAllocationPlanResponse);
     }
 
-    private AllocationPlan handleAllocationPlanResponse(Optional<AllocationPlan> allocationPlanOptional) {
-        if (allocationPlanOptional.isEmpty()) {
-            return new AllocationPlan();
-        }
-        allocationPlan = allocationPlanOptional.get();
-        updateViewAllocationPlanButtonVisibility();
-
-        String escapedJsonString = prepareJsonString(allocationPlan);
-        String script = "window.renderResourceAllocations('" + escapedJsonString + "');";
-
-        // Ensure script execution happens on the JavaFX Application Thread
+    private Result<AllocationPlan> handleAllocationPlanResponse(Result<AllocationPlan> result) {
         Platform.runLater(() -> {
+            if (result.getError() != null) {
+                return;
+            }
+            allocationPlan = result.getData();
+            updateViewAllocationPlanButtonVisibility();
+
+            String escapedJsonString = prepareJsonString(allocationPlan);
+            String script = "window.renderResourceAllocations('" + escapedJsonString + "');";
+
             try {
                 webView.getEngine().executeScript(script);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        return allocationPlan;
+        return result;
     }
 
     @FXML

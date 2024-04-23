@@ -9,16 +9,16 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
-import org.chainoptim.desktop.shared.util.ChartUtils;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.TimeUtil;
+
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -30,10 +30,7 @@ import javafx.util.Pair;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.chrono.IsoChronology;
 import java.time.format.*;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 public class SupplierPerformanceController implements DataReceiver<Supplier> {
@@ -141,24 +138,23 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
                 .exceptionally(this::handlePerformanceException);
     }
 
-    private Optional<SupplierPerformance> handlePerformanceResponse(Optional<SupplierPerformance> supplierPerformanceOptional) {
+    private Result<SupplierPerformance> handlePerformanceResponse(Result<SupplierPerformance> result) {
         Platform.runLater(() -> {
-            if (supplierPerformanceOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Supplier performance not found");
                 return;
             }
-            this.supplierPerformance = supplierPerformanceOptional.get();
+            this.supplierPerformance = result.getData();
             fallbackManager.setLoading(false);
 
             displayReport(supplierPerformance);
         });
-
-        return supplierPerformanceOptional;
+        return result;
     }
 
-    private Optional<SupplierPerformance> handlePerformanceException(Throwable ex) {
+    private Result<SupplierPerformance> handlePerformanceException(Throwable ex) {
         System.out.println("Supplier performance exception: " + ex.getMessage());
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void displayReport(SupplierPerformance supplierPerformance) {
@@ -236,13 +232,4 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
 
         lineChart.getData().add(series);
     }
-
-
-
-    // Metrics
-    // 1. Estimated Delivery date vs Actual Delivery date
-    // 2. Order Quantity vs Delivered Quantity
-    // 3. Delivered Quantity / Delivery Time
-    // 4. Delivered Quantity / Total Time
-    // 5. Value of delivered goods (based on how needed they were)
 }

@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthenticationServiceTest {
+class AuthenticationServiceTest {
 
     @Mock
     private HttpClient mockClient;
@@ -39,7 +39,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testLoginSuccess() throws Exception {
+    void testLoginSuccess() throws Exception {
         // Arrange
         setupMockResponse(HttpURLConnection.HTTP_OK, "{\"accessToken\":\"dummyToken\"}");
 
@@ -52,7 +52,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testLoginFailure() throws Exception {
+    void testLoginFailure() throws Exception {
         // Arrange
         setupMockResponse(401, null);
 
@@ -65,7 +65,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testValidateJWTTokenSuccess() throws Exception {
+    void testValidateJWTTokenSuccess() throws Exception {
         // Arrange
         setupMockResponse(200, null);
 
@@ -78,7 +78,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testValidateJWTTokenFailure() throws Exception {
+    void testValidateJWTTokenFailure() throws Exception {
         // Arrange
         setupMockResponse(401, null);
 
@@ -91,7 +91,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testGetUsernameFromJWTTokenSuccess() throws Exception {
+    void testGetUsernameFromJWTTokenSuccess() throws Exception {
         // Arrange
         setupMockResponse(200, "username");
 
@@ -105,7 +105,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testGetUsernameFromJWTTokenFailure() throws Exception {
+    void testGetUsernameFromJWTTokenFailure() throws Exception {
         // Arrange
         setupMockResponse(401, null);
 
