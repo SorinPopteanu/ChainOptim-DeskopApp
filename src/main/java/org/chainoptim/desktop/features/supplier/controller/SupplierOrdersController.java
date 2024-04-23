@@ -20,6 +20,7 @@ import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
+import org.chainoptim.desktop.shared.table.edit.cell.DateTimePickerCell;
 import org.chainoptim.desktop.shared.table.edit.cell.EditableCell;
 import org.chainoptim.desktop.shared.table.model.TableData;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
@@ -207,15 +208,16 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 item.getData().setQuantity(newValue);
             }
         });
-        estimatedDeliveryDateColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, LocalDateTime>(
-                isEditMode, selectedRowsIndices, LocalDateTime::parse) {
+        estimatedDeliveryDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierOrder>, LocalDateTime>(
+                isEditMode, selectedRowsIndices) {
             @Override
             protected void commitChange(TableData<SupplierOrder> item, LocalDateTime newValue) {
                 item.getData().setEstimatedDeliveryDate(newValue);
             }
         });
-        deliveryDateColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, LocalDateTime>(
-                isEditMode, selectedRowsIndices, LocalDateTime::parse) {
+
+        deliveryDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierOrder>, LocalDateTime>(
+                isEditMode, selectedRowsIndices) {
             @Override
             protected void commitChange(TableData<SupplierOrder> item, LocalDateTime newValue) {
                 item.getData().setDeliveryDate(newValue);

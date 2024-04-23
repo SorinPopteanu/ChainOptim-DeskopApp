@@ -55,7 +55,7 @@ public class SupplierController implements Initializable {
 
     @Inject
     public SupplierController(SupplierService supplierService,
-                                NavigationService navigationService,
+                              NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
                               FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
@@ -104,7 +104,7 @@ public class SupplierController implements Initializable {
         });
         shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
+                loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
             }
         });
         performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
