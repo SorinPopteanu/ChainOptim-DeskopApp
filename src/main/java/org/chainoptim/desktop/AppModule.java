@@ -22,6 +22,7 @@ import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.settings.service.UserSettingsServiceImpl;
 import org.chainoptim.desktop.core.user.service.*;
 import org.chainoptim.desktop.features.client.model.Client;
+import org.chainoptim.desktop.features.client.model.ClientOrder;
 import org.chainoptim.desktop.features.client.service.*;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.*;
@@ -155,7 +156,8 @@ public class AppModule extends AbstractModule {
         // - Client
         bind(ClientService.class).to(ClientServiceImpl.class);
         bind(ClientWriteService.class).to(ClientWriteServiceImpl.class);
-        bind(ClientOrdersService.class).to(ClientOrdersServiceImpl.class);
+        bind(ClientOrderService.class).to(ClientOrderServiceImpl.class);
+        bind(ClientOrderWriteService.class).to(ClientOrderWriteServiceImpl.class);
 
         // - SC Analysis
         bind(ProductProductionGraphService.class).to(ProductProductionGraphServiceImpl.class);
@@ -205,6 +207,9 @@ public class AppModule extends AbstractModule {
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<PaginatedResults<ClientOrder>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<ClientOrder>>>() {})
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<ResourceAllocationPlan>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<ResourceAllocationPlan>>() {})

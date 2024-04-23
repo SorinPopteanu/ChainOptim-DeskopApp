@@ -1,7 +1,7 @@
-package org.chainoptim.desktop.features.supplier.service;
+package org.chainoptim.desktop.features.client.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.features.client.model.ClientOrder;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
@@ -31,10 +31,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SupplierServiceTest {
+class ClientOrderServiceTest {
 
     @Mock
-    private CachingService<PaginatedResults<Supplier>> mockCachingService;
+    private CachingService<PaginatedResults<ClientOrder>> mockCachingService;
     @Mock
     private RequestHandler mockRequestHandler;
     @Mock
@@ -43,48 +43,48 @@ class SupplierServiceTest {
     private TokenManager mockTokenManager;
 
     @InjectMocks
-    private SupplierServiceImpl supplierService;
+    private ClientOrderServiceImpl clientOrderService;
 
     @Test
-    void getSuppliersByOrganizationId_ValidResponse() throws Exception {
+    void getClientOrdersByOrganizationId_ValidResponse() throws Exception {
         // Arrange
         Integer organizationId = 1;
         String fakeToken = "test-token";
         HttpRequest fakeRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/v1/suppliers/organization/" + organizationId.toString()))
+                .uri(URI.create("http://localhost:8080/api/v1/client-orders/organization/" + organizationId))
                 .headers("Authorization", "Bearer " + fakeToken)
                 .GET()
                 .build();
-        CompletableFuture<Result<List<Supplier>>> expectedFuture = CompletableFuture.completedFuture(new Result<>(new ArrayList<>(), null, 200));
+        CompletableFuture<Result<List<ClientOrder>>> expectedFuture = CompletableFuture.completedFuture(new Result<>(new ArrayList<>(), null, 200));
 
         when(mockRequestBuilder.buildReadRequest(anyString(), anyString())).thenReturn(fakeRequest);
-        when(mockRequestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<List<Supplier>>>any())).thenReturn(expectedFuture);
+        when(mockRequestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<List<ClientOrder>>>any())).thenReturn(expectedFuture);
         when(mockTokenManager.getToken()).thenReturn(fakeToken);
 
         // Act
-        CompletableFuture<Result<List<Supplier>>> resultFuture = supplierService.getSuppliersByOrganizationId(organizationId);
+        CompletableFuture<Result<List<ClientOrder>>> resultFuture = clientOrderService.getClientOrdersByOrganizationId(organizationId);
 
         // Assert
         verify(mockRequestBuilder).buildReadRequest(contains("organization/" + organizationId), anyString());
-        verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<List<Supplier>>>any());
+        verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<List<ClientOrder>>>any());
         assertNotNull(resultFuture);
         assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
     }
 
     @Test
-    void getSuppliersByOrganizationIdAdvanced_CacheHit() throws Exception {
+    void getClientOrdersByOrganizationIdAdvanced_CacheHit() throws Exception {
         // Arrange
-        Integer organizationId = 1;
+        Integer clientId = 1;
         SearchParamsImpl searchParams = new SearchParamsImpl();
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("suppliers", "organization", organizationId.toString(), searchParams);
-        PaginatedResults<Supplier> cachedResults = new PaginatedResults<>(new ArrayList<>(), 0);
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("client-orders", "client", clientId.toString(), searchParams);
+        PaginatedResults<ClientOrder> cachedResults = new PaginatedResults<>(new ArrayList<>(), 0);
 
         when(mockCachingService.isCached(cacheKey)).thenReturn(true);
         when(mockCachingService.isStale(cacheKey)).thenReturn(false);
         when(mockCachingService.get(cacheKey)).thenReturn(cachedResults);
 
         // Act
-        CompletableFuture<Result<PaginatedResults<Supplier>>> resultFuture = supplierService.getSuppliersByOrganizationIdAdvanced(organizationId, searchParams);
+        CompletableFuture<Result<PaginatedResults<ClientOrder>>> resultFuture = clientOrderService.getClientOrdersByClientIdAdvanced(clientId, searchParams);
 
         // Assert
         verify(mockCachingService).get(cacheKey);
@@ -93,57 +93,57 @@ class SupplierServiceTest {
     }
 
     @Test
-    void getSuppliersByOrganizationIdAdvanced_CacheMiss() throws Exception {
+    void getClientOrdersByOrganizationIdAdvanced_CacheMiss() throws Exception {
         // Arrange
-        Integer organizationId = 1;
+        Integer clientId = 1;
         SearchParamsImpl searchParams = new SearchParamsImpl();
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("suppliers", "organization", organizationId.toString(), searchParams);
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("client-orders", "client", clientId.toString(), searchParams);
         String fakeToken = "test-token";
         HttpRequest fakeRequest = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/api/v1/" + cacheKey))
                 .headers("Authorization", "Bearer " + fakeToken)
                 .GET()
                 .build();
-        PaginatedResults<Supplier> fetchedResults = new PaginatedResults<>(new ArrayList<>(), 0);
+        PaginatedResults<ClientOrder> fetchedResults = new PaginatedResults<>(new ArrayList<>(), 0);
 
         when(mockCachingService.isCached(cacheKey)).thenReturn(false);
         when(mockRequestBuilder.buildReadRequest(anyString(), anyString())).thenReturn(fakeRequest);
-        when(mockRequestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<PaginatedResults<Supplier>>>any(), any())).thenReturn(CompletableFuture.completedFuture(new Result<>(fetchedResults, null, 200)));
+        when(mockRequestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<PaginatedResults<ClientOrder>>>any(), any())).thenReturn(CompletableFuture.completedFuture(new Result<>(fetchedResults, null, 200)));
         when(mockTokenManager.getToken()).thenReturn(fakeToken);
 
         // Act
-        CompletableFuture<Result<PaginatedResults<Supplier>>> resultFuture = supplierService.getSuppliersByOrganizationIdAdvanced(organizationId, searchParams);
+        CompletableFuture<Result<PaginatedResults<ClientOrder>>> resultFuture = clientOrderService.getClientOrdersByClientIdAdvanced(clientId, searchParams);
 
         // Assert
-        verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<PaginatedResults<Supplier>>>any(), any());
+        verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<PaginatedResults<ClientOrder>>>any(), any());
         assertNotNull(resultFuture);
         assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
         assertSame(fetchedResults, resultFuture.get().getData());
     }
 
     @Test
-    void getSupplierById_ValidResponse() throws Exception {
+    void getClientOrderById_ValidResponse() throws Exception {
         // Arrange
-        int supplierId = 1;
+        int clientOrderId = 1;
         String fakeToken = "test-token";
         HttpRequest fakeRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/v1/suppliers/" + supplierId))
+                .uri(URI.create("http://localhost:8080/api/v1/clientOrders/" + clientOrderId))
                 .headers("Authorization", "Bearer " + fakeToken)
                 .GET()
                 .build();
 
-        CompletableFuture<Result<Supplier>> expectedFuture = CompletableFuture.completedFuture(new Result<>(new Supplier(), null, 200));
+        CompletableFuture<Result<ClientOrder>> expectedFuture = CompletableFuture.completedFuture(new Result<>(new ClientOrder(), null, 200));
 
         when(mockRequestBuilder.buildReadRequest(anyString(), anyString())).thenReturn(fakeRequest);
-        when(mockRequestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<Supplier>>any())).thenReturn(expectedFuture);
+        when(mockRequestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<ClientOrder>>any())).thenReturn(expectedFuture);
         when(mockTokenManager.getToken()).thenReturn(fakeToken);
 
         // Act
-        CompletableFuture<Result<Supplier>> resultFuture = supplierService.getSupplierById(supplierId);
+        CompletableFuture<Result<ClientOrder>> resultFuture = clientOrderService.getClientOrderById(clientOrderId);
 
         // Assert
-        verify(mockRequestBuilder).buildReadRequest(contains("suppliers/" + supplierId), anyString());
-        verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<Supplier>>any());
+        verify(mockRequestBuilder).buildReadRequest(contains("client-orders/" + clientOrderId), anyString());
+        verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<ClientOrder>>any());
         assertNotNull(resultFuture);
         assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
 

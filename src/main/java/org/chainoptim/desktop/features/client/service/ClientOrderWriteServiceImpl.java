@@ -1,8 +1,9 @@
 package org.chainoptim.desktop.features.client.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.client.dto.CreateClientOrderDTO;
 import org.chainoptim.desktop.features.client.dto.UpdateClientDTO;
+import org.chainoptim.desktop.features.client.dto.UpdateClientOrderDTO;
 import org.chainoptim.desktop.features.client.model.ClientOrder;
 import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
@@ -11,46 +12,40 @@ import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
+
 import java.net.http.HttpRequest;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ClientOrdersServiceImpl implements ClientOrdersService {
+public class ClientOrderWriteServiceImpl implements ClientOrderWriteService {
 
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
+    private final TokenManager tokenManager;
 
     @Inject
-    public ClientOrdersServiceImpl(RequestHandler requestHandler,
-                                   RequestBuilder requestBuilder) {
+    public ClientOrderWriteServiceImpl(RequestHandler requestHandler,
+                                       RequestBuilder requestBuilder,
+                                       TokenManager tokenManager) {
         this.requestHandler = requestHandler;
         this.requestBuilder = requestBuilder;
-    }
-
-    public CompletableFuture<Result<List<ClientOrder>>> getClientOrdersByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/client-orders/organization/" + organizationId.toString();
-
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
-        if (request == null) return requestHandler.getParsingErrorResult();
-
-        return requestHandler.sendRequest(request, new TypeReference<List<ClientOrder>>() {});
+        this.tokenManager = tokenManager;
     }
 
     public CompletableFuture<Result<ClientOrder>> createClientOrder(CreateClientOrderDTO orderDTO) {
         String routeAddress = "http://localhost:8080/api/v1/client-orders/create";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.POST, routeAddress, TokenManager.getToken(), orderDTO);
+                HttpMethod.POST, routeAddress, tokenManager.getToken(), orderDTO);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<ClientOrder>() {});
     }
 
-    public CompletableFuture<Result<ClientOrder>> updateClientOrder(UpdateClientDTO orderDTO) {
+    public CompletableFuture<Result<ClientOrder>> updateClientOrder(UpdateClientOrderDTO orderDTO) {
         String routeAddress = "http://localhost:8080/api/v1/client-orders/update";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.PUT, routeAddress, TokenManager.getToken(), orderDTO);
+                HttpMethod.PUT, routeAddress, tokenManager.getToken(), orderDTO);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<ClientOrder>() {});
@@ -60,7 +55,7 @@ public class ClientOrdersServiceImpl implements ClientOrdersService {
         String routeAddress = "http://localhost:8080/api/v1/client-orders/delete/" + orderId;
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.DELETE, routeAddress, TokenManager.getToken(), null);
+                HttpMethod.DELETE, routeAddress, tokenManager.getToken(), null);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<Integer>() {});

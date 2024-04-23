@@ -98,7 +98,6 @@ class ClientServiceTest {
         Integer organizationId = 1;
         SearchParamsImpl searchParams = new SearchParamsImpl();
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("clients", "organization", organizationId.toString(), searchParams);
-        System.out.println("Test cache key: " + cacheKey);
         String fakeToken = "test-token";
         HttpRequest fakeRequest = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/api/v1/" + cacheKey))
