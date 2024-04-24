@@ -4,9 +4,6 @@ import org.chainoptim.desktop.shared.common.uielements.UIItem;
 import org.chainoptim.desktop.shared.enums.FilterType;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
-import javafx.beans.property.SimpleMapProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -14,9 +11,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import jfxtras.scene.control.LocalDateTimeTextField;
-import lombok.Getter;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class FilterBar extends HBox {
@@ -77,7 +72,6 @@ public class FilterBar extends HBox {
             if (newVal != null) {
                 searchParams.getFiltersProperty().clear();
                 searchParams.getFiltersProperty().put(keyComboBox.getValue().getValue(), newVal.getValue());
-                System.out.println("Enum set to: " + newVal.getValue());
             }
         });
     }
@@ -91,7 +85,6 @@ public class FilterBar extends HBox {
         applyNumberPicker.setOnAction(event -> {
             searchParams.getFiltersProperty().clear();
             searchParams.getFiltersProperty().put(keyComboBox.getValue().getValue(), textField.getText());
-            System.out.println("Number set to: " + textField.getText());
         });
 
         numberPicker.getChildren().addAll(textField, applyNumberPicker);
@@ -102,7 +95,6 @@ public class FilterBar extends HBox {
             if (newValue != null) {
                 searchParams.getFiltersProperty().clear();
                 searchParams.getFiltersProperty().put(keyComboBox.getValue().getValue(), dateTimePicker.getLocalDateTime().toString());
-                System.out.println("Date/time set to: " + newValue);
             }
         });
     }

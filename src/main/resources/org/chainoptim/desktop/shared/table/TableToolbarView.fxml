@@ -14,7 +14,9 @@
             <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
             <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
         </StackPane>
+
         <FilterBar fx:id="filterBar"/>
+
         <HBox alignment="CENTER_LEFT" spacing="6">
             <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption"/>
             <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>

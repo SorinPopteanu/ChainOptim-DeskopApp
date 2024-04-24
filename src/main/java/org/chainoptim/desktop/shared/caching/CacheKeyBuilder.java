@@ -19,14 +19,13 @@ public class CacheKeyBuilder {
                 "&itemsPerPage=" + searchParams.getItemsPerPage();
 
         if (!searchParams.getFiltersProperty().isEmpty()) {
-            String filtersJson = null;
+            String filtersJson;
             try {
                 filtersJson = JsonUtil.getObjectMapper().writeValueAsString(searchParams.getFiltersProperty());
                 filtersJson = URLEncoder.encode(filtersJson, StandardCharsets.UTF_8);
             } catch (Exception e) {
-                throw new RuntimeException("Error serializing filters to JSON", e);
+                throw new RuntimeException("Error encoding filters to JSON", e);
             }
-
 
             key += "&filters=" + filtersJson;
         }
