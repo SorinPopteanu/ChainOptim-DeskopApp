@@ -26,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
     private final RequestHandler requestHandler;
     private final TokenManager tokenManager;
 
-    private static final int STALE_TIME = 30000;
+    private static final int STALE_TIME = 300;
 
     @Inject
     public ProductServiceImpl(CachingService<PaginatedResults<Product>> cachingService,

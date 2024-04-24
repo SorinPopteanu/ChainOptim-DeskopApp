@@ -29,7 +29,7 @@ public class NotificationPersistenceServiceImpl implements NotificationPersisten
 
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
-    private static final int STALE_TIME = 30000;
+    private static final int STALE_TIME = 300;
 
     @Inject
     public NotificationPersistenceServiceImpl(CachingService<PaginatedResults<NotificationUser>> cachingService) {

@@ -23,7 +23,7 @@ public class FactoryProductionHistoryServiceImpl implements FactoryProductionHis
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
 
-    private static final int STALE_TIME = 30000;
+    private static final int STALE_TIME = 300;
 
     @Inject
     public FactoryProductionHistoryServiceImpl(CachingService<FactoryProductionHistory> cachingService,

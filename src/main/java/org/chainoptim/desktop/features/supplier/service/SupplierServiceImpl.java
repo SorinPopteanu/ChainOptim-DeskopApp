@@ -24,7 +24,7 @@ public class SupplierServiceImpl implements SupplierService {
     private final RequestHandler requestHandler;
     private final TokenManager tokenManager;
 
-    private static final int STALE_TIME = 30000;
+    private static final int STALE_TIME = 300;
 
     @Inject
     public SupplierServiceImpl(CachingService<PaginatedResults<Supplier>> cachingService,

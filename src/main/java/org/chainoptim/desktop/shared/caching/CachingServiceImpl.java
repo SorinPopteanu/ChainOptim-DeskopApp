@@ -1,5 +1,7 @@
 package org.chainoptim.desktop.shared.caching;
 
+import lombok.Getter;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -9,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class CachingServiceImpl<T> implements CachingService<T> {
 
     private final Map<String, CachedData<T>> cache;
+    @Getter
     private final ScheduledExecutorService executorService;
 
     public CachingServiceImpl() {
@@ -17,7 +20,7 @@ public class CachingServiceImpl<T> implements CachingService<T> {
         scheduleCacheCleanup();
     }
 
-    public void add(String key, T data, long staleTime) {
+    public void add(String key, T data, float staleTime) {
         cache.put(key, new CachedData<>(data, staleTime));
     }
 
@@ -48,10 +51,10 @@ public class CachingServiceImpl<T> implements CachingService<T> {
 
     // Cleanup Scheduled Service
     private void scheduleCacheCleanup() {
-        executorService.scheduleAtFixedRate(this::cleanupStaleEntries, 20, 20, TimeUnit.MINUTES);
+        executorService.scheduleAtFixedRate(this::cleanupStaleEntries, 30, 30, TimeUnit.MINUTES);
     }
 
-    private void cleanupStaleEntries() {
+    public void cleanupStaleEntries() {
         cache.entrySet().removeIf(entry -> entry.getValue().isStale());
     }
 

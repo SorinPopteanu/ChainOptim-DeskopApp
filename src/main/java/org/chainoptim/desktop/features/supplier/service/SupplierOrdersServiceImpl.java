@@ -26,7 +26,7 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
     private final HttpClient client = HttpClient.newHttpClient();
     private static final String HEADER_KEY = "Authorization";
     private static final String HEADER_VALUE_PREFIX = "Bearer ";
-    private static final int STALE_TIME = 30000;
+    private static final int STALE_TIME = 300;
 
     @Inject
     public SupplierOrdersServiceImpl(CachingService<PaginatedResults<SupplierOrder>> cachingService) {

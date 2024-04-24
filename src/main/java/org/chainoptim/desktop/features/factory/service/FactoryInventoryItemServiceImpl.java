@@ -25,7 +25,7 @@ public class FactoryInventoryItemServiceImpl implements FactoryInventoryItemServ
     private final RequestBuilder requestBuilder;
     private final TokenManager tokenManager;
 
-    private static final int STALE_TIME = 30000;
+    private static final int STALE_TIME = 300;
 
     @Inject
     public FactoryInventoryItemServiceImpl(CachingService<PaginatedResults<FactoryInventoryItem>> cachingService,
