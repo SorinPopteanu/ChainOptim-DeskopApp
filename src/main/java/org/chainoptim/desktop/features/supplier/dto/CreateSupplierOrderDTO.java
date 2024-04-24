@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.supplier.dto;
 
 import lombok.Data;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
+import org.chainoptim.desktop.shared.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,6 @@ public class CreateSupplierOrderDTO {
     private LocalDateTime orderDate;
     private LocalDateTime estimatedDeliveryDate;
     private LocalDateTime deliveryDate;
-    private SupplierOrder.Status status;
+    private OrderStatus status;
     private String companyId;
 }

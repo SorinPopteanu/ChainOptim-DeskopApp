@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.supplier.model;
 
 import org.chainoptim.desktop.features.productpipeline.model.Component;
+import org.chainoptim.desktop.shared.enums.OrderStatus;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import lombok.*;
@@ -27,13 +28,6 @@ public class SupplierOrder {
         this.status = data.status;
     }
 
-    public enum Status {
-        Initiated,
-        Negociated,
-        Placed,
-        Delivered
-    }
-
     private Integer id;
     private Integer supplierId;
     private LocalDateTime createdAt;
@@ -45,5 +39,5 @@ public class SupplierOrder {
     private LocalDateTime estimatedDeliveryDate;
     private LocalDateTime deliveryDate;
     private String companyId;
-    private Status status;
+    private OrderStatus status;
 }

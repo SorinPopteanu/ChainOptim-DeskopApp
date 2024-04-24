@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class EditableCell<S, T> extends TableCell<S, T> {
 
     protected final BooleanProperty isEditMode;
-    private TextField textField;
+    protected TextField textField;
     protected final List<Integer> editableRows;
     private final StringConverter<T> converter;
 
