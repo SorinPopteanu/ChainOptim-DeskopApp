@@ -107,14 +107,14 @@ public class CreateComponentController implements Initializable {
         System.out.println("CreateComponent: " + componentDTO.getUnitDTO());
 
         componentService.createComponent(componentDTO)
-                .thenAccept(componentOptional ->
+                .thenAccept(result ->
                         // Navigate to component page
                         Platform.runLater(() -> {
-                            if (componentOptional.isEmpty()) {
+                            if (result.getError() != null) {
                                 fallbackManager.setErrorMessage("Failed to create component.");
                                 return;
                             }
-                            Component component = componentOptional.get();
+                            Component component = result.getData();
                             fallbackManager.setLoading(false);
                             currentSelectionService.setSelectedId(component.getId());
                             navigationService.switchView("Component?id=" + component.getId(), true);

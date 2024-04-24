@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -74,22 +75,25 @@ public class CreateSupplierController implements Initializable {
         CreateSupplierDTO supplierDTO = getCreateSupplierDTO(organizationId);
 
         supplierWriteService.createSupplier(supplierDTO)
-                .thenAccept(supplierOptional ->
-                    Platform.runLater(() -> {
-                        if (supplierOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create supplier.");
-                            return;
-                        }
-                        Supplier supplier = supplierOptional.get();
-                        fallbackManager.setLoading(false);
-                        currentSelectionService.setSelectedId(supplier.getId());
-                        navigationService.switchView("Supplier?id=" + supplier.getId(), true);
-                    })
-                )
+                .thenApply(this::handleCreateSupplierResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Supplier> handleCreateSupplierResponse(Result<Supplier> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create supplier.");
+                return;
+            }
+            Supplier supplier = result.getData();
+            fallbackManager.setLoading(false);
+            currentSelectionService.setSelectedId(supplier.getId());
+            navigationService.switchView("Supplier?id=" + supplier.getId(), true);
+        });
+        return result;
     }
 
     private CreateSupplierDTO getCreateSupplierDTO(Integer organizationId) {

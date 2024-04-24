@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.dto.ProductsSearchDTO;
 import org.chainoptim.desktop.features.product.service.ProductService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -12,7 +13,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 
 import java.util.List;
-import java.util.Optional;
 
 public class SelectProductController {
 
@@ -66,18 +66,18 @@ public class SelectProductController {
                 .exceptionally(this::handleProductsException);
     }
 
-    private Optional<List<ProductsSearchDTO>> handleProductsResponse(Optional<List<ProductsSearchDTO>> productsOptional) {
+    private Result<List<ProductsSearchDTO>> handleProductsResponse(Result<List<ProductsSearchDTO>> result) {
         Platform.runLater(() -> {
-            if (productsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
-            productComboBox.getItems().setAll(productsOptional.get());
+            productComboBox.getItems().setAll(result.getData());
 
         });
-        return productsOptional;
+        return result;
     }
 
-    private Optional<List<ProductsSearchDTO>> handleProductsException(Throwable ex) {
-        return Optional.empty();
+    private Result<List<ProductsSearchDTO>> handleProductsException(Throwable ex) {
+        return new Result<>();
     }
 }

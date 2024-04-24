@@ -1,66 +1,52 @@
 package org.chainoptim.desktop.features.supplier.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
-import org.chainoptim.desktop.shared.util.JsonUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class SupplierServiceImpl implements SupplierService {
 
     private final CachingService<PaginatedResults<Supplier>> cachingService;
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final RequestBuilder requestBuilder;
+    private final RequestHandler requestHandler;
+    private final TokenManager tokenManager;
 
-    private static final String HEADER_KEY = "Authorization";
-    private static final String HEADER_VALUE_PREFIX = "Bearer ";
     private static final int STALE_TIME = 30000;
 
     @Inject
-    public SupplierServiceImpl(CachingService<PaginatedResults<Supplier>> cachingService) {
+    public SupplierServiceImpl(CachingService<PaginatedResults<Supplier>> cachingService,
+                               RequestBuilder requestBuilder,
+                               RequestHandler requestHandler,
+                               TokenManager tokenManager) {
         this.cachingService = cachingService;
+        this.requestBuilder = requestBuilder;
+        this.requestHandler = requestHandler;
+        this.tokenManager = tokenManager;
     }
 
-    public CompletableFuture<Optional<List<Supplier>>> getSuppliersByOrganizationId(Integer organizationId) {
+    public CompletableFuture<Result<List<Supplier>>> getSuppliersByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/suppliers/organization/" + organizationId.toString();
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<Supplier>>empty();
-                    try {
-                        List<Supplier> suppliers = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<Supplier>>() {});
-                        return Optional.of(suppliers);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<List<Supplier>>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<List<Supplier>>() {});
     }
 
 
-    public CompletableFuture<Optional<PaginatedResults<Supplier>>> getSuppliersByOrganizationIdAdvanced(
+    public CompletableFuture<Result<PaginatedResults<Supplier>>> getSuppliersByOrganizationIdAdvanced(
             Integer organizationId,
             SearchParams searchParams
     ) {
@@ -68,60 +54,23 @@ public class SupplierServiceImpl implements SupplierService {
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("suppliers", "organization", organizationId.toString(), searchParams);
         String routeAddress = rootAddress + cacheKey;
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
-            return CompletableFuture.completedFuture(Optional.of(cachingService.get(cacheKey)));
+            return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
         }
 
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<PaginatedResults<Supplier>>empty();
-                    try {
-                        PaginatedResults<Supplier> suppliers = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<PaginatedResults<Supplier>>() {});
-
-                        cachingService.remove(cacheKey); // Ensure there isn't a stale cache entry
-                        cachingService.add(cacheKey, suppliers, STALE_TIME);
-
-                        return Optional.of(suppliers);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<PaginatedResults<Supplier>>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<PaginatedResults<Supplier>>() {}, suppliers -> {
+            cachingService.remove(cacheKey); // Ensure there isn't a stale cache entry
+            cachingService.add(cacheKey, suppliers, STALE_TIME);
+        });
     }
 
-    public CompletableFuture<Optional<Supplier>> getSupplierById(Integer supplierId) {
+    public CompletableFuture<Result<Supplier>> getSupplierById(Integer supplierId) {
         String routeAddress = "http://localhost:8080/api/v1/suppliers/" + supplierId.toString();
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    try {
-                        Supplier supplier = JsonUtil.getObjectMapper().readValue(response.body(), Supplier.class);
-                        return Optional.of(supplier);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        return Optional.empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<Supplier>() {});
     }
 }

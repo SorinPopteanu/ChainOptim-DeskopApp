@@ -1,20 +1,18 @@
 package org.chainoptim.desktop.features.client.controller;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.model.ClientOrder;
-import org.chainoptim.desktop.features.client.service.ClientOrdersService;
+import org.chainoptim.desktop.features.client.service.ClientOrderService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import com.google.inject.Inject;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -25,14 +23,12 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ClientOrdersController implements DataReceiver<Client> {
 
-    private final ClientOrdersService clientOrdersService;
+    private final ClientOrderService clientOrderService;
     private final FallbackManager fallbackManager;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
 
     private Client client;
     private List<ClientOrder> clientOrders;
@@ -62,54 +58,50 @@ public class ClientOrdersController implements DataReceiver<Client> {
 
     @Inject
     public ClientOrdersController(FallbackManager fallbackManager,
-                                  ClientOrdersService clientOrdersService,
-                                  FXMLLoaderService fxmlLoaderService,
-                                  ControllerFactory controllerFactory) {
+                                  ClientOrderService clientOrderService,
+                                  CommonViewsLoader commonViewsLoader) {
         this.fallbackManager = fallbackManager;
-        this.clientOrdersService = clientOrdersService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.clientOrderService = clientOrderService;
+        this.commonViewsLoader = commonViewsLoader;
     }
 
     @Override
     public void setData(Client client) {
-        loadFallbackManager();
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         this.client = client;
         loadClientOrders(client.getId());
-    }
-
-    private void loadFallbackManager() {
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void loadClientOrders(Integer clientId) {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        clientOrdersService.getClientOrdersByOrganizationId(clientId)
+        clientOrderService.getClientOrdersByOrganizationId(clientId)
                 .thenApply(this::handleOrdersResponse)
                 .exceptionally(this::handleOrdersException);
     }
 
-    private List<ClientOrder> handleOrdersResponse(Optional<List<ClientOrder>> orders) {
+    private Result<List<ClientOrder>> handleOrdersResponse(Result<List<ClientOrder>> result) {
         Platform.runLater(() -> {
-            if (orders.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load client orders.");
                 return;
             }
-            this.clientOrders = orders.get();
+            this.clientOrders = result.getData();
             fallbackManager.setLoading(false);
             System.out.println("Orders received: " + clientOrders);
+
             configureTableView();
             bindDataToTableView();
             setEditEvents();
         });
 
-        return clientOrders;
+        return result;
+    }
+
+    private Result<List<ClientOrder>> handleOrdersException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load client orders."));
+        return new Result<>();
     }
 
     private void configureTableView() {
@@ -171,10 +163,5 @@ public class ClientOrdersController implements DataReceiver<Client> {
 
     private void updateInDatabase(ClientOrder order) {
         System.out.println("Change the database with the new value: " + order);
-    }
-
-    private List<ClientOrder> handleOrdersException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load client orders."));
-        return Collections.emptyList();
     }
 }

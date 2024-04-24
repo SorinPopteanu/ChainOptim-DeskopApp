@@ -22,7 +22,7 @@
         <TextField fx:id="stageDescriptionField" styleClass="custom-text-field"/>
 
         <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px 0px;">
-            <Button text="Add Stage" onAction="#handleSubmit" styleClass="standard-write-button"/>
+            <Button text="Update Stage" onAction="#handleSubmit" styleClass="standard-write-button"/>
         </HBox>
 
         <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>

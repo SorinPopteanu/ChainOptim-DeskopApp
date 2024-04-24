@@ -10,6 +10,7 @@ import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDial
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.TimeUtil;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
@@ -169,13 +170,13 @@ public class AllocationPlanController {
                 .exceptionally(this::handleCurrentPlanException);
     }
 
-    private Optional<ResourceAllocationPlan> handleCurrentPlanResponse(Optional<ResourceAllocationPlan> planOptional) {
+    private Result<ResourceAllocationPlan> handleCurrentPlanResponse(Result<ResourceAllocationPlan> result) {
         Platform.runLater(() -> {
-            if (planOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load current allocation plan.");
                 return;
             }
-            currentPlan = planOptional.get();
+            currentPlan = result.getData();
             fallbackManager.setLoading(false);
 
             setUpConfirmDialogs();
@@ -196,12 +197,12 @@ public class AllocationPlanController {
 
 //            addDurationLabels(planOptional.get().getAllocationPlan().getDurationDays(), planOptional.get().getActivationDate());
         });
-        return planOptional;
+        return result;
     }
 
-    private Optional<ResourceAllocationPlan> handleCurrentPlanException(Throwable ex) {
+    private Result<ResourceAllocationPlan> handleCurrentPlanException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load current allocation plan."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void displayAllocations() {
@@ -282,9 +283,9 @@ public class AllocationPlanController {
                 .exceptionally(this::handleActivatePlanException);
     }
 
-    private Optional<ResourceAllocationPlan> handleActivatePlanResponse(Optional<ResourceAllocationPlan> planOptional) {
+    private Result<ResourceAllocationPlan> handleActivatePlanResponse(Result<ResourceAllocationPlan> result) {
         Platform.runLater(() -> {
-            if (planOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to activate the plan.");
                 return;
             }
@@ -295,15 +296,15 @@ public class AllocationPlanController {
             isPlanActive = true;
             adjustButtonsVisibilityBasedOnPlans();
 
-            allocationPlan = planOptional.get().getAllocationPlan();
+            allocationPlan = result.getData().getAllocationPlan();
             displayAllocations();
         });
-        return planOptional;
+        return result;
     }
 
-    private Optional<ResourceAllocationPlan> handleActivatePlanException(Throwable ex) {
+    private Result<ResourceAllocationPlan> handleActivatePlanException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to activate the plan."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void cancelActivation() {
@@ -327,9 +328,9 @@ public class AllocationPlanController {
                 .exceptionally(this::handleDeactivatePlanException);
     }
 
-    private Optional<ResourceAllocationPlan> handleDeactivatePlanResponse(Optional<ResourceAllocationPlan> planOptional) {
+    private Result<ResourceAllocationPlan> handleDeactivatePlanResponse(Result<ResourceAllocationPlan> result) {
         Platform.runLater(() -> {
-            if (planOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to deactivate the plan.");
                 return;
             }
@@ -343,12 +344,12 @@ public class AllocationPlanController {
             allocationPlan = null;
             tableView.getItems().clear();
         });
-        return planOptional;
+        return result;
     }
 
-    private Optional<ResourceAllocationPlan> handleDeactivatePlanException(Throwable ex) {
+    private Result<ResourceAllocationPlan> handleDeactivatePlanException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to deactivate the plan."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void replaceCurrentPlan(AllocationPlan plan) {
@@ -367,9 +368,9 @@ public class AllocationPlanController {
                 .exceptionally(this::handleReplacePlanException);
     }
 
-    private Optional<ResourceAllocationPlan> handleReplacePlanResponse(Optional<ResourceAllocationPlan> planOptional) {
+    private Result<ResourceAllocationPlan> handleReplacePlanResponse(Result<ResourceAllocationPlan> result) {
         Platform.runLater(() -> {
-            if (planOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to replace the plan.");
                 return;
             }
@@ -380,15 +381,15 @@ public class AllocationPlanController {
             isPlanActive = true;
             adjustButtonsVisibilityBasedOnPlans();
 
-            allocationPlan = planOptional.get().getAllocationPlan();
+            allocationPlan = result.getData().getAllocationPlan();
             displayAllocations();
         });
-        return planOptional;
+        return result;
     }
 
-    private Optional<ResourceAllocationPlan> handleReplacePlanException(Throwable ex) {
+    private Result<ResourceAllocationPlan> handleReplacePlanException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to replace the plan."));
-        return Optional.empty();
+        return new Result<>();
     }
 
 

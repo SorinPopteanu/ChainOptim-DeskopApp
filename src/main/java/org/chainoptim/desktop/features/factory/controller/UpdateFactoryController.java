@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.factory.service.FactoryService;
 import org.chainoptim.desktop.features.factory.service.FactoryWriteService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -77,24 +78,23 @@ public class UpdateFactoryController implements Initializable {
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<Factory> handleFactoryResponse(Optional<Factory> factoryOptional) {
+    private Result<Factory> handleFactoryResponse(Result<Factory> result) {
         Platform.runLater(() -> {
-            if (factoryOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load factory.");
                 return;
             }
-            factory = factoryOptional.get();
+            factory = result.getData();
 
             nameField.setText(factory.getName());
             selectOrCreateLocationController.setSelectedLocation(factory.getLocation());
         });
-
-        return factoryOptional;
+        return result;
     }
 
-    private Optional<Factory> handleFactoryException(Throwable ex) {
+    private Result<Factory> handleFactoryException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factory."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML
@@ -106,26 +106,29 @@ public class UpdateFactoryController implements Initializable {
         System.out.println(factoryDTO);
 
         factoryWriteService.updateFactory(factoryDTO)
-                .thenAccept(factoryOptional ->
-                    Platform.runLater(() -> {
-                        if (factoryOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create factory.");
-                            return;
-                        }
-                        fallbackManager.setLoading(false);
-
-                        // Manage navigation, invalidating previous factory cache
-                        Factory updatedFactory = factoryOptional.get();
-                        String factoryPage = "Factory?id=" + updatedFactory.getId();
-                        NavigationServiceImpl.invalidateViewCache(factoryPage);
-                        currentSelectionService.setSelectedId(updatedFactory.getId());
-                        navigationService.switchView(factoryPage, true);
-                    })
-                )
+                .thenApply(this::handleUpdateFactoryResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Factory> handleUpdateFactoryResponse(Result<Factory> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create factory.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            // Manage navigation, invalidating previous factory cache
+            Factory updatedFactory = result.getData();
+            String factoryPage = "Factory?id=" + updatedFactory.getId();
+            NavigationServiceImpl.invalidateViewCache(factoryPage);
+            currentSelectionService.setSelectedId(updatedFactory.getId());
+            navigationService.switchView(factoryPage, true);
+        });
+        return result;
     }
 
     private UpdateFactoryDTO getUpdateFactoryDTO() {

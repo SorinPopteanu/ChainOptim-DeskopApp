@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -77,23 +78,25 @@ public class CreateWarehouseController implements Initializable {
         System.out.println(warehouseDTO);
 
         warehouseWriteService.createWarehouse(warehouseDTO)
-                .thenAccept(warehouseOptional ->
-                    Platform.runLater(() -> {
-                        if (warehouseOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create new warehouse.");
-                            return;
-                        }
-                        Warehouse warehouse = warehouseOptional.get();
-                        fallbackManager.setLoading(false);
-                        currentSelectionService.setSelectedId(warehouse.getId());
-                        System.out.println(warehouseDTO);
-                        navigationService.switchView("Warehouse?id=" + warehouse.getId(), true);
-                    })
-                )
+                .thenApply(this::handleCreateWarehouseResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Warehouse> handleCreateWarehouseResponse(Result<Warehouse> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create new warehouse.");
+                return;
+            }
+            Warehouse warehouse = result.getData();
+            fallbackManager.setLoading(false);
+            currentSelectionService.setSelectedId(warehouse.getId());
+            navigationService.switchView("Warehouse?id=" + warehouse.getId(), true);
+        });
+        return result;
     }
 
     private CreateWarehouseDTO getCreateWarehouseDTO(Integer organizationId) {

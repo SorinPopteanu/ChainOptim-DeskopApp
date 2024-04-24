@@ -13,6 +13,7 @@ import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.Resou
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.model.ResourceAllocationPlan;
 import org.chainoptim.desktop.features.scanalysis.resourceallocation.service.ResourceAllocationPersistenceService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import com.google.inject.Inject;
@@ -116,13 +117,13 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
                 .exceptionally(this::handleCurrentPlanException);
     }
 
-    private Optional<ResourceAllocationPlan> handleCurrentPlanResponse(Optional<ResourceAllocationPlan> planOptional) {
+    private Result<ResourceAllocationPlan> handleCurrentPlanResponse(Result<ResourceAllocationPlan> result) {
         Platform.runLater(() -> {
-            if (planOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load current allocation plan.");
                 return;
             }
-            currentPlan = planOptional.get();
+            currentPlan = result.getData();
             fallbackManager.setLoading(false);
 
             currentPlanStartDate.setText(currentPlan.getActivationDate().toLocalDate().toString());
@@ -131,12 +132,12 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
 
             displayFormWithPlan(currentPlan.getAllocationPlan());
         });
-        return planOptional;
+        return result;
     }
 
-    private Optional<ResourceAllocationPlan> handleCurrentPlanException(Throwable ex) {
+    private Result<ResourceAllocationPlan> handleCurrentPlanException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load current allocation plan."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void displayFormWithPlan(AllocationPlan allocationPlan) {
@@ -296,12 +297,12 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
     // Submitting
     private void loadHistoryId(Integer factoryId) {
         historyService.getFactoryProductionHistoryByFactoryId(factoryId)
-                .thenApply(historyOptional -> {
-                    if (historyOptional.isEmpty()) {
-                        return historyOptional;
+                .thenApply(result -> {
+                    if (result.getError() != null) {
+                        return result;
                     }
-                    productionHistory = historyOptional.get();
-                    return historyOptional;
+                    productionHistory = result.getData();
+                    return result;
                 });
     }
 
@@ -319,24 +320,24 @@ public class AddProductionRecordController implements DataReceiver<Factory> {
                 .exceptionally(this::handleRecordAdditionException);
     }
 
-    private Optional<FactoryProductionHistory> handleRecordAddition(Optional<FactoryProductionHistory> historyOptional) {
+    private Result<FactoryProductionHistory> handleRecordAddition(Result<FactoryProductionHistory> result) {
         Platform.runLater(() -> {
-            if (historyOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to add production record.");
                 return;
             }
             fallbackManager.setLoading(false);
 
             if (actionListener != null) {
-                actionListener.onAddProductionRecord(historyOptional.get());
+                actionListener.onAddProductionRecord(result.getData());
             }
         });
-        return historyOptional;
+        return result;
     }
 
-    private Optional<FactoryProductionHistory> handleRecordAdditionException(Throwable ex) {
+    private Result<FactoryProductionHistory> handleRecordAdditionException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to add production record."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private AddDayToFactoryProductionHistoryDTO gatherRecordDTO() {

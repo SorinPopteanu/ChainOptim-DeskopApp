@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.client.service.ClientService;
 import org.chainoptim.desktop.features.client.service.ClientWriteService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -43,13 +44,12 @@ public class UpdateClientController implements Initializable {
     private TextField nameField;
 
     @Inject
-    public UpdateClientController(
-            ClientService clientService,
-            ClientWriteService clientWriteService,
-            NavigationService navigationService,
-            CurrentSelectionService currentSelectionService,
-            CommonViewsLoader commonViewsLoader,
-            FallbackManager fallbackManager) {
+    public UpdateClientController(ClientService clientService,
+                                  ClientWriteService clientWriteService,
+                                  NavigationService navigationService,
+                                  CurrentSelectionService currentSelectionService,
+                                  CommonViewsLoader commonViewsLoader,
+                                  FallbackManager fallbackManager) {
         this.clientService = clientService;
         this.clientWriteService = clientWriteService;
         this.navigationService = navigationService;
@@ -72,28 +72,28 @@ public class UpdateClientController implements Initializable {
 
         clientService.getClientById(clientId)
                 .thenApply(this::handleClientResponse)
-                .exceptionally(this::handleClientException)
-                .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
+                .exceptionally(this::handleClientException);
     }
 
-    private Optional<Client> handleClientResponse(Optional<Client> clientOptional) {
+    private Result<Client> handleClientResponse(Result<Client> result) {
         Platform.runLater(() -> {
-            if (clientOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load client.");
                 return;
             }
-            client = clientOptional.get();
+            client = result.getData();
+            fallbackManager.setLoading(false);
 
             nameField.setText(client.getName());
             selectOrCreateLocationController.setSelectedLocation(client.getLocation());
         });
 
-        return clientOptional;
+        return result;
     }
 
-    private Optional<Client> handleClientException(Throwable ex) {
+    private Result<Client> handleClientException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load client."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML
@@ -105,26 +105,29 @@ public class UpdateClientController implements Initializable {
         System.out.println(clientDTO);
 
         clientWriteService.updateClient(clientDTO)
-                .thenAccept(clientOptional ->
-                    Platform.runLater(() -> {
-                        if (clientOptional.isEmpty()) {
-                            fallbackManager.setErrorMessage("Failed to create client.");
-                            return;
-                        }
-                        fallbackManager.setLoading(false);
-
-                        // Manage navigation, invalidating previous client cache
-                        Client updatedClient = clientOptional.get();
-                        String clientPage = "Client?id=" + updatedClient.getId();
-                        NavigationServiceImpl.invalidateViewCache(clientPage);
-                        currentSelectionService.setSelectedId(updatedClient.getId());
-                        navigationService.switchView(clientPage, true);
-                    })
-                )
+                .thenApply(this::handleUpdateClientResponse)
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return null;
+                    return new Result<>();
                 });
+    }
+
+    private Result<Client> handleUpdateClientResponse(Result<Client> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to create client.");
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            // Manage navigation, invalidating previous client cache
+            Client updatedClient = result.getData();
+            String clientPage = "Client?id=" + updatedClient.getId();
+            NavigationServiceImpl.invalidateViewCache(clientPage);
+            currentSelectionService.setSelectedId(updatedClient.getId());
+            navigationService.switchView(clientPage, true);
+        });
+        return result;
     }
 
     private UpdateClientDTO getUpdateClientDTO() {

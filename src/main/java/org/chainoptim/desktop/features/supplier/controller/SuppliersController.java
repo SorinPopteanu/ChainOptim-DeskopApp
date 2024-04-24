@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -25,7 +26,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class SuppliersController implements Initializable {
@@ -117,13 +117,13 @@ public class SuppliersController implements Initializable {
                 .exceptionally(this::handleSupplierException);
     }
 
-    private Optional<PaginatedResults<Supplier>> handleSupplierResponse(Optional<PaginatedResults<Supplier>> suppliersOptional) {
+    private Result<PaginatedResults<Supplier>> handleSupplierResponse(Result<PaginatedResults<Supplier>> result) {
         Platform.runLater(() -> {
-            if (suppliersOptional.isEmpty()) {
+            if (result.getError() != null) {
                fallbackManager.setErrorMessage("Failed to load suppliers.");
                return;
             }
-            PaginatedResults<Supplier> paginatedResults = suppliersOptional.get();
+            PaginatedResults<Supplier> paginatedResults = result.getData();
             fallbackManager.setLoading(false);
 
             totalCount = paginatedResults.getTotalCount();
@@ -142,7 +142,12 @@ public class SuppliersController implements Initializable {
             }
             fallbackManager.setNoResults(false);
         });
-        return suppliersOptional;
+        return result;
+    }
+
+    private Result<PaginatedResults<Supplier>> handleSupplierException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load suppliers."));
+        return new Result<>();
     }
 
     private void loadSupplierCardUI(Supplier supplier) {
@@ -165,11 +170,6 @@ public class SuppliersController implements Initializable {
         supplierButton.setOnAction(event -> openSupplierDetails(supplier.getId()));
 
         suppliersVBox.getChildren().add(supplierButton);
-    }
-
-    private Optional<PaginatedResults<Supplier>> handleSupplierException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load suppliers."));
-        return Optional.empty();
     }
 
     private void openSupplierDetails(Integer supplierId) {

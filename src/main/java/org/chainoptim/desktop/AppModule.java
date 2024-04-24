@@ -20,11 +20,9 @@ import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotServiceImpl;
 import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.settings.service.UserSettingsServiceImpl;
-import org.chainoptim.desktop.core.user.service.UserService;
-import org.chainoptim.desktop.core.user.service.UserServiceImpl;
-import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
+import org.chainoptim.desktop.core.user.service.*;
 import org.chainoptim.desktop.features.client.model.Client;
+import org.chainoptim.desktop.features.client.model.ClientOrder;
 import org.chainoptim.desktop.features.client.service.*;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.service.*;
@@ -60,6 +58,10 @@ import org.chainoptim.desktop.shared.caching.CachingServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
 import org.chainoptim.desktop.shared.features.location.service.LocationServiceImpl;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilderImpl;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.RequestHandlerImpl;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.search.model.SearchParamsImpl;
@@ -104,11 +106,12 @@ public class AppModule extends AbstractModule {
         // - Abstraction
         bind(ControllerFactory.class).to(GuiceControllerFactory.class);
         bind(ThreadRunner.class).to(JavaFXThreadRunner.class);
-        bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class);
+        bind(FXMLLoaderService.class).to(FXMLLoaderServiceImpl.class).in(Singleton.class);
 
         // - User
         bind(AuthenticationService.class).to(AuthenticationServiceImpl.class);
         bind(UserService.class).to(UserServiceImpl.class);
+        bind(TokenManager.class).to(TokenManagerImpl.class).in(Singleton.class);
 
         // - Organization
         bind(OrganizationService.class).to(OrganizationServiceImpl.class);
@@ -153,7 +156,8 @@ public class AppModule extends AbstractModule {
         // - Client
         bind(ClientService.class).to(ClientServiceImpl.class);
         bind(ClientWriteService.class).to(ClientWriteServiceImpl.class);
-        bind(ClientOrdersService.class).to(ClientOrdersServiceImpl.class);
+        bind(ClientOrderService.class).to(ClientOrderServiceImpl.class);
+        bind(ClientOrderWriteService.class).to(ClientOrderWriteServiceImpl.class);
 
         // - SC Analysis
         bind(ProductProductionGraphService.class).to(ProductProductionGraphServiceImpl.class);
@@ -166,6 +170,10 @@ public class AppModule extends AbstractModule {
         bind(SupplierPerformanceService.class).to(SupplierPerformanceServiceImpl.class);
 
         // Shared
+        // - Http Handling
+        bind(RequestBuilder.class).to(RequestBuilderImpl.class);
+        bind(RequestHandler.class).to(RequestHandlerImpl.class);
+
         // - Location
         bind(LocationService.class).to(LocationServiceImpl.class);
 
@@ -199,6 +207,9 @@ public class AppModule extends AbstractModule {
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<PaginatedResults<ClientOrder>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<ClientOrder>>>() {})
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<ResourceAllocationPlan>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<ResourceAllocationPlan>>() {})

@@ -9,6 +9,7 @@ import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
@@ -121,13 +122,13 @@ public class WarehousesController implements Initializable {
                 .exceptionally(this::handleWarehouseException);
     }
 
-    private Optional<PaginatedResults<Warehouse>> handleWarehouseResponse(Optional<PaginatedResults<Warehouse>> warehousesOptional) {
+    private Result<PaginatedResults<Warehouse>> handleWarehouseResponse(Result<PaginatedResults<Warehouse>> result) {
         Platform.runLater(() -> {
-            if(warehousesOptional.isEmpty()) {
+            if(result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load warehouses. ");
                 return;
             }
-            PaginatedResults<Warehouse> paginatedResults = warehousesOptional.get();
+            PaginatedResults<Warehouse> paginatedResults = result.getData();
             fallbackManager.setLoading(false);
 
             totalCount = paginatedResults.getTotalCount();
@@ -146,7 +147,12 @@ public class WarehousesController implements Initializable {
             }
             fallbackManager.setNoResults(false);
         });
-        return warehousesOptional;
+        return result;
+    }
+
+    private Result<PaginatedResults<Warehouse>> handleWarehouseException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load warehouses."));
+        return new Result<>();
     }
 
     private void loadWarehouseCardUI(Warehouse warehouse) {
@@ -169,11 +175,6 @@ public class WarehousesController implements Initializable {
         warehouseButton.setOnAction(event -> openWarehouseDetails(warehouse.getId()));
 
         warehousesVBox.getChildren().add(warehouseButton);
-    }
-
-    private Optional<PaginatedResults<Warehouse>> handleWarehouseException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load warehouses."));
-        return Optional.empty();
     }
 
     private void openWarehouseDetails(Integer warehouseId) {
