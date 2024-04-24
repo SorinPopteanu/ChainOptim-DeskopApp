@@ -152,6 +152,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         setUpListeners();
         loadConfirmDialogs();
 
+        searchParams.setItemsPerPage(20);
         loadSupplierOrders(supplier.getId());
     }
 
@@ -462,7 +463,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         }
         confirmSupplierOrderDeleteController.setData(selectedOrders, confirmDialogInput);
         toggleDialogVisibility(confirmDeleteDialogContainer, true);
-        addToastWarning();
     }
 
     private void closeConfirmDeleteDialog() {
@@ -602,16 +602,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private void addToastError() {
         ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the supplier order", OperationOutcome.ERROR);
-        toastManager.addToast(toastInfo);
-    }
-
-    private void addToastInfo() {
-        ToastInfo toastInfo = new ToastInfo("Info", "A Supplier Order is a request for a product from a supplier", OperationOutcome.INFO);
-        toastManager.addToast(toastInfo);
-    }
-
-    private void addToastWarning() {
-        ToastInfo toastInfo = new ToastInfo("Warning", "You are about to delete a supplier order", OperationOutcome.WARNING);
         toastManager.addToast(toastInfo);
     }
 }

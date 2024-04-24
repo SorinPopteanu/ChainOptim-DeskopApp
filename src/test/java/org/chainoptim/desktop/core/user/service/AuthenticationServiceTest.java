@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.core.user.service;
 
-import org.chainoptim.desktop.core.user.service.AuthenticationServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +24,8 @@ class AuthenticationServiceTest {
 
     @Mock
     private HttpClient mockClient;
+    @Mock
+    private TokenManager tokenManager;
 
     @InjectMocks
     private AuthenticationServiceImpl authenticationService;
