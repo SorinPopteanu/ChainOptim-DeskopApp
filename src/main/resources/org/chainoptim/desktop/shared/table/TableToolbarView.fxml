@@ -2,22 +2,24 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import org.chainoptim.desktop.shared.search.FilterBar?>
+<?import org.chainoptim.desktop.shared.search.filters.FilterBar?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.shared.table.TableToolbarController" styleClass="table-toolbar" spacing="8">
 
     <!-- Search Options -->
-    <FlowPane alignment="CENTER_LEFT" vgap="6" hgap="6">
+    <FlowPane alignment="CENTER_LEFT" vgap="8" hgap="6">
         <StackPane alignment="CENTER_RIGHT">
             <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
             <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
         </StackPane>
         <FilterBar fx:id="filterBar"/>
-        <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption"/>
-        <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
-        <Button fx:id="refreshButton" styleClass="refresh-button"/>
+        <HBox alignment="CENTER_LEFT" spacing="6">
+            <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption"/>
+            <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
+            <Button fx:id="refreshButton" styleClass="refresh-button"/>
+        </HBox>
     </FlowPane>
 
     <!-- Table Actions -->

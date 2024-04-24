@@ -9,13 +9,16 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersWriteService;
+import org.chainoptim.desktop.shared.common.uielements.UIItem;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.enums.FilterType;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.OrderStatus;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.filters.FilterOption;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
@@ -37,6 +40,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
@@ -64,6 +68,23 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     // State
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
+    private static final List<FilterOption> filterOptions = List.of(
+            new FilterOption(
+                    new UIItem("Order Date Start", "orderDateStart"),
+                    new ArrayList<>(),
+                    FilterType.DATE
+            ),
+            new FilterOption(
+                    new UIItem("Quantity", "greaterThanQuantity"),
+                    new ArrayList<>(),
+                    FilterType.NUMBER
+            ),
+            new FilterOption(
+                    new UIItem("Status", "status"),
+                    List.of(new UIItem("Delivered", "DELIVERED"), new UIItem("Pending", "PENDING")),
+                    FilterType.ENUM
+            )
+    );
     private final Map<String, String> sortOptions = Map.of(
             "orderDate", "Order Date",
             "estimatedDeliveryDate", "Estimated Delivery Date",
@@ -142,9 +163,11 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     public void setData(Supplier supplier) {
         this.supplier = supplier;
 
+        searchParams.setItemsPerPage(20);
+
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(searchParams, sortOptions, () -> loadSupplierOrders(supplier.getId()));
+        tableToolbarController.initialize(searchParams, filterOptions, sortOptions, () -> loadSupplierOrders(supplier.getId()));
         selectComponentLoader.initialize();
 
         TableConfigurer.configureTableView(tableView, selectRowColumn);
@@ -152,7 +175,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         setUpListeners();
         loadConfirmDialogs();
 
-        searchParams.setItemsPerPage(20);
         loadSupplierOrders(supplier.getId());
     }
 
@@ -169,7 +191,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         confirmSupplierOrderDeleteController = commonViewsLoader.loadConfirmDialog(confirmDeleteDialogContainer);
         confirmSupplierOrderDeleteController.setActionListener(confirmDialogDeleteListener);
         closeConfirmDeleteDialog();
-        System.out.println("Confirm Dialogs loaded");
     }
 
     // Configuration
@@ -259,6 +280,10 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
+        searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
+            System.out.println("Filter changed: " + change.getKey() + " -> " + change.getValueAdded());
+            loadSupplierOrders(supplier.getId());
+        });
     }
 
     private void setUpTableToolbarListeners() {

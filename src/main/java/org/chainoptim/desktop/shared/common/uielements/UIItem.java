@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.search.model;
+package org.chainoptim.desktop.shared.common.uielements;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

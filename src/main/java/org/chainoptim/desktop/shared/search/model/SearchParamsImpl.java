@@ -4,13 +4,14 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
 public class SearchParamsImpl implements SearchParams {
 
     private final StringProperty searchQuery;
-    private final MapProperty<String, String> filters;
+    private final ObservableMap<String, String> filters;
     private final StringProperty sortOption;
     private final BooleanProperty ascending;
     private final IntegerProperty page;
@@ -18,7 +19,7 @@ public class SearchParamsImpl implements SearchParams {
 
     public SearchParamsImpl() {
         searchQuery = new SimpleStringProperty("");
-        filters = new SimpleMapProperty<>(FXCollections.observableHashMap());
+        filters = new SimpleMapProperty<>(FXCollections.observableMap(new HashMap<>()));
         sortOption = new SimpleStringProperty("createdAt");
         ascending = new SimpleBooleanProperty(false);
         page = new SimpleIntegerProperty(1);
@@ -28,7 +29,7 @@ public class SearchParamsImpl implements SearchParams {
     public StringProperty getSearchQueryProperty() {
         return searchQuery;
     }
-    public MapProperty<String, String> getFiltersProperty() {
+    public ObservableMap<String, String> getFiltersProperty() {
         return filters;
     }
     public StringProperty getSortOptionProperty() {
@@ -45,9 +46,6 @@ public class SearchParamsImpl implements SearchParams {
     }
     public String getSearchQuery() {
         return searchQuery.get();
-    }
-    public Map<String, String> getFilters() {
-        return filters.get();
     }
     public String getSortOption() {
         return sortOption.get();
@@ -68,8 +66,8 @@ public class SearchParamsImpl implements SearchParams {
     }
     public void setFilters(Map<String, String> filters) {
         this.page.set(1);
-        ObservableMap<String, String> observableFilters = FXCollections.observableMap(filters);
-        this.filters.set(observableFilters);
+        this.filters.clear();
+        this.filters.putAll(filters);
     }
     public void setSortOption(String sortOption) {
         this.page.set(1);

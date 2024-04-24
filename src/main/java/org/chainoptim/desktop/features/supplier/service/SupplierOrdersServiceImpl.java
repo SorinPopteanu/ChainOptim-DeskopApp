@@ -68,6 +68,7 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
         String rootAddress = "http://localhost:8080/api/v1/";
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("supplier-orders", "organization", supplierId.toString(), searchParams);
         String routeAddress = rootAddress + cacheKey;
+        System.out.println("Loading from: " + routeAddress);
 
         String jwtToken = TokenManager.getToken();
         if (jwtToken == null) return new CompletableFuture<>();

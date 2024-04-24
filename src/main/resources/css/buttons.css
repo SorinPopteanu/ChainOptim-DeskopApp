@@ -1,6 +1,7 @@
 .standard-write-button {
-    -fx-pref-height: 32px;
-    -fx-padding: 8px 12px 8px 12px;
+    -fx-min-height: 32px;
+    -fx-max-height: 32px;
+    -fx-padding: 0px 12px;
     -fx-background-color: #006AEE;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
@@ -12,13 +13,14 @@
 }
 
 .standard-write-button:hover {
-    -fx-background-color: #0068C9;
+    -fx-background-color: #005ACD;
 }
 
 .standard-write-button-disabled {
-    -fx-pref-height: 32px;
+    -fx-min-height: 32px;
+    -fx-max-height: 32px;
+    -fx-padding: 0px 12px;
     -fx-background-color: #5588DD;
-    -fx-padding: 4px 12px 4px 12px;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
     -fx-text-fill: white;
@@ -28,7 +30,7 @@
 }
 
 .standard-action-button {
-    -fx-padding: 4px 8px 4px 8px;
+    -fx-padding: 4px 8px;
     -fx-background-color: #eeeeee;
     -fx-border-color: #d0d0d0;
     -fx-background-radius: 4;
@@ -44,8 +46,9 @@
 }
 
 .standard-delete-button {
-    -fx-pref-height: 32px;
-    -fx-padding: 4px 12px 4px 12px;
+    -fx-min-height: 32px;
+    -fx-max-height: 32px;
+    -fx-padding: 0px 12px;
     -fx-background-color: #B22222;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
@@ -63,7 +66,7 @@
 .standard-cancel-button {
     -fx-min-height: 32px;
     -fx-max-height: 32px;
-    -fx-padding: 4px 12px 4px 12px;
+    -fx-padding: 4px 12px;
     -fx-background-color: #eeeeee;
     -fx-border-color: #d0d0d0;
     -fx-background-radius: 4;
@@ -104,8 +107,9 @@
 }
 
 .cancel-edit-button {
-    -fx-pref-height: 32px;
-    -fx-padding: 8px 10px;
+    -fx-min-height: 32px;
+    -fx-max-height: 32px;
+    -fx-padding: 0px 12px;
     -fx-background-color: #e6e6e6;
     -fx-border-color: #d3d3d3;
     -fx-background-radius: 6px;

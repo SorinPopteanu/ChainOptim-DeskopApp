@@ -1,11 +1,11 @@
 package org.chainoptim.desktop.shared.table;
 
-import org.chainoptim.desktop.shared.search.FilterBar;
+import org.chainoptim.desktop.shared.enums.FilterType;
+import org.chainoptim.desktop.shared.search.filters.FilterBar;
+import org.chainoptim.desktop.shared.search.filters.FilterOption;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
-import org.chainoptim.desktop.shared.search.model.UIItem;
-import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.common.uielements.UIItem;
 
-import com.google.inject.Inject;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
@@ -20,7 +20,6 @@ import javafx.util.Duration;
 
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,6 @@ public class TableToolbarController {
     // State
     private SearchParams searchParams;
     private Map<String,String> sortOptionsMap;
-    private Map<UIItem, List<UIItem>> filterOptions;
 
     // FXMl
     @FXML
@@ -70,12 +68,14 @@ public class TableToolbarController {
     private Image plusIcon;
 
     public void initialize(SearchParams searchParams,
+                           List<FilterOption> filterOptions,
                            Map<String, String> sortOptionsMap,
                            Runnable refreshAction) {
         this.searchParams = searchParams;
         this.sortOptionsMap = sortOptionsMap;
         initializeIcons();
         setSearchButton();
+        filterBar.initializeFilterBar(filterOptions, searchParams);
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
         setRefreshButton(refreshAction);
@@ -86,14 +86,6 @@ public class TableToolbarController {
         setCreateNewOrderButton();
 
         toggleButtonVisibilityOnCancel();
-
-        Map<UIItem, List<UIItem>> testFilterOptions = Map.of(
-                new UIItem("Order Date Start", "orderDateStart"),
-                List.of(new UIItem("Today", LocalDateTime.now().toString()), new UIItem("Yesterday", LocalDateTime.now().minusDays(1).toString())),
-                new UIItem("Quantity", "quantity"),
-                List.of(new UIItem("3", "3"), new UIItem("3", "3"))
-        );
-        filterBar.initializeFilterBar(testFilterOptions);
     }
 
     private void initializeIcons() {
