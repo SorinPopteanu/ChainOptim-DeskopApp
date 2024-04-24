@@ -209,7 +209,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             }
         });
         estimatedDeliveryDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierOrder>, LocalDateTime>(
-                isEditMode, selectedRowsIndices) {
+                isEditMode, selectedRowsIndices, true) {
             @Override
             protected void commitChange(TableData<SupplierOrder> item, LocalDateTime newValue) {
                 item.getData().setEstimatedDeliveryDate(newValue);
@@ -217,12 +217,16 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         });
 
         deliveryDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierOrder>, LocalDateTime>(
-                isEditMode, selectedRowsIndices) {
+                isEditMode, selectedRowsIndices, true) {
             @Override
             protected void commitChange(TableData<SupplierOrder> item, LocalDateTime newValue) {
                 item.getData().setDeliveryDate(newValue);
             }
         });
+
+        orderDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierOrder>, LocalDateTime>(
+                isEditMode, selectedRowsIndices, false){});
+
         statusColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierOrder>, OrderStatus>(
                 isEditMode, selectedRowsIndices, null, statusOptions) {
             @Override

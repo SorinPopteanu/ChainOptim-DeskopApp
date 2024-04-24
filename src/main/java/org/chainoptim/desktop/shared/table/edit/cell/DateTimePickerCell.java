@@ -8,14 +8,20 @@ import java.util.List;
 
 public class DateTimePickerCell<S, T> extends EditableCell<S, LocalDateTime> {
     private final LocalDateTimeTextField dateTimePicker;
+    private final DateTimeFormatter formatter;
+    private final boolean isEditable;
 
-    protected DateTimePickerCell(BooleanProperty isEditMode, List<Integer> editableRows) {
+    protected DateTimePickerCell(BooleanProperty isEditMode, List<Integer> editableRows, boolean isEditable) {
         super(isEditMode, editableRows, LocalDateTime::parse);
+        this.isEditable = isEditable;
         this.dateTimePicker = new LocalDateTimeTextField();
+        this.formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy, hh:mm a");
+        dateTimePicker.setDateTimeFormatter(formatter);
 
         dateTimePicker.localDateTimeProperty().addListener((obs, oldDateTime, newDateTime) -> {
-            System.out.println("DateTimePicker new date and time: " + newDateTime);
-            commitEdit(this.dateTimePicker.getLocalDateTime());
+            if (isEditable) {
+                commitEdit(this.dateTimePicker.getLocalDateTime());
+            }
         });
         this.dateTimePicker.setParseErrorCallback(e -> {
             System.out.println("DateTimePicker parsing error");
@@ -35,7 +41,7 @@ public class DateTimePickerCell<S, T> extends EditableCell<S, LocalDateTime> {
                 setGraphic(dateTimePicker);
                 setText(null);
             } else {
-                setText(getString());
+                setText(item != null ? formatter.format(item) : null);
                 setGraphic(null);
             }
         }
@@ -43,7 +49,7 @@ public class DateTimePickerCell<S, T> extends EditableCell<S, LocalDateTime> {
 
     @Override
     public void startEdit() {
-        if (!isEmpty() && isEditMode.get() && editableRows.contains(getIndex())) {
+        if (isEditable && !isEmpty() && isEditMode.get() && editableRows.contains(getIndex())) {
             super.startEdit();
             dateTimePicker.setLocalDateTime(getItem());
             setText(null);
