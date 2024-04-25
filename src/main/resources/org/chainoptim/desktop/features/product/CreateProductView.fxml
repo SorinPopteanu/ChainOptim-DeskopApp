@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.ScrollPane?>
+<?import org.chainoptim.desktop.shared.common.uielements.forms.FormField?>
+
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.features.product.controller.CreateProductController">
@@ -15,11 +16,9 @@
                 <Text text="Create Product" styleClass="form-title"/>
             </HBox>
 
-            <Label text="Name *:" styleClass="form-label"/>
-            <TextField fx:id="nameField" styleClass="custom-text-field"/>
+            <FormField fx:id="nameFormField"/>
 
-            <Label text="Description:" styleClass="form-label"/>
-            <TextField fx:id="descriptionField" styleClass="custom-text-field"/>
+            <FormField fx:id="descriptionFormField"/>
 
             <Label text="Unit of Measurement:" styleClass="form-label"/>
             <StackPane fx:id="unitOfMeasurementContainer"/>
