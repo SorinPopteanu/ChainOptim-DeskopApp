@@ -1,7 +1,7 @@
 .entity-header-container {
     -fx-padding: 20;
     -fx-background-color: #f2f2f2;
-    -fx-border-color: #c0c0c0 #ffffff #c0c0c0 #ffffff;
+    -fx-border-color: #ffffff #ffffff #c0c0c0 #ffffff;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 4, 0, 0, 2);
 }
 

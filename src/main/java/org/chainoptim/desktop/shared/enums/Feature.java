@@ -31,5 +31,10 @@ public enum Feature {
     CLIENT,
     CLIENT_ORDER,
     CLIENT_SHIPMENT,
-    CLIENT_EVALUATION
+    CLIENT_EVALUATION;
+
+    @Override
+    public String toString() {
+        return (name().charAt(0) + name().substring(1).toLowerCase()).replace("_", " ");
+    }
 }
