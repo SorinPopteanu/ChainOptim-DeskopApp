@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.core.settings.controller;
 
 import org.chainoptim.desktop.core.settings.model.UserSettings;
+import org.chainoptim.desktop.shared.common.uielements.settings.Switch;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import javafx.beans.property.BooleanProperty;
@@ -38,12 +39,15 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     // FXML
     @FXML
     private VBox contentVBox;
+    @FXML
+    private Switch overallSwitch;
     private final ToggleButton toggleOverallButton = new ToggleButton();
     private final Map<String, ToggleButton> featureToggleButtons = new HashMap<>();
 
     @Override
     public void setData(UserSettings userSettings) {
         this.userSettings = userSettings;
+        overallSwitch.initializeSwitch(aggregateNotificationSettings());
         initializeUI();
     }
 

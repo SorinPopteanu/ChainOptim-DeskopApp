@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 
+<?import org.chainoptim.desktop.shared.common.uielements.settings.Switch?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.core.settings.controller.NotificationSettingsController"
       prefHeight="400.0" prefWidth="600.0">
 
+    <Switch fx:id="overallSwitch" />
     <VBox fx:id="contentVBox" styleClass="settings-tab-container">
         <!-- Overall Settings -->
 

@@ -27,3 +27,29 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
+
+.custom-switch {
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1;
+}
+
+.switch-select-item {
+    -fx-padding: 4px 8px;
+    -fx-background-color: #efeeef;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
+
+.switch-select-item-selected {
+    -fx-padding: 4px 8px;
+    -fx-background-color: #006AEE;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
