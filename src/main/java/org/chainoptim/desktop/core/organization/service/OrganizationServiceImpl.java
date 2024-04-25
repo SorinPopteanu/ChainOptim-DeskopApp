@@ -1,7 +1,9 @@
 package org.chainoptim.desktop.core.organization.service;
 
+import org.chainoptim.desktop.core.organization.dto.UpdateOrganizationDTO;
 import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -31,6 +33,15 @@ public class OrganizationServiceImpl implements OrganizationService {
         String routeAddress = "http://localhost:8080/api/v1/organizations/" + organizationId.toString() + "?includeUsers=" + includeUsers;
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
+
+        return requestHandler.sendRequest(request, new TypeReference<Organization>() {});
+    }
+
+    public CompletableFuture<Result<Organization>> updateOrganization(UpdateOrganizationDTO organizationDTO) {
+        String routeAddress = "http://localhost:8080/api/v1/organizations/update";
+
+        HttpRequest request = requestBuilder.buildWriteRequest(
+                HttpMethod.POST, routeAddress, tokenManager.getToken(), organizationDTO);
 
         return requestHandler.sendRequest(request, new TypeReference<Organization>() {});
     }

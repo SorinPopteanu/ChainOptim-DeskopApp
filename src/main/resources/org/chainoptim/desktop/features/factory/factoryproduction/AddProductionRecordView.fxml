@@ -44,7 +44,7 @@
         <Label text="Allocations" styleClass="general-label-extra-large" style="-fx-padding: 16px 0px 0px 0px;"/>
         <VBox fx:id="allocationsVBox"/>
 
-        <HBox alignment="TOP_RIGHT" style="-fx-padding: 16px 0px 0px 0px;">
+        <HBox alignment="TOP_RIGHT" style="-fx-padding: 20px 0px 0px 0px;">
             <Button text="Add Record" onAction="#handleSubmit" styleClass="standard-write-button"/>
         </HBox>
     </VBox>

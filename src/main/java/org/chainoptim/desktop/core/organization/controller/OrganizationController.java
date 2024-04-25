@@ -2,6 +2,7 @@ package org.chainoptim.desktop.core.organization.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
@@ -11,6 +12,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
@@ -36,7 +38,8 @@ public class OrganizationController implements Initializable {
     // Services
     private final OrganizationService organizationService;
     private final CustomRoleService customRoleService;
-    private final FXMLLoaderService fxmlLoaderService;
+    private final NavigationService navigationService;
+    private final CommonViewsLoader commonViewsLoader;
     private final ControllerFactory controllerFactory;
 
     private final FallbackManager fallbackManager;
@@ -69,21 +72,24 @@ public class OrganizationController implements Initializable {
 
     @Inject
     public OrganizationController(OrganizationService organizationService,
-                                    CustomRoleService customRoleService,
-                                  FXMLLoaderService fxmlLoaderService,
+                                  CustomRoleService customRoleService,
+                                  NavigationService navigationService,
+                                  CommonViewsLoader commonViewsLoader,
                                   ControllerFactory controllerFactory,
                                   FallbackManager fallbackManager) {
         this.organizationService = organizationService;
         this.customRoleService = customRoleService;
-        this.fxmlLoaderService = fxmlLoaderService;
+        this.navigationService = navigationService;
+        this.commonViewsLoader = commonViewsLoader;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resourceBundle) {
-        loadFallbackManager();
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
@@ -100,15 +106,6 @@ public class OrganizationController implements Initializable {
 
         loadOrganization();
         loadCustomRoles(); // Multi-thread this as custom roles are not immediately needed
-    }
-
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void setupListeners() {
@@ -223,6 +220,6 @@ public class OrganizationController implements Initializable {
 
     @FXML
     private void handleEditOrganization() {
-        System.out.println("Edit organization clicked");
+        navigationService.switchView("Update-Organization", true);
     }
 }
