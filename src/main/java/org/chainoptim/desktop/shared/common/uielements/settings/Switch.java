@@ -1,28 +1,32 @@
 package org.chainoptim.desktop.shared.common.uielements.settings;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public class Switch extends HBox {
 
-    private boolean isOn;
+    private BooleanProperty isOn = new SimpleBooleanProperty();
 
     private Button leftButton;
     private Button rightButton;
 
     public void initializeSwitch(boolean isOn) {
-        this.getStyleClass().setAll("custom-switch");
+        this.getStyleClass().setAll("enum-selector");
         this.setMaxWidth(Region.USE_PREF_SIZE);
+        this.setMaxHeight(Region.USE_PREF_SIZE);
 
         leftButton = new Button("On");
-        leftButton.setStyle("-fx-border-radius: 5 0 0 5; -fx-background-radius: 5 0 0 5; -fx-border-width: 1 0 1 1;");
         leftButton.setOnAction(event -> toggle(true));
 
         rightButton = new Button("Off");
-        rightButton.setStyle("-fx-border-radius: 0 5 5 0; -fx-background-radius: 0 5 5 0; -fx-border-width: 1 1 1 0;");
         rightButton.setOnAction(event -> toggle(false));
 
         toggle(isOn);
@@ -30,9 +34,17 @@ public class Switch extends HBox {
         this.getChildren().addAll(leftButton, rightButton);
     }
 
-    private void toggle(boolean isOn) {
-        leftButton.getStyleClass().setAll(isOn ? "switch-select-item-selected" : "switch-select-item");
-        rightButton.getStyleClass().setAll(isOn ? "switch-select-item" : "switch-select-item-selected");
-        this.isOn = isOn;
+    public void toggle(boolean isOn) {
+        leftButton.getStyleClass().clear();
+        leftButton.getStyleClass().add(isOn ? "enum-select-item-selected" : "enum-select-item");
+        leftButton.getStyleClass().add("enum-left-item");
+        rightButton.getStyleClass().clear();
+        rightButton.getStyleClass().add(isOn ? "enum-select-item" : "enum-select-item-selected");
+        rightButton.getStyleClass().add("enum-right-item");
+        this.isOn.setValue(isOn);
+    }
+
+    public BooleanProperty getIsOnProperty() {
+        return isOn;
     }
 }

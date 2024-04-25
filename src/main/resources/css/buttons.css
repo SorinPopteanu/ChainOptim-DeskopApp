@@ -33,7 +33,7 @@
 .standard-action-button {
     -fx-padding: 4px 8px;
     -fx-background-color: #eeeeee;
-    -fx-border-color: #d0d0d0;
+    -fx-border-color: #dcdcdc;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
     -fx-font-weight: 600;
@@ -71,7 +71,6 @@
     -fx-max-height: 32px;
     -fx-padding: 4px 12px;
     -fx-background-color: #eeeeee;
-    -fx-border-color: #d0d0d0;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
     -fx-font-weight: 500;

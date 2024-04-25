@@ -47,6 +47,6 @@ public class GeneralSettingsController implements DataReceiver<UserSettings> {
     }
 
     public void cancelChanges(UserSettings originalUserSettings) {
-        infoLevelSelector.selectValue(originalUserSettings.getGeneralSettings().getInfoLevel());
+        infoLevelSelector.selectValue(originalUserSettings.getGeneralSettings().getInfoLevel(), InfoLevel.class);
     }
 }

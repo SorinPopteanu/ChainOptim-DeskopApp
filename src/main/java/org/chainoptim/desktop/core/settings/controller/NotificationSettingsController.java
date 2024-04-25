@@ -1,20 +1,21 @@
 package org.chainoptim.desktop.core.settings.controller;
 
 import org.chainoptim.desktop.core.settings.model.UserSettings;
-import org.chainoptim.desktop.shared.common.uielements.settings.Switch;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
+import com.jfoenix.controls.JFXToggleButton;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import lombok.Setter;
 
 import java.util.HashMap;
@@ -39,21 +40,18 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     // FXML
     @FXML
     private VBox contentVBox;
-    @FXML
-    private Switch overallSwitch;
-    private final ToggleButton toggleOverallButton = new ToggleButton();
-    private final Map<String, ToggleButton> featureToggleButtons = new HashMap<>();
+    private JFXToggleButton overallToggleButton = new JFXToggleButton();
+    private final Map<String, JFXToggleButton> featureToggleButtons = new HashMap<>();
 
     @Override
     public void setData(UserSettings userSettings) {
         this.userSettings = userSettings;
-        overallSwitch.initializeSwitch(aggregateNotificationSettings());
         initializeUI();
     }
 
     private void initializeUI() {
         contentVBox.getChildren().clear();
-        contentVBox.setSpacing(10);
+        contentVBox.setSpacing(12);
 
         cleanUpGlobalListeners();
 
@@ -72,7 +70,7 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
             haveSettingsChanged.removeListener(hasChangedListener);
         }
         if (overallChangeListener != null) {
-            toggleOverallButton.selectedProperty().removeListener(overallChangeListener);
+            overallToggleButton.selectedProperty().removeListener(overallChangeListener);
         }
     }
 
@@ -87,9 +85,9 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
 
         // Overall change listener
         overallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            handleToggleOverallButton(userSettings);
+            handleToggleOverallSwitch();
         };
-        toggleOverallButton.selectedProperty().addListener(overallChangeListener);
+        overallToggleButton.selectedProperty().addListener(overallChangeListener);
     }
 
     private void renderOverallHBox() {
@@ -102,17 +100,18 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         overallHBox.getChildren().add(region);
         HBox.setHgrow(region, Priority.ALWAYS);
 
-        toggleOverallButton.getStyleClass().setAll("toggle-button");
+        overallToggleButton = new JFXToggleButton();
         boolean overallSetting = aggregateNotificationSettings();
-        toggleOverallButton.setText(overallSetting ? "On" : "Off");
-        toggleOverallButton.setSelected(overallSetting);
-        overallHBox.getChildren().add(toggleOverallButton);
+        overallToggleButton.setSelected(overallSetting);
+        styleToggleButton(overallToggleButton);
+        overallHBox.getChildren().add(overallToggleButton);
 
         contentVBox.getChildren().add(overallHBox);
     }
 
     private void renderFeatureHBox(String feature) {
         HBox featureHBox = new HBox();
+        featureHBox.setAlignment(Pos.CENTER_LEFT);
         Label featureLabel = new Label(feature);
         featureLabel.getStyleClass().add("settings-label");
         featureHBox.getChildren().add(featureLabel);
@@ -121,40 +120,35 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         featureHBox.getChildren().add(region);
         HBox.setHgrow(region, Priority.ALWAYS);
 
-        ToggleButton toggleButton = new ToggleButton();
+        JFXToggleButton toggleButton = new JFXToggleButton();
         boolean featureSetting = getFeatureSetting(feature);
-        toggleButton.setText(featureSetting ? "On" : "Off");
         toggleButton.setSelected(featureSetting);
-        toggleButton.getStyleClass().setAll("toggle-button");
+        styleToggleButton(toggleButton);
         toggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-                handleToggleFeatureButton(userSettings, toggleButton, feature, toggleButton.isSelected()));
+                handleToggleFeatureSwitch(featureToggleButtons.get(feature), feature, newValue));
         featureToggleButtons.put(feature, toggleButton);
         featureHBox.getChildren().add(toggleButton);
 
         contentVBox.getChildren().add(featureHBox);
     }
 
-    private void handleToggleOverallButton(UserSettings userSettings) {
-        if (toggleOverallButton.isSelected()) {
-            toggleOverallButton.setText("On");
-        } else {
-            toggleOverallButton.setText("Off");
-        }
+    private void handleToggleOverallSwitch() {
+        boolean newState = overallToggleButton.isSelected();
         for (String feature : notificationFeatures) {
-            ToggleButton toggleButton = featureToggleButtons.get(feature);
-            handleToggleFeatureButton(userSettings, toggleButton, feature, toggleOverallButton.isSelected());
+            JFXToggleButton featureToggleButton = featureToggleButtons.get(feature);
+            handleToggleFeatureSwitch(featureToggleButton, feature, newState);
         }
     }
 
-    private void handleToggleFeatureButton(UserSettings userSettings, ToggleButton toggleButton, String feature, Boolean isOn) {
-        toggleButton.setSelected(isOn);
-        toggleButton.setText(Boolean.TRUE.equals(isOn) ? "On" : "Off");
+    private void handleToggleFeatureSwitch(JFXToggleButton featureToggleButton, String feature, Boolean isOn) {
+        featureToggleButton.setSelected(isOn);
         haveSettingsChanged.setValue(true);
+        System.out.println("Settings changed: " + haveSettingsChanged);
         setFeatureSetting(feature, isOn);
     }
 
     public void cancelChanges(UserSettings originalUserSettings) {
-        toggleOverallButton.selectedProperty().removeListener(overallChangeListener);
+        overallToggleButton.selectedProperty().removeListener(overallChangeListener);
         setData(originalUserSettings);
         haveSettingsChanged.setValue(false);
     }
@@ -185,5 +179,15 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
             case "Warehouse Inventory" -> userSettings.getNotificationSettings().setWarehouseInventoryOn(isOn);
             default -> {}
         }
+    }
+
+    private void styleToggleButton(JFXToggleButton toggleButton) {
+        toggleButton.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-border-color: transparent;");
+        toggleButton.setUnToggleColor(Color.valueOf("#cccccc"));
+        toggleButton.setToggleColor(Color.valueOf("#006AEE"));
+        toggleButton.setToggleLineColor(Color.valueOf("#337BEF"));
+        toggleButton.setBorder(null);
+        toggleButton.setDisableVisualFocus(true);
+        toggleButton.setMinSize(50, 30);
     }
 }
