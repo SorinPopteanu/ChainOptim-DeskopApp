@@ -211,7 +211,7 @@ public class SettingsController implements Initializable, SettingsListener {
                 generalSettingsController.setData(userSettings);
             }
             if (notificationSettingsController != null) {
-                notificationSettingsController.setData(userSettings);
+                notificationSettingsController.commitChanges(userSettings);
             }
 
             fallbackManager.setLoading(false);
@@ -229,12 +229,13 @@ public class SettingsController implements Initializable, SettingsListener {
     @FXML
     private void handleCancel() {
         // Reselect based on original settings
+        userSettings = TenantSettingsContext.getCurrentUserSettings().deepCopy();
         if (generalSettingsController != null) {
-            generalSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings().deepCopy());
+            generalSettingsController.cancelChanges(userSettings);
         }
 
         if (notificationSettingsController != null) {
-            notificationSettingsController.cancelChanges(TenantSettingsContext.getCurrentUserSettings().deepCopy());
+            notificationSettingsController.cancelChanges(userSettings);
         }
         handleSettingsChanged(false);
     }
