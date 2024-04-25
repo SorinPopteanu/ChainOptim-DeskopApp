@@ -18,6 +18,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.user.service.UserService;
 import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -77,36 +78,34 @@ public class AppController {
     private void fetchAndSetUser(String username) {
         userService.getUserByUsername(username)
                 .thenApply(this::handleUserResponse)
-                .exceptionally(ex -> Optional.empty());
+                .exceptionally(ex -> new Result<>());
     }
 
-    private Optional<User> handleUserResponse(Optional<User> userOptional) {
+    private Result<User> handleUserResponse(Result<User> result) {
         Platform.runLater(() -> {
-            System.out.println("User loaded: " + userOptional);
-            if (userOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
 
-            User user = userOptional.get();
+            User user = result.getData();
 
             user.getOrganization().setSubscriptionPlanTier(PRO);
-            System.out.println("Subscription plan: " + user.getOrganization().getSubscriptionPlanTier().toString());
 
             // Set user to TenantContext for reuse throughout the app
             TenantContext.setCurrentUser(user);
 
             // Fetch user settings and set them to TenantSettingsContext
             userSettingsService.getUserSettings(user.getId())
-                    .thenAccept(userSettingsOptional -> {
-                        if (userSettingsOptional.isEmpty()) return;
-                        TenantSettingsContext.setCurrentUserSettings(userSettingsOptional.get());
+                    .thenAccept(result1 -> {
+                        if (result1.getError() != null) return;
+                        TenantSettingsContext.setCurrentUserSettings(result1.getData());
                     });
 
             // Start WebSocket connection
             startWebSocket(user);
         });
 
-        return userOptional;
+        return result;
     }
 
     private void startWebSocket(User user) {

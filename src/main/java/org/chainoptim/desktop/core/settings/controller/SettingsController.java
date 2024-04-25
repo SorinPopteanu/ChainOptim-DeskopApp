@@ -8,6 +8,7 @@ import org.chainoptim.desktop.core.settings.model.UserSettings;
 import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -155,25 +156,25 @@ public class SettingsController implements Initializable, SettingsListener {
                 .exceptionally(this::handleUserSettingsException);
     }
 
-    private Optional<UserSettings> handleUserSettingsResponse(Optional<UserSettings> userSettingsOptional) {
+    private Result<UserSettings> handleUserSettingsResponse(Result<UserSettings> result) {
         Platform.runLater(() -> {
-            if (userSettingsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load user settings.");
                 return;
             }
 
-            userSettings = userSettingsOptional.get();
+            userSettings = result.getData();
             fallbackManager.setLoading(false);
 
             loadTabContent(generalTab, "/org/chainoptim/desktop/core/settings/GeneralSettingsView.fxml", userSettings);
         });
 
-        return userSettingsOptional;
+        return result;
     }
 
-    private Optional<UserSettings> handleUserSettingsException(Throwable ex) {
+    private Result<UserSettings> handleUserSettingsException(Throwable ex) {
         fallbackManager.setErrorMessage("Failed to load user settings.");
-        return Optional.empty();
+        return new Result<>();
     }
 
     @Override
@@ -197,13 +198,13 @@ public class SettingsController implements Initializable, SettingsListener {
                 .exceptionally(this::handleSaveException);
     }
 
-    private Optional<UserSettings> handleSaveResponse(Optional<UserSettings> userSettingsOptional) {
+    private Result<UserSettings> handleSaveResponse(Result<UserSettings> result) {
         Platform.runLater(() -> {
-            if (userSettingsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to save user settings.");
                 return;
             }
-            userSettings = userSettingsOptional.get();
+            userSettings = result.getData();
             TenantSettingsContext.setCurrentUserSettings(userSettings.deepCopy());
 
             if (generalSettingsController != null) {
@@ -217,12 +218,12 @@ public class SettingsController implements Initializable, SettingsListener {
             handleSettingsChanged(false);
         });
 
-        return userSettingsOptional;
+        return result;
     }
 
-    private Optional<UserSettings> handleSaveException(Throwable ex) {
+    private Result<UserSettings> handleSaveException(Throwable ex) {
         fallbackManager.setErrorMessage("Failed to save user settings.");
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML

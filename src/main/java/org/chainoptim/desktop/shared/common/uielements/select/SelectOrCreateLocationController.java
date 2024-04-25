@@ -7,6 +7,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.features.location.dto.CreateLocationDTO;
 import org.chainoptim.desktop.shared.features.location.model.Location;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -96,19 +97,19 @@ public class SelectOrCreateLocationController {
                 .exceptionally(this::handleLocationsException);
     }
 
-    private Optional<List<Location>> handleLocationsResponse(Optional<List<Location>> locationsOptional) {
+    private Result<List<Location>> handleLocationsResponse(Result<List<Location>> result) {
         Platform.runLater(() -> {
-            if (locationsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
-            locationComboBox.getItems().setAll(locationsOptional.get());
+            locationComboBox.getItems().setAll(result.getData());
 
         });
-        return locationsOptional;
+        return result;
     }
 
-    private Optional<List<Location>> handleLocationsException(Throwable ex) {
-        return Optional.empty();
+    private Result<List<Location>> handleLocationsException(Throwable ex) {
+        return new Result<>();
     }
 
     private void toggleVisibilityBasedOnSelection() {

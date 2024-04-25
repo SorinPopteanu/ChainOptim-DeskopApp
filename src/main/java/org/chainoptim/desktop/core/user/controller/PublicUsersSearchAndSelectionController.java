@@ -2,6 +2,7 @@ package org.chainoptim.desktop.core.user.controller;
 
 import org.chainoptim.desktop.core.user.dto.UserSearchResultDTO;
 import org.chainoptim.desktop.core.user.service.UserService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -91,12 +92,12 @@ public class PublicUsersSearchAndSelectionController implements Initializable {
                 .exceptionally(this::handleSearchException);
     }
 
-    private Optional<PaginatedResults<UserSearchResultDTO>> handleSearchResponse(Optional<PaginatedResults<UserSearchResultDTO>> optionalPaginatedResults) {
+    private Result<PaginatedResults<UserSearchResultDTO>> handleSearchResponse(Result<PaginatedResults<UserSearchResultDTO>> optionalPaginatedResults) {
         Platform.runLater(() -> {
-            if (optionalPaginatedResults.isEmpty()) {
+            if (optionalPaginatedResults.getError() != null) {
                 return;
             }
-            PaginatedResults<UserSearchResultDTO> paginatedResults = optionalPaginatedResults.get();
+            PaginatedResults<UserSearchResultDTO> paginatedResults = optionalPaginatedResults.getData();
             totalCount = (int) paginatedResults.getTotalCount();
 
             // Render Users List + Next Page Button
@@ -129,9 +130,9 @@ public class PublicUsersSearchAndSelectionController implements Initializable {
         return optionalPaginatedResults;
     }
 
-    private Optional<PaginatedResults<UserSearchResultDTO>> handleSearchException(Throwable throwable) {
+    private Result<PaginatedResults<UserSearchResultDTO>> handleSearchException(Throwable throwable) {
         System.out.println("Error searching for users: " + throwable.getMessage());
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void selectUser(UserSearchResultDTO user) {
