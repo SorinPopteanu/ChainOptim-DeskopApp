@@ -34,8 +34,12 @@ public class FormField<T> extends VBox {
 
         this.currentValue = initialValue != null ? initialValue.toString() : "";
 
-
         initializeUI();
+    }
+
+    public void setInitialValue(T initialValue) {
+        this.currentValue = initialValue != null ? initialValue.toString() : "";
+        textField.setText(currentValue);
     }
 
     private void initializeUI() {
@@ -78,9 +82,11 @@ public class FormField<T> extends VBox {
 
     private void checkValidity() {
         String input = textField.getText();
-        if (isMandatory && input.isEmpty()) {
-            toggleNodeVisibility(mandatoryErrorLabel, true);
-            return;
+        if (input.isEmpty()) {
+            if (isMandatory) {
+                toggleNodeVisibility(mandatoryErrorLabel, true);
+            }
+            return; // Skip parsing for non-mandatory fields
         }
         try {
             stringConverter.convert(input);
@@ -95,10 +101,14 @@ public class FormField<T> extends VBox {
         hasTriedSubmitting = true;
 
         String input = textField.getText();
-        if (isMandatory && input.isEmpty()) {
-            toggleNodeVisibility(mandatoryErrorLabel, true);
-            throw new ValidationException("Mandatory field is empty.");
+        if (input.isEmpty()) {
+            if (isMandatory) {
+                toggleNodeVisibility(mandatoryErrorLabel, true);
+                throw new ValidationException("Mandatory field is empty.");
+            }
+            return null; // Skip parsing for non-mandatory fields
         }
+
         try {
             T value = stringConverter.convert(input);
             toggleNodeVisibility(errorLabel, false);

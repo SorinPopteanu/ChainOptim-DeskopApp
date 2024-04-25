@@ -10,6 +10,8 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.dto.CreateUnitOfMeasurementDTO;
 import org.chainoptim.desktop.features.product.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.product.service.UnitOfMeasurementService;
+import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
+import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.httphandling.Result;
 
 import java.util.List;
@@ -28,9 +30,9 @@ public class SelectOrCreateUnitOfMeasurementController {
     @FXML
     private VBox createUnitForm;
     @FXML
-    private TextField nameField;
+    private FormField<String> unitNameField;
     @FXML
-    private TextField unitTypeField;
+    private FormField<String> unitTypeField;
 
     private final ToggleGroup unitToggleGroup = new ToggleGroup();
 
@@ -50,6 +52,8 @@ public class SelectOrCreateUnitOfMeasurementController {
         unitToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             toggleVisibilityBasedOnSelection();
         });
+
+        initializeFormFields();
 
         loadUnitsOfMeasurement();
     }
@@ -101,6 +105,11 @@ public class SelectOrCreateUnitOfMeasurementController {
         return new Result<>();
     }
 
+    private void initializeFormFields() {
+        unitNameField.initialize(String::new, "Name", true, null, "Your input is not valid.");
+        unitTypeField.initialize(String::new, "Type", true, null, "Your input is not valid.");
+    }
+
     private void toggleVisibilityBasedOnSelection() {
         boolean isSelectExistingSelected = selectExistingRadio.isSelected();
         unitComboBox.setVisible(isSelectExistingSelected);
@@ -113,11 +122,13 @@ public class SelectOrCreateUnitOfMeasurementController {
         return unitComboBox.getSelectionModel().getSelectedItem();
     }
 
-    public CreateUnitOfMeasurementDTO getNewUnitDTO() {
+    public CreateUnitOfMeasurementDTO getNewUnitDTO() throws ValidationException {
         CreateUnitOfMeasurementDTO unitDTO = new CreateUnitOfMeasurementDTO();
         unitDTO.setOrganizationId(organizationId);
-        unitDTO.setName(nameField.getText());
-        unitDTO.setUnitType(unitTypeField.getText());
+
+        unitDTO.setName(unitNameField.handleSubmit());
+        unitDTO.setUnitType(unitTypeField.handleSubmit());
+
         return unitDTO;
     }
 

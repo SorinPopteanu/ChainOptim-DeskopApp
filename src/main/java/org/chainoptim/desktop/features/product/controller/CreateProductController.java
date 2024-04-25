@@ -68,7 +68,6 @@ public class CreateProductController {
     public void initialize() {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         unitOfMeasurementController = commonViewsLoader.loadSelectOrCreateUnitOfMeasurement(unitOfMeasurementContainer);
-        unitOfMeasurementController.initialize();
 
         initializeFormFields();
     }
@@ -87,7 +86,6 @@ public class CreateProductController {
         Integer organizationId = currentUser.getOrganization().getId();
 
         CreateProductDTO productDTO = getCreateProductDTO(organizationId);
-        System.out.println("CreateProduct: " + productDTO);
         if (productDTO == null) return;
 
         fallbackManager.reset();
@@ -104,15 +102,17 @@ public class CreateProductController {
         try {
             productDTO.setName(nameFormField.handleSubmit());
             productDTO.setDescription(descriptionFormField.handleSubmit());
+            if (unitOfMeasurementController.isCreatingNewUnit()) {
+                productDTO.setCreateUnit(true);
+                productDTO.setUnitDTO(unitOfMeasurementController.getNewUnitDTO());
+            } else {
+                productDTO.setCreateUnit(false);
+                if (unitOfMeasurementController.getSelectedUnit() != null) {
+                    productDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
+                }
+            }
         } catch (ValidationException e) {
             return null;
-        }
-        if (unitOfMeasurementController.isCreatingNewUnit()) {
-            productDTO.setCreateUnit(true);
-            productDTO.setUnitDTO(unitOfMeasurementController.getNewUnitDTO());
-        } else {
-            productDTO.setCreateUnit(false);
-            productDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
         }
 
         return productDTO;
@@ -121,11 +121,15 @@ public class CreateProductController {
     private Result<Product> handleCreateProductResponse(Result<Product> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
-                fallbackManager.setErrorMessage("Failed to create product.");
+                toastManager.addToast(new ToastInfo(
+                        "Error", "Failed to create product.", OperationOutcome.ERROR));
                 return;
             }
             Product product = result.getData();
             fallbackManager.setLoading(false);
+            toastManager.addToast(new ToastInfo
+                    ("Product created.", "Product has been successfully created.", OperationOutcome.SUCCESS));
+
             currentSelectionService.setSelectedId(product.getId());
             navigationService.switchView("Product?id=" + product.getId(), true);
         });
@@ -133,8 +137,8 @@ public class CreateProductController {
     }
 
     private Result<Product> handleCreateProductException(Throwable ex) {
-        Platform.runLater(() -> toastManager.addToast(
-                new ToastInfo("An error occurred.", "Failed to create product.", OperationOutcome.ERROR)));
+        Platform.runLater(() -> toastManager.addToast(new ToastInfo(
+                "An error occurred.", "Failed to create product.", OperationOutcome.ERROR)));
         return new Result<>();
     }
 }

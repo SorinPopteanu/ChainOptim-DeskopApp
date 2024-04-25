@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 
+<?import org.chainoptim.desktop.shared.common.uielements.forms.FormField?>
+
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController" spacing="16">
@@ -19,25 +21,18 @@
 
     <!-- Create New Location subform -->
     <VBox fx:id="createLocationForm" visible="false">
-        <Label text="Address" styleClass="form-label"/>
-        <TextField fx:id="addressField" styleClass="custom-text-field"/>
+        <FormField fx:id="addressField"/>
 
-        <Label text="City" styleClass="form-label"/>
-        <TextField fx:id="cityField" styleClass="custom-text-field"/>
+        <FormField fx:id="cityField"/>
 
-        <Label text="State" styleClass="form-label"/>
-        <TextField fx:id="stateField" styleClass="custom-text-field"/>
+        <FormField fx:id="stateField"/>
 
-        <Label text="Country" styleClass="form-label"/>
-        <TextField fx:id="countryField" styleClass="custom-text-field"/>
+        <FormField fx:id="countryField"/>
 
-        <Label text="Zip Code" styleClass="form-label"/>
-        <TextField fx:id="zipCodeField" styleClass="custom-text-field"/>
+        <FormField fx:id="zipCodeField"/>
 
-        <Label text="Latitude" styleClass="form-label"/>
-        <TextField fx:id="latitudeField" styleClass="custom-text-field"/>
+        <FormField fx:id="latitudeField"/>
 
-        <Label text="Longitude" styleClass="form-label"/>
-        <TextField fx:id="longitudeField" styleClass="custom-text-field"/>
+        <FormField fx:id="longitudeField"/>
     </VBox>
 </VBox>
