@@ -7,15 +7,13 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class EnumSelector<T extends Enum<T>> extends HBox {
 
     private final ObjectProperty<T> selectedValueProperty = new SimpleObjectProperty<>();;
-    private final Map<T, Button> buttons = new HashMap<>();
+    private final Map<T, Button> buttons = new LinkedHashMap<>();
 
     public EnumSelector() {
         super();
@@ -30,7 +28,6 @@ public class EnumSelector<T extends Enum<T>> extends HBox {
         this.selectedValueProperty.setValue(selectedValue);
 
         int index = 0;
-
         for (T value : enumType.getEnumConstants()) {
             // Create a button for each enum value
             Button button = new Button(value.toString());
@@ -60,14 +57,12 @@ public class EnumSelector<T extends Enum<T>> extends HBox {
 
     public void selectValue(T value, Class<T> enumType) {
         selectedValueProperty.setValue(value);
+
         int index = 0;
         for (Map.Entry<T, Button> entry : buttons.entrySet()) {
             styleButton(value, entry.getKey(), entry.getValue(), index, enumType);
             index++;
         }
-        buttons.forEach((k, v) -> v.getStyleClass().add(
-                k.equals(selectedValueProperty.getValue()) ? "enum-select-item-selected" : "enum-select-item"
-        ));
     }
 
     public ObjectProperty<T> getValueProperty() {

@@ -53,7 +53,6 @@ public class ClientServiceImpl implements ClientService {
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("clients", "organization", organizationId.toString(), searchParams);
         String routeAddress = rootAddress + cacheKey;
 
-        System.out.println("Token: " + tokenManager.getToken());
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {

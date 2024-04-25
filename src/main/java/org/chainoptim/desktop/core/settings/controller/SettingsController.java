@@ -7,8 +7,11 @@ import org.chainoptim.desktop.core.settings.dto.UpdateUserSettingsDTO;
 import org.chainoptim.desktop.core.settings.model.UserSettings;
 import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -36,6 +39,7 @@ public class SettingsController implements Initializable, SettingsListener {
     private final UserSettingsService userSettingsService;
     private final CommonViewsLoader commonViewsLoader;
     private final ControllerFactory controllerFactory;
+    private final ToastManager toastManager;
 
     // Controllers
     private GeneralSettingsController generalSettingsController;
@@ -69,10 +73,12 @@ public class SettingsController implements Initializable, SettingsListener {
     public SettingsController(UserSettingsService userSettingsService,
                               CommonViewsLoader commonViewsLoader,
                               ControllerFactory controllerFactory,
+                              ToastManager toastManager,
                               FallbackManager fallbackManager) {
         this.userSettingsService = userSettingsService;
         this.commonViewsLoader = commonViewsLoader;
         this.controllerFactory = controllerFactory;
+        this.toastManager = toastManager;
         this.fallbackManager = fallbackManager;
     }
 
@@ -201,7 +207,7 @@ public class SettingsController implements Initializable, SettingsListener {
     private Result<UserSettings> handleSaveResponse(Result<UserSettings> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
-                fallbackManager.setErrorMessage("Failed to save user settings.");
+                toastManager.addToast(new ToastInfo("An error occurred", "Failed to save user settings.", OperationOutcome.ERROR));
                 return;
             }
             userSettings = result.getData();
@@ -214,6 +220,7 @@ public class SettingsController implements Initializable, SettingsListener {
                 notificationSettingsController.commitChanges(userSettings);
             }
 
+            toastManager.addToast(new ToastInfo("Success", "User settings saved successfully.", OperationOutcome.SUCCESS));
             fallbackManager.setLoading(false);
             handleSettingsChanged(false);
         });

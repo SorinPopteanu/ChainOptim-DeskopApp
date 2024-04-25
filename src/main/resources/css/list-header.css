@@ -2,6 +2,7 @@
     -fx-background-color: #ffffff;
     -fx-spacing: 20px;
     -fx-border-color: #c0c0c0;
+    -fx-border-width: 0px 0px 1px 0px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
 }
 
@@ -38,25 +39,6 @@
 .search-button:hover {
     -fx-cursor: hand;
     -fx-background-color: #000000;
-}
-
-.header .combo-box {
-    -fx-pref-height: 32px;
-    -fx-background-color: #ffffff;
-    -fx-font-weight: bold;
-    -fx-border-color: #c0c0c0;
-    -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-cursor: hand;
-}
-
-.header .combo-box .arrow-button {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-}
-
-.header .combo-box .arrow {
-    -fx-background-color: #c0c0c0;
 }
 
 .ordering-button {

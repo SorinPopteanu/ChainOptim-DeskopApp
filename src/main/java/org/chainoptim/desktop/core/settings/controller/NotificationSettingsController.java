@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.core.settings.controller;
 
+import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.settings.model.UserSettings;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -19,15 +20,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class NotificationSettingsController implements DataReceiver<UserSettings> {
 
     // State
     private UserSettings userSettings;
+    private boolean areNotificationsWithinPlan;
+    private boolean areEmailsWithinPlan;
     private final BooleanProperty haveSettingsChanged = new SimpleBooleanProperty(false);
 
     // Listeners
@@ -40,18 +40,23 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     // Constants
     private static final List<Feature> notificationFeatures = List.of(Feature.SUPPLIER_ORDER, Feature.CLIENT_ORDER, Feature.FACTORY_INVENTORY, Feature.WAREHOUSE_INVENTORY);
     private static final List<Feature> emailFeatures = List.of(Feature.SUPPLIER_ORDER, Feature.CLIENT_ORDER, Feature.FACTORY_INVENTORY, Feature.WAREHOUSE_INVENTORY);
-
+    private static final String NOTIFICATIONS = "Notifications";
+    private static final String EMAILS = "Emails";
+    
     // FXML
     @FXML
     private VBox contentVBox;
-    private JFXToggleButton notificationOverallToggleButton = new JFXToggleButton();
-    private final Map<Feature, JFXToggleButton> notificationFeatureToggleButtons = new HashMap<>();
-    private JFXToggleButton emailOverallToggleButton = new JFXToggleButton();
-    private final Map<Feature, JFXToggleButton> emailFeatureToggleButtons = new HashMap<>();
+    private final JFXToggleButton notificationOverallToggleButton = new JFXToggleButton();
+    private final Map<Feature, JFXToggleButton> notificationFeatureToggleButtons = new EnumMap<>(Feature.class);
+    private final JFXToggleButton emailOverallToggleButton = new JFXToggleButton();
+    private final Map<Feature, JFXToggleButton> emailFeatureToggleButtons = new EnumMap<>(Feature.class);
 
     @Override
     public void setData(UserSettings userSettings) {
         this.userSettings = userSettings;
+        this.areNotificationsWithinPlan = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().isCustomNotificationsOn();
+        this.areEmailsWithinPlan = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().isEmailNotificationsOn();
+
         initializeUI();
     }
 
@@ -59,20 +64,20 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         contentVBox.getChildren().clear();
         contentVBox.setSpacing(12);
 
-        renderOverallHBox("Notifications");
+        renderOverallHBox(NOTIFICATIONS);
 
         for (Feature feature : notificationFeatures) {
-            renderFeatureHBox(feature, "Notifications");
+            renderFeatureHBox(feature, NOTIFICATIONS);
         }
 
         Region region = new Region();
         region.setMinHeight(8);
         contentVBox.getChildren().add(region);
 
-        renderOverallHBox("Emails");
+        renderOverallHBox(EMAILS);
 
         for (Feature feature : emailFeatures) {
-            renderFeatureHBox(feature, "Emails");
+            renderFeatureHBox(feature, EMAILS);
         }
 
         setUpGlobalListeners();
@@ -88,14 +93,16 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         overallHBox.getChildren().add(region);
         HBox.setHgrow(region, Priority.ALWAYS);
 
-        if (Objects.equals(type, "Notifications")) {
+        if (Objects.equals(type, NOTIFICATIONS)) {
             boolean overallSetting = aggregateNotificationSettings();
             notificationOverallToggleButton.setSelected(overallSetting);
+            notificationOverallToggleButton.setDisable(!areNotificationsWithinPlan);
             styleToggleButton(notificationOverallToggleButton);
             overallHBox.getChildren().add(notificationOverallToggleButton);
-        } else if ("Emails".equals(type)) {
+        } else if (EMAILS.equals(type)) {
             boolean overallSetting = aggregateEmailSettings();
             emailOverallToggleButton.setSelected(overallSetting);
+            emailOverallToggleButton.setDisable(!areEmailsWithinPlan);
             styleToggleButton(emailOverallToggleButton);
             overallHBox.getChildren().add(emailOverallToggleButton);
         }
@@ -116,14 +123,16 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
 
         JFXToggleButton toggleButton = new JFXToggleButton();
         styleToggleButton(toggleButton);
-        if (Objects.equals(type, "Notifications")) {
+        if (Objects.equals(type, NOTIFICATIONS)) {
             boolean featureSetting = getNotificationFeatureSetting(feature);
             toggleButton.setSelected(featureSetting);
+            toggleButton.setDisable(!areNotificationsWithinPlan);
             toggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
                     handleToggleFeatureSwitch(notificationFeatureToggleButtons.get(feature), feature, newValue, type));
             notificationFeatureToggleButtons.put(feature, toggleButton);
-        } else if ("Emails".equals(type)) {
+        } else if (EMAILS.equals(type)) {
             boolean featureSetting = getEmailFeatureSetting(feature);
+            toggleButton.setDisable(!areEmailsWithinPlan);
             toggleButton.setSelected(featureSetting);
             toggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
                     handleToggleFeatureSwitch(emailFeatureToggleButtons.get(feature), feature, newValue, type));
@@ -135,13 +144,13 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     }
 
     private void handleToggleOverallSwitch(String type) {
-        if (Objects.equals(type, "Notifications")) {
+        if (Objects.equals(type, NOTIFICATIONS)) {
             boolean newState = notificationOverallToggleButton.isSelected();
             for (Feature feature : notificationFeatures) {
                 JFXToggleButton featureToggleButton = notificationFeatureToggleButtons.get(feature);
                 handleToggleFeatureSwitch(featureToggleButton, feature, newState, type);
             }
-        } else if ("Emails".equals(type)) {
+        } else if (EMAILS.equals(type)) {
             boolean newState = emailOverallToggleButton.isSelected();
             for (Feature feature : emailFeatures) {
                 JFXToggleButton featureToggleButton = emailFeatureToggleButtons.get(feature);
@@ -153,9 +162,9 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     private void handleToggleFeatureSwitch(JFXToggleButton featureToggleButton, Feature feature, Boolean isOn, String type) {
         featureToggleButton.setSelected(isOn);
         haveSettingsChanged.setValue(true);
-        if (Objects.equals(type, "Notifications")) {
+        if (Objects.equals(type, NOTIFICATIONS)) {
             setNotificationFeatureSetting(feature, isOn);
-        } else if ("Emails".equals(type)) {
+        } else if (EMAILS.equals(type)) {
             setEmailFeatureSetting(feature, isOn);
         }
     }
@@ -171,12 +180,12 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
 
         // Overall change listener
         notificationOverallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            handleToggleOverallSwitch("Notifications");
+            handleToggleOverallSwitch(NOTIFICATIONS);
         };
         notificationOverallToggleButton.selectedProperty().addListener(notificationOverallChangeListener);
 
         emailOverallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            handleToggleOverallSwitch("Emails");
+            handleToggleOverallSwitch(EMAILS);
         };
         emailOverallToggleButton.selectedProperty().addListener(emailOverallChangeListener);
     }
@@ -278,7 +287,7 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
             case CLIENT_ORDER -> userSettings.getNotificationSettings().setClientOrdersOn(isOn);
             case FACTORY_INVENTORY -> userSettings.getNotificationSettings().setFactoryInventoryOn(isOn);
             case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().setWarehouseInventoryOn(isOn);
-            default -> {}
+            default -> throw new IllegalStateException("Unexpected value: " + feature);
         }
     }
 
@@ -288,7 +297,7 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
             case CLIENT_ORDER -> userSettings.getNotificationSettings().setEmailClientOrdersOn(isOn);
             case FACTORY_INVENTORY -> userSettings.getNotificationSettings().setEmailFactoryInventoryOn(isOn);
             case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().setEmailWarehouseInventoryOn(isOn);
-            default -> {}
+            default -> throw new IllegalStateException("Unexpected value: " + feature);
         }
     }
 
