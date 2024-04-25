@@ -25,7 +25,7 @@ public class FactoryServiceImpl implements FactoryService {
     private final RequestBuilder requestBuilder;
     private final TokenManager tokenManager;
 
-    private static final int STALE_TIME = 30000;
+    private static final int STALE_TIME = 300;
 
     @Inject
     public FactoryServiceImpl(CachingService<PaginatedResults<Factory>> cachingService,

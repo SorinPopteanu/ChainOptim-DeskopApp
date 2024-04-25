@@ -23,7 +23,7 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
 
-    private static final int STALE_TIME = 30000;
+    private static final int STALE_TIME = 300;
 
     @Inject
     public ResourceAllocationPersistenceServiceImpl(CachingService<ResourceAllocationPlan> cachingService,

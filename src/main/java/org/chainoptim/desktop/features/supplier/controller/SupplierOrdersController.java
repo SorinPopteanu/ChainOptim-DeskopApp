@@ -9,14 +9,20 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersWriteService;
+import org.chainoptim.desktop.shared.common.uielements.UIItem;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.enums.Feature;
+import org.chainoptim.desktop.shared.enums.FilterType;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.OrderStatus;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.filters.FilterOption;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
+import org.chainoptim.desktop.shared.search.model.SearchOptions;
+import org.chainoptim.desktop.shared.search.model.SearchOptionsConfiguration;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
@@ -37,6 +43,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
@@ -64,12 +71,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     // State
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
-    private final Map<String, String> sortOptions = Map.of(
-            "orderDate", "Order Date",
-            "estimatedDeliveryDate", "Estimated Delivery Date",
-            "deliveryDate", "Delivery Date",
-            "quantity", "Quantity"
-    );
+
     private Supplier supplier;
     private final List<OrderStatus> statusOptions = Arrays.asList(OrderStatus.values());
     private long totalRowsCount;
@@ -142,9 +144,16 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     public void setData(Supplier supplier) {
         this.supplier = supplier;
 
-        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
+        searchParams.setItemsPerPage(20);
+        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
+
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(searchParams, sortOptions, () -> loadSupplierOrders(supplier.getId()));
+        tableToolbarController.initialize(
+                searchParams,
+                searchOptions.getFilterOptions(),
+                searchOptions.getSortOptions(),
+                () -> loadSupplierOrders(supplier.getId()));
+        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
 
         TableConfigurer.configureTableView(tableView, selectRowColumn);
@@ -168,7 +177,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         confirmSupplierOrderDeleteController = commonViewsLoader.loadConfirmDialog(confirmDeleteDialogContainer);
         confirmSupplierOrderDeleteController.setActionListener(confirmDialogDeleteListener);
         closeConfirmDeleteDialog();
-        System.out.println("Confirm Dialogs loaded");
     }
 
     // Configuration
@@ -258,6 +266,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
+        searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
+            System.out.println("Filter changed: " + change.getKey() + " -> " + change.getValueAdded());
+            if (searchParams.getFiltersProperty().entrySet().size() == 1) { // Allow only one filter at a time
+                loadSupplierOrders(supplier.getId());
+            }
+        });
     }
 
     private void setUpTableToolbarListeners() {
@@ -462,7 +476,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         }
         confirmSupplierOrderDeleteController.setData(selectedOrders, confirmDialogInput);
         toggleDialogVisibility(confirmDeleteDialogContainer, true);
-        addToastWarning();
     }
 
     private void closeConfirmDeleteDialog() {
@@ -602,16 +615,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private void addToastError() {
         ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the supplier order", OperationOutcome.ERROR);
-        toastManager.addToast(toastInfo);
-    }
-
-    private void addToastInfo() {
-        ToastInfo toastInfo = new ToastInfo("Info", "A Supplier Order is a request for a product from a supplier", OperationOutcome.INFO);
-        toastManager.addToast(toastInfo);
-    }
-
-    private void addToastWarning() {
-        ToastInfo toastInfo = new ToastInfo("Warning", "You are about to delete a supplier order", OperationOutcome.WARNING);
         toastManager.addToast(toastInfo);
     }
 }

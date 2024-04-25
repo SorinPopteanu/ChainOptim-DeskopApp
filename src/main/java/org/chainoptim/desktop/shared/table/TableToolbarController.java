@@ -1,11 +1,11 @@
 package org.chainoptim.desktop.shared.table;
 
-import org.chainoptim.desktop.shared.enums.OperationOutcome;
+import org.chainoptim.desktop.shared.enums.FilterType;
+import org.chainoptim.desktop.shared.search.filters.FilterBar;
+import org.chainoptim.desktop.shared.search.filters.FilterOption;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
-import org.chainoptim.desktop.shared.toast.controller.ToastManager;
-import org.chainoptim.desktop.shared.toast.model.ToastInfo;
+import org.chainoptim.desktop.shared.common.uielements.UIItem;
 
-import com.google.inject.Inject;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
@@ -24,12 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class TableToolbarController {
-
-    // Services
-    private final ToastManager toastManager;
 
     // State
     private SearchParams searchParams;
@@ -41,25 +37,23 @@ public class TableToolbarController {
     @FXML
     private Button searchButton;
     @FXML
+    private FilterBar filterBar;
+    @FXML
     private ComboBox<String> sortOptions;
     @FXML
     private Button orderingButton;
     @FXML
     private Button refreshButton;
-    @Getter
-    @FXML
+
+    @FXML @Getter
     private Button cancelRowSelectionButton;
-    @Getter
-    @FXML
+    @FXML @Getter
     private Button deleteSelectedRowsButton;
-    @Getter
-    @FXML
+    @FXML @Getter
     private Button editSelectedRowsButton;
-    @Getter
-    @FXML
+    @FXML @Getter
     private Button saveChangesButton;
-    @Getter
-    @FXML
+    @FXML @Getter
     private Button createNewOrderButton;
 
     // Icons
@@ -73,18 +67,15 @@ public class TableToolbarController {
     private Image saveIcon;
     private Image plusIcon;
 
-    @Inject
-    public TableToolbarController(ToastManager toastManager) {
-        this.toastManager = toastManager;
-    }
-
     public void initialize(SearchParams searchParams,
+                           List<FilterOption> filterOptions,
                            Map<String, String> sortOptionsMap,
                            Runnable refreshAction) {
         this.searchParams = searchParams;
         this.sortOptionsMap = sortOptionsMap;
         initializeIcons();
         setSearchButton();
+        filterBar.initializeFilterBar(filterOptions, searchParams);
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
         setRefreshButton(refreshAction);
@@ -93,30 +84,8 @@ public class TableToolbarController {
         setEditSelectedRowsButton();
         setSaveChangesButton();
         setCreateNewOrderButton();
-    }
 
-    @FXML
-    private void addToast() {
-        ToastInfo toastInfo = new ToastInfo("Success", "The order has been created/updated successfully", OperationOutcome.SUCCESS);
-        toastManager.addToast(toastInfo);
-    }
-
-    @FXML
-    private void addToastError() {
-        ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the order", OperationOutcome.ERROR);
-        toastManager.addToast(toastInfo);
-    }
-
-    @FXML
-    private void addToastInfo() {
-        ToastInfo toastInfo = new ToastInfo("Info", "A Supplier Order is a request for a component from a supplier", OperationOutcome.INFO);
-        toastManager.addToast(toastInfo);
-    }
-
-    @FXML
-    private void addToastWarning() {
-        ToastInfo toastInfo = new ToastInfo("Warning", "You are about to delete a supplier order", OperationOutcome.WARNING);
-        toastManager.addToast(toastInfo);
+        toggleButtonVisibilityOnCancel();
     }
 
     private void initializeIcons() {

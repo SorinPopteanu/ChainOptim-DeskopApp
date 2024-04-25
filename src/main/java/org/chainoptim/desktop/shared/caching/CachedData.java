@@ -4,24 +4,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
 public class CachedData<T> {
 
     private T data;
-    private long staleTime; // Seconds
-    private LocalDateTime cachedAt;
+    private float staleTimeMillis;
+    private Instant cachedAt;
 
-    public CachedData(T data, long staleTime) {
+    public CachedData(T data, float staleTime) {
         this.data = data;
-        this.staleTime = staleTime;
-        this.cachedAt = LocalDateTime.now();
+        this.staleTimeMillis = staleTime * 1000;
+        this.cachedAt = Instant.now();
     }
 
     public boolean isStale() {
-        return LocalDateTime.now().isAfter(cachedAt.plusSeconds(staleTime));
+        return Instant.now().isAfter(cachedAt.plusMillis((long) staleTimeMillis));
     }
-
 
 }

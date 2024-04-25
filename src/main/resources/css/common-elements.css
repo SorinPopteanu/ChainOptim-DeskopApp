@@ -65,7 +65,7 @@
 }
 
 .custom-combo-box {
-    -fx-pref-height: 32px;
+    -fx-min-height: 32px;
     -fx-max-height: 32px;
     -fx-background-color: #ffffff;
     -fx-font-weight: bold;
