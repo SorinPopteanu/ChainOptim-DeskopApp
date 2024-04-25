@@ -34,8 +34,8 @@ public class CreateProductController {
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
-    private final FallbackManager fallbackManager;
     private final ToastManager toastManager;
+    private final FallbackManager fallbackManager;
 
     private SelectOrCreateUnitOfMeasurementController unitOfMeasurementController;
 

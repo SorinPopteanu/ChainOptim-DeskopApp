@@ -3,9 +3,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
+<?import org.chainoptim.desktop.shared.common.uielements.forms.FormField?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.supplier.controller.CreateSupplierController" >
+      fx:controller="org.chainoptim.desktop.features.supplier.controller.CreateSupplierController">
 
     <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
         <VBox VBox.vgrow="ALWAYS" styleClass="form-container">
@@ -13,8 +14,7 @@
                 <Text text="Create Supplier" styleClass="form-title"/>
             </HBox>
 
-            <Label text="Name *:" styleClass="form-label"/>
-            <TextField fx:id="nameField" styleClass="custom-text-field"/>
+            <FormField fx:id="nameFormField"/>
 
             <Label text="Location:" styleClass="form-label"/>
             <StackPane fx:id="selectOrCreateLocationContainer"/>

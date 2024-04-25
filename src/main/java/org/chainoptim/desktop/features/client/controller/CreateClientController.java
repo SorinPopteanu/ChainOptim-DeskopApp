@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 public class CreateClientController implements Initializable {
 
+    // Services
     private final ClientWriteService clientWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
@@ -35,8 +36,10 @@ public class CreateClientController implements Initializable {
     private final ToastManager toastManager;
     private final FallbackManager fallbackManager;
 
+    // Controllers
     private SelectOrCreateLocationController selectOrCreateLocationController;
 
+    // FXML
     @FXML
     private StackPane fallbackContainer;
     @FXML
@@ -44,14 +47,14 @@ public class CreateClientController implements Initializable {
     @FXML
     private FormField<String> nameFormField;
 
-
     @Inject
-    public CreateClientController(ClientWriteService clientWriteService,
-                                  NavigationService navigationService,
-                                  CurrentSelectionService currentSelectionService,
-                                  ToastManager toastManager,
-                                  FallbackManager fallbackManager,
-                                  CommonViewsLoader commonViewsLoader) {
+    public CreateClientController(
+            ClientWriteService clientWriteService,
+            NavigationService navigationService,
+            CurrentSelectionService currentSelectionService,
+            ToastManager toastManager,
+            FallbackManager fallbackManager,
+            CommonViewsLoader commonViewsLoader) {
         this.clientWriteService = clientWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
@@ -112,13 +115,13 @@ public class CreateClientController implements Initializable {
 
     private Result<Client> handleCreateClientResponse(Result<Client> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 toastManager.addToast(new ToastInfo(
                         "Error", "Failed to create client.", OperationOutcome.ERROR));
                 return;
             }
             Client client = result.getData();
-            fallbackManager.setLoading(false);
             toastManager.addToast(new ToastInfo(
                     "Success", "Client created successfully.", OperationOutcome.SUCCESS));
 

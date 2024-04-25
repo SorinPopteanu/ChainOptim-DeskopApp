@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 
 public class UpdateClientController implements Initializable {
 
+    // Services
     private final ClientService clientService;
     private final ClientWriteService clientWriteService;
     private final NavigationService navigationService;
@@ -39,10 +40,13 @@ public class UpdateClientController implements Initializable {
     private final ToastManager toastManager;
     private final FallbackManager fallbackManager;
 
-    private Client client;
-
+    // Controllers
     private SelectOrCreateLocationController selectOrCreateLocationController;
 
+    // State
+    private Client client;
+
+    // FXML
     @FXML
     private StackPane fallbackContainer;
     @FXML
@@ -51,13 +55,14 @@ public class UpdateClientController implements Initializable {
     private FormField<String> nameFormField;
 
     @Inject
-    public UpdateClientController(ClientService clientService,
-                                  ClientWriteService clientWriteService,
-                                  NavigationService navigationService,
-                                  CurrentSelectionService currentSelectionService,
-                                  CommonViewsLoader commonViewsLoader,
-                                  ToastManager toastManager,
-                                  FallbackManager fallbackManager) {
+    public UpdateClientController(
+            ClientService clientService,
+            ClientWriteService clientWriteService,
+            NavigationService navigationService,
+            CurrentSelectionService currentSelectionService,
+            CommonViewsLoader commonViewsLoader,
+            ToastManager toastManager,
+            FallbackManager fallbackManager) {
         this.clientService = clientService;
         this.clientWriteService = clientWriteService;
         this.navigationService = navigationService;
@@ -71,7 +76,6 @@ public class UpdateClientController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         selectOrCreateLocationController = commonViewsLoader.loadSelectOrCreateLocation(selectOrCreateLocationContainer);
-        selectOrCreateLocationController.initialize();
         loadClient(currentSelectionService.getSelectedId());
     }
 
@@ -87,15 +91,13 @@ public class UpdateClientController implements Initializable {
     private Result<Client> handleClientResponse(Result<Client> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
-                toastManager.addToast(new ToastInfo(
-                        "Error", "Failed to update client.", OperationOutcome.ERROR));
+                fallbackManager.setErrorMessage("Failed to load client.");
                 return;
             }
             client = result.getData();
             fallbackManager.setLoading(false);
 
             initializeFormFields();
-
             selectOrCreateLocationController.setSelectedLocation(client.getLocation());
         });
 
@@ -147,12 +149,14 @@ public class UpdateClientController implements Initializable {
 
     private Result<Client> handleUpdateClientResponse(Result<Client> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 toastManager.addToast(new ToastInfo(
                         "Error", "Failed to update client.", OperationOutcome.ERROR));
                 return;
             }
-            fallbackManager.setLoading(false);
+            toastManager.addToast(new ToastInfo(
+                    "Success", "Client updated successfully.", OperationOutcome.SUCCESS));
 
             // Manage navigation, invalidating previous client cache
             Client updatedClient = result.getData();
