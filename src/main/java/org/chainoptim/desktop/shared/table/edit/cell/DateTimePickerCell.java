@@ -36,7 +36,7 @@ public class DateTimePickerCell<S, T> extends EditableCell<S, LocalDateTime> {
             setGraphic(null);
             setText(null);
         } else {
-            if (isEditMode.get() && editableRows.contains(getIndex())) {
+            if (isEditable && isEditMode.get() && editableRows.contains(getIndex())) {
                 dateTimePicker.setLocalDateTime(item);
                 setGraphic(dateTimePicker);
                 setText(null);

@@ -102,7 +102,7 @@ public class ClientsController implements Initializable {
         });
     }
 
-    private void loadClients() {
+    public void loadClients() {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 

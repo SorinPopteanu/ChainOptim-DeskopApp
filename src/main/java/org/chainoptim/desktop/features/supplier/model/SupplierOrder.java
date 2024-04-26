@@ -21,6 +21,7 @@ public class SupplierOrder {
         this.component = data.component;
         this.organizationId = data.organizationId;
         this.quantity = data.quantity;
+        this.deliveredQuantity = data.deliveredQuantity;
         this.orderDate = data.orderDate;
         this.estimatedDeliveryDate = data.estimatedDeliveryDate;
         this.deliveryDate = data.deliveryDate;
@@ -35,6 +36,7 @@ public class SupplierOrder {
     private Component component;
     private Integer organizationId;
     private Float quantity;
+    private Float deliveredQuantity;
     private LocalDateTime orderDate;
     private LocalDateTime estimatedDeliveryDate;
     private LocalDateTime deliveryDate;

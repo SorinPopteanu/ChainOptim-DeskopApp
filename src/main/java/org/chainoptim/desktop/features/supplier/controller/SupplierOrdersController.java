@@ -9,17 +9,15 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersService;
 import org.chainoptim.desktop.features.supplier.service.SupplierOrdersWriteService;
-import org.chainoptim.desktop.shared.common.uielements.UIItem;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
-import org.chainoptim.desktop.shared.enums.FilterType;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.OrderStatus;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
-import org.chainoptim.desktop.shared.search.filters.FilterOption;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchOptions;
 import org.chainoptim.desktop.shared.search.model.SearchOptionsConfiguration;
@@ -31,7 +29,6 @@ import org.chainoptim.desktop.shared.table.edit.cell.EditableCell;
 import org.chainoptim.desktop.shared.table.model.TableData;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
 import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
-
 import org.chainoptim.desktop.shared.toast.controller.ToastManager;
 import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -106,6 +103,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     @FXML
     private TableColumn<TableData<SupplierOrder>, Float> quantityColumn;
     @FXML
+    private TableColumn<TableData<SupplierOrder>, Float> deliveredQuantityColumn;
+    @FXML
     private TableColumn<TableData<SupplierOrder>, OrderStatus> statusColumn;
     @FXML
     private TableColumn<TableData<SupplierOrder>, LocalDateTime> orderDateColumn;
@@ -127,17 +126,17 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     public SupplierOrdersController(SupplierOrdersService supplierOrdersService,
                                     SupplierOrdersWriteService supplierOrdersWriteService,
                                     CommonViewsLoader commonViewsLoader,
+                                    SelectComponentLoader selectComponentLoader,
                                     ToastManager toastManager,
                                     FallbackManager fallbackManager,
-                                    SearchParams searchParams,
-                                    SelectComponentLoader selectComponentLoader) {
+                                    SearchParams searchParams) {
         this.supplierOrdersService = supplierOrdersService;
         this.supplierOrdersWriteService = supplierOrdersWriteService;
         this.commonViewsLoader = commonViewsLoader;
         this.toastManager = toastManager;
+        this.selectComponentLoader = selectComponentLoader;
         this.fallbackManager = fallbackManager;
         this.searchParams = searchParams;
-        this.selectComponentLoader = selectComponentLoader;
     }
 
     @Override
@@ -193,6 +192,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             return new SimpleObjectProperty<>(componentName);
         });
         quantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getQuantity()));
+        deliveredQuantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getDeliveredQuantity()));
         statusColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getStatus()));
         orderDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getOrderDate()));
         estimatedDeliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getEstimatedDeliveryDate()));
@@ -216,6 +216,13 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 item.getData().setQuantity(newValue);
             }
         });
+        deliveredQuantityColumn.setCellFactory(column -> new EditableCell<TableData<SupplierOrder>, Float>(
+                isEditMode, selectedRowsIndices, Float::parseFloat) {
+            @Override
+            protected void commitChange(TableData<SupplierOrder> item, Float newValue) {
+                item.getData().setDeliveredQuantity(newValue);
+            }
+        });
         estimatedDeliveryDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierOrder>, LocalDateTime>(
                 isEditMode, selectedRowsIndices, true) {
             @Override
@@ -231,7 +238,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 item.getData().setDeliveryDate(newValue);
             }
         });
-
         orderDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierOrder>, LocalDateTime>(
                 isEditMode, selectedRowsIndices, false){});
 
@@ -267,7 +273,6 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
         searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
         searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
-            System.out.println("Filter changed: " + change.getKey() + " -> " + change.getValueAdded());
             if (searchParams.getFiltersProperty().entrySet().size() == 1) { // Allow only one filter at a time
                 loadSupplierOrders(supplier.getId());
             }
@@ -336,13 +341,13 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 .exceptionally(this::handleOrdersException);
     }
 
-    private Optional<PaginatedResults<SupplierOrder>> handleOrdersResponse(Optional<PaginatedResults<SupplierOrder>> supplierOrdersOptional) {
+    private Result<PaginatedResults<SupplierOrder>> handleOrdersResponse(Result<PaginatedResults<SupplierOrder>> result) {
         Platform.runLater(() -> {
-            if (supplierOrdersOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("No orders found");
                 return;
             }
-            PaginatedResults<SupplierOrder> paginatedResults = supplierOrdersOptional.get();
+            PaginatedResults<SupplierOrder> paginatedResults = result.getData();
             fallbackManager.setLoading(false);
 
             totalRowsCount = paginatedResults.getTotalCount();
@@ -362,12 +367,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             }
         });
 
-        return supplierOrdersOptional;
+        return result;
     }
 
-    private Optional<PaginatedResults<SupplierOrder>> handleOrdersException(Throwable ex) {
+    private Result<PaginatedResults<SupplierOrder>> handleOrdersException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supplier orders."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     // UI Actions
@@ -488,31 +493,21 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     }
 
     // Backend calls
+    // - Create
     private void handleCreateOrders(List<SupplierOrder> supplierOrders) {
-        try {
-            List<CreateSupplierOrderDTO> createSupplierOrderDTOs = new ArrayList<>();
+        List<CreateSupplierOrderDTO> createSupplierOrderDTOs = new ArrayList<>();
+        for (SupplierOrder order : supplierOrders) {
+            CreateSupplierOrderDTO createSupplierOrderDTO = getCreateSupplierOrderDTO(order);
 
-            for (SupplierOrder order : supplierOrders) {
-                CreateSupplierOrderDTO createSupplierOrderDTO = getCreateSupplierOrderDTO(order);
-
-                createSupplierOrderDTOs.add(createSupplierOrderDTO);
-            }
-
-            supplierOrdersWriteService.createSupplierOrdersInBulk(createSupplierOrderDTOs)
-                    .thenAccept(createdOrders -> {
-                        if (createdOrders != null) {
-                            System.out.println("Orders created successfully: " + createdOrders);
-                        } else {
-                            System.out.println("Error creating orders");
-                        }
-                    });
-            isNewOrderMode.set(false);
-            closeConfirmCreateDialog();
-            updateUIOnSuccessfulOperation();
-            addToast();
-        } catch (Exception e) {
-            addToastError();
+            createSupplierOrderDTOs.add(createSupplierOrderDTO);
         }
+
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        supplierOrdersWriteService.createSupplierOrdersInBulk(createSupplierOrderDTOs)
+                .thenApply(this::handleCreateSupplierOrdersResponse)
+                .exceptionally(this::handleCreateSupplierOrdersException);
     }
 
     private CreateSupplierOrderDTO getCreateSupplierOrderDTO(SupplierOrder order) {
@@ -524,6 +519,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         createSupplierOrderDTO.setSupplierId(supplier.getId());
         createSupplierOrderDTO.setComponentId(order.getComponent().getId());
         createSupplierOrderDTO.setQuantity(order.getQuantity());
+        createSupplierOrderDTO.setDeliveredQuantity(order.getDeliveredQuantity());
         createSupplierOrderDTO.setOrderDate(order.getOrderDate());
         createSupplierOrderDTO.setEstimatedDeliveryDate(order.getEstimatedDeliveryDate());
         createSupplierOrderDTO.setDeliveryDate(order.getDeliveryDate());
@@ -531,6 +527,32 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         createSupplierOrderDTO.setCompanyId(order.getCompanyId());
 
         return createSupplierOrderDTO;
+    }
+
+    private Result<List<SupplierOrder>> handleCreateSupplierOrdersResponse(Result<List<SupplierOrder>> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Supplier Orders.", OperationOutcome.ERROR);
+                toastManager.addToast(toastInfo);
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            isNewOrderMode.set(false);
+            closeConfirmCreateDialog();
+            updateUIOnSuccessfulOperation();
+            ToastInfo toastInfo = new ToastInfo("Success", "Supplier Orders created successfully.", OperationOutcome.SUCCESS);
+            toastManager.addToast(toastInfo);
+        });
+        return  result;
+    }
+
+    private Result<List<SupplierOrder>> handleCreateSupplierOrdersException(Throwable throwable) {
+        Platform.runLater(() -> {
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Supplier Orders.", OperationOutcome.ERROR);
+            toastManager.addToast(toastInfo);
+        });
+        return new Result<>();
     }
 
     private void handleUpdateOrders(List<SupplierOrder> supplierOrders) {
@@ -542,11 +564,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             updateSupplierOrderDTOs.add(updateSupplierOrderDTO);
         }
 
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
         supplierOrdersWriteService.updateSupplierOrdersInBulk(updateSupplierOrderDTOs)
-                .thenAccept(updatedOrders -> {});
-        closeConfirmUpdateDialog();
-        updateUIOnSuccessfulOperation();
-        addToastUpdate();
+                .thenApply(this::handleUpdateSupplierOrdersResponse)
+                .exceptionally(this::handleUpdateSupplierOrdersException);
     }
 
     private UpdateSupplierOrderDTO getUpdateSupplierOrderDTO(SupplierOrder order) {
@@ -555,6 +578,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         updateSupplierOrderDTO.setOrganizationId(order.getOrganizationId());
         updateSupplierOrderDTO.setComponentId(order.getComponent().getId());
         updateSupplierOrderDTO.setQuantity(order.getQuantity());
+        updateSupplierOrderDTO.setDeliveredQuantity(order.getDeliveredQuantity());
         updateSupplierOrderDTO.setOrderDate(order.getOrderDate());
         updateSupplierOrderDTO.setEstimatedDeliveryDate(order.getEstimatedDeliveryDate());
         updateSupplierOrderDTO.setDeliveryDate(order.getDeliveryDate());
@@ -564,25 +588,74 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         return updateSupplierOrderDTO;
     }
 
+    private Result<List<SupplierOrder>> handleUpdateSupplierOrdersResponse(Result<List<SupplierOrder>> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Supplier Orders.", OperationOutcome.ERROR);
+                toastManager.addToast(toastInfo);
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+
+            isNewOrderMode.set(false);
+            closeConfirmUpdateDialog();
+            updateUIOnSuccessfulOperation();
+            ToastInfo toastInfo = new ToastInfo("Success", "Supplier Orders updated successfully.", OperationOutcome.SUCCESS);
+            toastManager.addToast(toastInfo);
+        });
+        return  result;
+    }
+
+    private Result<List<SupplierOrder>> handleUpdateSupplierOrdersException(Throwable throwable) {
+        Platform.runLater(() -> {
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Supplier Orders.", OperationOutcome.ERROR);
+            toastManager.addToast(toastInfo);
+        });
+        return new Result<>();
+    }
+
     private void handleDeleteOrders(List<SupplierOrder> supplierOrders) {
         List<Integer> ordersToRemoveIds = new ArrayList<>();
         for (SupplierOrder order : supplierOrders) {
             ordersToRemoveIds.add(order.getId());
         }
 
-        try {
-            supplierOrdersWriteService.deleteSupplierOrderInBulk(ordersToRemoveIds)
-                    .thenAccept(result -> System.out.println("Orders deleted successfully:" + ordersToRemoveIds));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
 
-        tableView.getItems().removeIf(tableData -> ordersToRemoveIds.contains(tableData.getData().getId()));
+        supplierOrdersWriteService.deleteSupplierOrderInBulk(ordersToRemoveIds)
+                .thenApply(this::handleDeleteSupplierOrdersResponse)
+                .exceptionally(this::handleDeleteSupplierOrdersException);
+    }
 
-        closeConfirmDeleteDialog();
-        isEditMode.set(false);
-        tableView.refresh();
-        selectedRowsIndices.clear();
+    private Result<List<Integer>> handleDeleteSupplierOrdersResponse(Result<List<Integer>> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Supplier Orders.", OperationOutcome.ERROR);
+                toastManager.addToast(toastInfo);
+                return;
+            }
+            fallbackManager.setLoading(false);
+
+            tableView.getItems().removeIf(tableData -> result.getData().contains(tableData.getData().getId()));
+
+            closeConfirmDeleteDialog();
+            isEditMode.set(false);
+            tableView.refresh();
+            selectedRowsIndices.clear();
+            ToastInfo toastInfo = new ToastInfo("Success", "Supplier Orders deleted successfully.", OperationOutcome.SUCCESS);
+            toastManager.addToast(toastInfo);
+        });
+        return  result;
+    }
+
+    private Result<List<Integer>> handleDeleteSupplierOrdersException(Throwable throwable) {
+        Platform.runLater(() -> {
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Supplier Orders.", OperationOutcome.ERROR);
+            toastManager.addToast(toastInfo);
+        });
+        return new Result<>();
     }
 
     private void updateUIOnSuccessfulOperation() {
@@ -600,21 +673,5 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         selectRowColumn.setEditable(true);
         selectedRowsIndices.clear();
         tableView.refresh();
-    }
-
-    // Toasts
-    private void addToast() {
-        ToastInfo toastInfo = new ToastInfo("Success", "The supplier order has been created successfully", OperationOutcome.SUCCESS);
-        toastManager.addToast(toastInfo);
-    }
-
-    private void addToastUpdate() {
-        ToastInfo toastInfo = new ToastInfo("Success", "The supplier order has been updated successfully", OperationOutcome.SUCCESS);
-        toastManager.addToast(toastInfo);
-    }
-
-    private void addToastError() {
-        ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the supplier order", OperationOutcome.ERROR);
-        toastManager.addToast(toastInfo);
     }
 }
