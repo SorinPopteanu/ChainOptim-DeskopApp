@@ -8,13 +8,12 @@ import org.chainoptim.desktop.shared.search.model.SearchParams;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface ClientOrderService {
+public interface ClientOrdersService {
 
     CompletableFuture<Result<List<ClientOrder>>> getClientOrdersByOrganizationId(Integer organizationId);
     CompletableFuture<Result<PaginatedResults<ClientOrder>>> getClientOrdersByClientIdAdvanced(
             Integer clientId,
             SearchParams searchParams
     );
-    CompletableFuture<Result<ClientOrder>> getClientOrderById(Integer orderId);
 
 }

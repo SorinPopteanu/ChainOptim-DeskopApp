@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.client.dto;
 
+import org.chainoptim.desktop.shared.enums.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,4 +21,5 @@ public class UpdateClientOrderDTO {
     private LocalDateTime orderDate;
     private LocalDateTime estimatedDeliveryDate;
     private LocalDateTime deliveryDate;
+    private OrderStatus status;
 }
