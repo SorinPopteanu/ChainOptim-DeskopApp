@@ -39,7 +39,7 @@ public class FactoryInventoryItemServiceImpl implements FactoryInventoryItemServ
     }
 
     public CompletableFuture<Result<List<FactoryInventoryItem>>> getFactoryInventoryItemsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/factory-inventory-items/organization/" + organizationId.toString();
+        String routeAddress = "http://localhost:8080/api/v1/factory-inventory-items/factory/" + organizationId.toString();
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
         if (request == null) return requestHandler.getParsingErrorResult();
