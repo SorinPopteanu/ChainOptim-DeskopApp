@@ -156,8 +156,8 @@ public class AppModule extends AbstractModule {
         // - Client
         bind(ClientService.class).to(ClientServiceImpl.class);
         bind(ClientWriteService.class).to(ClientWriteServiceImpl.class);
-        bind(ClientOrderService.class).to(ClientOrderServiceImpl.class);
-        bind(ClientOrderWriteService.class).to(ClientOrderWriteServiceImpl.class);
+        bind(ClientOrdersService.class).to(ClientOrdersServiceImpl.class);
+        bind(ClientOrdersWriteService.class).to(ClientOrdersWriteServiceImpl.class);
 
         // - SC Analysis
         bind(ProductProductionGraphService.class).to(ProductProductionGraphServiceImpl.class);

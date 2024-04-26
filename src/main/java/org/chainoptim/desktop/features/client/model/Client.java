@@ -1,11 +1,15 @@
 package org.chainoptim.desktop.features.client.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.chainoptim.desktop.shared.features.location.model.Location;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Client {
 
     private Integer id;

@@ -1,16 +1,16 @@
-package org.chainoptim.desktop.features.supplier.service;
+package org.chainoptim.desktop.features.client.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.supplier.dto.CreateSupplierOrderDTO;
-import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierOrderDTO;
-import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
+import org.chainoptim.desktop.features.client.dto.CreateClientOrderDTO;
+import org.chainoptim.desktop.features.client.dto.UpdateClientOrderDTO;
+import org.chainoptim.desktop.features.client.model.ClientOrder;
+import org.chainoptim.desktop.features.client.service.ClientOrdersWriteService;
 import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 
@@ -18,59 +18,59 @@ import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class SupplierOrdersWriteServiceImpl implements SupplierOrdersWriteService {
+public class ClientOrdersWriteServiceImpl implements ClientOrdersWriteService {
 
-    private final CachingService<PaginatedResults<SupplierOrder>> cachingService;
+    private final CachingService<PaginatedResults<ClientOrder>> cachingService;
     private final RequestBuilder requestBuilder;
     private final RequestHandler requestHandler;
     private final TokenManager tokenManager;
 
     @Inject
-    public SupplierOrdersWriteServiceImpl(CachingService<PaginatedResults<SupplierOrder>> cachingService,
-                                          RequestBuilder requestBuilder,
-                                          RequestHandler requestHandler,
-                                          TokenManager tokenManager) {
+    public ClientOrdersWriteServiceImpl(CachingService<PaginatedResults<ClientOrder>> cachingService,
+                                        RequestBuilder requestBuilder,
+                                        RequestHandler requestHandler,
+                                        TokenManager tokenManager) {
         this.cachingService = cachingService;
         this.requestBuilder = requestBuilder;
         this.requestHandler = requestHandler;
         this.tokenManager = tokenManager;
     }
 
-    public CompletableFuture<Result<SupplierOrder>> createSupplierOrder(CreateSupplierOrderDTO orderDTO) {
-        String routeAddress = "http://localhost:8080/api/v1/supplier-orders/create";
+    public CompletableFuture<Result<ClientOrder>> createClientOrder(CreateClientOrderDTO orderDTO) {
+        String routeAddress = "http://localhost:8080/api/v1/client-orders/create";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.POST, routeAddress, tokenManager.getToken(), orderDTO);
 
-        return requestHandler.sendRequest(request, new TypeReference<SupplierOrder>() {}, order -> {
+        return requestHandler.sendRequest(request, new TypeReference<ClientOrder>() {}, order -> {
             cachingService.clear(); // Invalidate cache
         });
     }
 
-    public CompletableFuture<Result<List<SupplierOrder>>> createSupplierOrdersInBulk(List<CreateSupplierOrderDTO> orderDTOs) {
-        String routeAddress = "http://localhost:8080/api/v1/supplier-orders/create/bulk";
+    public CompletableFuture<Result<List<ClientOrder>>> createClientOrdersInBulk(List<CreateClientOrderDTO> orderDTOs) {
+        String routeAddress = "http://localhost:8080/api/v1/client-orders/create/bulk";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.POST, routeAddress, tokenManager.getToken(), orderDTOs);
 
-        return requestHandler.sendRequest(request, new TypeReference<List<SupplierOrder>>() {}, orders -> {
+        return requestHandler.sendRequest(request, new TypeReference<List<ClientOrder>>() {}, orders -> {
             cachingService.clear(); // Invalidate cache
         });
     }
 
-    public CompletableFuture<Result<List<SupplierOrder>>> updateSupplierOrdersInBulk(List<UpdateSupplierOrderDTO> orderDTOs) {
-        String routeAddress = "http://localhost:8080/api/v1/supplier-orders/update/bulk";
+    public CompletableFuture<Result<List<ClientOrder>>> updateClientOrdersInBulk(List<UpdateClientOrderDTO> orderDTOs) {
+        String routeAddress = "http://localhost:8080/api/v1/client-orders/update/bulk";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.PUT, routeAddress, tokenManager.getToken(), orderDTOs);
 
-        return requestHandler.sendRequest(request, new TypeReference<List<SupplierOrder>>() {}, orders -> {
+        return requestHandler.sendRequest(request, new TypeReference<List<ClientOrder>>() {}, orders -> {
             cachingService.clear(); // Invalidate cache
         });
     }
 
-    public CompletableFuture<Result<List<Integer>>> deleteSupplierOrderInBulk(List<Integer> orderIds) {
-        String routeAddress = "http://localhost:8080/api/v1/supplier-orders/delete/bulk";
+    public CompletableFuture<Result<List<Integer>>> deleteClientOrderInBulk(List<Integer> orderIds) {
+        String routeAddress = "http://localhost:8080/api/v1/client-orders/delete/bulk";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
                 HttpMethod.DELETE, routeAddress, tokenManager.getToken(), orderIds);

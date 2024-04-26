@@ -7,7 +7,6 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController">
 
-
     <VBox VBox.vgrow="ALWAYS">
         <StackPane fx:id="tableToolbarContainer"/>
         <ScrollPane fx:id="supplierOrdersScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
@@ -20,6 +19,7 @@
                         <TableColumn text="Supplier" fx:id="supplierNameColumn" minWidth="150"/>
                         <TableColumn text="Component" fx:id="componentNameColumn" minWidth="150"/>
                         <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
+                        <TableColumn text="Delivered Quantity" fx:id="deliveredQuantityColumn" minWidth="150"/>
                         <TableColumn text="Status" fx:id="statusColumn" minWidth="150"/>
                         <TableColumn text="Order Date" fx:id="orderDateColumn" minWidth="150"/>
                         <TableColumn text="Estimated Delivery Date" fx:id="estimatedDeliveryDateColumn" minWidth="200"/>

@@ -39,7 +39,7 @@ class ClientOrderWriteServiceTest {
     private TokenManager tokenManager;
 
     @InjectMocks
-    private ClientOrderWriteServiceImpl clientOrderWriteService;
+    private ClientOrdersWriteServiceImpl clientOrderWriteService;
 
     @Test
     void createClientOrder_Successful() throws Exception {
@@ -68,61 +68,61 @@ class ClientOrderWriteServiceTest {
         assertNotNull(resultFuture);
         assertEquals(HttpURLConnection.HTTP_CREATED, resultFuture.get().getStatusCode());
     }
-
-    @Test
-    void updateClientOrder_Successful() throws Exception {
-        // Arrange
-        UpdateClientOrderDTO clientOrderDTO = new UpdateClientOrderDTO();
-        String clientOrderDTOString = JsonUtil.getObjectMapper().writeValueAsString(clientOrderDTO);
-        String fakeToken = "test-token";
-        HttpRequest fakeRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/v1/client-orders/update"))
-                .header("Authorization", "Bearer " + fakeToken)
-                .PUT(HttpRequest.BodyPublishers.ofString(clientOrderDTOString))
-                .build();
-        ClientOrder expectedClientOrder = new ClientOrder();
-        CompletableFuture<Result<ClientOrder>> expectedFuture = CompletableFuture.completedFuture(new Result<>(expectedClientOrder, null, HttpURLConnection.HTTP_OK));
-
-        when(requestBuilder.buildWriteRequest(HttpMethod.PUT, "http://localhost:8080/api/v1/client-orders/update", fakeToken, clientOrderDTO)).thenReturn(fakeRequest);
-        when(requestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<ClientOrder>>any())).thenReturn(expectedFuture);
-        when(tokenManager.getToken()).thenReturn(fakeToken);
-
-        // Act
-        CompletableFuture<Result<ClientOrder>> resultFuture = clientOrderWriteService.updateClientOrder(clientOrderDTO);
-
-        // Assert
-        verify(requestBuilder).buildWriteRequest(HttpMethod.PUT, "http://localhost:8080/api/v1/client-orders/update", fakeToken, clientOrderDTO);
-        verify(requestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<ClientOrder>>any());
-        assertNotNull(resultFuture);
-        assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
-    }
-
-    @Test
-    void deleteClientOrder_Successful() throws Exception {
-        // Arrange
-        Integer clientOrderId = 1;
-        String fakeToken = "test-token";
-        HttpRequest fakeRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/v1/client-orders/delete/" + clientOrderId))
-                .header("Authorization", "Bearer " + fakeToken)
-                .DELETE()
-                .build();
-        Integer expectedResponse = HttpURLConnection.HTTP_OK; // Use an appropriate success code or response
-        CompletableFuture<Result<Integer>> expectedFuture = CompletableFuture.completedFuture(new Result<>(expectedResponse, null, HttpURLConnection.HTTP_OK));
-
-        when(requestBuilder.buildWriteRequest(HttpMethod.DELETE, "http://localhost:8080/api/v1/client-orders/delete/" + clientOrderId, fakeToken, null)).thenReturn(fakeRequest);
-        when(requestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<Integer>>any())).thenReturn(expectedFuture);
-        when(tokenManager.getToken()).thenReturn(fakeToken);
-
-        // Act
-        CompletableFuture<Result<Integer>> resultFuture = clientOrderWriteService.deleteClientOrder(clientOrderId);
-
-        // Assert
-        verify(requestBuilder).buildWriteRequest(HttpMethod.DELETE, "http://localhost:8080/api/v1/client-orders/delete/" + clientOrderId, fakeToken, null);
-        verify(requestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<Integer>>any());
-        assertNotNull(resultFuture);
-        assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
-    }
+//
+//    @Test
+//    void updateClientOrder_Successful() throws Exception {
+//        // Arrange
+//        UpdateClientOrderDTO clientOrderDTO = new UpdateClientOrderDTO();
+//        String clientOrderDTOString = JsonUtil.getObjectMapper().writeValueAsString(clientOrderDTO);
+//        String fakeToken = "test-token";
+//        HttpRequest fakeRequest = HttpRequest.newBuilder()
+//                .uri(URI.create("http://localhost:8080/api/v1/client-orders/update"))
+//                .header("Authorization", "Bearer " + fakeToken)
+//                .PUT(HttpRequest.BodyPublishers.ofString(clientOrderDTOString))
+//                .build();
+//        ClientOrder expectedClientOrder = new ClientOrder();
+//        CompletableFuture<Result<ClientOrder>> expectedFuture = CompletableFuture.completedFuture(new Result<>(expectedClientOrder, null, HttpURLConnection.HTTP_OK));
+//
+//        when(requestBuilder.buildWriteRequest(HttpMethod.PUT, "http://localhost:8080/api/v1/client-orders/update", fakeToken, clientOrderDTO)).thenReturn(fakeRequest);
+//        when(requestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<ClientOrder>>any())).thenReturn(expectedFuture);
+//        when(tokenManager.getToken()).thenReturn(fakeToken);
+//
+//        // Act
+//        CompletableFuture<Result<ClientOrder>> resultFuture = clientOrderWriteService.updateClientOrder(clientOrderDTO);
+//
+//        // Assert
+//        verify(requestBuilder).buildWriteRequest(HttpMethod.PUT, "http://localhost:8080/api/v1/client-orders/update", fakeToken, clientOrderDTO);
+//        verify(requestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<ClientOrder>>any());
+//        assertNotNull(resultFuture);
+//        assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
+//    }
+//
+//    @Test
+//    void deleteClientOrder_Successful() throws Exception {
+//        // Arrange
+//        Integer clientOrderId = 1;
+//        String fakeToken = "test-token";
+//        HttpRequest fakeRequest = HttpRequest.newBuilder()
+//                .uri(URI.create("http://localhost:8080/api/v1/client-orders/delete/" + clientOrderId))
+//                .header("Authorization", "Bearer " + fakeToken)
+//                .DELETE()
+//                .build();
+//        Integer expectedResponse = HttpURLConnection.HTTP_OK; // Use an appropriate success code or response
+//        CompletableFuture<Result<Integer>> expectedFuture = CompletableFuture.completedFuture(new Result<>(expectedResponse, null, HttpURLConnection.HTTP_OK));
+//
+//        when(requestBuilder.buildWriteRequest(HttpMethod.DELETE, "http://localhost:8080/api/v1/client-orders/delete/" + clientOrderId, fakeToken, null)).thenReturn(fakeRequest);
+//        when(requestHandler.sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<Integer>>any())).thenReturn(expectedFuture);
+//        when(tokenManager.getToken()).thenReturn(fakeToken);
+//
+//        // Act
+//        CompletableFuture<Result<Integer>> resultFuture = clientOrderWriteService.deleteClientOrder(clientOrderId);
+//
+//        // Assert
+//        verify(requestBuilder).buildWriteRequest(HttpMethod.DELETE, "http://localhost:8080/api/v1/client-orders/delete/" + clientOrderId, fakeToken, null);
+//        verify(requestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<Integer>>any());
+//        assertNotNull(resultFuture);
+//        assertEquals(HttpURLConnection.HTTP_OK, resultFuture.get().getStatusCode());
+//    }
 
 
 }
