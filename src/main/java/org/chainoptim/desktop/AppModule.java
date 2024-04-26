@@ -25,6 +25,7 @@ import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.model.ClientOrder;
 import org.chainoptim.desktop.features.client.service.*;
 import org.chainoptim.desktop.features.factory.model.Factory;
+import org.chainoptim.desktop.features.factory.model.FactoryInventoryItem;
 import org.chainoptim.desktop.features.factory.service.*;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.*;
@@ -139,6 +140,8 @@ public class AppModule extends AbstractModule {
         bind(FactoryWriteService.class).to(FactoryWriteServiceImpl.class);
         bind(FactoryStageService.class).to(FactoryStageServiceImpl.class);
         bind(FactoryStageWriteService.class).to(FactoryStageWriteServiceImpl.class);
+        bind(FactoryInventoryItemService.class).to(FactoryInventoryItemServiceImpl.class);
+        bind(FactoryInventoryItemWriteService.class).to(FactoryInventoryItemWriteServiceImpl.class);
 
         // - Warehouse
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
@@ -195,6 +198,9 @@ public class AppModule extends AbstractModule {
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Factory>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Factory>>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<PaginatedResults<FactoryInventoryItem>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<FactoryInventoryItem>>>() {})
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Warehouse>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Warehouse>>>() {})
