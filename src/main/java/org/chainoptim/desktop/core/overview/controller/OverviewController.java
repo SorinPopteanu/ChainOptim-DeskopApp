@@ -14,6 +14,7 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.common.uielements.badge.BadgeData;
 import org.chainoptim.desktop.shared.common.uielements.badge.FeatureCountBadge;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -127,8 +128,6 @@ public class OverviewController implements Initializable {
         headerImageView.setFitHeight(16);
         headerImageView.setFitWidth(16);
         titleLabel.setGraphic(headerImageView);
-
-//        alertImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/alert-circle-solid.png")));
     }
 
     private void loadData(User currentUser) {
@@ -144,46 +143,46 @@ public class OverviewController implements Initializable {
                 .thenApply(this::handleSupplyChainSnapshotResponse)
                 .exceptionally(ex -> {
                     Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supply chain snapshot."));
-                    return Optional.empty();
+                    return new Result<>();
                 });
 
         notificationPersistenceService.getNotificationsByUserIdAdvanced(currentUser.getId(), searchParams)
                 .thenApply(this::handleNotificationsResponse)
                 .exceptionally(ex -> {
                     Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load notifications."));
-                    return Optional.empty();
+                    return new Result<>();
                 });
     }
 
     // Fetches
-    private Optional<SupplyChainSnapshot> handleSupplyChainSnapshotResponse(Optional<SupplyChainSnapshot> snapshotOptional) {
+    private Result<SupplyChainSnapshot> handleSupplyChainSnapshotResponse(Result<SupplyChainSnapshot> result) {
         Platform.runLater(() -> {
-            if (snapshotOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
-            snapshot = snapshotOptional.get().getSnapshot();
+            snapshot = result.getData().getSnapshot();
             snapshotContext.setSnapshot(snapshot);
             fallbackManager.setLoading(false);
 
             renderEntityCountsVBox(snapshot);
         });
 
-        return snapshotOptional;
+        return result;
     }
 
-    private Optional<PaginatedResults<NotificationUser>> handleNotificationsResponse(Optional<PaginatedResults<NotificationUser>> notificationsOptional) {
+    private Result<PaginatedResults<NotificationUser>> handleNotificationsResponse(Result<PaginatedResults<NotificationUser>> result) {
         Platform.runLater(() -> {
-            if (notificationsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
-            PaginatedResults<NotificationUser> notifications = notificationsOptional.get();
+            PaginatedResults<NotificationUser> notifications = result.getData();
             fallbackManager.setLoading(false);
 
             totalCount = notifications.getTotalCount();
             renderNotificationsVBox(notifications.getResults());
         });
 
-        return notificationsOptional;
+        return result;
     }
 
     // UI Rendering
@@ -271,7 +270,7 @@ public class OverviewController implements Initializable {
                     .thenApply(this::handleNotificationsResponse)
                     .exceptionally(ex -> {
                         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load more notifications."));
-                        return Optional.empty();
+                        return new Result<>();
                     });
         });
         notificationsVBox.getChildren().add(currentLoadMoreButton);

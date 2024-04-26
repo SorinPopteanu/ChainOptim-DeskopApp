@@ -11,6 +11,7 @@ import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDial
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
@@ -290,16 +291,16 @@ public class OrganizationOverviewController implements DataReceiver<Organization
                 .exceptionally(this::handleBasicRoleException);
     }
 
-    private Optional<User> handleBasicRoleResponse(Optional<User> userOptional) {
+    private Result<User> handleBasicRoleResponse(Result<User> result) {
         Platform.runLater(() -> {
-            if (userOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to assign basic role.");
                 return;
             }
             fallbackManager.setLoading(false);
 
             // Update Users list with updated user
-            User updatedUser = userOptional.get();
+            User updatedUser = result.getData();
             organizationViewData.getOrganization().getUsers().stream()
                     .filter(user -> user.getId().equals(updatedUser.getId()))
                     .findFirst().ifPresent(user -> user.setRole(updatedUser.getRole()));
@@ -311,19 +312,19 @@ public class OrganizationOverviewController implements DataReceiver<Organization
             if (assignNode == null) return;
 
             membersGridPane.getChildren().remove(assignNode);
-            Button button = addBasicRoleButton(userOptional.get(), editedUserRowIndex);
+            Button button = addBasicRoleButton(updatedUser, editedUserRowIndex);
             applyStandardMargin(button);
             membersGridPane.add(button, ASSIGN_BASIC_ROLE_COLUMN_INDEX, editedUserRowIndex);
             GridPane.setHalignment(button, HPos.CENTER);
 
             editedUserRowIndex = -1;
         });
-        return userOptional;
+        return result;
     }
 
-    private Optional<User> handleBasicRoleException(Throwable throwable) {
+    private Result<User> handleBasicRoleException(Throwable throwable) {
         fallbackManager.setErrorMessage("Failed to assign basic role.");
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void cancelAssignBasicRole() {
@@ -364,16 +365,16 @@ public class OrganizationOverviewController implements DataReceiver<Organization
                 .exceptionally(this::handleCustomRoleException);
     }
 
-    private Optional<User> handleCustomRoleResponse(Optional<User> userOptional) {
+    private Result<User> handleCustomRoleResponse(Result<User> result) {
         Platform.runLater(() -> {
-            if (userOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to assign custom role.");
                 return;
             }
             fallbackManager.setLoading(false);
 
             // Update users list with updated user
-            User updatedUser = userOptional.get();
+            User updatedUser = result.getData();
             organizationViewData.getOrganization().getUsers().stream()
                     .filter(user -> user.getId().equals(updatedUser.getId()))
                     .findFirst().ifPresent(user -> user.setCustomRole(updatedUser.getCustomRole()));
@@ -385,19 +386,19 @@ public class OrganizationOverviewController implements DataReceiver<Organization
             if (assignNode == null) return;
 
             membersGridPane.getChildren().remove(assignNode);
-            Button button = addCustomRoleButton(userOptional.get(), editedUserRowIndex);
+            Button button = addCustomRoleButton(updatedUser, editedUserRowIndex);
             applyStandardMargin(button);
             membersGridPane.add(button, ASSIGN_ROLE_COLUMN_INDEX, editedUserRowIndex);
             GridPane.setHalignment(button, HPos.CENTER);
 
             editedUserRowIndex = -1;
         });
-        return userOptional;
+        return result;
     }
 
-    private Optional<User> handleCustomRoleException(Throwable throwable) {
+    private Result<User> handleCustomRoleException(Throwable throwable) {
         fallbackManager.setErrorMessage("Failed to assign custom role.");
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void cancelAssignCustomRole() {
@@ -442,13 +443,13 @@ public class OrganizationOverviewController implements DataReceiver<Organization
                 .exceptionally(this::handleRemoveMemberException);
     }
 
-    private Optional<User> handleRemoveMemberResponse(Optional<User> userOptional) {
+    private Result<User> handleRemoveMemberResponse(Result<User> result) {
         Platform.runLater(() -> {
-            if (userOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to remove member.");
                 return;
             }
-            User user = userOptional.get();
+            User user = result.getData();
 
             toggleRemoveDialog(false);
             fallbackManager.setLoading(false);
@@ -460,12 +461,12 @@ public class OrganizationOverviewController implements DataReceiver<Organization
             // Re-render members grid - necessary here, at least from that user down
             renderMembersGrid();
         });
-        return userOptional;
+        return result;
     }
 
-    private Optional<User> handleRemoveMemberException(Throwable throwable) {
+    private Result<User> handleRemoveMemberException(Throwable throwable) {
         fallbackManager.setErrorMessage("Failed to remove member.");
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void cancelRemoveMember() {

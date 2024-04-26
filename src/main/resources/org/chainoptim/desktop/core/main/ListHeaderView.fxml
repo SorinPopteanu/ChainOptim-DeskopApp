@@ -20,7 +20,7 @@
                 <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
             </StackPane>
             <Region HBox.hgrow="ALWAYS"/>
-            <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption"/>
+            <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption" styleClass="custom-combo-box"/>
             <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="refreshButton" styleClass="refresh-button"/>

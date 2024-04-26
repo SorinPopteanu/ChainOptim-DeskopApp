@@ -9,6 +9,7 @@ import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDial
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
@@ -505,13 +506,13 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
         return new UpdateCustomRoleDTO(customRole.getId(), roleName, permissions);
     }
 
-    private void handleSuccessfulUpdate(Optional<CustomRole> updatedRoleOptional, int rowIndex) {
+    private void handleSuccessfulUpdate(Result<CustomRole> result, int rowIndex) {
         Platform.runLater(() -> {
-            if (updatedRoleOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to update custom role.");
                 return;
             }
-            CustomRole updatedRole = updatedRoleOptional.get();
+            CustomRole updatedRole = result.getData();
             closeConfirmUpdateDialog();
 
             // Update customRoles
@@ -570,9 +571,9 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 .thenAccept(deletedRoleIdOptional -> handleSuccessfulDelete(deletedRoleIdOptional, currentToBeDeletedRowIndex));
     }
 
-    private void handleSuccessfulDelete(Optional<Integer> deletedRoleIdOptional, int rowIndex) {
+    private void handleSuccessfulDelete(Result<Integer> result, int rowIndex) {
         Platform.runLater(() -> {
-            if (deletedRoleIdOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to delete custom role.");
                 return;
             }
@@ -603,17 +604,17 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 .thenApply(this::handleNewRoleResponse)
                 .exceptionally(ex -> {
                     Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to create new custom role."));
-                    return Optional.empty();
+                    return new Result<>();
                 });
     }
 
-    private Optional<CustomRole> handleNewRoleResponse(Optional<CustomRole> newRoleOptional) {
+    private Result<CustomRole> handleNewRoleResponse(Result<CustomRole> result) {
         Platform.runLater(() -> {
-            if (newRoleOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to create new custom role.");
                 return;
             }
-            CustomRole newRole = newRoleOptional.get();
+            CustomRole newRole = result.getData();
             customRoles.add(newRole);
             tabTitle.setText("Custom Roles (" + customRoles.size() + ")");
 
@@ -625,7 +626,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
                 addFeaturePermissionRow(feature, newRole, newRowIndex++);
             }
         });
-        return newRoleOptional;
+        return result;
     }
 
     // Utils

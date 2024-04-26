@@ -1,49 +1,38 @@
 package org.chainoptim.desktop.core.overview.service;
 
 import org.chainoptim.desktop.core.overview.model.SupplyChainSnapshot;
-import org.chainoptim.desktop.core.user.util.TokenManager;
-import org.chainoptim.desktop.shared.util.JsonUtil;
+import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.inject.Inject;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class SupplyChainSnapshotServiceImpl implements SupplyChainSnapshotService {
 
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final RequestHandler requestHandler;
+    private final RequestBuilder requestBuilder;
+    private final org.chainoptim.desktop.core.user.service.TokenManager tokenManager;
 
-    private static final String HEADER_KEY = "Authorization";
-    private static final String HEADER_VALUE_PREFIX = "Bearer ";
+    @Inject
+    public SupplyChainSnapshotServiceImpl(
+            RequestHandler requestHandler,
+            RequestBuilder requestBuilder,
+            TokenManager tokenManager) {
+        this.requestHandler = requestHandler;
+        this.requestBuilder = requestBuilder;
+        this.tokenManager = tokenManager;
+    }
 
-    public CompletableFuture<Optional<SupplyChainSnapshot>> getSupplyChainSnapshot(Integer organizationId) {
+    public CompletableFuture<Result<SupplyChainSnapshot>> getSupplyChainSnapshot(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/supply-chain-snapshots/organization/" + organizationId.toString();
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<SupplyChainSnapshot>empty();
-                    try {
-                        SupplyChainSnapshot snapshot = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<SupplyChainSnapshot>() {});
-                        return Optional.of(snapshot);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<SupplyChainSnapshot>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<SupplyChainSnapshot>() {});
     }
 }

@@ -8,8 +8,10 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.productpipeline.dto.CreateComponentDTO;
 import org.chainoptim.desktop.features.productpipeline.model.Component;
 import org.chainoptim.desktop.features.productpipeline.service.ComponentService;
+import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateUnitOfMeasurementController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
@@ -30,8 +32,7 @@ public class CreateComponentController implements Initializable {
     private final ComponentService componentService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
-    private final ControllerFactory controllerFactory;
+    private final CommonViewsLoader commonViewsLoader;
     private final FallbackManager fallbackManager;
 
     private SelectOrCreateUnitOfMeasurementController unitOfMeasurementController;
@@ -51,52 +52,24 @@ public class CreateComponentController implements Initializable {
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
             FallbackManager fallbackManager,
-            FXMLLoaderService fxmlLoaderService,
-            ControllerFactory controllerFactory
+            CommonViewsLoader commonViewsLoader
     ) {
         this.componentService = componentService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
-        this.controllerFactory = controllerFactory;
+        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
-        loadSelectOrCreateUnitOfMeasurement();
-    }
-
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
-    }
-
-    private void loadSelectOrCreateUnitOfMeasurement() {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectOrCreateUnitOfMeasurementView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node selectOrCreateUnitOfMeasurementView = loader.load();
-            unitOfMeasurementController = loader.getController();
-            unitOfMeasurementContainer.getChildren().add(selectOrCreateUnitOfMeasurementView);
-            unitOfMeasurementController.initialize();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
+        unitOfMeasurementController = commonViewsLoader.loadSelectOrCreateUnitOfMeasurement(unitOfMeasurementContainer);
+        unitOfMeasurementController.initialize();
     }
 
     @FXML
     private void handleSubmit() {
-        fallbackManager.reset();
-        fallbackManager.setLoading(true);
-
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             return;
@@ -104,7 +77,11 @@ public class CreateComponentController implements Initializable {
         Integer organizationId = currentUser.getOrganization().getId();
 
         CreateComponentDTO componentDTO = getCreateComponentDTO(organizationId);
-        System.out.println("CreateComponent: " + componentDTO.getUnitDTO());
+        System.out.println("CreateComponent: " + componentDTO);
+        if (componentDTO == null) return;
+
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
 
         componentService.createComponent(componentDTO)
                 .thenAccept(result ->
@@ -129,14 +106,18 @@ public class CreateComponentController implements Initializable {
     private CreateComponentDTO getCreateComponentDTO(Integer organizationId) {
         CreateComponentDTO componentDTO = new CreateComponentDTO();
         componentDTO.setOrganizationId(organizationId);
-        componentDTO.setName(nameField.getText());
-        componentDTO.setDescription(descriptionField.getText());
-        if (unitOfMeasurementController.isCreatingNewUnit()) {
-            componentDTO.setCreateUnit(true);
-            componentDTO.setUnitDTO(unitOfMeasurementController.getNewUnitDTO());
-        } else {
-            componentDTO.setCreateUnit(false);
-            componentDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
+        try {
+            componentDTO.setName(nameField.getText());
+            componentDTO.setDescription(descriptionField.getText());
+            if (unitOfMeasurementController.isCreatingNewUnit()) {
+                componentDTO.setCreateUnit(true);
+                componentDTO.setUnitDTO(unitOfMeasurementController.getNewUnitDTO());
+            } else {
+                componentDTO.setCreateUnit(false);
+                componentDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
+            }
+        } catch (ValidationException e) {
+            return null;
         }
 
         return componentDTO;

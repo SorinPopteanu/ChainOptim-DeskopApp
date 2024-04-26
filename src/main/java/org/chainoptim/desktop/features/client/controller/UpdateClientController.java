@@ -7,9 +7,15 @@ import org.chainoptim.desktop.features.client.dto.UpdateClientDTO;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
 import org.chainoptim.desktop.features.client.service.ClientWriteService;
+import org.chainoptim.desktop.features.product.model.Product;
+import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
+import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -25,36 +31,44 @@ import java.util.ResourceBundle;
 
 public class UpdateClientController implements Initializable {
 
+    // Services
     private final ClientService clientService;
     private final ClientWriteService clientWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+    private final ToastManager toastManager;
     private final FallbackManager fallbackManager;
 
-    private Client client;
-
+    // Controllers
     private SelectOrCreateLocationController selectOrCreateLocationController;
 
+    // State
+    private Client client;
+
+    // FXML
     @FXML
     private StackPane fallbackContainer;
     @FXML
     private StackPane selectOrCreateLocationContainer;
     @FXML
-    private TextField nameField;
+    private FormField<String> nameFormField;
 
     @Inject
-    public UpdateClientController(ClientService clientService,
-                                  ClientWriteService clientWriteService,
-                                  NavigationService navigationService,
-                                  CurrentSelectionService currentSelectionService,
-                                  CommonViewsLoader commonViewsLoader,
-                                  FallbackManager fallbackManager) {
+    public UpdateClientController(
+            ClientService clientService,
+            ClientWriteService clientWriteService,
+            NavigationService navigationService,
+            CurrentSelectionService currentSelectionService,
+            CommonViewsLoader commonViewsLoader,
+            ToastManager toastManager,
+            FallbackManager fallbackManager) {
         this.clientService = clientService;
         this.clientWriteService = clientWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.commonViewsLoader = commonViewsLoader;
+        this.toastManager = toastManager;
         this.fallbackManager = fallbackManager;
     }
 
@@ -62,7 +76,6 @@ public class UpdateClientController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         selectOrCreateLocationController = commonViewsLoader.loadSelectOrCreateLocation(selectOrCreateLocationContainer);
-        selectOrCreateLocationController.initialize();
         loadClient(currentSelectionService.getSelectedId());
     }
 
@@ -84,7 +97,7 @@ public class UpdateClientController implements Initializable {
             client = result.getData();
             fallbackManager.setLoading(false);
 
-            nameField.setText(client.getName());
+            initializeFormFields();
             selectOrCreateLocationController.setSelectedLocation(client.getLocation());
         });
 
@@ -96,29 +109,54 @@ public class UpdateClientController implements Initializable {
         return new Result<>();
     }
 
+    private void initializeFormFields() {
+        nameFormField.initialize(String::new, "Name", true, client.getName(), "Your input is not valid");
+    }
+
     @FXML
     private void handleSubmit() {
+        UpdateClientDTO clientDTO = getUpdateClientDTO();
+        if (clientDTO == null) return;
+        System.out.println(clientDTO);
+
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        UpdateClientDTO clientDTO = getUpdateClientDTO();
-        System.out.println(clientDTO);
-
         clientWriteService.updateClient(clientDTO)
                 .thenApply(this::handleUpdateClientResponse)
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return new Result<>();
-                });
+                .exceptionally(this::handleUpdateClientException);
+    }
+
+    private UpdateClientDTO getUpdateClientDTO() {
+        UpdateClientDTO clientDTO = new UpdateClientDTO();
+        clientDTO.setId(client.getId());
+        try {
+            clientDTO.setName(nameFormField.handleSubmit());
+
+            if (selectOrCreateLocationController.isCreatingNewLocation()) {
+                clientDTO.setCreateLocation(true);
+                clientDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
+            } else {
+                clientDTO.setCreateLocation(false);
+                clientDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
+            }
+        } catch (ValidationException e) {
+            return null;
+        }
+
+        return clientDTO;
     }
 
     private Result<Client> handleUpdateClientResponse(Result<Client> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
-                fallbackManager.setErrorMessage("Failed to create client.");
+                toastManager.addToast(new ToastInfo(
+                        "Error", "Failed to update client.", OperationOutcome.ERROR));
                 return;
             }
-            fallbackManager.setLoading(false);
+            toastManager.addToast(new ToastInfo(
+                    "Success", "Client updated successfully.", OperationOutcome.SUCCESS));
 
             // Manage navigation, invalidating previous client cache
             Client updatedClient = result.getData();
@@ -130,20 +168,10 @@ public class UpdateClientController implements Initializable {
         return result;
     }
 
-    private UpdateClientDTO getUpdateClientDTO() {
-        UpdateClientDTO clientDTO = new UpdateClientDTO();
-        clientDTO.setId(client.getId());
-        clientDTO.setName(nameField.getText());
-
-        if (selectOrCreateLocationController.isCreatingNewLocation()) {
-            clientDTO.setCreateLocation(true);
-            clientDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
-        } else {
-            clientDTO.setCreateLocation(false);
-            clientDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
-        }
-
-        return clientDTO;
+    private Result<Client> handleUpdateClientException(Throwable ex) {
+        Platform.runLater(() -> toastManager.addToast(new ToastInfo(
+                "An error occurred.", "Failed to update client.", OperationOutcome.ERROR)));
+        return new Result<>();
     }
 }
 

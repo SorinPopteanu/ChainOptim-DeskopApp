@@ -1,74 +1,171 @@
 package org.chainoptim.desktop.core.settings.controller;
 
+import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.settings.model.UserSettings;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
+import com.jfoenix.controls.JFXToggleButton;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NotificationSettingsController implements DataReceiver<UserSettings> {
 
     // State
     private UserSettings userSettings;
+    private boolean areNotificationsWithinPlan;
+    private boolean areEmailsWithinPlan;
     private final BooleanProperty haveSettingsChanged = new SimpleBooleanProperty(false);
 
     // Listeners
     @Setter
     private SettingsListener settingsListener;
     private ChangeListener<Boolean> hasChangedListener;
-    private ChangeListener<Boolean> overallChangeListener;
+    private ChangeListener<Boolean> notificationOverallChangeListener;
+    private ChangeListener<Boolean> emailOverallChangeListener;
 
     // Constants
-    private static final List<String> notificationFeatures = List.of("Supplier Orders", "Client Orders", "Factory Inventory", "Warehouse Inventory");
-
+    private static final List<Feature> notificationFeatures = List.of(Feature.SUPPLIER_ORDER, Feature.CLIENT_ORDER, Feature.FACTORY_INVENTORY, Feature.WAREHOUSE_INVENTORY);
+    private static final List<Feature> emailFeatures = List.of(Feature.SUPPLIER_ORDER, Feature.CLIENT_ORDER, Feature.FACTORY_INVENTORY, Feature.WAREHOUSE_INVENTORY);
+    private static final String NOTIFICATIONS = "Notifications";
+    private static final String EMAILS = "Emails";
+    
     // FXML
     @FXML
     private VBox contentVBox;
-    private final ToggleButton toggleOverallButton = new ToggleButton();
-    private final Map<String, ToggleButton> featureToggleButtons = new HashMap<>();
+    private final JFXToggleButton notificationOverallToggleButton = new JFXToggleButton();
+    private final Map<Feature, JFXToggleButton> notificationFeatureToggleButtons = new EnumMap<>(Feature.class);
+    private final JFXToggleButton emailOverallToggleButton = new JFXToggleButton();
+    private final Map<Feature, JFXToggleButton> emailFeatureToggleButtons = new EnumMap<>(Feature.class);
 
     @Override
     public void setData(UserSettings userSettings) {
         this.userSettings = userSettings;
+        this.areNotificationsWithinPlan = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().isCustomNotificationsOn();
+        this.areEmailsWithinPlan = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().isEmailNotificationsOn();
+
         initializeUI();
     }
 
     private void initializeUI() {
         contentVBox.getChildren().clear();
-        contentVBox.setSpacing(10);
+        contentVBox.setSpacing(12);
 
-        cleanUpGlobalListeners();
+        renderOverallHBox(NOTIFICATIONS);
 
-        renderOverallHBox();
+        for (Feature feature : notificationFeatures) {
+            renderFeatureHBox(feature, NOTIFICATIONS);
+        }
 
-        for (String feature : notificationFeatures) {
-            renderFeatureHBox(feature);
+        Region region = new Region();
+        region.setMinHeight(8);
+        contentVBox.getChildren().add(region);
+
+        renderOverallHBox(EMAILS);
+
+        for (Feature feature : emailFeatures) {
+            renderFeatureHBox(feature, EMAILS);
         }
 
         setUpGlobalListeners();
     }
 
-    private void cleanUpGlobalListeners() {
-        haveSettingsChanged.setValue(false);
-        if (hasChangedListener != null) {
-            haveSettingsChanged.removeListener(hasChangedListener);
+    private void renderOverallHBox(String type) {
+        HBox overallHBox = new HBox();
+        Label overallLabel = new Label(type);
+        overallLabel.getStyleClass().add("settings-section-label");
+        overallHBox.getChildren().add(overallLabel);
+
+        Region region = new Region();
+        overallHBox.getChildren().add(region);
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        if (Objects.equals(type, NOTIFICATIONS)) {
+            boolean overallSetting = aggregateNotificationSettings();
+            notificationOverallToggleButton.setSelected(overallSetting);
+            notificationOverallToggleButton.setDisable(!areNotificationsWithinPlan);
+            styleToggleButton(notificationOverallToggleButton);
+            overallHBox.getChildren().add(notificationOverallToggleButton);
+        } else if (EMAILS.equals(type)) {
+            boolean overallSetting = aggregateEmailSettings();
+            emailOverallToggleButton.setSelected(overallSetting);
+            emailOverallToggleButton.setDisable(!areEmailsWithinPlan);
+            styleToggleButton(emailOverallToggleButton);
+            overallHBox.getChildren().add(emailOverallToggleButton);
         }
-        if (overallChangeListener != null) {
-            toggleOverallButton.selectedProperty().removeListener(overallChangeListener);
+
+        contentVBox.getChildren().add(overallHBox);
+    }
+
+    private void renderFeatureHBox(Feature feature, String type) {
+        HBox featureHBox = new HBox();
+        featureHBox.setAlignment(Pos.CENTER_LEFT);
+        Label featureLabel = new Label(feature.toString());
+        featureLabel.getStyleClass().add("settings-label");
+        featureHBox.getChildren().add(featureLabel);
+
+        Region region = new Region();
+        featureHBox.getChildren().add(region);
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        JFXToggleButton toggleButton = new JFXToggleButton();
+        styleToggleButton(toggleButton);
+        if (Objects.equals(type, NOTIFICATIONS)) {
+            boolean featureSetting = getNotificationFeatureSetting(feature);
+            toggleButton.setSelected(featureSetting);
+            toggleButton.setDisable(!areNotificationsWithinPlan);
+            toggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
+                    handleToggleFeatureSwitch(notificationFeatureToggleButtons.get(feature), feature, newValue, type));
+            notificationFeatureToggleButtons.put(feature, toggleButton);
+        } else if (EMAILS.equals(type)) {
+            boolean featureSetting = getEmailFeatureSetting(feature);
+            toggleButton.setDisable(!areEmailsWithinPlan);
+            toggleButton.setSelected(featureSetting);
+            toggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
+                    handleToggleFeatureSwitch(emailFeatureToggleButtons.get(feature), feature, newValue, type));
+            emailFeatureToggleButtons.put(feature, toggleButton);
+        }
+        featureHBox.getChildren().add(toggleButton);
+
+        contentVBox.getChildren().add(featureHBox);
+    }
+
+    private void handleToggleOverallSwitch(String type) {
+        if (Objects.equals(type, NOTIFICATIONS)) {
+            boolean newState = notificationOverallToggleButton.isSelected();
+            for (Feature feature : notificationFeatures) {
+                JFXToggleButton featureToggleButton = notificationFeatureToggleButtons.get(feature);
+                handleToggleFeatureSwitch(featureToggleButton, feature, newState, type);
+            }
+        } else if (EMAILS.equals(type)) {
+            boolean newState = emailOverallToggleButton.isSelected();
+            for (Feature feature : emailFeatures) {
+                JFXToggleButton featureToggleButton = emailFeatureToggleButtons.get(feature);
+                handleToggleFeatureSwitch(featureToggleButton, feature, newState, type);
+            }
+        }
+    }
+
+    private void handleToggleFeatureSwitch(JFXToggleButton featureToggleButton, Feature feature, Boolean isOn, String type) {
+        featureToggleButton.setSelected(isOn);
+        haveSettingsChanged.setValue(true);
+        if (Objects.equals(type, NOTIFICATIONS)) {
+            setNotificationFeatureSetting(feature, isOn);
+        } else if (EMAILS.equals(type)) {
+            setEmailFeatureSetting(feature, isOn);
         }
     }
 
@@ -82,104 +179,135 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
         haveSettingsChanged.addListener(hasChangedListener);
 
         // Overall change listener
-        overallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            handleToggleOverallButton(userSettings);
+        notificationOverallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            handleToggleOverallSwitch(NOTIFICATIONS);
         };
-        toggleOverallButton.selectedProperty().addListener(overallChangeListener);
+        notificationOverallToggleButton.selectedProperty().addListener(notificationOverallChangeListener);
+
+        emailOverallChangeListener = (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            handleToggleOverallSwitch(EMAILS);
+        };
+        emailOverallToggleButton.selectedProperty().addListener(emailOverallChangeListener);
     }
 
-    private void renderOverallHBox() {
-        HBox overallHBox = new HBox();
-        Label overallLabel = new Label("Overall");
-        overallLabel.getStyleClass().add("settings-section-label");
-        overallHBox.getChildren().add(overallLabel);
+    public void commitChanges(UserSettings newSettings) {
+        // Temporarily remove listeners to prevent unpredictable behavior
+        removeListeners();
 
-        Region region = new Region();
-        overallHBox.getChildren().add(region);
-        HBox.setHgrow(region, Priority.ALWAYS);
+        this.userSettings = newSettings;
+        updateUI();
 
-        toggleOverallButton.getStyleClass().setAll("toggle-button");
-        boolean overallSetting = aggregateNotificationSettings();
-        toggleOverallButton.setText(overallSetting ? "On" : "Off");
-        toggleOverallButton.setSelected(overallSetting);
-        overallHBox.getChildren().add(toggleOverallButton);
-
-        contentVBox.getChildren().add(overallHBox);
-    }
-
-    private void renderFeatureHBox(String feature) {
-        HBox featureHBox = new HBox();
-        Label featureLabel = new Label(feature);
-        featureLabel.getStyleClass().add("settings-label");
-        featureHBox.getChildren().add(featureLabel);
-
-        Region region = new Region();
-        featureHBox.getChildren().add(region);
-        HBox.setHgrow(region, Priority.ALWAYS);
-
-        ToggleButton toggleButton = new ToggleButton();
-        boolean featureSetting = getFeatureSetting(feature);
-        toggleButton.setText(featureSetting ? "On" : "Off");
-        toggleButton.setSelected(featureSetting);
-        toggleButton.getStyleClass().setAll("toggle-button");
-        toggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-                handleToggleFeatureButton(userSettings, toggleButton, feature, toggleButton.isSelected()));
-        featureToggleButtons.put(feature, toggleButton);
-        featureHBox.getChildren().add(toggleButton);
-
-        contentVBox.getChildren().add(featureHBox);
-    }
-
-    private void handleToggleOverallButton(UserSettings userSettings) {
-        if (toggleOverallButton.isSelected()) {
-            toggleOverallButton.setText("On");
-        } else {
-            toggleOverallButton.setText("Off");
-        }
-        for (String feature : notificationFeatures) {
-            ToggleButton toggleButton = featureToggleButtons.get(feature);
-            handleToggleFeatureButton(userSettings, toggleButton, feature, toggleOverallButton.isSelected());
-        }
-    }
-
-    private void handleToggleFeatureButton(UserSettings userSettings, ToggleButton toggleButton, String feature, Boolean isOn) {
-        toggleButton.setSelected(isOn);
-        toggleButton.setText(Boolean.TRUE.equals(isOn) ? "On" : "Off");
-        haveSettingsChanged.setValue(true);
-        setFeatureSetting(feature, isOn);
+        reinstallListeners();
+        haveSettingsChanged.setValue(false);
     }
 
     public void cancelChanges(UserSettings originalUserSettings) {
-        toggleOverallButton.selectedProperty().removeListener(overallChangeListener);
-        setData(originalUserSettings);
+        // Temporarily remove listeners to prevent unpredictable behavior
+        removeListeners();
+
+        this.userSettings = originalUserSettings;
+        updateUI();
+
+        reinstallListeners();
         haveSettingsChanged.setValue(false);
+    }
+
+    private void reinstallListeners() {
+        notificationOverallToggleButton.selectedProperty().addListener(notificationOverallChangeListener);
+        emailOverallToggleButton.selectedProperty().addListener(emailOverallChangeListener);
+        haveSettingsChanged.addListener(hasChangedListener);
+    }
+
+    private void removeListeners() {
+        notificationOverallToggleButton.selectedProperty().removeListener(notificationOverallChangeListener);
+        emailOverallToggleButton.selectedProperty().removeListener(emailOverallChangeListener);
+        haveSettingsChanged.removeListener(hasChangedListener);
+    }
+
+    private void updateUI() {
+        boolean overallSetting = aggregateNotificationSettings();
+        notificationOverallToggleButton.setSelected(overallSetting);
+
+        for (Map.Entry<Feature, JFXToggleButton> entry : notificationFeatureToggleButtons.entrySet()) {
+            Feature feature = entry.getKey();
+            JFXToggleButton toggleButton = entry.getValue();
+            boolean featureSetting = getNotificationFeatureSetting(feature);
+            toggleButton.setSelected(featureSetting);
+        }
+
+        boolean emailOverallSetting = aggregateEmailSettings();
+        emailOverallToggleButton.setSelected(emailOverallSetting);
+
+        for (Map.Entry<Feature, JFXToggleButton> entry : emailFeatureToggleButtons.entrySet()) {
+            Feature feature = entry.getKey();
+            JFXToggleButton toggleButton = entry.getValue();
+            boolean featureSetting = getEmailFeatureSetting(feature);
+            toggleButton.setSelected(featureSetting);
+        }
     }
 
     // Utils
     private boolean aggregateNotificationSettings() {
-        return userSettings.getNotificationSettings().isClientOrdersOn() &&
-                userSettings.getNotificationSettings().isSupplierOrdersOn() &&
+        return userSettings.getNotificationSettings().isSupplierOrdersOn() &&
+                userSettings.getNotificationSettings().isClientOrdersOn() &&
                 userSettings.getNotificationSettings().isFactoryInventoryOn() &&
                 userSettings.getNotificationSettings().isWarehouseInventoryOn();
     }
 
-    private boolean getFeatureSetting(String feature) {
+    private boolean aggregateEmailSettings() {
+        return userSettings.getNotificationSettings().isEmailSupplierOrdersOn() &&
+                userSettings.getNotificationSettings().isEmailClientOrdersOn() &&
+                userSettings.getNotificationSettings().isEmailFactoryInventoryOn() &&
+                userSettings.getNotificationSettings().isEmailWarehouseInventoryOn();
+    }
+
+    private boolean getNotificationFeatureSetting(Feature feature) {
         return switch (feature) {
-            case "Supplier Orders" -> userSettings.getNotificationSettings().isSupplierOrdersOn();
-            case "Client Orders" -> userSettings.getNotificationSettings().isClientOrdersOn();
-            case "Factory Inventory" -> userSettings.getNotificationSettings().isFactoryInventoryOn();
-            case "Warehouse Inventory" -> userSettings.getNotificationSettings().isWarehouseInventoryOn();
+            case SUPPLIER_ORDER -> userSettings.getNotificationSettings().isSupplierOrdersOn();
+            case CLIENT_ORDER -> userSettings.getNotificationSettings().isClientOrdersOn();
+            case FACTORY_INVENTORY -> userSettings.getNotificationSettings().isFactoryInventoryOn();
+            case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().isWarehouseInventoryOn();
             default -> false;
         };
     }
 
-    private void setFeatureSetting(String feature, boolean isOn) {
+    private boolean getEmailFeatureSetting(Feature feature) {
+        return switch (feature) {
+            case SUPPLIER_ORDER -> userSettings.getNotificationSettings().isEmailSupplierOrdersOn();
+            case CLIENT_ORDER -> userSettings.getNotificationSettings().isEmailClientOrdersOn();
+            case FACTORY_INVENTORY -> userSettings.getNotificationSettings().isEmailFactoryInventoryOn();
+            case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().isEmailWarehouseInventoryOn();
+            default -> false;
+        };
+    }
+
+    private void setNotificationFeatureSetting(Feature feature, boolean isOn) {
         switch (feature) {
-            case "Supplier Orders" -> userSettings.getNotificationSettings().setSupplierOrdersOn(isOn);
-            case "Client Orders" -> userSettings.getNotificationSettings().setClientOrdersOn(isOn);
-            case "Factory Inventory" -> userSettings.getNotificationSettings().setFactoryInventoryOn(isOn);
-            case "Warehouse Inventory" -> userSettings.getNotificationSettings().setWarehouseInventoryOn(isOn);
-            default -> {}
+            case SUPPLIER_ORDER -> userSettings.getNotificationSettings().setSupplierOrdersOn(isOn);
+            case CLIENT_ORDER -> userSettings.getNotificationSettings().setClientOrdersOn(isOn);
+            case FACTORY_INVENTORY -> userSettings.getNotificationSettings().setFactoryInventoryOn(isOn);
+            case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().setWarehouseInventoryOn(isOn);
+            default -> throw new IllegalStateException("Unexpected value: " + feature);
         }
+    }
+
+    private void setEmailFeatureSetting(Feature feature, boolean isOn) {
+        switch (feature) {
+            case SUPPLIER_ORDER -> userSettings.getNotificationSettings().setEmailSupplierOrdersOn(isOn);
+            case CLIENT_ORDER -> userSettings.getNotificationSettings().setEmailClientOrdersOn(isOn);
+            case FACTORY_INVENTORY -> userSettings.getNotificationSettings().setEmailFactoryInventoryOn(isOn);
+            case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().setEmailWarehouseInventoryOn(isOn);
+            default -> throw new IllegalStateException("Unexpected value: " + feature);
+        }
+    }
+
+    private void styleToggleButton(JFXToggleButton toggleButton) {
+        toggleButton.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-border-color: transparent;");
+        toggleButton.setUnToggleColor(Color.valueOf("#cccccc"));
+        toggleButton.setToggleColor(Color.valueOf("#006AEE"));
+        toggleButton.setToggleLineColor(Color.valueOf("#337BEF"));
+        toggleButton.setBorder(null);
+        toggleButton.setDisableVisualFocus(true);
+        toggleButton.setMinSize(50, 30);
     }
 }

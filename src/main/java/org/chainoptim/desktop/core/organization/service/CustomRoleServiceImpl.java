@@ -3,142 +3,66 @@ package org.chainoptim.desktop.core.organization.service;
 import org.chainoptim.desktop.core.organization.dto.CreateCustomRoleDTO;
 import org.chainoptim.desktop.core.organization.dto.UpdateCustomRoleDTO;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
-import org.chainoptim.desktop.core.user.util.TokenManager;
-import org.chainoptim.desktop.shared.util.JsonUtil;
+import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.shared.httphandling.HttpMethod;
+import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
+import org.chainoptim.desktop.shared.httphandling.RequestHandler;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
+import com.google.inject.Inject;
+
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class CustomRoleServiceImpl implements CustomRoleService {
 
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final RequestHandler requestHandler;
+    private final RequestBuilder requestBuilder;
+    private final TokenManager tokenManager;
 
-    private static final String HEADER_KEY = "Authorization";
-    private static final String HEADER_VALUE_PREFIX = "Bearer ";
+    @Inject
+    public CustomRoleServiceImpl(RequestHandler requestHandler,
+                                 RequestBuilder requestBuilder,
+                                 TokenManager tokenManager) {
+        this.requestHandler = requestHandler;
+        this.requestBuilder = requestBuilder;
+        this.tokenManager = tokenManager;
+    }
 
-    public CompletableFuture<Optional<List<CustomRole>>> getCustomRolesByOrganizationId(Integer organizationId) {
+    public CompletableFuture<Result<List<CustomRole>>> getCustomRolesByOrganizationId(Integer organizationId) {
         String routeAddress = "http://localhost:8080/api/v1/custom-roles/organization/" + organizationId.toString();
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .GET()
-                .headers(HEADER_KEY, headerValue)
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.<List<CustomRole>>empty();
-                    try {
-                        List<CustomRole> customRoles = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<List<CustomRole>>() {});
-                        return Optional.of(customRoles);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<List<CustomRole>>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<List<CustomRole>>() {});
     }
 
-    public CompletableFuture<Optional<CustomRole>> createCustomRole(CreateCustomRoleDTO roleDTO) {
+    public CompletableFuture<Result<CustomRole>> createCustomRole(CreateCustomRoleDTO roleDTO) {
         String routeAddress = "http://localhost:8080/api/v1/custom-roles/create";
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildWriteRequest(
+                HttpMethod.POST, routeAddress, tokenManager.getToken(), roleDTO);
 
-        // Serialize DTO
-        String requestBody = null;
-        try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(roleDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assert requestBody != null;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
-                .headers(HEADER_KEY, headerValue)
-                .headers("Content-Type", "application/json")
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    try {
-                        CustomRole customRole = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<CustomRole>() {});
-                        return Optional.of(customRole);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<CustomRole>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<CustomRole>() {});
     }
 
-    public CompletableFuture<Optional<CustomRole>> updateCustomRole(UpdateCustomRoleDTO roleDTO) {
+    public CompletableFuture<Result<CustomRole>> updateCustomRole(UpdateCustomRoleDTO roleDTO) {
         String routeAddress = "http://localhost:8080/api/v1/custom-roles/update";
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildWriteRequest(
+                HttpMethod.PUT, routeAddress, tokenManager.getToken(), roleDTO);
 
-        // Serialize DTO
-        String requestBody = null;
-        try {
-            requestBody = JsonUtil.getObjectMapper().writeValueAsString(roleDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assert requestBody != null;
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .PUT(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
-                .headers(HEADER_KEY, headerValue)
-                .headers("Content-Type", "application/json")
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    try {
-                        CustomRole customRole = JsonUtil.getObjectMapper().readValue(response.body(), new TypeReference<CustomRole>() {});
-                        return Optional.of(customRole);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return Optional.<CustomRole>empty();
-                    }
-                });
+        return requestHandler.sendRequest(request, new TypeReference<CustomRole>() {});
     }
 
-    public CompletableFuture<Optional<Integer>> deleteCustomRole(Integer roleId) {
+    public CompletableFuture<Result<Integer>> deleteCustomRole(Integer roleId) {
         String routeAddress = "http://localhost:8080/api/v1/custom-roles/delete/" + roleId;
 
-        String jwtToken = TokenManager.getToken();
-        if (jwtToken == null) return new CompletableFuture<>();
-        String headerValue = HEADER_VALUE_PREFIX + jwtToken;
+        HttpRequest request = requestBuilder.buildWriteRequest(
+                HttpMethod.DELETE, routeAddress, tokenManager.getToken(), null);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(routeAddress))
-                .DELETE()
-                .headers(HEADER_KEY, headerValue)
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() != HttpURLConnection.HTTP_OK) return Optional.empty();
-                    return Optional.of(roleId);
-                });
+        return requestHandler.sendRequest(request, new TypeReference<Integer>() {});
     }
 }

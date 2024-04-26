@@ -2,6 +2,7 @@ package org.chainoptim.desktop.core.organization.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
@@ -9,7 +10,9 @@ import org.chainoptim.desktop.core.organization.service.CustomRoleService;
 import org.chainoptim.desktop.core.organization.service.OrganizationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
@@ -35,7 +38,8 @@ public class OrganizationController implements Initializable {
     // Services
     private final OrganizationService organizationService;
     private final CustomRoleService customRoleService;
-    private final FXMLLoaderService fxmlLoaderService;
+    private final NavigationService navigationService;
+    private final CommonViewsLoader commonViewsLoader;
     private final ControllerFactory controllerFactory;
 
     private final FallbackManager fallbackManager;
@@ -68,21 +72,24 @@ public class OrganizationController implements Initializable {
 
     @Inject
     public OrganizationController(OrganizationService organizationService,
-                                    CustomRoleService customRoleService,
-                                  FXMLLoaderService fxmlLoaderService,
+                                  CustomRoleService customRoleService,
+                                  NavigationService navigationService,
+                                  CommonViewsLoader commonViewsLoader,
                                   ControllerFactory controllerFactory,
                                   FallbackManager fallbackManager) {
         this.organizationService = organizationService;
         this.customRoleService = customRoleService;
-        this.fxmlLoaderService = fxmlLoaderService;
+        this.navigationService = navigationService;
+        this.commonViewsLoader = commonViewsLoader;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resourceBundle) {
-        loadFallbackManager();
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
+
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             Platform.runLater(() -> fallbackManager.setLoading(false));
@@ -99,15 +106,6 @@ public class OrganizationController implements Initializable {
 
         loadOrganization();
         loadCustomRoles(); // Multi-thread this as custom roles are not immediately needed
-    }
-
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void setupListeners() {
@@ -160,17 +158,15 @@ public class OrganizationController implements Initializable {
                 .exceptionally(this::handleOrganizationException);
     }
 
-    private Optional<Organization> handleOrganizationResponse(Optional<Organization> organizationOptional) {
+    private Result<Organization> handleOrganizationResponse(Result<Organization> result) {
         Platform.runLater(() -> {
-            if (organizationOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load organization.");
                 return;
             }
-            organizationViewData.setOrganization(organizationOptional.get());
+            organizationViewData.setOrganization(result.getData());
 
             organizationViewData.getOrganization().setSubscriptionPlanTier(PRO);
-
-            System.out.println("Organization: " + organizationViewData.getOrganization());
 
             initializeUI();
 
@@ -181,7 +177,7 @@ public class OrganizationController implements Initializable {
             fallbackManager.setLoading(false);
         });
 
-        return organizationOptional;
+        return result;
     }
 
     private void loadCustomRoles() {
@@ -191,24 +187,24 @@ public class OrganizationController implements Initializable {
                 .thenRun(() -> Platform.runLater(() -> fallbackManager.setLoading(false)));
     }
 
-    private Optional<List<CustomRole>> handleCustomRolesResponse(Optional<List<CustomRole>> customRolesOptional) {
+    private Result<List<CustomRole>> handleCustomRolesResponse(Result<List<CustomRole>> result) {
         Platform.runLater(() -> {
-            if (customRolesOptional.isEmpty()) {
+            if (result.getError() != null) {
                 fallbackManager.setErrorMessage("Failed to load custom roles.");
                 return;
             }
-            organizationViewData.setCustomRoles(customRolesOptional.get());
+            organizationViewData.setCustomRoles(result.getData());
             if (organizationOverviewController != null) {
                 organizationOverviewController.setData(organizationViewData);
             }
             System.out.println("Custom Roles: " + organizationViewData.getCustomRoles());
         });
-        return customRolesOptional;
+        return result;
     }
 
-    private Optional<List<CustomRole>> handleCustomRolesException(Throwable ex) {
+    private Result<List<CustomRole>> handleCustomRolesException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load custom roles."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     private void initializeUI() {
@@ -217,13 +213,13 @@ public class OrganizationController implements Initializable {
         planLabel.setText("Subscription Plan: " + organizationViewData.getOrganization().getSubscriptionPlanTier().toString());
     }
 
-    private Optional<Organization> handleOrganizationException(Throwable ex) {
+    private Result<Organization> handleOrganizationException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load organization."));
-        return Optional.empty();
+        return new Result<>();
     }
 
     @FXML
     private void handleEditOrganization() {
-        System.out.println("Edit organization clicked");
+        navigationService.switchView("Update-Organization", true);
     }
 }

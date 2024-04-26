@@ -10,6 +10,7 @@
     -fx-font-size: 14px;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
 }
 
 .standard-write-button:hover {
@@ -32,13 +33,14 @@
 .standard-action-button {
     -fx-padding: 4px 8px;
     -fx-background-color: #eeeeee;
-    -fx-border-color: #d0d0d0;
+    -fx-border-color: #dcdcdc;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
     -fx-font-weight: 600;
     -fx-font-size: 13px;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
 }
 
 .standard-action-button:hover {
@@ -57,6 +59,7 @@
     -fx-font-size: 14px;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
 }
 
 .standard-delete-button:hover {
@@ -68,13 +71,13 @@
     -fx-max-height: 32px;
     -fx-padding: 4px 12px;
     -fx-background-color: #eeeeee;
-    -fx-border-color: #d0d0d0;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
     -fx-font-weight: 500;
     -fx-font-size: 14px;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
 }
 
 .standard-cancel-button:hover {
@@ -116,6 +119,7 @@
     -fx-border-radius: 6px;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
 }
 
 .cancel-edit-button:hover {

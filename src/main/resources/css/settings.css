@@ -18,7 +18,7 @@
 }
 
 .settings-section-label {
-    -fx-font-size: 18px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-padding: 10 0 10 0;
 }
@@ -26,4 +26,37 @@
 .settings-label {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+}
+
+/* Switch */
+/* Style for the toggle button */
+/* General styling for the toggle button */
+.jfx-toggle-button {
+    -fx-padding: 0;
+}
+
+/* Specific styling for the sliding thumb and track in both states */
+.jfx-toggle-button .jfx-toggle-node {
+    -fx-background-radius: 15; /* Optional: Adjust as per your design needs */
+    -fx-background-color: transparent; /* Makes background transparent */
+}
+
+.jfx-toggle-button:selected .jfx-toggle-node {
+    -fx-background-color: #006AEE; /* Your specified blue color for "On" state */
+}
+
+.jfx-toggle-button .jfx-rippler {
+    -fx-rippler-fill: transparent; /* Remove the ripple effect on click */
+}
+
+.jfx-toggle-button:selected .jfx-rippler {
+    -fx-rippler-fill: #006AEE; /* Consistent with the toggle's "On" state color */
+}
+
+.jfx-toggle-button .jfx-toggle-color {
+    -fx-background-color: #cce4ff; /* Lighter blue for the track */
+}
+
+.jfx-toggle-button:selected .jfx-toggle-color {
+    -fx-background-color: #006AEE; /* ON state color for the track */
 }

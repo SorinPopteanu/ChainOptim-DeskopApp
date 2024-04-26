@@ -13,8 +13,14 @@ public class NotificationSettings {
     private boolean clientOrdersOn;
     private boolean factoryInventoryOn;
     private boolean warehouseInventoryOn;
+    private boolean emailSupplierOrdersOn;
+    private boolean emailClientOrdersOn;
+    private boolean emailFactoryInventoryOn;
+    private boolean emailWarehouseInventoryOn;
 
     public NotificationSettings deepCopy() {
-        return new NotificationSettings(supplierOrdersOn, clientOrdersOn, factoryInventoryOn, warehouseInventoryOn);
+        return new NotificationSettings(
+                supplierOrdersOn, clientOrdersOn, factoryInventoryOn, warehouseInventoryOn,
+                emailSupplierOrdersOn, emailClientOrdersOn, emailFactoryInventoryOn, emailWarehouseInventoryOn);
     }
 }

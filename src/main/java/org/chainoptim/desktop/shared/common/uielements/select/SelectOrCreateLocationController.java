@@ -4,9 +4,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
+import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.features.location.dto.CreateLocationDTO;
 import org.chainoptim.desktop.shared.features.location.model.Location;
 import org.chainoptim.desktop.shared.features.location.service.LocationService;
+import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -28,19 +31,19 @@ public class SelectOrCreateLocationController {
     @FXML
     private VBox createLocationForm;
     @FXML
-    private TextField addressField;
+    private FormField<String> addressField;
     @FXML
-    private TextField cityField;
+    private FormField<String> cityField;
     @FXML
-    private TextField stateField;
+    private FormField<String> stateField;
     @FXML
-    private TextField countryField;
+    private FormField<String> countryField;
     @FXML
-    private TextField zipCodeField;
+    private FormField<String> zipCodeField;
     @FXML
-    private TextField latitudeField;
+    private FormField<Double> latitudeField;
     @FXML
-    private TextField longitudeField;
+    private FormField<Double> longitudeField;
 
     private final ToggleGroup locationToggleGroup = new ToggleGroup();
 
@@ -61,7 +64,19 @@ public class SelectOrCreateLocationController {
             toggleVisibilityBasedOnSelection();
         });
 
+        initializeFormFields();
+
         loadLocations();
+    }
+
+    private void initializeFormFields() {
+        addressField.initialize(String::new, "Address", false, null, "Your input is not valid.");
+        cityField.initialize(String::new, "City", false, null, "Your input is not valid.");
+        stateField.initialize(String::new, "State", false, null, "Your input is not valid.");
+        countryField.initialize(String::new, "Country", false, null, "Your input is not valid.");
+        zipCodeField.initialize(String::new, "Zip Code", false, null, "Your input is not valid.");
+        latitudeField.initialize(Double::parseDouble, "Latitude", false, null, "Your input is not a number.");
+        longitudeField.initialize(Double::parseDouble, "Longitude", false, null, "Your input is not a number.");
     }
 
     private void loadLocations() {
@@ -96,19 +111,19 @@ public class SelectOrCreateLocationController {
                 .exceptionally(this::handleLocationsException);
     }
 
-    private Optional<List<Location>> handleLocationsResponse(Optional<List<Location>> locationsOptional) {
+    private Result<List<Location>> handleLocationsResponse(Result<List<Location>> result) {
         Platform.runLater(() -> {
-            if (locationsOptional.isEmpty()) {
+            if (result.getError() != null) {
                 return;
             }
-            locationComboBox.getItems().setAll(locationsOptional.get());
+            locationComboBox.getItems().setAll(result.getData());
 
         });
-        return locationsOptional;
+        return result;
     }
 
-    private Optional<List<Location>> handleLocationsException(Throwable ex) {
-        return Optional.empty();
+    private Result<List<Location>> handleLocationsException(Throwable ex) {
+        return new Result<>();
     }
 
     private void toggleVisibilityBasedOnSelection() {
@@ -128,34 +143,17 @@ public class SelectOrCreateLocationController {
 
     }
 
-    public CreateLocationDTO getNewLocationDTO() {
+    public CreateLocationDTO getNewLocationDTO() throws ValidationException {
         CreateLocationDTO locationDTO = new CreateLocationDTO();
         locationDTO.setOrganizationId(organizationId);
-        locationDTO.setAddress(addressField.getText());
-        locationDTO.setCity(cityField.getText());
-        locationDTO.setState(stateField.getText());
-        locationDTO.setCountry(countryField.getText());
-        locationDTO.setZipCode(zipCodeField.getText());
+        locationDTO.setAddress(addressField.handleSubmit());
+        locationDTO.setCity(cityField.handleSubmit());
+        locationDTO.setState(stateField.handleSubmit());
+        locationDTO.setCountry(countryField.handleSubmit());
+        locationDTO.setZipCode(zipCodeField.handleSubmit());
+        locationDTO.setLatitude(latitudeField.handleSubmit());
+        locationDTO.setLongitude(longitudeField.handleSubmit());
 
-        String latitudeStr = latitudeField.getText().trim();
-        if (!latitudeStr.isEmpty()) {
-            try {
-                double latitude = Double.parseDouble(latitudeStr);
-                locationDTO.setLatitude(latitude);
-            } catch (NumberFormatException e) {
-                System.out.println("Error parsing longitude");
-            }
-        }
-
-        String longitudeStr = longitudeField.getText().trim();
-        if (!longitudeStr.isEmpty()) {
-            try {
-                double longitude = Double.parseDouble(longitudeStr);
-                locationDTO.setLongitude(longitude);
-            } catch (NumberFormatException e) {
-                System.out.println("Error parsing longitude");
-            }
-        }
         return locationDTO;
     }
 

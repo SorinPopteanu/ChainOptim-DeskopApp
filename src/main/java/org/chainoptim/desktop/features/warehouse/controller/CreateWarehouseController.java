@@ -7,16 +7,20 @@ import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.warehouse.dto.CreateWarehouseDTO;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
+import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
+import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
@@ -24,35 +28,38 @@ import java.util.ResourceBundle;
 
 public class CreateWarehouseController implements Initializable {
 
+    // Services
     private final WarehouseWriteService warehouseWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+    private final ToastManager toastManager;
     private final FallbackManager fallbackManager;
 
+    // Controllers
     private SelectOrCreateLocationController selectOrCreateLocationController;
 
+    // FXML
     @FXML
     private StackPane fallbackContainer;
     @FXML
     private StackPane selectOrCreateLocationContainer;
     @FXML
-    private TextField nameField;
-    @FXML
-    private TextField locationIdField;
+    private FormField<String> nameFormField;
 
     @Inject
     public CreateWarehouseController(
             WarehouseWriteService warehouseWriteService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
+            ToastManager toastManager,
             FallbackManager fallbackManager,
-            CommonViewsLoader commonViewsLoader
-    ) {
+            CommonViewsLoader commonViewsLoader) {
         this.warehouseWriteService = warehouseWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.commonViewsLoader = commonViewsLoader;
+        this.toastManager = toastManager;
         this.fallbackManager = fallbackManager;
     }
 
@@ -60,14 +67,16 @@ public class CreateWarehouseController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         selectOrCreateLocationController = commonViewsLoader.loadSelectOrCreateLocation(selectOrCreateLocationContainer);
-        selectOrCreateLocationController.initialize();
+
+        initializeFormFields();
+    }
+
+    private void initializeFormFields() {
+        nameFormField.initialize(String::new, "Name", true, null, "Your input is not valid.");
     }
 
     @FXML
     private void handleSubmit() {
-        fallbackManager.reset();
-        fallbackManager.setLoading(true);
-
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser == null) {
             return;
@@ -75,42 +84,59 @@ public class CreateWarehouseController implements Initializable {
         Integer organizationId = currentUser.getOrganization().getId();
 
         CreateWarehouseDTO warehouseDTO = getCreateWarehouseDTO(organizationId);
-        System.out.println(warehouseDTO);
+        if (warehouseDTO == null) return;
+
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
 
         warehouseWriteService.createWarehouse(warehouseDTO)
                 .thenApply(this::handleCreateWarehouseResponse)
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return new Result<>();
-                });
+                .exceptionally(this::handleCreateWarehouseException);
+    }
+
+    private CreateWarehouseDTO getCreateWarehouseDTO(Integer organizationId) {
+        CreateWarehouseDTO warehouseDTO = new CreateWarehouseDTO();
+        try {
+            warehouseDTO.setName(nameFormField.handleSubmit());
+            warehouseDTO.setOrganizationId(organizationId);
+            if (selectOrCreateLocationController.isCreatingNewLocation()) {
+                warehouseDTO.setCreateLocation(true);
+                warehouseDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
+            } else {
+                warehouseDTO.setCreateLocation(false);
+                warehouseDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
+            }
+        } catch (ValidationException e) {
+            return null;
+        }
+
+        return warehouseDTO;
     }
 
     private Result<Warehouse> handleCreateWarehouseResponse(Result<Warehouse> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
-                fallbackManager.setErrorMessage("Failed to create new warehouse.");
+                toastManager.addToast(new ToastInfo(
+                        "Error", "Failed to create warehouse.", OperationOutcome.ERROR));
                 return;
             }
             Warehouse warehouse = result.getData();
-            fallbackManager.setLoading(false);
+            toastManager.addToast(new ToastInfo(
+                    "Success", "Warehouse created successfully.", OperationOutcome.SUCCESS));
+
             currentSelectionService.setSelectedId(warehouse.getId());
             navigationService.switchView("Warehouse?id=" + warehouse.getId(), true);
         });
         return result;
     }
 
-    private CreateWarehouseDTO getCreateWarehouseDTO(Integer organizationId) {
-        CreateWarehouseDTO warehouseDTO = new CreateWarehouseDTO();
-        warehouseDTO.setName(nameField.getText());
-        warehouseDTO.setOrganizationId(organizationId);
-        if (selectOrCreateLocationController.isCreatingNewLocation()) {
-            warehouseDTO.setCreateLocation(true);
-            warehouseDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
-        } else {
-            warehouseDTO.setCreateLocation(false);
-            warehouseDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
-        }
-
-        return warehouseDTO;
+    private Result<Warehouse> handleCreateWarehouseException(Throwable ex) {
+        Platform.runLater(() ->
+            toastManager.addToast(new ToastInfo(
+                    "Error", "Failed to create warehouse.", OperationOutcome.ERROR)));
+        return new Result<>();
     }
+
 }
+

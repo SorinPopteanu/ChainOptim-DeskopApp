@@ -29,3 +29,9 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
+
+.form-error-message {
+    -fx-text-fill: #B22222;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}

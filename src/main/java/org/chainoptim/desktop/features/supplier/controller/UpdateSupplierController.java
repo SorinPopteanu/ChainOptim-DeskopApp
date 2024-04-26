@@ -7,39 +7,49 @@ import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
 import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
+import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
+import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class UpdateSupplierController implements Initializable {
 
+    // Services
     private final SupplierService supplierService;
     private final SupplierWriteService supplierWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+    private final ToastManager toastManager;
     private final FallbackManager fallbackManager;
 
-    private Supplier supplier;
-
+    // Controllers
     private SelectOrCreateLocationController selectOrCreateLocationController;
 
+    // State
+    private Supplier supplier;
+
+    // FXML
     @FXML
     private StackPane fallbackContainer;
     @FXML
     private StackPane selectOrCreateLocationContainer;
     @FXML
-    private TextField nameField;
+    private FormField<String> nameFormField;
 
     @Inject
     public UpdateSupplierController(
@@ -47,14 +57,15 @@ public class UpdateSupplierController implements Initializable {
             SupplierWriteService supplierWriteService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
-            FallbackManager fallbackManager,
-            CommonViewsLoader commonViewsLoader
-    ) {
+            CommonViewsLoader commonViewsLoader,
+            ToastManager toastManager,
+            FallbackManager fallbackManager) {
         this.supplierService = supplierService;
         this.supplierWriteService = supplierWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.commonViewsLoader = commonViewsLoader;
+        this.toastManager = toastManager;
         this.fallbackManager = fallbackManager;
     }
 
@@ -62,7 +73,6 @@ public class UpdateSupplierController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         selectOrCreateLocationController = commonViewsLoader.loadSelectOrCreateLocation(selectOrCreateLocationContainer);
-        selectOrCreateLocationController.initialize();
         loadSupplier(currentSelectionService.getSelectedId());
     }
 
@@ -84,9 +94,10 @@ public class UpdateSupplierController implements Initializable {
             supplier = result.getData();
             fallbackManager.setLoading(false);
 
-            nameField.setText(supplier.getName());
+            initializeFormFields();
             selectOrCreateLocationController.setSelectedLocation(supplier.getLocation());
         });
+
         return result;
     }
 
@@ -95,28 +106,54 @@ public class UpdateSupplierController implements Initializable {
         return new Result<>();
     }
 
+    private void initializeFormFields() {
+        nameFormField.initialize(String::new, "Name", true, supplier.getName(), "Your input is not valid");
+    }
+
     @FXML
     private void handleSubmit() {
+        UpdateSupplierDTO supplierDTO = getUpdateSupplierDTO();
+        if (supplierDTO == null) return;
+        System.out.println(supplierDTO);
+
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        UpdateSupplierDTO supplierDTO = getUpdateSupplierDTO();
-
         supplierWriteService.updateSupplier(supplierDTO)
                 .thenApply(this::handleUpdateSupplierResponse)
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return new Result<>();
-                });
+                .exceptionally(this::handleUpdateSupplierException);
+    }
+
+    private UpdateSupplierDTO getUpdateSupplierDTO() {
+        UpdateSupplierDTO supplierDTO = new UpdateSupplierDTO();
+        supplierDTO.setId(supplier.getId());
+        try {
+            supplierDTO.setName(nameFormField.handleSubmit());
+
+            if (selectOrCreateLocationController.isCreatingNewLocation()) {
+                supplierDTO.setCreateLocation(true);
+                supplierDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
+            } else {
+                supplierDTO.setCreateLocation(false);
+                supplierDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
+            }
+        } catch (ValidationException e) {
+            return null;
+        }
+
+        return supplierDTO;
     }
 
     private Result<Supplier> handleUpdateSupplierResponse(Result<Supplier> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
-                fallbackManager.setErrorMessage("Failed to create supplier.");
+                toastManager.addToast(new ToastInfo(
+                        "Error", "Failed to update supplier.", OperationOutcome.ERROR));
                 return;
             }
-            fallbackManager.setLoading(false);
+            toastManager.addToast(new ToastInfo(
+                    "Success", "Supplier updated successfully.", OperationOutcome.SUCCESS));
 
             // Manage navigation, invalidating previous supplier cache
             Supplier updatedSupplier = result.getData();
@@ -128,20 +165,10 @@ public class UpdateSupplierController implements Initializable {
         return result;
     }
 
-    private UpdateSupplierDTO getUpdateSupplierDTO() {
-        UpdateSupplierDTO supplierDTO = new UpdateSupplierDTO();
-        supplierDTO.setId(supplier.getId());
-        supplierDTO.setName(nameField.getText());
-
-        if (selectOrCreateLocationController.isCreatingNewLocation()) {
-            supplierDTO.setCreateLocation(true);
-            supplierDTO.setLocation(selectOrCreateLocationController.getNewLocationDTO());
-        } else {
-            supplierDTO.setCreateLocation(false);
-            supplierDTO.setLocationId(selectOrCreateLocationController.getSelectedLocation().getId());
-        }
-
-        return supplierDTO;
+    private Result<Supplier> handleUpdateSupplierException(Throwable ex) {
+        Platform.runLater(() -> toastManager.addToast(new ToastInfo(
+                "An error occurred.", "Failed to update supplier.", OperationOutcome.ERROR)));
+        return new Result<>();
     }
 }
 
