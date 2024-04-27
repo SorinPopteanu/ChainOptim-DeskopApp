@@ -2,11 +2,13 @@ package org.chainoptim.desktop.core.main.model;
 
 import org.chainoptim.desktop.core.main.service.NavigationService;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Getter
 public class SidebarNavigationConfiguration {
@@ -28,12 +30,15 @@ public class SidebarNavigationConfiguration {
                     .subsections(List.of(
                             SidebarSubsection.builder()
                                     .name("Products")
+                                    .key("Products")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Stages")
+                                    .key("Stages")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Components")
+                                    .key("Components")
                                     .build()
                     ))
                     .build(),
@@ -43,15 +48,19 @@ public class SidebarNavigationConfiguration {
                     .subsections(List.of(
                             SidebarSubsection.builder()
                                     .name("Suppliers")
+                                    .key("Suppliers")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Supplier Orders")
+                                    .key("Supplier Orders")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Supplier Shipments")
+                                    .key("Supplier Shipments")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Performances")
+                                    .key("Supplier Performances")
                                     .build()
                     ))
                     .build(),
@@ -61,15 +70,19 @@ public class SidebarNavigationConfiguration {
                     .subsections(List.of(
                             SidebarSubsection.builder()
                                     .name("Factories")
+                                    .key("Factories")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Factory Stages")
+                                    .key("Factory Stages")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Factory Inventory")
+                                    .key("Factory Inventory")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Performances")
+                                    .key("Factory Performances")
                                     .build()
                     ))
                     .build(),
@@ -79,12 +92,15 @@ public class SidebarNavigationConfiguration {
                     .subsections(List.of(
                             SidebarSubsection.builder()
                                     .name("Warehouses")
+                                    .key("Warehouses")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Warehouse Inventory")
+                                    .key("Warehouse Inventory")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Evaluations")
+                                    .key("Warehouse Evaluations")
                                     .build()
                     ))
                     .build(),
@@ -94,15 +110,19 @@ public class SidebarNavigationConfiguration {
                     .subsections(List.of(
                             SidebarSubsection.builder()
                                     .name("Clients")
+                                    .key("Clients")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Client Orders")
+                                    .key("Client Orders")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Client Shipments")
+                                    .key("Client Shipments")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Evaluations")
+                                    .key("Client Evaluations")
                                     .build()
                     ))
                     .build(),
@@ -120,10 +140,19 @@ public class SidebarNavigationConfiguration {
             ));
 
             section.getSubsections().forEach(subsection -> {
+                subsection.setSelectedProperty(new SimpleBooleanProperty(false));
                 subsection.setIconPath(ICONS_PATH + BUTTON_ICON_MAP.get(subsection.getName()));
-                subsection.setAction(() -> navigationService.switchView(
-                        subsection.getName(), false
-                ));
+                subsection.setAction(() -> {
+                    navigationService.switchView(
+                            subsection.getName(), false
+                    );
+                    for (SidebarSubsection otherSubsection : section.getSubsections()) {
+                        if (!Objects.equals(otherSubsection.getKey(), subsection.getKey())) {
+                            otherSubsection.setSelected(false);
+                        }
+                    }
+                    subsection.setSelected(true);
+                });
             });
         }
 

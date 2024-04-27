@@ -16,7 +16,7 @@
     </HBox>
 
     <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" styleClass="sidebar-scrollpane">
-        <VBox fx:id="buttonContainer" styleClass="sidebar-inner-container" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <VBox fx:id="buttonContainer" styleClass="sidebar-inner-container">
             <!-- Navigation buttons -->
         </VBox>
     </ScrollPane>

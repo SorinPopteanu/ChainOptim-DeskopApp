@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SidebarSection {
     private String name;
+    private String key;
     private String iconPath;
     private Runnable action;
 

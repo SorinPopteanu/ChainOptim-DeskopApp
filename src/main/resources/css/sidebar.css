@@ -9,7 +9,6 @@
 .sidebar-inner-container {
     -fx-background-color: #171717;
     -fx-padding: 0px 16px 16px 16px;
-    -fx-spacing: 16px;
 }
 
 .sidebar-inner-container-collapsed {
@@ -41,13 +40,16 @@
     -fx-text-fill: #dedede;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-padding: 10px;
     -fx-border-radius: 5px;
     -fx-min-height: 40;
     -fx-max-height: 48;
     -fx-alignment: baseline-left;
     -fx-graphic-text-gap: 20px;
     -fx-cursor: hand;
+}
+
+.sidebar-subsection {
+    -fx-padding: 6px 12px 0px 12px;
 }
 
 .sidebar-subbutton {
@@ -64,17 +66,26 @@
     -fx-cursor: hand;
 }
 
-.sidebar-subbutton:hover {
-    -fx-background-color: #39393b;
+.sidebar-subbutton-selected {
+    -fx-background-color: #171717;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 0px 20px;
+    -fx-border-radius: 5px;
+    -fx-min-height: 40;
+    -fx-max-height: 48;
+    -fx-alignment: baseline-left;
+    -fx-graphic-text-gap: 20px;
+    -fx-cursor: hand;
 }
 
 .sidebar-toggle-button {
     -fx-background-color: #171717;
-    -fx-text-fill: #dedede;
+    -fx-text-fill: #cdcdcd;
     -fx-padding: 9px;
     -fx-cursor: hand;
 }
-
 
 /* Scrollpane */
 .sidebar-scrollpane {

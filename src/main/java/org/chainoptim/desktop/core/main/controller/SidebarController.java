@@ -9,6 +9,7 @@ import org.chainoptim.desktop.core.main.service.SceneManager;
 
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
@@ -21,10 +22,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Controller for Sidebar
@@ -40,7 +38,7 @@ public class SidebarController {
 
     // State
     private final List<Button> navigationButtons = new ArrayList<>();
-    private final List<Button> toggleButtons = new ArrayList<>();
+    private final Map<String, Button> toggleButtons = new HashMap<>(); // Key: section name
 
     // Constants
     private final List<String> orderedKeys = List.of("Overview", "Organization", "Products", "Factories", "Warehouses", "Suppliers", "Clients", "Settings");
@@ -106,21 +104,21 @@ public class SidebarController {
 
     private void createSidebarButtons() {
         SidebarSection[] sections = SidebarNavigationConfiguration.getSidebarSections(navigationService);
-        for (int i = 0; i < sections.length; i++) {
-            SidebarSection section = sections[i];
-            int finalI = i;
-
-            VBox sectionVBox = new VBox(8);
+        for (SidebarSection section : sections) {
+            VBox sectionVBox = new VBox();
+            sectionVBox.setStyle("-fx-padding: 8px 0px;");
 
             // Main section
             HBox mainHBox = new HBox();
+            mainHBox.setAlignment(Pos.CENTER_LEFT);
 
             Button button = getSidebarButton(section);
             navigationButtons.add(button);
             mainHBox.getChildren().add(button);
 
             if (section.getSubsections().isEmpty()) {
-                buttonContainer.getChildren().add(mainHBox);
+                sectionVBox.getChildren().add(mainHBox);
+                buttonContainer.getChildren().add(sectionVBox);
                 continue;
             }
 
@@ -128,23 +126,26 @@ public class SidebarController {
             HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
             mainHBox.getChildren().add(spacer);
 
+            // Subsection toggling
+            VBox subSectionVBox = new VBox();
+            toggleNodeVisibility(subSectionVBox, section.isExpanded());
+            subSectionVBox.getStyleClass().add("sidebar-subsection");
+
             Button toggleSectionButton = new Button();
             toggleSectionButton.setGraphic(createImageView(caretDownIcon));
             toggleSectionButton.getStyleClass().add("sidebar-toggle-button");
-            toggleSectionButton.setOnAction(e -> toggleSection(section, finalI));
-            toggleButtons.add(toggleSectionButton);
+            toggleSectionButton.setOnAction(e -> toggleSection(subSectionVBox, section));
+            toggleButtons.put(section.getName(), toggleSectionButton);
             mainHBox.getChildren().add(toggleSectionButton);
-
-            sectionVBox.getChildren().add(mainHBox);
 
             // Subsections
             for (SidebarSubsection subsection : section.getSubsections()) {
                 Button subsectionButton = getSidebarSubButton(subsection);
-                toggleNodeVisibility(subsectionButton, section.isExpanded());
                 navigationButtons.add(subsectionButton);
-                sectionVBox.getChildren().add(subsectionButton);
+                subSectionVBox.getChildren().add(subsectionButton);
             }
 
+            sectionVBox.getChildren().addAll(mainHBox, subSectionVBox);
             buttonContainer.getChildren().add(sectionVBox);
         }
     }
@@ -163,25 +164,22 @@ public class SidebarController {
     private Button getSidebarSubButton(SidebarSubsection subSection) {
         Button button = new Button(subSection.getName());
         setButtonGraphic(button, subSection.getIconPath());
-        button.getStyleClass().add("sidebar-subbutton");
+        button.getStyleClass().add(subSection.isSelected() ? "sidebar-subbutton-selected" : "sidebar-subbutton");
+        subSection.getIsSelectedProperty().addListener((observable, oldValue, newValue) -> {
+            button.getStyleClass().setAll(newValue ? "sidebar-subbutton-selected" : "sidebar-subbutton");
+        });
         button.setMaxWidth(Double.MAX_VALUE);
         button.setOnAction(e -> subSection.getAction().run());
+        button.setUserData(subSection.getKey());
 
         return button;
     }
 
-    private void toggleSection(SidebarSection section, int index) {
+    private void toggleSection(VBox subSectionVBox, SidebarSection section) {
         section.setExpanded(!section.isExpanded());
-        Button correspondingToggleButton = toggleButtons.get(index);
+        toggleNodeVisibility(subSectionVBox, section.isExpanded());
+        Button correspondingToggleButton = toggleButtons.get(section.getName());
         correspondingToggleButton.setGraphic(createImageView(section.isExpanded() ? caretUpIcon : caretDownIcon));
-
-        for (SidebarSubsection subsection : section.getSubsections()) {
-            Button correspondingButton = navigationButtons.stream()
-                    .filter(button -> button.getText().equals(subsection.getName()))
-                    .findFirst().orElse(null);
-            if (correspondingButton == null) continue;
-            toggleNodeVisibility(correspondingButton, section.isExpanded());
-        }
     }
 
     public void setButtonGraphic(Button button, String imagePath){
