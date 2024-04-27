@@ -7,6 +7,7 @@
 }
 
 .sidebar-inner-container {
+    -fx-background-color: #171717;
     -fx-padding: 0px 16px 16px 16px;
     -fx-spacing: 16px;
 }
@@ -14,6 +15,10 @@
 .sidebar-inner-container-collapsed {
     -fx-padding: 0px 12px 16px 12px;
     -fx-spacing: 16px;
+}
+
+.sidebar-scrollpane {
+    -fx-border-color: #171717;
 }
 
 .sidebar-title-container {
@@ -33,9 +38,9 @@
 
 .sidebar-button {
     -fx-background-color: #171717;
-    -fx-text-fill: white;
+    -fx-text-fill: #dedede;
     -fx-font-size: 16px;
-    -fx-font-weight: 600;
+    -fx-font-weight: bold;
     -fx-padding: 10px;
     -fx-border-radius: 5px;
     -fx-min-height: 40;
@@ -45,6 +50,68 @@
     -fx-cursor: hand;
 }
 
-.sidebar-button:hover {
+.sidebar-subbutton {
+    -fx-background-color: #171717;
+    -fx-text-fill: #dedede;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 0px 20px;
+    -fx-border-radius: 5px;
+    -fx-min-height: 40;
+    -fx-max-height: 48;
+    -fx-alignment: baseline-left;
+    -fx-graphic-text-gap: 20px;
+    -fx-cursor: hand;
+}
+
+.sidebar-subbutton:hover {
     -fx-background-color: #39393b;
+}
+
+.sidebar-toggle-button {
+    -fx-background-color: #171717;
+    -fx-text-fill: #dedede;
+    -fx-padding: 9px;
+    -fx-cursor: hand;
+}
+
+
+/* Scrollpane */
+.sidebar-scrollpane {
+    -fx-background-color: #171717;
+    -fx-border-color: transparent;
+}
+
+.sidebar-scrollpane .viewport {
+    -fx-background-color: #171717;
+}
+
+.sidebar-scrollpane .scroll-bar:vertical {
+    -fx-min-width: 5px;
+    -fx-pref-width: 5px;
+    -fx-max-width: 5px;
+    -fx-background-color: #171717;
+}
+
+.sidebar-scrollpane .scroll-bar:vertical .thumb {
+    -fx-background-color: #d1d1d1;
+    -fx-background-insets: 0, 0, 0, 0;
+    -fx-background-radius: 4px;
+}
+
+.sidebar-scrollpane .scroll-bar:vertical .track {
+    -fx-min-width: 5px;
+    -fx-pref-width: 5px;
+    -fx-max-width: 5px;
+    -fx-background-color: #171717;
+}
+
+.sidebar-scrollpane .scroll-bar .increment-button,
+.sidebar-scrollpane .scroll-bar .decrement-button {
+    -fx-background-color: #171717;
+}
+
+.sidebar-scrollpane .scroll-bar .increment-arrow,
+.sidebar-scrollpane .scroll-bar .decrement-arrow {
+    -fx-fill: #d1d1d1;
 }

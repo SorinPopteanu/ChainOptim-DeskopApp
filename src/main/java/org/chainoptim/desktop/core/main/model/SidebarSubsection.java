@@ -1,11 +1,15 @@
 package org.chainoptim.desktop.core.main.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
 @AllArgsConstructor
-@Getter
-public class SidebarButton {
+@NoArgsConstructor
+public class SidebarSubsection {
     private String name;
     private String iconPath;
     private Runnable action;

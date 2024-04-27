@@ -1,18 +1,23 @@
 package org.chainoptim.desktop.core.main.controller;
 
-import org.chainoptim.desktop.core.main.model.SidebarButton;
+import org.chainoptim.desktop.core.main.model.SidebarNavigationConfiguration;
+import org.chainoptim.desktop.core.main.model.SidebarSection;
+import org.chainoptim.desktop.core.main.model.SidebarSubsection;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
 import org.chainoptim.desktop.core.main.service.SceneManager;
 
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 
@@ -28,31 +33,18 @@ import java.util.Objects;
  */
 public class SidebarController {
 
+    // Services
     @Setter
     private NavigationService navigationService;
     private final AuthenticationService authenticationService;
 
     // State
-    private final List<SidebarButton> navigationButtons = new ArrayList<>();
+    private final List<Button> navigationButtons = new ArrayList<>();
+    private final List<Button> toggleButtons = new ArrayList<>();
 
     // Constants
-    private static final String ICONS_PATH = "/img/";
     private final List<String> orderedKeys = List.of("Overview", "Organization", "Products", "Factories", "Warehouses", "Suppliers", "Clients", "Settings");
-    private final Map<String, String> buttonIconMap = Map.ofEntries(
-            Map.entry("Overview", "globe-solid.png"),
-            Map.entry("Organization", "building-solid.png"),
-            Map.entry("Products", "box-solid.png"),
-            Map.entry("Factories", "industry-solid.png"),
-            Map.entry("Warehouses", "warehouse-solid.png"),
-            Map.entry("Suppliers", "truck-arrow-right-solid.png"),
-            Map.entry("Clients", "universal-access-solid.png"),
-            Map.entry("Settings", "gear-solid.png"),
 
-            Map.entry("Account", "user-solid.png"),
-            Map.entry("Back", "arrow-left-solid.png"),
-            Map.entry("Toggle", "bars-solid.png"),
-            Map.entry("Logout", "right-from-bracket-solid.png")
-    );
     private static final double COLLAPSED_WIDTH = 64;
     private static final double EXPANDED_WIDTH = 256;
     private boolean isSidebarMinimized = false;
@@ -63,6 +55,8 @@ public class SidebarController {
     @FXML
     private HBox dashboardHBox;
     @FXML
+    private ScrollPane scrollPane;
+    @FXML
     private VBox buttonContainer;
     @FXML
     private Button toggleButton;
@@ -72,6 +66,10 @@ public class SidebarController {
     private VBox bottomContainer;
     @FXML
     private Button logoutButton;
+
+    // Icons
+    private Image caretUpIcon;
+    private Image caretDownIcon;
 
     @Inject
     public SidebarController(NavigationService navigationService, AuthenticationService authenticationService) {
@@ -84,47 +82,119 @@ public class SidebarController {
     public void initialize() {
         sidebar.setMinWidth(EXPANDED_WIDTH);
         sidebar.setMaxWidth(EXPANDED_WIDTH);
-        initializeNavigationButtons();
+
+        scrollPane.getStyleClass().add("edge-to-edge");
+
+        initializeIcons();
         createSidebarButtons();
 
         // Navigate to Overview
         navigationService.switchView("Overview", true);
 
         // Back, Toggle and Logout buttons
-        setButtonGraphic(backButton, ICONS_PATH + buttonIconMap.get("Back"));
+        setButtonGraphic(backButton, SidebarNavigationConfiguration.getButtonIconPath("Back"));
         backButton.setOnAction(e -> navigationService.goBack());
-        setButtonGraphic(toggleButton, ICONS_PATH + buttonIconMap.get("Toggle"));
+        setButtonGraphic(toggleButton, SidebarNavigationConfiguration.getButtonIconPath("Toggle"));
         toggleButton.setOnAction(e -> toggleSidebar());
-        setButtonGraphic(logoutButton, ICONS_PATH + buttonIconMap.get("Logout"));
+        setButtonGraphic(logoutButton, SidebarNavigationConfiguration.getButtonIconPath("Logout"));
     }
 
-    private void initializeNavigationButtons() {
-        orderedKeys.forEach(key -> {
-            String iconPath = ICONS_PATH + buttonIconMap.get(key);
-            Runnable action = () -> navigationService.switchView(key, true);
-            navigationButtons.add(new SidebarButton(key, iconPath, action));
-        });
+    private void initializeIcons() {
+        caretUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/caret-up-solid.png")));
+        caretDownIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/caret-down-solid.png")));
     }
 
     private void createSidebarButtons() {
-        navigationButtons.forEach(model -> {
-            Button button = new Button(model.getName());
-            button.setOnAction(e -> model.getAction().run());
-            setButtonGraphic(button, model.getIconPath());
-            button.getStyleClass().add("sidebar-button");
-            button.setStyle("-fx-padding: 10px 18px;");
-            button.setMaxWidth(Double.MAX_VALUE);
-            buttonContainer.getChildren().add(button);
-        });
+        SidebarSection[] sections = SidebarNavigationConfiguration.getSidebarSections(navigationService);
+        for (int i = 0; i < sections.length; i++) {
+            SidebarSection section = sections[i];
+            int finalI = i;
+
+            VBox sectionVBox = new VBox(8);
+
+            // Main section
+            HBox mainHBox = new HBox();
+
+            Button button = getSidebarButton(section);
+            navigationButtons.add(button);
+            mainHBox.getChildren().add(button);
+
+            if (section.getSubsections().isEmpty()) {
+                buttonContainer.getChildren().add(mainHBox);
+                continue;
+            }
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+            mainHBox.getChildren().add(spacer);
+
+            Button toggleSectionButton = new Button();
+            toggleSectionButton.setGraphic(createImageView(caretDownIcon));
+            toggleSectionButton.getStyleClass().add("sidebar-toggle-button");
+            toggleSectionButton.setOnAction(e -> toggleSection(section, finalI));
+            toggleButtons.add(toggleSectionButton);
+            mainHBox.getChildren().add(toggleSectionButton);
+
+            sectionVBox.getChildren().add(mainHBox);
+
+            // Subsections
+            for (SidebarSubsection subsection : section.getSubsections()) {
+                Button subsectionButton = getSidebarSubButton(subsection);
+                toggleNodeVisibility(subsectionButton, section.isExpanded());
+                navigationButtons.add(subsectionButton);
+                sectionVBox.getChildren().add(subsectionButton);
+            }
+
+            buttonContainer.getChildren().add(sectionVBox);
+        }
+    }
+
+    private Button getSidebarButton(SidebarSection section) {
+        Button button = new Button(section.getName());
+        setButtonGraphic(button, section.getIconPath());
+        button.getStyleClass().add("sidebar-button");
+        button.setStyle("-fx-padding: 10px 18px;");
+        button.setMaxWidth(Double.MAX_VALUE);
+        button.setOnAction(e -> section.getAction().run());
+
+        return button;
+    }
+
+    private Button getSidebarSubButton(SidebarSubsection subSection) {
+        Button button = new Button(subSection.getName());
+        setButtonGraphic(button, subSection.getIconPath());
+        button.getStyleClass().add("sidebar-subbutton");
+        button.setMaxWidth(Double.MAX_VALUE);
+        button.setOnAction(e -> subSection.getAction().run());
+
+        return button;
+    }
+
+    private void toggleSection(SidebarSection section, int index) {
+        section.setExpanded(!section.isExpanded());
+        Button correspondingToggleButton = toggleButtons.get(index);
+        correspondingToggleButton.setGraphic(createImageView(section.isExpanded() ? caretUpIcon : caretDownIcon));
+
+        for (SidebarSubsection subsection : section.getSubsections()) {
+            Button correspondingButton = navigationButtons.stream()
+                    .filter(button -> button.getText().equals(subsection.getName()))
+                    .findFirst().orElse(null);
+            if (correspondingButton == null) continue;
+            toggleNodeVisibility(correspondingButton, section.isExpanded());
+        }
     }
 
     public void setButtonGraphic(Button button, String imagePath){
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(16);
-        imageView.setFitWidth(16);
-        button.setGraphic(imageView);
-        button.setGraphicTextGap(10);
+        try {
+            Image image = new Image(getClass().getResourceAsStream(imagePath));
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(16);
+            imageView.setFitWidth(16);
+            button.setGraphic(imageView);
+            button.setGraphicTextGap(10);
+        } catch (Exception e) {
+            System.out.println("Icon not added yet: " + imagePath);
+        }
     }
 
     // Sidebar toggling
@@ -192,5 +262,17 @@ public class SidebarController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private ImageView createImageView(Image image) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(12);
+        imageView.setFitHeight(12);
+        return imageView;
+    }
+
+    private void toggleNodeVisibility(Node node, boolean isVisible) {
+        node.setVisible(isVisible);
+        node.setManaged(isVisible);
     }
 }

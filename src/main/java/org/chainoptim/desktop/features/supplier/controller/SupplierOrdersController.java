@@ -531,12 +531,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private Result<List<SupplierOrder>> handleCreateSupplierOrdersResponse(Result<List<SupplierOrder>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Supplier Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
 
             isNewOrderMode.set(false);
             closeConfirmCreateDialog();
@@ -590,13 +590,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private Result<List<SupplierOrder>> handleUpdateSupplierOrdersResponse(Result<List<SupplierOrder>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Supplier Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
-
 
             isNewOrderMode.set(false);
             closeConfirmUpdateDialog();
@@ -631,12 +630,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private Result<List<Integer>> handleDeleteSupplierOrdersResponse(Result<List<Integer>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Supplier Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
 
             tableView.getItems().removeIf(tableData -> result.getData().contains(tableData.getData().getId()));
 

@@ -534,12 +534,12 @@ public class ClientOrdersController implements DataReceiver<Client> {
 
     private Result<List<ClientOrder>> handleCreateClientOrdersResponse(Result<List<ClientOrder>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Client Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
 
             isNewOrderMode.set(false);
             closeConfirmCreateDialog();
@@ -593,12 +593,12 @@ public class ClientOrdersController implements DataReceiver<Client> {
 
     private Result<List<ClientOrder>> handleUpdateClientOrdersResponse(Result<List<ClientOrder>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Client Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
 
 
             isNewOrderMode.set(false);
@@ -634,12 +634,12 @@ public class ClientOrdersController implements DataReceiver<Client> {
 
     private Result<List<Integer>> handleDeleteClientOrdersResponse(Result<List<Integer>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Client Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
 
             tableView.getItems().removeIf(tableData -> result.getData().contains(tableData.getData().getId()));
 
