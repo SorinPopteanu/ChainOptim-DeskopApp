@@ -38,7 +38,7 @@
 
 .sidebar-button {
     -fx-background-color: #171717;
-    -fx-text-fill: #dedede;
+    -fx-text-fill: #eeeeee;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-border-radius: 5px;
@@ -55,7 +55,7 @@
 
 .sidebar-subbutton {
     -fx-background-color: #171717;
-    -fx-text-fill: #dedede;
+    -fx-text-fill: #eeeeee;
     -fx-font-size: 15px;
     -fx-font-weight: 600;
     -fx-padding: 0px 20px;

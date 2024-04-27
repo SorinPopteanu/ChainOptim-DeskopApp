@@ -39,7 +39,9 @@ public class SidebarController {
 
     // State
     private final List<Button> mainNavigationButtons = new ArrayList<>();
-    private final Map<String, Button> toggleButtons = new HashMap<>(); // Key: section name
+    private final List<Region> sectionRegions = new ArrayList<>();
+    private final Map<String, Button> toggleExpandSectionButtons = new HashMap<>(); // Key: section name
+    private final List<VBox> subsectionVBoxes = new ArrayList<>();
     private boolean isSidebarCollapsed = false;
     private SidebarSection[] sections;
 
@@ -132,6 +134,8 @@ public class SidebarController {
                 subSectionVBox.getChildren().add(subsectionButton);
             }
             sectionVBox.getChildren().addAll(mainHBox, subSectionVBox);
+            subsectionVBoxes.add(subSectionVBox);
+
             navigationButtonContainer.getChildren().add(sectionVBox);
         }
     }
@@ -152,6 +156,7 @@ public class SidebarController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
         mainHBox.getChildren().add(spacer);
+        sectionRegions.add(spacer);
 
         // Subsection toggling
         toggleNodeVisibility(subSectionVBox, section.isExpanded());
@@ -161,7 +166,7 @@ public class SidebarController {
         toggleSectionButton.setGraphic(createImageView(caretDownIcon));
         toggleSectionButton.getStyleClass().add("sidebar-toggle-button");
         toggleSectionButton.setOnAction(e -> toggleSection(subSectionVBox, section));
-        toggleButtons.put(section.getName(), toggleSectionButton);
+        toggleExpandSectionButtons.put(section.getName(), toggleSectionButton);
         mainHBox.getChildren().add(toggleSectionButton);
     }
 
@@ -191,7 +196,7 @@ public class SidebarController {
     private void toggleSection(VBox subSectionVBox, SidebarSection section) {
         section.setExpanded(!section.isExpanded());
         toggleNodeVisibility(subSectionVBox, section.isExpanded());
-        Button correspondingToggleButton = toggleButtons.get(section.getName());
+        Button correspondingToggleButton = toggleExpandSectionButtons.get(section.getName());
         correspondingToggleButton.setGraphic(createImageView(section.isExpanded() ? caretUpIcon : caretDownIcon));
     }
 
@@ -250,24 +255,44 @@ public class SidebarController {
     }
 
     private void toggleSectionVBox(VBox sectionVBox, SidebarSection section, boolean isVisible) {
-        for (Node subSection : sectionVBox.getChildren()) {
-            if (subSection instanceof VBox subSectionVBox) {
-                toggleNodeVisibility(subSectionVBox, isVisible);
-            }
-            if (!(subSection instanceof HBox mainHBox)) return;
-
-            mainHBox.setAlignment(!isVisible ? Pos.CENTER : Pos.CENTER_LEFT);
-            for (Node mainHBoxChild : mainHBox.getChildren()) {
-                if (mainHBoxChild instanceof Button mainNavigationButton && mainNavigationButtons.contains(mainNavigationButton)) {
-                    Tooltip tooltip = new Tooltip(mainNavigationButton.getText());
-                    tooltip.getStyleClass().add("custom-tooltip");
-                    mainNavigationButton.setTooltip(!isVisible ? tooltip : null);
-                    mainNavigationButton.setContentDisplay(!isVisible ? ContentDisplay.GRAPHIC_ONLY : ContentDisplay.LEFT);
-                    continue; // Prevent hiding for main navigation buttons
-                }
-                toggleNodeVisibility(mainHBoxChild, isVisible && section.isExpanded());
-            }
+        for (Button mainNavigationButton : mainNavigationButtons) {
+            Tooltip tooltip = new Tooltip(mainNavigationButton.getText());
+            tooltip.getStyleClass().add("custom-tooltip");
+            mainNavigationButton.setTooltip(!isVisible ? tooltip : null);
+            mainNavigationButton.setContentDisplay(!isVisible ? ContentDisplay.GRAPHIC_ONLY : ContentDisplay.LEFT);
         }
+        for (Region sectionRegion : sectionRegions) {
+            toggleNodeVisibility(sectionRegion, isVisible);
+        }
+        for (Button toggleExpandButton : toggleExpandSectionButtons.values()) {
+            toggleNodeVisibility(toggleExpandButton, isVisible);
+            toggleExpandButton.setGraphic(createImageView(isVisible ? caretDownIcon : caretUpIcon));
+        }
+        for (VBox subsectionVBox : subsectionVBoxes) {
+            toggleNodeVisibility(subsectionVBox, isVisible && section.isExpanded());
+        }
+//        for (Node subSection : sectionVBox.getChildren()) {
+//            if (subSection instanceof VBox subSectionVBox) {
+//                toggleNodeVisibility(subSectionVBox, isVisible);
+//            }
+//            if (!(subSection instanceof HBox mainHBox)) continue;
+//
+//            mainHBox.setAlignment(!isVisible ? Pos.CENTER : Pos.CENTER_LEFT);
+//            for (Node mainHBoxChild : mainHBox.getChildren()) {
+//                if (mainHBoxChild instanceof Button mainNavigationButton && mainNavigationButtons.contains(mainNavigationButton)) {
+//
+//                }
+//                if (mainHBoxChild instanceof Button toggleExpandButton && toggleExpandSectionButtons.containsValue(toggleExpandButton)) {
+//                    toggleNodeVisibility(toggleExpandButton, isVisible);
+//                    continue; // Prevent hiding for toggle buttons
+//                }
+//                if (mainHBoxChild instanceof Region spacer) {
+//                    toggleNodeVisibility(spacer, isVisible);
+//                    continue; // Prevent hiding for spacer
+//                }
+//                toggleNodeVisibility(mainHBoxChild, isVisible && section.isExpanded());
+//            }
+//        }
     }
 
     // Handle logout
