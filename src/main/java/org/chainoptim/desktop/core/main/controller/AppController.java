@@ -2,9 +2,12 @@ package org.chainoptim.desktop.core.main.controller;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
 import javafx.fxml.FXML;
+import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
@@ -40,11 +43,14 @@ public class AppController {
     private final UserSettingsService userSettingsService;
     private final NotificationManager notificationManager;
 
-    @FXML
     private final SidebarController sidebarController;
 
     @FXML
     private StackPane contentArea;
+    @FXML
+    private BorderPane appPane;
+    @FXML
+    private StackPane startUpArea;
 
     @Inject
     public AppController(NavigationService navigationService,
@@ -64,6 +70,7 @@ public class AppController {
     public void initialize() {
         navigationService.setMainContentArea(contentArea);
         sidebarController.setNavigationService(navigationService);
+        loaadStartUpView();
 
         // Load user from JWT token
         User currentUser = TenantContext.getCurrentUser();
@@ -73,6 +80,16 @@ public class AppController {
         if (jwtToken == null) return;
 
         authenticationService.getUsernameFromJWTToken(jwtToken).ifPresent(this::fetchAndSetUser);
+    }
+
+    private void loaadStartUpView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/chainoptim/desktop/core/main/StartUpView.fxml"));
+            loader.setControllerFactory(MainApplication.injector::getInstance);
+            startUpArea.getChildren().add(loader.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void fetchAndSetUser(String username) {
@@ -99,6 +116,8 @@ public class AppController {
                     .thenAccept(result1 -> {
                         if (result1.getError() != null) return;
                         TenantSettingsContext.setCurrentUserSettings(result1.getData());
+                        startUpArea.setVisible(false);
+                        appPane.setVisible(true);
                     });
 
             // Start WebSocket connection

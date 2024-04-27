@@ -135,8 +135,13 @@ public class SidebarNavigationConfiguration {
     public static SidebarSection[] getSidebarSections(NavigationService navigationService) {
         for (SidebarSection section : SECTIONS) {
             section.setIconPath(ICONS_PATH + BUTTON_ICON_MAP.get(section.getName()));
-            section.setAction(() ->
-                    selectSubsection(navigationService, section.getSubsections().getFirst()));
+            section.setAction(() -> {
+                if (section.getSubsections().size() == 0) {
+                    navigationService.switchView(section.getName(), false);
+                } else {
+                    selectSubsection(navigationService, section.getSubsections().getFirst());
+                }
+            });
 
             section.getSubsections().forEach(subsection -> {
                 subsection.setSelectedProperty(new SimpleBooleanProperty(false));
