@@ -9,6 +9,7 @@ import org.chainoptim.desktop.core.main.service.SceneManager;
 
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -37,15 +38,14 @@ public class SidebarController {
     private final AuthenticationService authenticationService;
 
     // State
-    private final List<Button> navigationButtons = new ArrayList<>();
+    private final List<Button> mainNavigationButtons = new ArrayList<>();
     private final Map<String, Button> toggleButtons = new HashMap<>(); // Key: section name
+    private boolean isSidebarCollapsed = false;
+    private SidebarSection[] sections;
 
     // Constants
-    private final List<String> orderedKeys = List.of("Overview", "Organization", "Products", "Factories", "Warehouses", "Suppliers", "Clients", "Settings");
-
     private static final double COLLAPSED_WIDTH = 64;
     private static final double EXPANDED_WIDTH = 256;
-    private boolean isSidebarMinimized = false;
 
     // FXML
     @FXML
@@ -55,7 +55,9 @@ public class SidebarController {
     @FXML
     private ScrollPane scrollPane;
     @FXML
-    private VBox buttonContainer;
+    private VBox mainVBox;
+    @FXML
+    private VBox navigationButtonContainer;
     @FXML
     private Button toggleButton;
     @FXML
@@ -78,17 +80,32 @@ public class SidebarController {
     // Initialization
     @FXML
     public void initialize() {
+        configureSidebar();
+        initializeIcons();
+        initializeOuterButtons();
+        renderSidebarButtons();
+
+        navigationService.switchView("Overview", true);
+    }
+
+    private void configureSidebar() {
         sidebar.setMinWidth(EXPANDED_WIDTH);
         sidebar.setMaxWidth(EXPANDED_WIDTH);
 
         scrollPane.getStyleClass().add("edge-to-edge");
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
-        initializeIcons();
-        createSidebarButtons();
+        scrollPane.getContent().boundsInLocalProperty().addListener((obs, oldBounds, newBounds) ->
+                updateScrollBarVisibility(scrollPane, newBounds));
+    }
 
-        // Navigate to Overview
-        navigationService.switchView("Overview", true);
+    private void initializeIcons() {
+        caretUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/caret-up-solid.png")));
+        caretDownIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/caret-down-solid.png")));
+    }
 
+    private void initializeOuterButtons() {
         // Back, Toggle and Logout buttons
         setButtonGraphic(backButton, SidebarNavigationConfiguration.getButtonIconPath("Back"));
         backButton.setOnAction(e -> navigationService.goBack());
@@ -97,57 +114,55 @@ public class SidebarController {
         setButtonGraphic(logoutButton, SidebarNavigationConfiguration.getButtonIconPath("Logout"));
     }
 
-    private void initializeIcons() {
-        caretUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/caret-up-solid.png")));
-        caretDownIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/caret-down-solid.png")));
-    }
-
-    private void createSidebarButtons() {
-        SidebarSection[] sections = SidebarNavigationConfiguration.getSidebarSections(navigationService);
+    private void renderSidebarButtons() {
+        sections = SidebarNavigationConfiguration.getSidebarSections(navigationService);
         for (SidebarSection section : sections) {
             VBox sectionVBox = new VBox();
             sectionVBox.setStyle("-fx-padding: 8px 0px;");
 
             // Main section
             HBox mainHBox = new HBox();
-            mainHBox.setAlignment(Pos.CENTER_LEFT);
-
-            Button button = getSidebarButton(section);
-            navigationButtons.add(button);
-            mainHBox.getChildren().add(button);
-
-            if (section.getSubsections().isEmpty()) {
-                sectionVBox.getChildren().add(mainHBox);
-                buttonContainer.getChildren().add(sectionVBox);
-                continue;
-            }
-
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-            mainHBox.getChildren().add(spacer);
-
-            // Subsection toggling
             VBox subSectionVBox = new VBox();
-            toggleNodeVisibility(subSectionVBox, section.isExpanded());
-            subSectionVBox.getStyleClass().add("sidebar-subsection");
-
-            Button toggleSectionButton = new Button();
-            toggleSectionButton.setGraphic(createImageView(caretDownIcon));
-            toggleSectionButton.getStyleClass().add("sidebar-toggle-button");
-            toggleSectionButton.setOnAction(e -> toggleSection(subSectionVBox, section));
-            toggleButtons.put(section.getName(), toggleSectionButton);
-            mainHBox.getChildren().add(toggleSectionButton);
+            renderMainHBox(mainHBox, section, sectionVBox, subSectionVBox);
 
             // Subsections
+            if (section.getSubsections().isEmpty()) continue;
             for (SidebarSubsection subsection : section.getSubsections()) {
                 Button subsectionButton = getSidebarSubButton(subsection);
-                navigationButtons.add(subsectionButton);
                 subSectionVBox.getChildren().add(subsectionButton);
             }
-
             sectionVBox.getChildren().addAll(mainHBox, subSectionVBox);
-            buttonContainer.getChildren().add(sectionVBox);
+            navigationButtonContainer.getChildren().add(sectionVBox);
         }
+    }
+
+    private void renderMainHBox(HBox mainHBox, SidebarSection section, VBox sectionVBox, VBox subSectionVBox) {
+        mainHBox.setAlignment(Pos.CENTER_LEFT);
+
+        Button button = getSidebarButton(section);
+        mainNavigationButtons.add(button);
+        mainHBox.getChildren().add(button);
+
+        if (section.getSubsections().isEmpty()) {
+            sectionVBox.getChildren().add(mainHBox);
+            navigationButtonContainer.getChildren().add(sectionVBox);
+            return;
+        }
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+        mainHBox.getChildren().add(spacer);
+
+        // Subsection toggling
+        toggleNodeVisibility(subSectionVBox, section.isExpanded());
+        subSectionVBox.getStyleClass().add("sidebar-subsection");
+
+        Button toggleSectionButton = new Button();
+        toggleSectionButton.setGraphic(createImageView(caretDownIcon));
+        toggleSectionButton.getStyleClass().add("sidebar-toggle-button");
+        toggleSectionButton.setOnAction(e -> toggleSection(subSectionVBox, section));
+        toggleButtons.put(section.getName(), toggleSectionButton);
+        mainHBox.getChildren().add(toggleSectionButton);
     }
 
     private Button getSidebarButton(SidebarSection section) {
@@ -165,12 +180,10 @@ public class SidebarController {
         Button button = new Button(subSection.getName());
         setButtonGraphic(button, subSection.getIconPath());
         button.getStyleClass().add(subSection.isSelected() ? "sidebar-subbutton-selected" : "sidebar-subbutton");
-        subSection.getIsSelectedProperty().addListener((observable, oldValue, newValue) -> {
-            button.getStyleClass().setAll(newValue ? "sidebar-subbutton-selected" : "sidebar-subbutton");
-        });
+        subSection.getIsSelectedProperty().addListener((observable, oldValue, newValue) ->
+            button.getStyleClass().setAll(Boolean.TRUE.equals(newValue) ? "sidebar-subbutton-selected" : "sidebar-subbutton"));
         button.setMaxWidth(Double.MAX_VALUE);
         button.setOnAction(e -> subSection.getAction().run());
-        button.setUserData(subSection.getKey());
 
         return button;
     }
@@ -182,33 +195,21 @@ public class SidebarController {
         correspondingToggleButton.setGraphic(createImageView(section.isExpanded() ? caretUpIcon : caretDownIcon));
     }
 
-    public void setButtonGraphic(Button button, String imagePath){
-        try {
-            Image image = new Image(getClass().getResourceAsStream(imagePath));
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(16);
-            imageView.setFitWidth(16);
-            button.setGraphic(imageView);
-            button.setGraphicTextGap(10);
-        } catch (Exception e) {
-            System.out.println("Icon not added yet: " + imagePath);
-        }
-    }
-
     // Sidebar toggling
     private void toggleSidebar() {
-        if (isSidebarMinimized) {
+        if (isSidebarCollapsed) {
             expandSidebar();
         } else {
             collapseSidebar();
         }
-        isSidebarMinimized = !isSidebarMinimized;
+        isSidebarCollapsed = !isSidebarCollapsed;
     }
 
     private void collapseSidebar() {
         // Reduce width and hide everything but the icons
         sidebar.setMinWidth(COLLAPSED_WIDTH);
         sidebar.setMaxWidth(COLLAPSED_WIDTH);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         dashboardHBox.getStyleClass().setAll("sidebar-title-container-collapsed");
         dashboardHBox.getChildren().forEach(child -> child.setVisible(false));
@@ -216,15 +217,14 @@ public class SidebarController {
         toggleButton.setVisible(true);
         toggleButton.setManaged(true);
 
-        buttonContainer.getStyleClass().setAll("sidebar-inner-container-collapsed");
-        buttonContainer.getChildren().forEach(node -> {
-            if (node instanceof Button button) {
-                Tooltip tooltip = new Tooltip(button.getText());
-                button.setTooltip(tooltip);
-                button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-                button.setStyle("-fx-padding: 10px;");
+        navigationButtonContainer.getStyleClass().setAll("sidebar-inner-container-collapsed");
+        for (int i = 0; i < navigationButtonContainer.getChildren().size(); i++) {
+            Node node = navigationButtonContainer.getChildren().get(i);
+            SidebarSection section = sections[i];
+            if (node instanceof VBox sectionVBox) {
+                toggleSectionVBox(sectionVBox, section, false);
             }
-        });
+        }
         bottomContainer.getStyleClass().setAll("sidebar-inner-container-collapsed");
         logoutButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
     }
@@ -237,16 +237,37 @@ public class SidebarController {
         dashboardHBox.getChildren().forEach(child -> child.setVisible(true));
         dashboardHBox.getChildren().forEach(child -> child.setManaged(true));
 
-        buttonContainer.getStyleClass().setAll("sidebar-inner-container");
-        buttonContainer.getChildren().forEach(node -> {
-            if (node instanceof Button button) {
-                button.setContentDisplay(ContentDisplay.LEFT);
-                button.setTooltip(null);
-                button.setStyle("-fx-padding: 10px 18px;");
+        navigationButtonContainer.getStyleClass().setAll("sidebar-inner-container");
+        for (int i = 0; i < navigationButtonContainer.getChildren().size(); i++) {
+            Node node = navigationButtonContainer.getChildren().get(i);
+            SidebarSection section = sections[i];
+            if (node instanceof VBox sectionVBox) {
+                toggleSectionVBox(sectionVBox, section, true);
             }
-        });
+        }
         bottomContainer.getStyleClass().setAll("sidebar-inner-container");
         logoutButton.setContentDisplay(ContentDisplay.LEFT);
+    }
+
+    private void toggleSectionVBox(VBox sectionVBox, SidebarSection section, boolean isVisible) {
+        for (Node subSection : sectionVBox.getChildren()) {
+            if (subSection instanceof VBox subSectionVBox) {
+                toggleNodeVisibility(subSectionVBox, isVisible);
+            }
+            if (!(subSection instanceof HBox mainHBox)) return;
+
+            mainHBox.setAlignment(!isVisible ? Pos.CENTER : Pos.CENTER_LEFT);
+            for (Node mainHBoxChild : mainHBox.getChildren()) {
+                if (mainHBoxChild instanceof Button mainNavigationButton && mainNavigationButtons.contains(mainNavigationButton)) {
+                    Tooltip tooltip = new Tooltip(mainNavigationButton.getText());
+                    tooltip.getStyleClass().add("custom-tooltip");
+                    mainNavigationButton.setTooltip(!isVisible ? tooltip : null);
+                    mainNavigationButton.setContentDisplay(!isVisible ? ContentDisplay.GRAPHIC_ONLY : ContentDisplay.LEFT);
+                    continue; // Prevent hiding for main navigation buttons
+                }
+                toggleNodeVisibility(mainHBoxChild, isVisible && section.isExpanded());
+            }
+        }
     }
 
     // Handle logout
@@ -262,6 +283,20 @@ public class SidebarController {
         }
     }
 
+    // Utils
+    public void setButtonGraphic(Button button, String imagePath){
+        try {
+            Image image = new Image(getClass().getResourceAsStream(imagePath));
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(16);
+            imageView.setFitWidth(16);
+            button.setGraphic(imageView);
+            button.setGraphicTextGap(10);
+        } catch (Exception e) {
+            System.out.println("Icon not added yet: " + imagePath);
+        }
+    }
+
     private ImageView createImageView(Image image) {
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(12);
@@ -272,5 +307,12 @@ public class SidebarController {
     private void toggleNodeVisibility(Node node, boolean isVisible) {
         node.setVisible(isVisible);
         node.setManaged(isVisible);
+    }
+
+    private void updateScrollBarVisibility(ScrollPane scrollPane, Bounds contentBounds) {
+        boolean verticalScrollNeeded = contentBounds.getHeight() > scrollPane.getViewportBounds().getHeight();
+
+        String thumbStyle = verticalScrollNeeded ? "#d1d1d1" : "transparent";
+        scrollPane.lookupAll(".thumb").forEach(thumb -> thumb.setStyle("-fx-background-color: " + thumbStyle));
     }
 }

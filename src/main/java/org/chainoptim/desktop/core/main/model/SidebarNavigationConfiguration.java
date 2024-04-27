@@ -135,28 +135,32 @@ public class SidebarNavigationConfiguration {
     public static SidebarSection[] getSidebarSections(NavigationService navigationService) {
         for (SidebarSection section : SECTIONS) {
             section.setIconPath(ICONS_PATH + BUTTON_ICON_MAP.get(section.getName()));
-            section.setAction(() -> navigationService.switchView(
-                    section.getSubsections().getFirst().getName(), true
-            ));
+            section.setAction(() ->
+                    selectSubsection(navigationService, section.getSubsections().getFirst()));
 
             section.getSubsections().forEach(subsection -> {
                 subsection.setSelectedProperty(new SimpleBooleanProperty(false));
                 subsection.setIconPath(ICONS_PATH + BUTTON_ICON_MAP.get(subsection.getName()));
-                subsection.setAction(() -> {
-                    navigationService.switchView(
-                            subsection.getName(), false
-                    );
-                    for (SidebarSubsection otherSubsection : section.getSubsections()) {
-                        if (!Objects.equals(otherSubsection.getKey(), subsection.getKey())) {
-                            otherSubsection.setSelected(false);
-                        }
-                    }
-                    subsection.setSelected(true);
-                });
+                subsection.setAction(() ->
+                    selectSubsection(navigationService, subsection));
             });
         }
 
         return SECTIONS;
+    }
+
+    private static void selectSubsection(NavigationService navigationService, SidebarSubsection subsection) {
+        navigationService.switchView(
+                subsection.getName(), false
+        );
+        for (SidebarSection someSection : SECTIONS) {
+            for (SidebarSubsection otherSubsection : someSection.getSubsections()) {
+                if (!Objects.equals(otherSubsection.getKey(), subsection.getKey())) {
+                    otherSubsection.setSelected(false);
+                }
+            }
+        }
+        subsection.setSelected(true);
     }
 
     private static final Map<String, String> BUTTON_ICON_MAP = Map.ofEntries(
