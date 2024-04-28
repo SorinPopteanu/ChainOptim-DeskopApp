@@ -10,6 +10,7 @@ import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.search.model.SearchData;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.TimeUtil;
 
@@ -33,7 +34,7 @@ import java.time.LocalDateTime;
 import java.time.format.*;
 import java.util.*;
 
-public class SupplierPerformanceController implements DataReceiver<Supplier> {
+public class SupplierPerformanceController implements DataReceiver<SearchData<Supplier>> {
 
     // Services
     private final SupplierPerformanceService supplierPerformanceService;
@@ -82,11 +83,11 @@ public class SupplierPerformanceController implements DataReceiver<Supplier> {
     }
 
     @Override
-    public void setData(Supplier supplier) {
+    public void setData(SearchData<Supplier> searchData) {
         setUpInfoLabel();
-        setUpRefreshButton(supplier.getId());
+        setUpRefreshButton(searchData.getData().getId());
         setUpComponentsComboBox();
-        loadSupplierPerformance(supplier.getId(), false);
+        loadSupplierPerformance(searchData.getData().getId(), false);
     }
 
     private void setUpInfoLabel() {

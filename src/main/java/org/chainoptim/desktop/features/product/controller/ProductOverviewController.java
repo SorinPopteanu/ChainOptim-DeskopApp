@@ -133,7 +133,7 @@ public class ProductOverviewController implements DataReceiver<Product> {
 
             entityLabel.setOnMouseClicked(event -> {
                 currentSelectionService.setSelectedId(entityDTO.getId());
-                navigationService.switchView(entityPageKey + "?id=" + entityDTO.getId(), true);
+                navigationService.switchView(entityPageKey + "?id=" + entityDTO.getId(), true, null);
             });
 
             entityFlowPane.getChildren().add(entityLabel);

@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.features.warehouse.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -27,7 +27,6 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class WarehousesController implements Initializable {
@@ -181,6 +180,6 @@ public class WarehousesController implements Initializable {
         currentSelectionService.setSelectedId(warehouseId);
         currentSelectionService.setSelectedPage("Warehouse");
 
-        navigationService.switchView("Warehouse?id=" + warehouseId, true);
+        navigationService.switchView("Warehouse?id=" + warehouseId, true, null);
     }
 }

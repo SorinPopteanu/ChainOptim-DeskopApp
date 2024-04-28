@@ -5,12 +5,12 @@
 <?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.main.controller.ListHeaderController"
+      fx:controller="org.chainoptim.desktop.shared.search.controller.ListHeaderController"
       styleClass="header">
 
     <HBox alignment="CENTER_LEFT" spacing="12" styleClass="list-title-container">
         <Label fx:id="title" styleClass="list-title"/>
-        <InfoLabel fx:id="productInfoLabel"/>
+        <InfoLabel fx:id="featureInfoLabel"/>
     </HBox>
 
     <HBox spacing="16" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" styleClass="toolbar">

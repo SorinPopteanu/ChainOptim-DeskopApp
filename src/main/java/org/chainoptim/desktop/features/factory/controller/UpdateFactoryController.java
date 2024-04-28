@@ -160,7 +160,7 @@ public class UpdateFactoryController implements Initializable {
             String factoryPage = "Factory?id=" + updatedFactory.getId();
             NavigationServiceImpl.invalidateViewCache(factoryPage);
             currentSelectionService.setSelectedId(updatedFactory.getId());
-            navigationService.switchView(factoryPage, true);
+            navigationService.switchView(factoryPage, true, null);
         });
         return result;
     }

@@ -1,6 +1,8 @@
 package org.chainoptim.desktop.core.main.model;
 
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.shared.enums.SearchMode;
+import org.chainoptim.desktop.shared.search.model.SearchData;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import lombok.Getter;
@@ -52,15 +54,15 @@ public class SidebarNavigationConfiguration {
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Supplier Orders")
-                                    .key("Supplier Orders")
+                                    .key("Supplier-Orders")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Supplier Shipments")
-                                    .key("Supplier Shipments")
+                                    .key("Supplier-Shipments")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Performances")
-                                    .key("Supplier Performances")
+                                    .key("Supplier-Performances")
                                     .build()
                     ))
                     .build(),
@@ -74,15 +76,15 @@ public class SidebarNavigationConfiguration {
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Factory Stages")
-                                    .key("Factory Stages")
+                                    .key("Factory-Stages")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Factory Inventory")
-                                    .key("Factory Inventory")
+                                    .key("Factory-Inventory")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Performances")
-                                    .key("Factory Performances")
+                                    .key("Factory-Performances")
                                     .build()
                     ))
                     .build(),
@@ -96,11 +98,11 @@ public class SidebarNavigationConfiguration {
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Warehouse Inventory")
-                                    .key("Warehouse Inventory")
+                                    .key("Warehouse-Inventory")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Evaluations")
-                                    .key("Warehouse Evaluations")
+                                    .key("Warehouse-Evaluations")
                                     .build()
                     ))
                     .build(),
@@ -114,15 +116,15 @@ public class SidebarNavigationConfiguration {
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Client Orders")
-                                    .key("Client Orders")
+                                    .key("Client-Orders")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Client Shipments")
-                                    .key("Client Shipments")
+                                    .key("Client-Shipments")
                                     .build(),
                             SidebarSubsection.builder()
                                     .name("Evaluations")
-                                    .key("Client Evaluations")
+                                    .key("Client-Evaluations")
                                     .build()
                     ))
                     .build(),
@@ -137,7 +139,7 @@ public class SidebarNavigationConfiguration {
             section.setIconPath(ICONS_PATH + BUTTON_ICON_MAP.get(section.getName()));
             section.setAction(() -> {
                 if (section.getSubsections().isEmpty()) {
-                    navigationService.switchView(section.getName(), false);
+                    navigationService.switchView(section.getName(), true, null);
                 } else {
                     selectSubsection(navigationService, section.getSubsections().getFirst());
                 }
@@ -156,8 +158,9 @@ public class SidebarNavigationConfiguration {
 
     private static void selectSubsection(NavigationService navigationService, SidebarSubsection subsection) {
         navigationService.switchView(
-                subsection.getName(), false
-        );
+                subsection.getKey(), true, new SearchData<>(null, SearchMode.ORGANIZATION));
+
+        // Deselect other subsections
         for (SidebarSection someSection : SECTIONS) {
             for (SidebarSubsection otherSubsection : someSection.getSubsections()) {
                 if (!Objects.equals(otherSubsection.getKey(), subsection.getKey())) {

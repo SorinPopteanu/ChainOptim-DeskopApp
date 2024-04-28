@@ -126,7 +126,7 @@ public class CreateWarehouseController implements Initializable {
                     "Success", "Warehouse created successfully.", OperationOutcome.SUCCESS));
 
             currentSelectionService.setSelectedId(warehouse.getId());
-            navigationService.switchView("Warehouse?id=" + warehouse.getId(), true);
+            navigationService.switchView("Warehouse?id=" + warehouse.getId(), true, null);
         });
         return result;
     }

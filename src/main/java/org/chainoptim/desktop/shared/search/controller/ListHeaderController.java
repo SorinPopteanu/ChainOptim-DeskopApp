@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.core.main.controller;
+package org.chainoptim.desktop.shared.search.controller;
 
 import com.google.inject.Inject;
 import javafx.animation.Interpolator;
@@ -34,7 +34,7 @@ public class ListHeaderController {
     @FXML
     private Label title;
     @FXML
-    private InfoLabel productInfoLabel;
+    private InfoLabel featureInfoLabel;
     @FXML
     private TextField searchBar;
     @FXML
@@ -104,7 +104,7 @@ public class ListHeaderController {
     }
 
     private void setInfoLabel(Feature feature) {
-        productInfoLabel.setFeatureAndLevel(feature,
+        featureInfoLabel.setFeatureAndLevel(feature,
                 TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel());
     }
 
@@ -198,7 +198,7 @@ public class ListHeaderController {
     }
 
     private void handleCreateNewItem() {
-        navigationService.switchView(createNewItem, true);
+        navigationService.switchView(createNewItem, true, null);
     }
 
 }

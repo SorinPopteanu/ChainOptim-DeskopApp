@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.features.supplier.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -176,7 +176,7 @@ public class SuppliersController implements Initializable {
         currentSelectionService.setSelectedId(supplierId);
         currentSelectionService.setSelectedPage("Supplier");
 
-        navigationService.switchView("Supplier?id=" + supplierId, true);
+        navigationService.switchView("Supplier?id=" + supplierId, true, null);
     }
 }
 

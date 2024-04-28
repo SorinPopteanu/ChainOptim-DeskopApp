@@ -4,12 +4,18 @@
 <?import javafx.scene.layout.*?>
 <?import org.chainoptim.desktop.shared.search.filters.FilterBar?>
 
+<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.shared.table.TableToolbarController" styleClass="table-toolbar" spacing="8">
 
+    <HBox fx:id="titleContainer" alignment="CENTER_LEFT" spacing="12" styleClass="list-title-container">
+        <Label fx:id="title" styleClass="list-title"/>
+        <InfoLabel fx:id="featureInfoLabel"/>
+    </HBox>
+
     <!-- Search Options -->
-    <FlowPane alignment="CENTER_LEFT" vgap="8" hgap="6">
+    <FlowPane alignment="CENTER_LEFT" vgap="8" hgap="6" styleClass="toolbar">
         <StackPane alignment="CENTER_RIGHT">
             <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
             <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>

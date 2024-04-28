@@ -87,7 +87,7 @@ public class SidebarController {
         initializeOuterButtons();
         renderSidebarButtons();
 
-        navigationService.switchView("Overview", true);
+        navigationService.switchView("Overview", true, null);
     }
 
     private void configureSidebar() {
@@ -178,7 +178,6 @@ public class SidebarController {
         button.setMaxWidth(Double.MAX_VALUE);
         button.setOnAction(e -> {
             section.getAction().run();
-            System.out.println("VBOx: " + subSectionVBox);
             if (!section.isExpanded()) {
                 toggleSection(subSectionVBox, section);
             }
@@ -202,10 +201,10 @@ public class SidebarController {
     private void toggleSection(VBox subSectionVBox, SidebarSection section) {
         section.setExpanded(!section.isExpanded());
         toggleNodeVisibility(subSectionVBox, section.isExpanded());
-        System.out.println("VBOx: " + subSectionVBox);
-        System.out.println("Subsection visibility: " + subSectionVBox.isVisible());
         Button correspondingToggleButton = toggleExpandSectionButtons.get(section.getName());
-        correspondingToggleButton.setGraphic(createImageView(section.isExpanded() ? caretUpIcon : caretDownIcon));
+        if (correspondingToggleButton != null) {
+            correspondingToggleButton.setGraphic(createImageView(section.isExpanded() ? caretUpIcon : caretDownIcon));
+        }
     }
 
     // Sidebar toggling

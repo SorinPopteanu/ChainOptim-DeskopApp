@@ -482,7 +482,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
     private void handleAddNewMembers() {
         Integer organizationId = organizationViewData.getOrganization().getId();
         currentSelectionService.setSelectedId(organizationId);
-        navigationService.switchView("Add-New-Members?id=" + organizationId, true);
+        navigationService.switchView("Add-New-Members?id=" + organizationId, true, null);
     }
 
     // Utils

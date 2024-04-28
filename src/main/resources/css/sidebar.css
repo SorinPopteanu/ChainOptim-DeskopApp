@@ -135,18 +135,12 @@
     -fx-background-color: #171717;
 }
 
-.sidebar-scrollpane .scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-min-width: 12px;
-    -fx-min-height: 12px;
-}
-
 .sidebar-scrollpane .scroll-bar:vertical .thumb {
-    -fx-background-color: transparent;
+    -fx-background-color: #171717;
 }
 
 .sidebar-scrollpane .scroll-bar:vertical:hover .thumb {
-    -fx-background-color: #d1d1d1;
+    -fx-background-color: #171717;
 }
 
 .sidebar-scrollpane .scroll-bar .increment-button,
@@ -156,5 +150,5 @@
 
 .sidebar-scrollpane .scroll-bar .increment-arrow,
 .sidebar-scrollpane .scroll-bar .decrement-arrow {
-    -fx-fill: #d1d1d1;
+    -fx-fill: #171717;
 }

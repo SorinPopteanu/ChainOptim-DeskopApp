@@ -123,6 +123,6 @@ public class WarehouseController implements Initializable {
     @FXML
     private void handleEditWarehouse() {
         currentSelectionService.setSelectedId(warehouse.getId());
-        navigationService.switchView("Update-Warehouse?id=" + warehouse.getId(), true);
+        navigationService.switchView("Update-Warehouse?id=" + warehouse.getId(), true, null);
     }
 }

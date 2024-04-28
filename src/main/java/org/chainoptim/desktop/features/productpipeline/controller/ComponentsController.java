@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.features.productpipeline.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -173,6 +173,6 @@ public class ComponentsController implements Initializable {
         // And also encode it in the viewKey for caching purposes
         currentSelectionService.setSelectedId(componentId);
         currentSelectionService.setSelectedPage("Component");
-        navigationService.switchView("Component?id=" + componentId, true);
+        navigationService.switchView("Component?id=" + componentId, true, null);
     }
 }

@@ -163,7 +163,7 @@ public class UpdateClientController implements Initializable {
             String clientPage = "Client?id=" + updatedClient.getId();
             NavigationServiceImpl.invalidateViewCache(clientPage);
             currentSelectionService.setSelectedId(updatedClient.getId());
-            navigationService.switchView(clientPage, true);
+            navigationService.switchView(clientPage, true, null);
         });
         return result;
     }

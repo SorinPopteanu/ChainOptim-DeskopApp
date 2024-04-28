@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.shared.util.resourceloader;
 
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.shared.common.uielements.select.*;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;

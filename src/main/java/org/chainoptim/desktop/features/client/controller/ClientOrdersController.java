@@ -150,11 +150,11 @@ public class ClientOrdersController implements DataReceiver<Client> {
         SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
 
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(
-                searchParams,
-                searchOptions.getFilterOptions(),
-                searchOptions.getSortOptions(),
-                () -> loadClientOrders(client.getId()));
+//        tableToolbarController.initialize(
+//                searchParams,
+//                searchOptions.getFilterOptions(),
+//                searchOptions.getSortOptions(),
+//                () -> loadClientOrders(client.getId()));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectProductLoader.initialize();
 

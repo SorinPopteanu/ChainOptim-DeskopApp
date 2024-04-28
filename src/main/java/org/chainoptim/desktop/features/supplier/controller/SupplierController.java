@@ -15,8 +15,10 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.search.model.SearchData;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
@@ -161,8 +163,8 @@ public class SupplierController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
             loader.setControllerFactory(controllerFactory::createController);
             Node content = loader.load();
-            DataReceiver<Supplier> controller = loader.getController();
-            controller.setData(supplier);
+            DataReceiver<SearchData<Supplier>> controller = loader.getController();
+            controller.setData(new SearchData<>(supplier, SearchMode.SECONDARY));
             tab.setContent(content);
         } catch (IOException e) {
             e.printStackTrace();
@@ -172,6 +174,6 @@ public class SupplierController implements Initializable {
     @FXML
     private void handleEditSupplier() {
         currentSelectionService.setSelectedId(supplier.getId());
-        navigationService.switchView("Update-Supplier?id=" + supplier.getId(), true);
+        navigationService.switchView("Update-Supplier?id=" + supplier.getId(), true, null);
     }
 }

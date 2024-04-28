@@ -160,7 +160,7 @@ public class UpdateSupplierController implements Initializable {
             String supplierPage = "Supplier?id=" + updatedSupplier.getId();
             NavigationServiceImpl.invalidateViewCache(supplierPage);
             currentSelectionService.setSelectedId(updatedSupplier.getId());
-            navigationService.switchView(supplierPage, true);
+            navigationService.switchView(supplierPage, true, null);
         });
         return result;
     }

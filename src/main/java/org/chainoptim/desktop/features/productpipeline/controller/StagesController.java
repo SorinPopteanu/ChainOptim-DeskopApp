@@ -1,12 +1,11 @@
 package org.chainoptim.desktop.features.productpipeline.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.productpipeline.dto.StagesSearchDTO;
-import org.chainoptim.desktop.features.productpipeline.model.Stage;
 import org.chainoptim.desktop.features.productpipeline.service.StageService;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -173,6 +172,6 @@ public class StagesController implements Initializable {
         // And also encode it in the viewKey for caching purposes
         currentSelectionService.setSelectedId(stageId);
         currentSelectionService.setSelectedPage("Stage");
-        navigationService.switchView("Stage?id=" + stageId, true);
+        navigationService.switchView("Stage?id=" + stageId, true, null);
     }
 }

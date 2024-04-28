@@ -144,7 +144,7 @@ public class ClientController implements Initializable {
     @FXML
     private void handleEditClient() {
         currentSelectionService.setSelectedId(client.getId());
-        navigationService.switchView("Update-Client?id=" + client.getId(), true);
+        navigationService.switchView("Update-Client?id=" + client.getId(), true, null);
     }
 
 }

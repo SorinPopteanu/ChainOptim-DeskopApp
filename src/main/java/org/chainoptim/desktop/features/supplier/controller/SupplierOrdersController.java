@@ -15,13 +15,11 @@ import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.OrderStatus;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
-import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchOptions;
-import org.chainoptim.desktop.shared.search.model.SearchOptionsConfiguration;
-import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.*;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
 import org.chainoptim.desktop.shared.table.edit.cell.DateTimePickerCell;
@@ -49,7 +47,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class SupplierOrdersController implements DataReceiver<Supplier> {
+public class SupplierOrdersController implements DataReceiver<SearchData<Supplier>> {
 
     // Services
     private final SupplierOrdersService supplierOrdersService;
@@ -69,6 +67,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
 
+    private SearchMode searchMode;
     private Supplier supplier;
     private final List<OrderStatus> statusOptions = Arrays.asList(OrderStatus.values());
     private long totalRowsCount;
@@ -140,17 +139,18 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     }
 
     @Override
-    public void setData(Supplier supplier) {
-        this.supplier = supplier;
+    public void setData(SearchData<Supplier> searchData) {
+        this.supplier = searchData.getData();
+        this.searchMode = searchData.getSearchMode();
 
         searchParams.setItemsPerPage(20);
         SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
 
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
         tableToolbarController.initialize(
-                searchParams,
-                searchOptions.getFilterOptions(),
-                searchOptions.getSortOptions(),
+                searchMode, searchParams,
+                "Supplier Orders", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
+                searchOptions.getFilterOptions(), searchOptions.getSortOptions(),
                 () -> loadSupplierOrders(supplier.getId()));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
@@ -160,7 +160,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         setUpListeners();
         loadConfirmDialogs();
 
-        loadSupplierOrders(supplier.getId());
+        loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null);
     }
 
     // Loading
@@ -185,7 +185,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         selectRowColumn.setCellValueFactory(data -> data.getValue().isSelectedProperty());
         orderIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getId()));
         companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"));
-        supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.supplier.getName()));
+        supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>("this.supplier.getName()"));
         componentNameColumn.setCellValueFactory(data -> {
             Component component = data.getValue().getData().getComponent();
             String componentName = component != null ? component.getName() : "N/A";
@@ -336,9 +336,17 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             return;
         }
 
-        supplierOrdersService.getSuppliersBySupplierIdAdvanced(supplierId, searchParams)
-                .thenApply(this::handleOrdersResponse)
-                .exceptionally(this::handleOrdersException);
+        if (searchMode == SearchMode.SECONDARY) {
+            if (supplierId == null) return;
+            supplierOrdersService.getSupplierOrdersAdvanced(supplierId, searchMode, searchParams)
+                    .thenApply(this::handleOrdersResponse)
+                    .exceptionally(this::handleOrdersException);
+        } else {
+            if (currentUser.getOrganization().getId() == null) return;
+            supplierOrdersService.getSupplierOrdersAdvanced(currentUser.getOrganization().getId(), searchMode, searchParams)
+                    .thenApply(this::handleOrdersResponse)
+                    .exceptionally(this::handleOrdersException);
+        }
     }
 
     private Result<PaginatedResults<SupplierOrder>> handleOrdersResponse(Result<PaginatedResults<SupplierOrder>> result) {

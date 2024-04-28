@@ -141,7 +141,7 @@ public class FactoryController implements Initializable {
     @FXML
     private void handleEditFactory() {
         currentSelectionService.setSelectedId(factory.getId());
-        navigationService.switchView("Update-Factory?id=" + factory.getId(), true);
+        navigationService.switchView("Update-Factory?id=" + factory.getId(), true, null);
     }
 
 }

@@ -189,11 +189,11 @@ public class OverviewController implements Initializable {
     private void renderEntityCountsVBox(Snapshot snapshot) {
         entityCountsHBox.getChildren().clear();
 
-        FeatureCountBadge productsCountLabel = new FeatureCountBadge(new BadgeData("Products", snapshot.getProductsCount(), () -> navigationService.switchView("Products", true)));
-        FeatureCountBadge factoriesCountLabel = new FeatureCountBadge(new BadgeData("Factories", snapshot.getFactoriesCount(), () -> navigationService.switchView("Factories", true)));
-        FeatureCountBadge warehousesCountLabel = new FeatureCountBadge(new BadgeData("Warehouses", snapshot.getWarehousesCount(), () -> navigationService.switchView("Warehouses", true)));
-        FeatureCountBadge suppliersCountLabel = new FeatureCountBadge(new BadgeData("Suppliers", snapshot.getSuppliersCount(), () -> navigationService.switchView("Suppliers", true)));
-        FeatureCountBadge clientsCountLabel = new FeatureCountBadge(new BadgeData("Clients", snapshot.getClientsCount(), () -> navigationService.switchView("Clients", true)));
+        FeatureCountBadge productsCountLabel = new FeatureCountBadge(new BadgeData("Products", snapshot.getProductsCount(), () -> navigationService.switchView("Products", true, null)));
+        FeatureCountBadge factoriesCountLabel = new FeatureCountBadge(new BadgeData("Factories", snapshot.getFactoriesCount(), () -> navigationService.switchView("Factories", true, null)));
+        FeatureCountBadge warehousesCountLabel = new FeatureCountBadge(new BadgeData("Warehouses", snapshot.getWarehousesCount(), () -> navigationService.switchView("Warehouses", true, null)));
+        FeatureCountBadge suppliersCountLabel = new FeatureCountBadge(new BadgeData("Suppliers", snapshot.getSuppliersCount(), () -> navigationService.switchView("Suppliers", true, null)));
+        FeatureCountBadge clientsCountLabel = new FeatureCountBadge(new BadgeData("Clients", snapshot.getClientsCount(), () -> navigationService.switchView("Clients", true, null)));
 
         entityCountsHBox.getChildren().addAll(productsCountLabel, factoriesCountLabel, warehousesCountLabel, suppliersCountLabel, clientsCountLabel);
         entityCountsHBox.setSpacing(40);
