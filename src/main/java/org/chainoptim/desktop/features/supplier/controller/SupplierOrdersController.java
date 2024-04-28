@@ -150,11 +150,11 @@ public class SupplierOrdersController implements DataReceiver<SearchData<Supplie
 
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(
-                searchMode, searchParams,
+        tableToolbarController.initialize(new ListHeaderParams
+                (searchMode, searchParams,
                 "Supplier Orders", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
-                searchOptions.getFilterOptions(), searchOptions.getSortOptions(),
-                () -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
+                searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
+                () -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null), null, null));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
 

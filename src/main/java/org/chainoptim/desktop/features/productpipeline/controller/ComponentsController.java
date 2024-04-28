@@ -11,6 +11,7 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -81,7 +82,7 @@ public class ComponentsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Components", "/img/box-solid.png", Feature.PRODUCT, sortOptions, this::loadComponents, "Component", "Create-Component");
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Components", "/img/box-solid.png", Feature.PRODUCT, sortOptions, null, this::loadComponents, "Component", "Create-Component"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadComponents();

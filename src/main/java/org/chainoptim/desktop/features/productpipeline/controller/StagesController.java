@@ -11,6 +11,7 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -80,7 +81,7 @@ public class StagesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Stages", "/img/box-solid.png", Feature.PRODUCT, sortOptions, this::loadStages, "Stage", "Create-Stage");
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Stages", "/img/box-solid.png", Feature.PRODUCT, sortOptions, null, this::loadStages, "Stage", "Create-Stage"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadStages();

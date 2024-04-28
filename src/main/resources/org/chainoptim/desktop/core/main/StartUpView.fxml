@@ -3,10 +3,13 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.main.controller.StartUpController"
-      prefHeight="400.0" prefWidth="600.0" styleClass="start-up-container" alignment="CENTER">
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="org.chainoptim.desktop.core.main.controller.StartUpController"
+        prefHeight="400.0" prefWidth="600.0" styleClass="start-up-container" alignment="CENTER" spacing="48">
 
         <Label text="ChainOptim" styleClass="start-up-label"/>
+
+        <ImageView fx:id="customSpinner" />
 </VBox>

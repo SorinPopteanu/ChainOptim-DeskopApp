@@ -11,6 +11,7 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -83,7 +84,7 @@ public class WarehousesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Warehouses", "/img/warehouse-solid.png", Feature.WAREHOUSE, sortOptions, this::loadWarehouses, "Warehouse", "Create-Warehouse");
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Warehouses", "/img/warehouse-solid.png", Feature.WAREHOUSE, sortOptions, null, this::loadWarehouses, "Warehouse", "Create-Warehouse"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadWarehouses();

@@ -6,6 +6,7 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.search.filters.FilterBar;
 import org.chainoptim.desktop.shared.search.filters.FilterOption;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
 import javafx.animation.Interpolator;
@@ -74,24 +75,21 @@ public class TableToolbarController {
     private Image saveIcon;
     private Image plusIcon;
 
-    public void initialize(SearchMode searchMode, SearchParams searchParams,
-                           String titleText, String titleIconPath, Feature feature,
-                           List<FilterOption> filterOptions, Map<String, String> sortOptionsMap,
-                           Runnable refreshAction) {
-        this.searchParams = searchParams;
-        this.sortOptionsMap = sortOptionsMap;
+    public void initialize(ListHeaderParams headerParams) {
+        this.searchParams = headerParams.getSearchParams();
+        this.sortOptionsMap = headerParams.getSortOptionsMap();
         initializeIcons();
-        setTitle(titleText, titleIconPath);
-        setInfoLabel(feature);
-        if (searchMode == SearchMode.SECONDARY) {
+        setTitle(headerParams.getTitleText(), headerParams.getTitleIconPath());
+        setInfoLabel(headerParams.getFeature());
+        if (headerParams.getSearchMode() == SearchMode.SECONDARY) {
             titleContainer.setVisible(false);
             titleContainer.setManaged(false);
         }
         setSearchButton();
-        filterBar.initializeFilterBar(filterOptions, searchParams);
+        filterBar.initializeFilterBar(headerParams.getFilterOptions(), searchParams);
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
-        setRefreshButton(refreshAction);
+        setRefreshButton(headerParams.getRefreshAction());
         setCancelRowSelectionButton();
         setDeleteSelectedRowsButton();
         setEditSelectedRowsButton();

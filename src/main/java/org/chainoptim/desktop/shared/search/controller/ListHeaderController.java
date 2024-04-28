@@ -13,6 +13,7 @@ import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
 import java.util.ArrayList;
@@ -61,20 +62,17 @@ public class ListHeaderController {
         this.navigationService = navigationService;
     }
 
-    public void initializeHeader(SearchParams searchParams,
-                                 String titleText, String titleIconPath, Feature feature,
-                                 Map<String, String> sortOptionsMap,
-                                 Runnable refreshAction,
-                                 String createNewItemButtonText, String createNewItem) {
-        this.searchParams = searchParams;
-        this.sortOptionsMap = sortOptionsMap;
-        setTitle(titleText, titleIconPath);
-        setInfoLabel(feature);
+    public void initializeHeader(ListHeaderParams headerParams) {
+        this.searchParams = headerParams.getSearchParams();
+        this.sortOptionsMap = headerParams.getSortOptionsMap();
+        this.createNewItem = headerParams.getCreateNewItem();
+        setTitle(headerParams.getTitleText(), headerParams.getTitleIconPath());
+        setInfoLabel(headerParams.getFeature());
         setSearchButton();
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
-        setRefreshButton(refreshAction);
-        setCreateNewItemButton(createNewItemButtonText);
+        setRefreshButton(headerParams.getRefreshAction());
+        setCreateNewItemButton(headerParams.getCreateNewItemButtonText());
         setNewItemKey(createNewItem);
     }
 
