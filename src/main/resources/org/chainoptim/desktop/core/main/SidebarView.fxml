@@ -4,9 +4,7 @@
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.core.main.controller.SidebarController"
-            fx:id="sidebar"
-            styleClass="sidebar"
->
+            fx:id="sidebar" styleClass="sidebar">
 
     <HBox fx:id="dashboardHBox" alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-title-container">
         <Button fx:id="backButton" styleClass="sidebar-button"/>
@@ -17,16 +15,8 @@
     </HBox>
 
     <ScrollPane fx:id="scrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true" styleClass="sidebar-scrollpane">
-        <VBox fx:id="mainVBox" style="-fx-background-color: #171717;" prefHeight="1000">
-            <VBox fx:id="navigationButtonContainer" styleClass="sidebar-inner-container">
-                <!-- Navigation buttons -->
-            </VBox>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <VBox fx:id="bottomContainer" alignment="BOTTOM_LEFT" styleClass="sidebar-inner-container">
-                <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="sidebar-button"/>
-            </VBox>
+        <VBox fx:id="navigationButtonContainer" styleClass="sidebar-inner-container" prefHeight="1000">
+            <!-- Navigation buttons -->
         </VBox>
     </ScrollPane>
 </VBox>

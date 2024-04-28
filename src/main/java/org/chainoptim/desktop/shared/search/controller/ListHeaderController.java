@@ -79,7 +79,9 @@ public class ListHeaderController {
     public void disableCreateButton(boolean isDisabled, String disabledTooltipText) {
         if (isDisabled) {
             createNewItemButton.getStyleClass().setAll("standard-write-button-disabled");
-            createNewItemButton.setTooltip(new Tooltip(disabledTooltipText));
+            Tooltip tooltip = new Tooltip(disabledTooltipText);
+            tooltip.getStyleClass().add("custom-tooltip");
+            createNewItemButton.setTooltip(tooltip);
             createNewItemButton.setOnAction(null);
         } else {
             createNewItemButton.getStyleClass().setAll("standard-write-button");

@@ -5,7 +5,6 @@ import org.chainoptim.desktop.core.main.model.SidebarSection;
 import org.chainoptim.desktop.core.main.model.SidebarSubsection;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.core.main.service.SceneManager;
 
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
@@ -57,17 +56,11 @@ public class SidebarController {
     @FXML
     private ScrollPane scrollPane;
     @FXML
-    private VBox mainVBox;
-    @FXML
     private VBox navigationButtonContainer;
     @FXML
     private Button toggleButton;
     @FXML
     private Button backButton;
-    @FXML
-    private VBox bottomContainer;
-    @FXML
-    private Button logoutButton;
 
     // Icons
     private Image caretUpIcon;
@@ -113,7 +106,6 @@ public class SidebarController {
         backButton.setOnAction(e -> navigationService.goBack());
         setButtonGraphic(toggleButton, SidebarNavigationConfiguration.getButtonIconPath("Toggle"));
         toggleButton.setOnAction(e -> toggleSidebar());
-        setButtonGraphic(logoutButton, SidebarNavigationConfiguration.getButtonIconPath("Logout"));
     }
 
     private void renderSidebarButtons() {
@@ -238,8 +230,6 @@ public class SidebarController {
                 toggleSectionVBox(section, false);
             }
         }
-        bottomContainer.getStyleClass().setAll("sidebar-inner-container-collapsed");
-        logoutButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
     }
 
     private void expandSidebar() {
@@ -261,8 +251,6 @@ public class SidebarController {
                 toggleSectionVBox(section, true);
             }
         }
-        bottomContainer.getStyleClass().setAll("sidebar-inner-container");
-        logoutButton.setContentDisplay(ContentDisplay.LEFT);
     }
 
     private void toggleSectionVBox(SidebarSection section, boolean isVisible) {
@@ -281,19 +269,6 @@ public class SidebarController {
         }
         for (VBox subsectionVBox : subsectionVBoxes) {
             toggleNodeVisibility(subsectionVBox, isVisible && section.isExpanded());
-        }
-    }
-
-    // Handle logout
-    @FXML
-    private void handleLogout() {
-        authenticationService.logout();
-
-        // Switch back to login scene
-        try {
-            SceneManager.loadLoginScene();
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 

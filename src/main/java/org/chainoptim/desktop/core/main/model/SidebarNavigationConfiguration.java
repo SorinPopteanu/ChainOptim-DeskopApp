@@ -183,8 +183,7 @@ public class SidebarNavigationConfiguration {
 
             Map.entry("Account", "user-solid.png"),
             Map.entry("Back", "arrow-left-solid.png"),
-            Map.entry("Toggle", "bars-solid.png"),
-            Map.entry("Logout", "right-from-bracket-solid.png")
+            Map.entry("Toggle", "bars-solid.png")
     );
 
     private static final String ICONS_PATH = "/img/";
