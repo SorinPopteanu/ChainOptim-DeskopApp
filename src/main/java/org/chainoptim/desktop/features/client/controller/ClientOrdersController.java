@@ -2,26 +2,24 @@ package org.chainoptim.desktop.features.client.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.client.service.ClientOrdersService;
-import org.chainoptim.desktop.features.client.service.ClientOrdersWriteService;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.client.dto.CreateClientOrderDTO;
 import org.chainoptim.desktop.features.client.dto.UpdateClientOrderDTO;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.model.ClientOrder;
+import org.chainoptim.desktop.features.client.service.ClientOrdersService;
+import org.chainoptim.desktop.features.client.service.ClientOrdersWriteService;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.OrderStatus;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
-import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchOptions;
-import org.chainoptim.desktop.shared.search.model.SearchOptionsConfiguration;
-import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.*;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
 import org.chainoptim.desktop.shared.table.edit.cell.DateTimePickerCell;
@@ -52,7 +50,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ClientOrdersController implements DataReceiver<Client> {
+public class ClientOrdersController implements DataReceiver<SearchData<Client>> {
 
     // Services
     private final ClientOrdersService clientOrdersService;
@@ -72,6 +70,7 @@ public class ClientOrdersController implements DataReceiver<Client> {
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
 
+    private SearchMode searchMode;
     private Client client;
     private final List<OrderStatus> statusOptions = Arrays.asList(OrderStatus.values());
     private long totalRowsCount;
@@ -123,6 +122,8 @@ public class ClientOrdersController implements DataReceiver<Client> {
     private StackPane confirmDeleteDialogContainer;
     @FXML
     private StackPane confirmCreateDialogContainer;
+    @FXML
+    private StackPane fallbackContainer;
 
 
     @Inject
@@ -143,18 +144,20 @@ public class ClientOrdersController implements DataReceiver<Client> {
     }
 
     @Override
-    public void setData(Client client) {
-        this.client = client;
+    public void setData(SearchData<Client> searchData) {
+        this.client = searchData.getData();
+        this.searchMode = searchData.getSearchMode();
 
         searchParams.setItemsPerPage(20);
         SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
 
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-//        tableToolbarController.initialize(
-//                searchParams,
-//                searchOptions.getFilterOptions(),
-//                searchOptions.getSortOptions(),
-//                () -> loadClientOrders(client.getId()));
+        tableToolbarController.initialize(new ListHeaderParams
+                (searchMode, searchParams,
+                "Client Orders", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
+                searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
+                () -> loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null), null, null));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectProductLoader.initialize();
 
@@ -163,7 +166,7 @@ public class ClientOrdersController implements DataReceiver<Client> {
         setUpListeners();
         loadConfirmDialogs();
 
-        loadClientOrders(client.getId());
+        loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null);
     }
 
     // Loading
@@ -188,7 +191,7 @@ public class ClientOrdersController implements DataReceiver<Client> {
         selectRowColumn.setCellValueFactory(data -> data.getValue().isSelectedProperty());
         orderIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getId()));
         companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"));
-        clientNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.client.getName()));
+        clientNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>("this.client.getName()"));
         productNameColumn.setCellValueFactory(data -> {
             Product product = data.getValue().getData().getProduct();
             String productName = product != null ? product.getName() : "N/A";
@@ -265,19 +268,29 @@ public class ClientOrdersController implements DataReceiver<Client> {
 
     // - Listeners
     private void setUpListeners() {
+        setUpFallbackManagerListener();
         setUpSearchListeners();
         setUpTableToolbarListeners();
         setUpConfirmDialogListeners();
     }
 
+    private void setUpFallbackManagerListener() {
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            clientOrdersScrollPane.setVisible(newValue);
+            clientOrdersScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
+    }
+
     private void setUpSearchListeners() {
-        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadClientOrders(client.getId()));
-        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadClientOrders(client.getId()));
-        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadClientOrders(client.getId()));
-        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadClientOrders(client.getId()));
+        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null));
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null));
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null));
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null));
         searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
             if (searchParams.getFiltersProperty().entrySet().size() == 1) { // Allow only one filter at a time
-                loadClientOrders(client.getId());
+                loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null);
             }
         });
     }
@@ -298,7 +311,7 @@ public class ClientOrdersController implements DataReceiver<Client> {
                 openConfirmUpdateDialog(selectedRowsIndices);
             }
         });
-        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
+        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));
         tableToolbarController.getCreateNewOrderButton().setOnAction(e -> addNewOrder());
     }
 
@@ -339,9 +352,17 @@ public class ClientOrdersController implements DataReceiver<Client> {
             return;
         }
 
-        clientOrdersService.getClientOrdersByClientIdAdvanced(clientId, searchParams)
-                .thenApply(this::handleOrdersResponse)
-                .exceptionally(this::handleOrdersException);
+        if (searchMode == SearchMode.SECONDARY) {
+            if (clientId == null) return;
+            clientOrdersService.getClientOrdersAdvanced(clientId, searchMode, searchParams)
+                    .thenApply(this::handleOrdersResponse)
+                    .exceptionally(this::handleOrdersException);
+        } else {
+            if (currentUser.getOrganization().getId() == null) return;
+            clientOrdersService.getClientOrdersAdvanced(currentUser.getOrganization().getId(), searchMode, searchParams)
+                    .thenApply(this::handleOrdersResponse)
+                    .exceptionally(this::handleOrdersException);
+        }
     }
 
     private Result<PaginatedResults<ClientOrder>> handleOrdersResponse(Result<PaginatedResults<ClientOrder>> result) {
@@ -599,7 +620,6 @@ public class ClientOrdersController implements DataReceiver<Client> {
                 toastManager.addToast(toastInfo);
                 return;
             }
-
 
             isNewOrderMode.set(false);
             closeConfirmUpdateDialog();
