@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ScrollPane?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="main-container"
+      fx:controller="org.chainoptim.desktop.features.productpipeline.controller.ComponentsController">
+
+    <StackPane fx:id="headerContainer"/>
+
+    <StackPane VBox.vgrow="ALWAYS">
+        <ScrollPane fx:id="componentsScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
+            <VBox>
+                <VBox fx:id="componentsVBox" styleClass="items-list"/>
+                <StackPane fx:id="pageSelectorContainer"/>
+            </VBox>
+        </ScrollPane>
+
+        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS" styleClass="page-fallback-container"/>
+    </StackPane>
+
+</VBox>

@@ -1,14 +1,14 @@
 .header {
     -fx-background-color: #f2f2f2;
-    -fx-spacing: 20px;
-    -fx-border-color: #c0c0c0;
+    -fx-spacing: 24px;
+    -fx-border-color: #ddcecd;
     -fx-border-width: 0px 0px 1px 0px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
 }
 
 .toolbar {
     -fx-background-color: #f2f2f2;
-    -fx-padding: 0px 32px 32px 32px;
+    -fx-padding: 0px 32px 24px 32px;
 }
 
 .list-title-container {
@@ -16,7 +16,7 @@
 }
 
 .list-title {
-    -fx-font-size: 26px;
+    -fx-font-size: 25px;
     -fx-font-weight: bold;
     -fx-graphic-text-gap: 12px;
 }

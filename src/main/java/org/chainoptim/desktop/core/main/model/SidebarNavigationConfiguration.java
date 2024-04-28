@@ -136,7 +136,7 @@ public class SidebarNavigationConfiguration {
         for (SidebarSection section : SECTIONS) {
             section.setIconPath(ICONS_PATH + BUTTON_ICON_MAP.get(section.getName()));
             section.setAction(() -> {
-                if (section.getSubsections().size() == 0) {
+                if (section.getSubsections().isEmpty()) {
                     navigationService.switchView(section.getName(), false);
                 } else {
                     selectSubsection(navigationService, section.getSubsections().getFirst());

@@ -13,19 +13,21 @@
         <InfoLabel fx:id="productInfoLabel"/>
     </HBox>
 
-    <ToolBar styleClass="toolbar">
-        <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
-            <StackPane alignment="CENTER_RIGHT">
-                <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
-                <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
-            </StackPane>
-            <Region HBox.hgrow="ALWAYS"/>
+    <HBox spacing="16" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" styleClass="toolbar">
+        <StackPane alignment="CENTER_RIGHT">
+            <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
+            <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
+        </StackPane>
+
+        <HBox alignment="CENTER_LEFT" spacing="2">
             <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption" styleClass="custom-combo-box"/>
             <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="refreshButton" styleClass="refresh-button"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="createNewItemButton" styleClass="standard-write-button"/>
         </HBox>
-    </ToolBar>
+
+        <Button fx:id="refreshButton" styleClass="refresh-button"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="createNewItemButton" styleClass="standard-write-button"/>
+    </HBox>
 </VBox>

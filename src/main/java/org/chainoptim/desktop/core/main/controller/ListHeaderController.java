@@ -94,10 +94,10 @@ public class ListHeaderController {
         title.setText(titleText);
         Image titleIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream(titleIconPath)));
         ImageView titleIconView = new ImageView(titleIcon);
-        titleIconView.setFitWidth(18);
-        titleIconView.setFitHeight(18);
+        titleIconView.setFitWidth(16);
+        titleIconView.setFitHeight(16);
         ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(-1);
+        colorAdjust.setBrightness(-0.84);
         titleIconView.setEffect(colorAdjust);
         title.setGraphic(titleIconView);
         title.setContentDisplay(ContentDisplay.LEFT);

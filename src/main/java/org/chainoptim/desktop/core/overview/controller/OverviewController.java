@@ -262,7 +262,7 @@ public class OverviewController implements Initializable {
 
         currentLoadMoreButton = new Button("Load More");
         currentLoadMoreButton.getStyleClass().add("pseudo-link");
-        currentLoadMoreButton.setStyle("-fx-padding: 4px;");
+        currentLoadMoreButton.setStyle("-fx-padding: 10px 12px;");
         currentLoadMoreButton.setOnAction(event -> {
             searchParams.setPage(++lastPage);
             clearNotifications = false;

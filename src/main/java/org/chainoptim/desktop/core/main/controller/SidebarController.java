@@ -143,7 +143,7 @@ public class SidebarController {
     private void renderMainHBox(HBox mainHBox, SidebarSection section, VBox sectionVBox, VBox subSectionVBox) {
         mainHBox.setAlignment(Pos.CENTER_LEFT);
 
-        Button button = getSidebarButton(section);
+        Button button = getSidebarButton(subSectionVBox, section);
         mainNavigationButtons.add(button);
         mainHBox.getChildren().add(button);
 
@@ -170,13 +170,19 @@ public class SidebarController {
         mainHBox.getChildren().add(toggleSectionButton);
     }
 
-    private Button getSidebarButton(SidebarSection section) {
+    private Button getSidebarButton(VBox subSectionVBox, SidebarSection section) {
         Button button = new Button(section.getName());
         setButtonGraphic(button, section.getIconPath());
         button.getStyleClass().add("sidebar-button");
         button.setStyle("-fx-padding: 10px 18px;");
         button.setMaxWidth(Double.MAX_VALUE);
-        button.setOnAction(e -> section.getAction().run());
+        button.setOnAction(e -> {
+            section.getAction().run();
+            System.out.println("VBOx: " + subSectionVBox);
+            if (!section.isExpanded()) {
+                toggleSection(subSectionVBox, section);
+            }
+        });
 
         return button;
     }
@@ -196,6 +202,8 @@ public class SidebarController {
     private void toggleSection(VBox subSectionVBox, SidebarSection section) {
         section.setExpanded(!section.isExpanded());
         toggleNodeVisibility(subSectionVBox, section.isExpanded());
+        System.out.println("VBOx: " + subSectionVBox);
+        System.out.println("Subsection visibility: " + subSectionVBox.isVisible());
         Button correspondingToggleButton = toggleExpandSectionButtons.get(section.getName());
         correspondingToggleButton.setGraphic(createImageView(section.isExpanded() ? caretUpIcon : caretDownIcon));
     }
@@ -226,8 +234,8 @@ public class SidebarController {
         for (int i = 0; i < navigationButtonContainer.getChildren().size(); i++) {
             Node node = navigationButtonContainer.getChildren().get(i);
             SidebarSection section = sections[i];
-            if (node instanceof VBox sectionVBox) {
-                toggleSectionVBox(sectionVBox, section, false);
+            if (node instanceof VBox) {
+                toggleSectionVBox(section, false);
             }
         }
         bottomContainer.getStyleClass().setAll("sidebar-inner-container-collapsed");
@@ -246,15 +254,15 @@ public class SidebarController {
         for (int i = 0; i < navigationButtonContainer.getChildren().size(); i++) {
             Node node = navigationButtonContainer.getChildren().get(i);
             SidebarSection section = sections[i];
-            if (node instanceof VBox sectionVBox) {
-                toggleSectionVBox(sectionVBox, section, true);
+            if (node instanceof VBox) {
+                toggleSectionVBox(section, true);
             }
         }
         bottomContainer.getStyleClass().setAll("sidebar-inner-container");
         logoutButton.setContentDisplay(ContentDisplay.LEFT);
     }
 
-    private void toggleSectionVBox(VBox sectionVBox, SidebarSection section, boolean isVisible) {
+    private void toggleSectionVBox(SidebarSection section, boolean isVisible) {
         for (Button mainNavigationButton : mainNavigationButtons) {
             Tooltip tooltip = new Tooltip(mainNavigationButton.getText());
             tooltip.getStyleClass().add("custom-tooltip");
@@ -271,34 +279,12 @@ public class SidebarController {
         for (VBox subsectionVBox : subsectionVBoxes) {
             toggleNodeVisibility(subsectionVBox, isVisible && section.isExpanded());
         }
-//        for (Node subSection : sectionVBox.getChildren()) {
-//            if (subSection instanceof VBox subSectionVBox) {
-//                toggleNodeVisibility(subSectionVBox, isVisible);
-//            }
-//            if (!(subSection instanceof HBox mainHBox)) continue;
-//
-//            mainHBox.setAlignment(!isVisible ? Pos.CENTER : Pos.CENTER_LEFT);
-//            for (Node mainHBoxChild : mainHBox.getChildren()) {
-//                if (mainHBoxChild instanceof Button mainNavigationButton && mainNavigationButtons.contains(mainNavigationButton)) {
-//
-//                }
-//                if (mainHBoxChild instanceof Button toggleExpandButton && toggleExpandSectionButtons.containsValue(toggleExpandButton)) {
-//                    toggleNodeVisibility(toggleExpandButton, isVisible);
-//                    continue; // Prevent hiding for toggle buttons
-//                }
-//                if (mainHBoxChild instanceof Region spacer) {
-//                    toggleNodeVisibility(spacer, isVisible);
-//                    continue; // Prevent hiding for spacer
-//                }
-//                toggleNodeVisibility(mainHBoxChild, isVisible && section.isExpanded());
-//            }
-//        }
     }
 
     // Handle logout
     @FXML
     private void handleLogout() {
-        authenticationService.logout(); // Clear JWT token from storage
+        authenticationService.logout();
 
         // Switch back to login scene
         try {
