@@ -11,11 +11,9 @@ import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.notification.controller.NotificationManager;
 import org.chainoptim.desktop.core.notification.model.Notification;
 import org.chainoptim.desktop.core.notification.service.NotificationWebSocketClient;
-import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
@@ -25,7 +23,6 @@ import org.chainoptim.desktop.shared.httphandling.Result;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
 import java.util.function.Consumer;
 import static org.chainoptim.desktop.core.organization.model.Organization.SubscriptionPlanTier.PRO;
 
@@ -70,7 +67,7 @@ public class AppController {
     public void initialize() {
         navigationService.setMainContentArea(contentArea);
         sidebarController.setNavigationService(navigationService);
-        loaadStartUpView();
+        loadStartUpView();
 
         // Load user from JWT token
         User currentUser = TenantContext.getCurrentUser();
@@ -82,7 +79,7 @@ public class AppController {
         authenticationService.getUsernameFromJWTToken(jwtToken).ifPresent(this::fetchAndSetUser);
     }
 
-    private void loaadStartUpView() {
+    private void loadStartUpView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/chainoptim/desktop/core/main/StartUpView.fxml"));
             loader.setControllerFactory(MainApplication.injector::getInstance);
