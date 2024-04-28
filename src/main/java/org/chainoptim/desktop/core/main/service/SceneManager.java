@@ -39,7 +39,7 @@ public class SceneManager {
         // Set the controller factory to use Guice for DI
         loader.setControllerFactory(MainApplication.injector::getInstance);
         Parent root = loader.load();
-        Scene mainScene = new Scene(root, 1080, 720);
+        Scene mainScene = new Scene(root, 1200, 800);
         applyCss(mainScene, "/css/globals.css");
         primaryStage.setScene(mainScene);
         primaryStage.setTitle("ChainOptim");

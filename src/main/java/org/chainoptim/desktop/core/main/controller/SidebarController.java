@@ -222,6 +222,7 @@ public class SidebarController {
         sidebar.setMinWidth(COLLAPSED_WIDTH);
         sidebar.setMaxWidth(COLLAPSED_WIDTH);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         dashboardHBox.getStyleClass().setAll("sidebar-title-container-collapsed");
         dashboardHBox.getChildren().forEach(child -> child.setVisible(false));
@@ -244,6 +245,9 @@ public class SidebarController {
     private void expandSidebar() {
         sidebar.setMinWidth(EXPANDED_WIDTH);
         sidebar.setMaxWidth(EXPANDED_WIDTH);
+
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
         dashboardHBox.getStyleClass().setAll("sidebar-title-container");
         dashboardHBox.getChildren().forEach(child -> child.setVisible(true));

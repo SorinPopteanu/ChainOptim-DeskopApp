@@ -1,24 +1,23 @@
 .header {
     -fx-background-color: #f2f2f2;
-    -fx-spacing: 24px;
     -fx-border-color: #ddcecd;
     -fx-border-width: 0px 0px 1px 0px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
 }
 
-.toolbar {
-    -fx-background-color: #f2f2f2;
-    -fx-padding: 0px 32px 24px 32px;
-}
-
 .list-title-container {
-    -fx-padding: 20px 32px 0px 32px;
+    -fx-padding: 16px 32px 0px 32px;
 }
 
 .list-title {
-    -fx-font-size: 25px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-graphic-text-gap: 12px;
+}
+
+.toolbar {
+    -fx-background-color: #f2f2f2;
+    -fx-padding: 16px 32px 16px 32px;
 }
 
 .search-bar {

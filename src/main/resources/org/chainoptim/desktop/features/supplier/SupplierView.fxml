@@ -25,7 +25,5 @@
             <Tab fx:id="shipmentsTab" text="Shipments"/>
             <Tab fx:id="performanceTab" text="Performance"/>
         </TabPane>
-
-        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
     </StackPane>
 </VBox>

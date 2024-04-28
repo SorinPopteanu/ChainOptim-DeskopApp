@@ -119,6 +119,8 @@ public class SupplierOrdersController implements DataReceiver<SearchData<Supplie
     private StackPane confirmDeleteDialogContainer;
     @FXML
     private StackPane confirmCreateDialogContainer;
+    @FXML
+    private StackPane fallbackContainer;
 
 
     @Inject
@@ -146,12 +148,13 @@ public class SupplierOrdersController implements DataReceiver<SearchData<Supplie
         searchParams.setItemsPerPage(20);
         SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
 
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
         tableToolbarController.initialize(
                 searchMode, searchParams,
                 "Supplier Orders", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
                 searchOptions.getFilterOptions(), searchOptions.getSortOptions(),
-                () -> loadSupplierOrders(supplier.getId()));
+                () -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
 
@@ -262,19 +265,29 @@ public class SupplierOrdersController implements DataReceiver<SearchData<Supplie
 
     // - Listeners
     private void setUpListeners() {
+        setUpFallbackManagerListener();
         setUpSearchListeners();
         setUpTableToolbarListeners();
         setUpConfirmDialogListeners();
     }
 
+    private void setUpFallbackManagerListener() {
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            supplierOrdersScrollPane.setVisible(newValue);
+            supplierOrdersScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
+    }
+
     private void setUpSearchListeners() {
-        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSupplierOrders(supplier.getId()));
-        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
-        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
-        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
+        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
         searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
             if (searchParams.getFiltersProperty().entrySet().size() == 1) { // Allow only one filter at a time
-                loadSupplierOrders(supplier.getId());
+                loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null);
             }
         });
     }
@@ -295,7 +308,7 @@ public class SupplierOrdersController implements DataReceiver<SearchData<Supplie
                 openConfirmUpdateDialog(selectedRowsIndices);
             }
         });
-        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
+        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));
         tableToolbarController.getCreateNewOrderButton().setOnAction(e -> addNewOrder());
     }
 

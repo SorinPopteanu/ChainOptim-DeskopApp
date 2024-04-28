@@ -40,8 +40,6 @@ public class SupplierController implements Initializable {
     private Supplier supplier;
 
     @FXML
-    private StackPane fallbackContainer;
-    @FXML
     private TabPane tabPane;
     @FXML
     private Tab overviewTab;
@@ -73,7 +71,6 @@ public class SupplierController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadFallbackManager();
         setupListeners();
 
         Integer supplierId = currentSelectionService.getSelectedId();
@@ -83,15 +80,6 @@ public class SupplierController implements Initializable {
             System.out.println("Missing supplier id.");
             fallbackManager.setErrorMessage("Failed to load supplier.");
         }
-    }
-
-    private void loadFallbackManager() {
-        // Load view into fallbackContainer
-        Node fallbackView = fxmlLoaderService.loadView(
-                "/org/chainoptim/desktop/shared/fallback/FallbackManagerView.fxml",
-                controllerFactory::createController
-        );
-        fallbackContainer.getChildren().add(fallbackView);
     }
 
     private void setupListeners() {
@@ -114,13 +102,6 @@ public class SupplierController implements Initializable {
             if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
                 loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", this.supplier);
             }
-        });
-
-        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
-            tabPane.setVisible(newValue);
-            tabPane.setManaged(newValue);
-            fallbackContainer.setVisible(!newValue);
-            fallbackContainer.setManaged(!newValue);
         });
     }
 
