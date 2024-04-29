@@ -2,7 +2,6 @@ package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.client.model.ClientOrder;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.FactoryInventoryItem;
 import org.chainoptim.desktop.features.factory.service.FactoryInventoryItemService;
