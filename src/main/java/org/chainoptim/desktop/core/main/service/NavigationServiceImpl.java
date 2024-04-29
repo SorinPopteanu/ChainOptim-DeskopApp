@@ -3,14 +3,17 @@ package org.chainoptim.desktop.core.main.service;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.abstraction.ThreadRunner;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +60,8 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
             Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
             Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
+            Map.entry("Stages", "/org/chainoptim/desktop/features/productpipeline/StagesView.fxml"),
+            Map.entry("Components", "/org/chainoptim/desktop/features/productpipeline/ComponentsView.fxml"),
 
             Map.entry("Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml"),
             Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
@@ -72,18 +77,20 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
             Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"),
             Map.entry("Update-Supplier", "/org/chainoptim/desktop/features/supplier/UpdateSupplierView.fxml"),
+            Map.entry("Supplier-Orders", "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml"),
 
             Map.entry("Clients", "/org/chainoptim/desktop/features/client/ClientsView.fxml"),
             Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),
             Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml"),
             Map.entry("Update-Client", "/org/chainoptim/desktop/features/client/UpdateClientView.fxml"),
+            Map.entry("Client-Orders", "/org/chainoptim/desktop/features/client/ClientOrdersView.fxml"),
 
             Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml"),
 
             Map.entry("Settings", "/org/chainoptim/desktop/core/settings/SettingsView.fxml")
     );
 
-    public void switchView(String viewKey, boolean forward) {
+    public <T> void switchView(String viewKey, boolean forward, T extraData) {
         // Skip if already there
         if (Objects.equals(currentViewKey, viewKey)) {
             return;
@@ -93,7 +100,7 @@ public class NavigationServiceImpl implements NavigationService {
         fallbackManager.reset();
 
         // Get view from cache or load it
-        Node view = viewCache.computeIfAbsent(viewKey, this::loadView);
+        Node view = viewCache.computeIfAbsent(viewKey, key -> loadView(viewKey, extraData));
 
         // Display view
         if (view != null) {
@@ -103,7 +110,7 @@ public class NavigationServiceImpl implements NavigationService {
         }
     }
 
-    private Node loadView(String viewKey) {
+    private <T> Node loadView(String viewKey, T extraData) {
         // Extract key without dynamic parameter
         String baseViewKey = findBaseKey(viewKey);
 
@@ -114,8 +121,19 @@ public class NavigationServiceImpl implements NavigationService {
             return null;
         }
 
-        // Load view
-        return fxmlLoaderService.loadView(viewPath, controllerFactory::createController);
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(viewPath, controllerFactory::createController);
+        try {
+            Node view = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof DataReceiver dataReceiver) {
+                dataReceiver.setData(extraData);
+            }
+
+            return view;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private String findBaseKey(String viewKey) {
@@ -154,7 +172,7 @@ public class NavigationServiceImpl implements NavigationService {
 
     public void goBack() {
         if (previousViewKeys != null && !previousViewKeys.isEmpty()) {
-            switchView(previousViewKeys.getLast(), false);
+            switchView(previousViewKeys.getLast(), false, null);
         }
     }
 

@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.core.main.controller;
+package org.chainoptim.desktop.shared.search.controller;
 
 import com.google.inject.Inject;
 import javafx.animation.Interpolator;
@@ -13,6 +13,7 @@ import org.chainoptim.desktop.core.context.TenantSettingsContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class ListHeaderController {
     @FXML
     private Label title;
     @FXML
-    private InfoLabel productInfoLabel;
+    private InfoLabel featureInfoLabel;
     @FXML
     private TextField searchBar;
     @FXML
@@ -61,27 +62,26 @@ public class ListHeaderController {
         this.navigationService = navigationService;
     }
 
-    public void initializeHeader(SearchParams searchParams,
-                                 String titleText, String titleIconPath, Feature feature,
-                                 Map<String, String> sortOptionsMap,
-                                 Runnable refreshAction,
-                                 String createNewItemButtonText, String createNewItem) {
-        this.searchParams = searchParams;
-        this.sortOptionsMap = sortOptionsMap;
-        setTitle(titleText, titleIconPath);
-        setInfoLabel(feature);
+    public void initializeHeader(ListHeaderParams headerParams) {
+        this.searchParams = headerParams.getSearchParams();
+        this.sortOptionsMap = headerParams.getSortOptionsMap();
+        this.createNewItem = headerParams.getCreateNewItem();
+        setTitle(headerParams.getTitleText(), headerParams.getTitleIconPath());
+        setInfoLabel(headerParams.getFeature());
         setSearchButton();
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
-        setRefreshButton(refreshAction);
-        setCreateNewItemButton(createNewItemButtonText);
+        setRefreshButton(headerParams.getRefreshAction());
+        setCreateNewItemButton(headerParams.getCreateNewItemButtonText());
         setNewItemKey(createNewItem);
     }
 
     public void disableCreateButton(boolean isDisabled, String disabledTooltipText) {
         if (isDisabled) {
             createNewItemButton.getStyleClass().setAll("standard-write-button-disabled");
-            createNewItemButton.setTooltip(new Tooltip(disabledTooltipText));
+            Tooltip tooltip = new Tooltip(disabledTooltipText);
+            tooltip.getStyleClass().add("custom-tooltip");
+            createNewItemButton.setTooltip(tooltip);
             createNewItemButton.setOnAction(null);
         } else {
             createNewItemButton.getStyleClass().setAll("standard-write-button");
@@ -94,17 +94,17 @@ public class ListHeaderController {
         title.setText(titleText);
         Image titleIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream(titleIconPath)));
         ImageView titleIconView = new ImageView(titleIcon);
-        titleIconView.setFitWidth(18);
-        titleIconView.setFitHeight(18);
+        titleIconView.setFitWidth(16);
+        titleIconView.setFitHeight(16);
         ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(-1);
+        colorAdjust.setBrightness(-0.84);
         titleIconView.setEffect(colorAdjust);
         title.setGraphic(titleIconView);
         title.setContentDisplay(ContentDisplay.LEFT);
     }
 
     private void setInfoLabel(Feature feature) {
-        productInfoLabel.setFeatureAndLevel(feature,
+        featureInfoLabel.setFeatureAndLevel(feature,
                 TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel());
     }
 
@@ -198,7 +198,7 @@ public class ListHeaderController {
     }
 
     private void handleCreateNewItem() {
-        navigationService.switchView(createNewItem, true);
+        navigationService.switchView(createNewItem, true, null);
     }
 
 }

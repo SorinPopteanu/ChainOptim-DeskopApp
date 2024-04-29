@@ -126,7 +126,7 @@ public class CreateClientController implements Initializable {
                     "Success", "Client created successfully.", OperationOutcome.SUCCESS));
 
             currentSelectionService.setSelectedId(client.getId());
-            navigationService.switchView("Client?id=" + client.getId(), true);
+            navigationService.switchView("Client?id=" + client.getId(), true, null);
         });
         return result;
     }

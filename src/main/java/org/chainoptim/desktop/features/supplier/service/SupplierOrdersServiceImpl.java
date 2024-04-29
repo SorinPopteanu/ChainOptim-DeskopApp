@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -44,12 +45,16 @@ public class SupplierOrdersServiceImpl implements SupplierOrdersService {
         return requestHandler.sendRequest(request, new TypeReference<List<SupplierOrder>>() {});
     }
 
-    public CompletableFuture<Result<PaginatedResults<SupplierOrder>>> getSuppliersBySupplierIdAdvanced(
-            Integer supplierId,
+    public CompletableFuture<Result<PaginatedResults<SupplierOrder>>> getSupplierOrdersAdvanced(
+            Integer entityId,
+            SearchMode searchMode,
             SearchParams searchParams
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("supplier-orders", "organization", supplierId.toString(), searchParams);
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey(
+                "supplier-orders",
+                searchMode == SearchMode.ORGANIZATION ? "organization" : "supplier", entityId.toString(),
+                searchParams);
         String routeAddress = rootAddress + cacheKey;
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());

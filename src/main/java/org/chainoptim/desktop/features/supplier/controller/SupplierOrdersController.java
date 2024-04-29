@@ -15,13 +15,11 @@ import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.OrderStatus;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
-import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchOptions;
-import org.chainoptim.desktop.shared.search.model.SearchOptionsConfiguration;
-import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.*;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
 import org.chainoptim.desktop.shared.table.edit.cell.DateTimePickerCell;
@@ -49,7 +47,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class SupplierOrdersController implements DataReceiver<Supplier> {
+public class SupplierOrdersController implements DataReceiver<SearchData<Supplier>> {
 
     // Services
     private final SupplierOrdersService supplierOrdersService;
@@ -69,6 +67,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
 
+    private SearchMode searchMode;
     private Supplier supplier;
     private final List<OrderStatus> statusOptions = Arrays.asList(OrderStatus.values());
     private long totalRowsCount;
@@ -120,6 +119,8 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     private StackPane confirmDeleteDialogContainer;
     @FXML
     private StackPane confirmCreateDialogContainer;
+    @FXML
+    private StackPane fallbackContainer;
 
 
     @Inject
@@ -140,18 +141,20 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
     }
 
     @Override
-    public void setData(Supplier supplier) {
-        this.supplier = supplier;
+    public void setData(SearchData<Supplier> searchData) {
+        this.supplier = searchData.getData();
+        this.searchMode = searchData.getSearchMode();
 
         searchParams.setItemsPerPage(20);
         SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
 
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(
-                searchParams,
-                searchOptions.getFilterOptions(),
-                searchOptions.getSortOptions(),
-                () -> loadSupplierOrders(supplier.getId()));
+        tableToolbarController.initialize(new ListHeaderParams
+                (searchMode, searchParams,
+                "Supplier Orders", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
+                searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
+                () -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null), null, null));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
 
@@ -160,7 +163,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         setUpListeners();
         loadConfirmDialogs();
 
-        loadSupplierOrders(supplier.getId());
+        loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null);
     }
 
     // Loading
@@ -185,7 +188,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
         selectRowColumn.setCellValueFactory(data -> data.getValue().isSelectedProperty());
         orderIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getId()));
         companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"));
-        supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.supplier.getName()));
+        supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>("this.supplier.getName()"));
         componentNameColumn.setCellValueFactory(data -> {
             Component component = data.getValue().getData().getComponent();
             String componentName = component != null ? component.getName() : "N/A";
@@ -262,19 +265,29 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     // - Listeners
     private void setUpListeners() {
+        setUpFallbackManagerListener();
         setUpSearchListeners();
         setUpTableToolbarListeners();
         setUpConfirmDialogListeners();
     }
 
+    private void setUpFallbackManagerListener() {
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            supplierOrdersScrollPane.setVisible(newValue);
+            supplierOrdersScrollPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
+    }
+
     private void setUpSearchListeners() {
-        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSupplierOrders(supplier.getId()));
-        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
-        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
-        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(supplier.getId()));
+        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null));
         searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
             if (searchParams.getFiltersProperty().entrySet().size() == 1) { // Allow only one filter at a time
-                loadSupplierOrders(supplier.getId());
+                loadSupplierOrders(searchMode == SearchMode.SECONDARY ? supplier.getId() : null);
             }
         });
     }
@@ -295,7 +308,7 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
                 openConfirmUpdateDialog(selectedRowsIndices);
             }
         });
-        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
+        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));
         tableToolbarController.getCreateNewOrderButton().setOnAction(e -> addNewOrder());
     }
 
@@ -336,9 +349,17 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
             return;
         }
 
-        supplierOrdersService.getSuppliersBySupplierIdAdvanced(supplierId, searchParams)
-                .thenApply(this::handleOrdersResponse)
-                .exceptionally(this::handleOrdersException);
+        if (searchMode == SearchMode.SECONDARY) {
+            if (supplierId == null) return;
+            supplierOrdersService.getSupplierOrdersAdvanced(supplierId, searchMode, searchParams)
+                    .thenApply(this::handleOrdersResponse)
+                    .exceptionally(this::handleOrdersException);
+        } else {
+            if (currentUser.getOrganization().getId() == null) return;
+            supplierOrdersService.getSupplierOrdersAdvanced(currentUser.getOrganization().getId(), searchMode, searchParams)
+                    .thenApply(this::handleOrdersResponse)
+                    .exceptionally(this::handleOrdersException);
+        }
     }
 
     private Result<PaginatedResults<SupplierOrder>> handleOrdersResponse(Result<PaginatedResults<SupplierOrder>> result) {
@@ -531,12 +552,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private Result<List<SupplierOrder>> handleCreateSupplierOrdersResponse(Result<List<SupplierOrder>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Supplier Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
 
             isNewOrderMode.set(false);
             closeConfirmCreateDialog();
@@ -590,13 +611,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private Result<List<SupplierOrder>> handleUpdateSupplierOrdersResponse(Result<List<SupplierOrder>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Supplier Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
-
 
             isNewOrderMode.set(false);
             closeConfirmUpdateDialog();
@@ -631,12 +651,12 @@ public class SupplierOrdersController implements DataReceiver<Supplier> {
 
     private Result<List<Integer>> handleDeleteSupplierOrdersResponse(Result<List<Integer>> result) {
         Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Supplier Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            fallbackManager.setLoading(false);
 
             tableView.getItems().removeIf(tableData -> result.getData().contains(tableData.getData().getId()));
 

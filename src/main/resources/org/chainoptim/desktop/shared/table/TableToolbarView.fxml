@@ -4,32 +4,41 @@
 <?import javafx.scene.layout.*?>
 <?import org.chainoptim.desktop.shared.search.filters.FilterBar?>
 
+<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.shared.table.TableToolbarController" styleClass="table-toolbar" spacing="8">
+      fx:controller="org.chainoptim.desktop.shared.table.TableToolbarController" styleClass="table-toolbar">
 
-    <!-- Search Options -->
-    <FlowPane alignment="CENTER_LEFT" vgap="8" hgap="6">
-        <StackPane alignment="CENTER_RIGHT">
-            <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
-            <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
-        </StackPane>
-
-        <FilterBar fx:id="filterBar"/>
-
-        <HBox alignment="CENTER_LEFT" spacing="6">
-            <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption"/>
-            <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
-            <Button fx:id="refreshButton" styleClass="refresh-button"/>
-        </HBox>
-    </FlowPane>
-
-    <!-- Table Actions -->
-    <HBox alignment="CENTER_LEFT" spacing="6">
-        <Button fx:id="cancelRowSelectionButton" styleClass="cancel-edit-button"/>
-        <Button fx:id="deleteSelectedRowsButton" styleClass="standard-delete-button"/>
-        <Button fx:id="editSelectedRowsButton" text="Edit Orders" styleClass="standard-write-button"/>
-        <Button fx:id="saveChangesButton" text="Save Changes" styleClass="standard-write-button"/>
-        <Button fx:id="createNewOrderButton" text="Add Order" styleClass="standard-write-button"/>
+    <HBox fx:id="titleContainer" alignment="CENTER_LEFT" spacing="12" styleClass="list-title-container">
+        <Label fx:id="title" styleClass="list-title"/>
+        <InfoLabel fx:id="featureInfoLabel"/>
     </HBox>
+
+    <VBox styleClass="toolbar" spacing="8">
+        <!-- Search Options -->
+        <FlowPane alignment="CENTER_LEFT" vgap="8" hgap="6">
+            <StackPane alignment="CENTER_RIGHT">
+                <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
+                <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
+            </StackPane>
+
+            <FilterBar fx:id="filterBar"/>
+
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption"/>
+                <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
+                <Button fx:id="refreshButton" styleClass="refresh-button"/>
+            </HBox>
+        </FlowPane>
+
+        <!-- Table Actions -->
+        <HBox alignment="CENTER_LEFT" spacing="6">
+            <Button fx:id="cancelRowSelectionButton" styleClass="cancel-edit-button"/>
+            <Button fx:id="deleteSelectedRowsButton" styleClass="standard-delete-button"/>
+            <Button fx:id="editSelectedRowsButton" text="Edit Orders" styleClass="standard-write-button"/>
+            <Button fx:id="saveChangesButton" text="Save Changes" styleClass="standard-write-button"/>
+            <Button fx:id="createNewOrderButton" text="Add Order" styleClass="standard-write-button"/>
+        </HBox>
+    </VBox>
+
 </VBox>

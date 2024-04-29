@@ -1,24 +1,23 @@
 .header {
-    -fx-background-color: #ffffff;
-    -fx-spacing: 20px;
-    -fx-border-color: #c0c0c0;
+    -fx-background-color: #f2f2f2;
+    -fx-border-color: #ddcecd;
     -fx-border-width: 0px 0px 1px 0px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
 }
 
-.toolbar {
-    -fx-background-color: #ffffff;
-    -fx-padding: 0px 32px 32px 32px;
-}
-
 .list-title-container {
-    -fx-padding: 20px 32px 0px 32px;
+    -fx-padding: 16px 32px 0px 32px;
 }
 
 .list-title {
-    -fx-font-size: 26px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-graphic-text-gap: 12px;
+}
+
+.toolbar {
+    -fx-background-color: #f2f2f2;
+    -fx-padding: 16px 32px 16px 32px;
 }
 
 .search-bar {
@@ -43,9 +42,9 @@
 
 .ordering-button {
     -fx-pref-height: 32px;
-    -fx-background-color: transparent;
+    -fx-background-color: white;
     -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
+    -fx-faint-focus-color: white;
     -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
@@ -58,9 +57,9 @@
 
 .refresh-button {
     -fx-pref-height: 32px;
-    -fx-background-color: transparent;
+    -fx-background-color: white;
     -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
+    -fx-faint-focus-color: white;
     -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;

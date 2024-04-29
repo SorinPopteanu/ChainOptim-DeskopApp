@@ -1,7 +1,8 @@
 package org.chainoptim.desktop.features.client.controller;
 
+import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -11,6 +12,7 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -79,7 +81,7 @@ public class ClientsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Clients", "/img/truck-arrow-right-solid.png", Feature.CLIENT, sortOptions, this::loadClients, "Client", "Create-Client");
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Clients", "/img/truck-arrow-right-solid.png", Feature.CLIENT, sortOptions, null, this::loadClients, "Client", "Create-Client"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadClients();
@@ -130,7 +132,10 @@ public class ClientsController implements Initializable {
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
             int clientsLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxClients();
+
             headerController.disableCreateButton(clientsLimit != -1 && totalCount >= clientsLimit, "You have reached the limit of clients allowed by your current subscription plan.");
+            boolean hasPermissions = TenantContext.getCurrentUser().getCustomRole() != null ? TenantContext.getCurrentUser().getCustomRole().getPermissions().getClients().getCanCreate() : TenantContext.getCurrentUser().getRole() == User.Role.ADMIN;
+            headerController.disableCreateButton(!hasPermissions, "You do not have permission to create clients.");
 
             clientsVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {
@@ -178,7 +183,7 @@ public class ClientsController implements Initializable {
         currentSelectionService.setSelectedId(clientId);
         currentSelectionService.setSelectedPage("Client");
 
-        navigationService.switchView("Client?id=" + clientId, true);
+        navigationService.switchView("Client?id=" + clientId, true, null);
     }
 }
 

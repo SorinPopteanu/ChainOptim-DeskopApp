@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.core.settings.controller.AccountSettingsController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="400.0" prefWidth="600.0" styleClass="settings-tab-container" spacing="12">
 
-</AnchorPane>
+    <StackPane>
+        <HBox>
+            <Button fx:id="logoutButton" styleClass="standard-action-button" style="-fx-padding: 12px 18px; -fx-min-height: 44px;"/>
+
+            <Region minWidth="80" maxWidth="80"/>
+
+            <Button fx:id="deleteAccountButton" styleClass="standard-action-button" style="-fx-padding: 12px 18px; -fx-min-height: 44px;"/>
+        </HBox>
+
+        <StackPane fx:id="confirmLogoutDialogContainer"/>
+
+        <StackPane fx:id="confirmDeleteAccountDialogContainer"/>
+    </StackPane>
+</VBox>

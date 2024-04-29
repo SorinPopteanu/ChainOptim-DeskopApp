@@ -16,13 +16,11 @@ import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.OrderStatus;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
-import org.chainoptim.desktop.shared.search.model.PaginatedResults;
-import org.chainoptim.desktop.shared.search.model.SearchOptions;
-import org.chainoptim.desktop.shared.search.model.SearchOptionsConfiguration;
-import org.chainoptim.desktop.shared.search.model.SearchParams;
+import org.chainoptim.desktop.shared.search.model.*;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
 import org.chainoptim.desktop.shared.table.edit.cell.DateTimePickerCell;
@@ -153,11 +151,11 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
         }
 
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(
-                searchParams,
-                searchOptions.getFilterOptions(),
-                searchOptions.getSortOptions(),
-                () -> loadWarehouseInventoryItems(warehouse.getId()));
+        tableToolbarController.initialize(new ListHeaderParams(
+                SearchMode.SECONDARY, searchParams,
+                "Factory Inventory", "/img/box-solid.png", Feature.WAREHOUSE_INVENTORY,
+                searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
+                () -> loadWarehouseInventoryItems(warehouse.getId()), null, null));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
         selectProductLoader.initialize();

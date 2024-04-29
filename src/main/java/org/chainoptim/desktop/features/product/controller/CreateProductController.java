@@ -131,7 +131,7 @@ public class CreateProductController {
                     ("Product created.", "Product has been successfully created.", OperationOutcome.SUCCESS));
 
             currentSelectionService.setSelectedId(product.getId());
-            navigationService.switchView("Product?id=" + product.getId(), true);
+            navigationService.switchView("Product?id=" + product.getId(), true, null);
         });
         return result;
     }

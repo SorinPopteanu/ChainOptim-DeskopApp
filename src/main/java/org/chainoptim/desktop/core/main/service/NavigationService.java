@@ -4,7 +4,7 @@ import javafx.scene.layout.StackPane;
 
 public interface NavigationService {
 
-    void switchView(String viewKey, boolean forward);
+    <T> void switchView(String viewKey, boolean forward, T data);
 
     void setMainContentArea(StackPane contentArea);
 

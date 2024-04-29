@@ -2,10 +2,8 @@ package org.chainoptim.desktop.shared.util.resourceloader;
 
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
-import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.shared.common.uielements.select.*;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
@@ -17,7 +15,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
-import java.util.List;
 
 public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
@@ -40,7 +37,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
     public ListHeaderController loadListHeader(StackPane headerContainer) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/core/main/ListHeaderView.fxml",
+                "/org/chainoptim/desktop/shared/search/ListHeaderView.fxml",
                 controllerFactory::createController
         );
         try {

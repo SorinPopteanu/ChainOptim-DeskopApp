@@ -3,21 +3,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOrdersController">
+            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOrdersController" >
 
-    <VBox VBox.vgrow="ALWAYS">
-        <StackPane fx:id="tableToolbarContainer"/>
-        <ScrollPane fx:id="clientOrdersScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
-            <VBox>
-                <TableView fx:id="tableView" styleClass="table-view">
+    <!-- Header -->
+    <StackPane fx:id="tableToolbarContainer"/>
+
+    <StackPane>
+        <!-- Content -->
+        <ScrollPane fx:id="clientOrdersScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true">
+            <VBox style="-fx-background-color: purple;" VBox.vgrow="ALWAYS" prefHeight="1000">
+                <TableView fx:id="tableView" styleClass="table-view" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="selectRowColumn" prefWidth="50"/>
                         <TableColumn text="Order ID" fx:id="orderIdColumn" minWidth="120"/>
                         <TableColumn text="Company Order ID" fx:id="companyIdColumn" minWidth="150"/>
                         <TableColumn text="Client" fx:id="clientNameColumn" minWidth="150"/>
-                        <TableColumn text="Component" fx:id="productNameColumn" minWidth="150"/>
+                        <TableColumn text="Product" fx:id="productNameColumn" minWidth="150"/>
                         <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
                         <TableColumn text="Delivered Quantity" fx:id="deliveredQuantityColumn" minWidth="150"/>
                         <TableColumn text="Status" fx:id="statusColumn" minWidth="150"/>
@@ -26,13 +29,15 @@
                         <TableColumn text="Delivery Date" fx:id="deliveryDateColumn" minWidth="200"/>
                     </columns>
                 </TableView>
-                <StackPane fx:id="pageSelectorContainer"/>
+                <StackPane fx:id="pageSelectorContainer" style="-fx-background-color: yellow;"/>
             </VBox>
         </ScrollPane>
-    </VBox>
 
-    <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px;"/>
-    <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
-    <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
+        <!-- Fallback and Confirm Dialogs -->
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
 
-</StackPane>
+        <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px;"/>
+        <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
+        <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
+    </StackPane>
+</VBox>

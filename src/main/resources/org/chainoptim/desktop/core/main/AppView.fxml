@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns = "http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.main.controller.AppController"
-      style="-fx-background-color: #ffffff; -fx-border-width: 1px 0px 0px 0px; -fx-border-color: #c0c0c0;">
+<StackPane xmlns = "http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.chainoptim.desktop.core.main.controller.AppController">
+    <BorderPane fx:id="appPane" styleClass="app-pane" visible="false">
 
-    <!-- Sidebar -->
-    <left>
-        <fx:include source="SidebarView.fxml"/>
-    </left>
+        <!-- Sidebar -->
+        <left>
+            <fx:include source="SidebarView.fxml"/>
+        </left>
 
-    <!-- Main Content -->
-    <center>
-        <StackPane fx:id="contentArea"/>
-    </center>
+        <!-- Main Content -->
+        <center>
+            <StackPane fx:id="contentArea"/>
+        </center>
 
-</BorderPane>
+    </BorderPane>
+
+    <StackPane fx:id="startUpArea"/>
+</StackPane>

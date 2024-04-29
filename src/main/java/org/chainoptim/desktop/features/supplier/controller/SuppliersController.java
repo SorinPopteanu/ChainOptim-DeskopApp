@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.features.supplier.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -11,6 +11,7 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -79,7 +80,7 @@ public class SuppliersController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Suppliers", "/img/truck-arrow-right-solid.png", Feature.SUPPLIER, sortOptions, this::loadSuppliers, "Supplier", "Create-Supplier");
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Suppliers", "/img/truck-arrow-right-solid.png", Feature.SUPPLIER, sortOptions, null, this::loadSuppliers, "Supplier", "Create-Supplier"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadSuppliers();
@@ -176,7 +177,7 @@ public class SuppliersController implements Initializable {
         currentSelectionService.setSelectedId(supplierId);
         currentSelectionService.setSelectedPage("Supplier");
 
-        navigationService.switchView("Supplier?id=" + supplierId, true);
+        navigationService.switchView("Supplier?id=" + supplierId, true, null);
     }
 }
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.shared.search.controller.ListHeaderController"
+      styleClass="header">
+
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="list-title-container">
+        <Label fx:id="title" styleClass="list-title"/>
+        <InfoLabel fx:id="featureInfoLabel"/>
+    </HBox>
+
+    <HBox spacing="16" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" styleClass="toolbar">
+        <StackPane alignment="CENTER_RIGHT">
+            <TextField fx:id="searchBar" onAction="#handleSearch" promptText="Search..." prefWidth="240" styleClass="search-bar"/>
+            <Button fx:id="searchButton" onAction="#handleSearch" styleClass="search-button"/>
+        </StackPane>
+
+        <HBox alignment="CENTER_LEFT" spacing="2">
+            <ComboBox fx:id="sortOptions" promptText="Sort By..." onAction="#handleSortOption" styleClass="custom-combo-box"/>
+            <Button fx:id="orderingButton" onAction="#handleOrdering" styleClass="ordering-button"/>
+        </HBox>
+
+        <Button fx:id="refreshButton" styleClass="refresh-button"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="createNewItemButton" styleClass="standard-write-button"/>
+    </HBox>
+</VBox>

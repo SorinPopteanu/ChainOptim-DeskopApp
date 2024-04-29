@@ -10,7 +10,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -20,13 +20,13 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class FactoriesController implements Initializable {
@@ -82,7 +82,7 @@ public class FactoriesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resourceBundle) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Factories", "/img/industry-solid.png", Feature.FACTORY, sortOptions, this::loadFactories, "Factory", "Create-Factory");
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Factories", "/img/industry-solid.png", Feature.FACTORY, sortOptions, null, this::loadFactories, "Factory", "Create-Factory"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadFactories();
@@ -182,6 +182,6 @@ public class FactoriesController implements Initializable {
         currentSelectionService.setSelectedId(factoryId);
         currentSelectionService.setSelectedPage("Factory");
 
-        navigationService.switchView("Factory?id=" + factoryId, true);
+        navigationService.switchView("Factory?id=" + factoryId, true, null);
     }
 }

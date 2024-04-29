@@ -1,21 +1,23 @@
 package org.chainoptim.desktop.shared.table;
 
-import org.chainoptim.desktop.shared.enums.FilterType;
+import org.chainoptim.desktop.core.context.TenantSettingsContext;
+import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
+import org.chainoptim.desktop.shared.enums.Feature;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.search.filters.FilterBar;
 import org.chainoptim.desktop.shared.search.filters.FilterOption;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
-import org.chainoptim.desktop.shared.common.uielements.UIItem;
 
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import lombok.Getter;
@@ -31,7 +33,13 @@ public class TableToolbarController {
     private SearchParams searchParams;
     private Map<String,String> sortOptionsMap;
 
-    // FXMl
+    // FXML
+    @FXML
+    private HBox titleContainer;
+    @FXML
+    private Label title;
+    @FXML
+    private InfoLabel featureInfoLabel;
     @FXML
     private TextField searchBar;
     @FXML
@@ -67,18 +75,21 @@ public class TableToolbarController {
     private Image saveIcon;
     private Image plusIcon;
 
-    public void initialize(SearchParams searchParams,
-                           List<FilterOption> filterOptions,
-                           Map<String, String> sortOptionsMap,
-                           Runnable refreshAction) {
-        this.searchParams = searchParams;
-        this.sortOptionsMap = sortOptionsMap;
+    public void initialize(ListHeaderParams headerParams) {
+        this.searchParams = headerParams.getSearchParams();
+        this.sortOptionsMap = headerParams.getSortOptionsMap();
         initializeIcons();
+        setTitle(headerParams.getTitleText(), headerParams.getTitleIconPath());
+        setInfoLabel(headerParams.getFeature());
+        if (headerParams.getSearchMode() == SearchMode.SECONDARY) {
+            titleContainer.setVisible(false);
+            titleContainer.setManaged(false);
+        }
         setSearchButton();
-        filterBar.initializeFilterBar(filterOptions, searchParams);
+        filterBar.initializeFilterBar(headerParams.getFilterOptions(), searchParams);
         setOrderingButton();
         setSortOptions(new ArrayList<>(sortOptionsMap.values()));
-        setRefreshButton(refreshAction);
+        setRefreshButton(headerParams.getRefreshAction());
         setCancelRowSelectionButton();
         setDeleteSelectedRowsButton();
         setEditSelectedRowsButton();
@@ -98,6 +109,24 @@ public class TableToolbarController {
         deleteIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
         saveIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/floppy-disk-solid.png")));
         plusIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/plus.png")));
+    }
+
+    private void setTitle(String titleText, String titleIconPath) {
+        title.setText(titleText);
+        Image titleIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream(titleIconPath)));
+        ImageView titleIconView = new ImageView(titleIcon);
+        titleIconView.setFitWidth(16);
+        titleIconView.setFitHeight(16);
+        ColorAdjust colorAdjust = new ColorAdjust();
+        colorAdjust.setBrightness(-0.84);
+        titleIconView.setEffect(colorAdjust);
+        title.setGraphic(titleIconView);
+        title.setContentDisplay(ContentDisplay.LEFT);
+    }
+
+    private void setInfoLabel(Feature feature) {
+        featureInfoLabel.setFeatureAndLevel(feature,
+                TenantSettingsContext.getCurrentUserSettings().getGeneralSettings().getInfoLevel());
     }
 
     private void setSearchButton() {

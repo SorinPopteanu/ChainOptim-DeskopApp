@@ -4,8 +4,10 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.search.model.SearchData;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -78,22 +80,22 @@ public class ClientController implements Initializable {
     private void setupListeners() {
         overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", this.client);
+                commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", new SearchData<>(this.client, SearchMode.SECONDARY));
             }
         });
         ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
-                commonViewsLoader.loadTabContent(ordersTab, "/org/chainoptim/desktop/features/client/ClientOrdersView.fxml", this.client);
+                commonViewsLoader.loadTabContent(ordersTab, "/org/chainoptim/desktop/features/client/ClientOrdersView.fxml", new SearchData<>(this.client, SearchMode.SECONDARY));
             }
         });
         shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                commonViewsLoader.loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/client/ClientShipmentsView.fxml", this.client);
+                commonViewsLoader.loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/client/ClientShipmentsView.fxml", new SearchData<>(this.client, SearchMode.SECONDARY));
             }
         });
         evaluationTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && evaluationTab.getContent() == null) {
-                commonViewsLoader.loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/client/ClientEvaluationView.fxml", this.client);
+                commonViewsLoader.loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/client/ClientEvaluationView.fxml", new SearchData<>(this.client, SearchMode.SECONDARY));
             }
         });
 
@@ -144,7 +146,7 @@ public class ClientController implements Initializable {
     @FXML
     private void handleEditClient() {
         currentSelectionService.setSelectedId(client.getId());
-        navigationService.switchView("Update-Client?id=" + client.getId(), true);
+        navigationService.switchView("Update-Client?id=" + client.getId(), true, null);
     }
 
 }

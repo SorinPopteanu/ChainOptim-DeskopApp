@@ -3,15 +3,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController">
+            fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierOrdersController" >
 
-    <VBox VBox.vgrow="ALWAYS">
-        <StackPane fx:id="tableToolbarContainer"/>
-        <ScrollPane fx:id="supplierOrdersScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
-            <VBox>
-                <TableView fx:id="tableView" styleClass="table-view">
+    <!-- Header -->
+    <StackPane fx:id="tableToolbarContainer"/>
+
+    <StackPane>
+        <!-- Content -->
+        <ScrollPane fx:id="supplierOrdersScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true">
+            <VBox style="-fx-background-color: purple;" VBox.vgrow="ALWAYS" prefHeight="1000">
+                <TableView fx:id="tableView" styleClass="table-view" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="selectRowColumn" prefWidth="50"/>
                         <TableColumn text="Order ID" fx:id="orderIdColumn" minWidth="120"/>
@@ -26,13 +29,15 @@
                         <TableColumn text="Delivery Date" fx:id="deliveryDateColumn" minWidth="200"/>
                     </columns>
                 </TableView>
-                <StackPane fx:id="pageSelectorContainer"/>
+                <StackPane fx:id="pageSelectorContainer" style="-fx-background-color: yellow;"/>
             </VBox>
         </ScrollPane>
-    </VBox>
 
-    <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px;"/>
-    <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
-    <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
+        <!-- Fallback and Confirm Dialogs -->
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
 
-</StackPane>
+        <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px;"/>
+        <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
+        <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
+    </StackPane>
+</VBox>

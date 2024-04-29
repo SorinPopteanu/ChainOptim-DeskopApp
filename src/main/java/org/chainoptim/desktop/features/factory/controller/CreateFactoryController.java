@@ -110,7 +110,7 @@ public class CreateFactoryController implements Initializable {
                     "Success", "Factory created successfully.", OperationOutcome.SUCCESS));
 
             currentSelectionService.setSelectedId(factory.getId());
-            navigationService.switchView("Factory?id=" + factory.getId(), true);
+            navigationService.switchView("Factory?id=" + factory.getId(), true, null);
         });
         return result;
     }

@@ -220,6 +220,6 @@ public class OrganizationController implements Initializable {
 
     @FXML
     private void handleEditOrganization() {
-        navigationService.switchView("Update-Organization", true);
+        navigationService.switchView("Update-Organization", true, null);
     }
 }

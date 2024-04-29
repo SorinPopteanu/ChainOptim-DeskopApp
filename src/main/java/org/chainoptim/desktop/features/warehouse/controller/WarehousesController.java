@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.features.warehouse.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -11,6 +11,7 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -27,7 +28,6 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class WarehousesController implements Initializable {
@@ -84,7 +84,7 @@ public class WarehousesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Warehouses", "/img/warehouse-solid.png", Feature.WAREHOUSE, sortOptions, this::loadWarehouses, "Warehouse", "Create-Warehouse");
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Warehouses", "/img/warehouse-solid.png", Feature.WAREHOUSE, sortOptions, null, this::loadWarehouses, "Warehouse", "Create-Warehouse"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadWarehouses();
@@ -181,6 +181,6 @@ public class WarehousesController implements Initializable {
         currentSelectionService.setSelectedId(warehouseId);
         currentSelectionService.setSelectedPage("Warehouse");
 
-        navigationService.switchView("Warehouse?id=" + warehouseId, true);
+        navigationService.switchView("Warehouse?id=" + warehouseId, true, null);
     }
 }

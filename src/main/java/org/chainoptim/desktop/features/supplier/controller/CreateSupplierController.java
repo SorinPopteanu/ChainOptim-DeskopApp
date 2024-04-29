@@ -126,7 +126,7 @@ public class CreateSupplierController implements Initializable {
                     "Success", "Supplier created successfully.", OperationOutcome.SUCCESS));
 
             currentSelectionService.setSelectedId(supplier.getId());
-            navigationService.switchView("Supplier?id=" + supplier.getId(), true);
+            navigationService.switchView("Supplier?id=" + supplier.getId(), true, null);
         });
         return result;
     }

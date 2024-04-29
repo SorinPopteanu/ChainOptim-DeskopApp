@@ -160,7 +160,7 @@ public class UpdateWarehouseController implements Initializable {
             String warehousePage = "Warehouse?id=" + updatedWarehouse.getId();
             NavigationServiceImpl.invalidateViewCache(warehousePage);
             currentSelectionService.setSelectedId(updatedWarehouse.getId());
-            navigationService.switchView(warehousePage, true);
+            navigationService.switchView(warehousePage, true, null);
         });
         return result;
     }

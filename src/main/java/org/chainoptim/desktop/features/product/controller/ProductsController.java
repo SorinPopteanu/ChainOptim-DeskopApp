@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.features.product.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.controller.ListHeaderController;
+import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
@@ -11,6 +11,7 @@ import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
+import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
@@ -78,7 +79,7 @@ public class ProductsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(searchParams, "Products", "/img/box-solid.png", Feature.PRODUCT, sortOptions, this::loadProducts, "Product", "Create-Product");
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Products", "/img/box-solid.png", Feature.PRODUCT, sortOptions, null, this::loadProducts, "Product", "Create-Product"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
         loadProducts();
@@ -170,6 +171,6 @@ public class ProductsController implements Initializable {
         // And also encode it in the viewKey for caching purposes
         currentSelectionService.setSelectedId(productId);
         currentSelectionService.setSelectedPage("Product");
-        navigationService.switchView("Product?id=" + productId, true);
+        navigationService.switchView("Product?id=" + productId, true, null);
     }
 }

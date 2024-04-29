@@ -4,10 +4,10 @@ import org.chainoptim.desktop.core.settings.model.UserSettings;
 import org.chainoptim.desktop.shared.common.uielements.settings.EnumSelector;
 import org.chainoptim.desktop.shared.enums.InfoLevel;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import lombok.Setter;
 
 public class GeneralSettingsController implements DataReceiver<UserSettings> {
@@ -27,6 +27,7 @@ public class GeneralSettingsController implements DataReceiver<UserSettings> {
     @Override
     public void setData(UserSettings data) {
         this.userSettings = data;
+
         infoLevelSelector.getChildren().clear();
         infoLevelSelector.initializeSelector(InfoLevel.class, userSettings.getGeneralSettings().getInfoLevel());
 

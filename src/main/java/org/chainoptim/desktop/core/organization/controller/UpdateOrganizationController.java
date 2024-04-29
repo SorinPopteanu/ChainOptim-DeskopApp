@@ -121,7 +121,7 @@ public class UpdateOrganizationController implements Initializable {
             // Manage navigation, invalidating previous warehouse cache
             String organizationPage = "Organization";
             NavigationServiceImpl.invalidateViewCache(organizationPage);
-            navigationService.switchView(organizationPage, true);
+            navigationService.switchView(organizationPage, true, null);
         });
         return result;
     }
