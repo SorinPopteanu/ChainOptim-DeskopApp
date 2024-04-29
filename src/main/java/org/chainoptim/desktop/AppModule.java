@@ -50,10 +50,8 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
 import org.chainoptim.desktop.features.supplier.service.*;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
-import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
-import org.chainoptim.desktop.features.warehouse.service.WarehouseServiceImpl;
-import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
-import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteServiceImpl;
+import org.chainoptim.desktop.features.warehouse.model.WarehouseInventoryItem;
+import org.chainoptim.desktop.features.warehouse.service.*;
 import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.caching.CachingServiceImpl;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -146,6 +144,8 @@ public class AppModule extends AbstractModule {
         // - Warehouse
         bind(WarehouseService.class).to(WarehouseServiceImpl.class);
         bind(WarehouseWriteService.class).to(WarehouseWriteServiceImpl.class);
+        bind(WarehouseInventoryItemService.class).to(WarehouseInventoryItemServiceImpl.class);
+        bind(WarehouseInventoryItemWriteService.class).to(WarehouseInventoryItemWriteServiceImpl.class);
 
         // - Supplier
         bind(SupplierService.class).to(SupplierServiceImpl.class);
@@ -204,6 +204,9 @@ public class AppModule extends AbstractModule {
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Warehouse>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Warehouse>>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<PaginatedResults<WarehouseInventoryItem>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<WarehouseInventoryItem>>>() {})
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Supplier>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Supplier>>>() {})

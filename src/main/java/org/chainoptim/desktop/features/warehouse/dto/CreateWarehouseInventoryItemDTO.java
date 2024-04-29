@@ -11,4 +11,5 @@ public class CreateWarehouseInventoryItemDTO {
     private Integer componentId;
     private Float quantity;
     private Float minimumRequiredQuantity;
+    private  String companyId;
 }
