@@ -569,6 +569,7 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
 
     private UpdateFactoryInventoryItemDTO getUpdateFactoryInventoryItemDTO(FactoryInventoryItem item) {
         UpdateFactoryInventoryItemDTO updateFactoryInventoryItemDTO = new UpdateFactoryInventoryItemDTO();
+        updateFactoryInventoryItemDTO.setOrganizationId(factory.getOrganizationId());
         updateFactoryInventoryItemDTO.setId(item.getId());
         updateFactoryInventoryItemDTO.setComponentId(item.getComponent().getId());
         updateFactoryInventoryItemDTO.setProductId(item.getProduct().getId());
