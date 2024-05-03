@@ -15,7 +15,7 @@
 
     <StackPane>
         <!-- Content -->
-        <ScrollPane fx:id="clientOrdersScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true">
+        <ScrollPane fx:id="supplierShipmentsScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true">
             <VBox style="-fx-background-color: purple;" VBox.vgrow="ALWAYS" prefHeight="1000">
                 <TableView fx:id="tableView" styleClass="table-view" VBox.vgrow="ALWAYS">
                     <columns>
