@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.supplier.dto;
+package org.chainoptim.desktop.features.client.dto;
 
 import org.chainoptim.desktop.shared.enums.ShipmentStatus;
 import org.chainoptim.desktop.shared.features.location.model.Location;
@@ -10,10 +10,9 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateSupplierShipmentDTO {
-    private Integer id;
+public class CreateClientShipmentDTO {
     private Integer organizationId;
-    private Integer supplierOrderId;
+    private Integer clientOrderId;
     private Float quantity;
     private LocalDateTime shipmentStartingDate;
     private LocalDateTime estimatedArrivalDate;

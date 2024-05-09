@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.supplier.model;
+package org.chainoptim.desktop.features.client.model;
 
 import org.chainoptim.desktop.shared.enums.ShipmentStatus;
 import org.chainoptim.desktop.shared.features.location.model.Location;
@@ -10,11 +10,13 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SupplierShipment {
+public class ClientShipment {
 
-    public SupplierShipment(SupplierShipment data) {
+    public ClientShipment(ClientShipment data) {
         this.id = data.id;
-        this.supplierOrderId = data.supplierOrderId;
+        this.createdAt = data.createdAt;
+        this.updatedAt = data.updatedAt;
+        this.clientOrderId = data.clientOrderId;
         this.quantity = data.quantity;
         this.shipmentStartingDate = data.shipmentStartingDate;
         this.estimatedArrivalDate = data.estimatedArrivalDate;
@@ -28,7 +30,9 @@ public class SupplierShipment {
     }
 
     private Integer id;
-    private Integer supplierOrderId;
+    private Integer clientOrderId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private Float quantity;
     private LocalDateTime shipmentStartingDate;
     private LocalDateTime estimatedArrivalDate;

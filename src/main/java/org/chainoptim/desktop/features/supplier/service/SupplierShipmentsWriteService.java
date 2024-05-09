@@ -11,9 +11,9 @@ public interface SupplierShipmentsWriteService {
 
     CompletableFuture<Result<SupplierShipment>> createSupplierShipment(CreateSupplierShipmentDTO supplierDTO);
 
-    CompletableFuture<Result<List<Integer>>> deleteSupplierShipmentInBulk(List<Integer> orderIds);
+    CompletableFuture<Result<List<Integer>>> deleteSupplierShipmentInBulk(List<Integer> shipmentIds);
 
-    CompletableFuture<Result<List<SupplierShipment>>> updateSupplierShipmentsInBulk(List<UpdateSupplierShipmentDTO> orderDTOs);
+    CompletableFuture<Result<List<SupplierShipment>>> updateSupplierShipmentsInBulk(List<UpdateSupplierShipmentDTO> shipmentDTOs);
 
-    CompletableFuture<Result<List<SupplierShipment>>> createSupplierShipmentsInBulk(List<CreateSupplierShipmentDTO> orderDTOs);
+    CompletableFuture<Result<List<SupplierShipment>>> createSupplierShipmentsInBulk(List<CreateSupplierShipmentDTO> shipmentDTOs);
 }

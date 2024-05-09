@@ -58,6 +58,32 @@ public class SearchOptionsConfiguration {
             )
     );
 
+    private static final SearchOptions CLIENT_SHIPMENT_OPTIONS = new SearchOptions(
+            List.of(
+                    new FilterOption(
+                            new UIItem("Created At Start", "createdAtStart"),
+                            new ArrayList<>(),
+                            FilterType.DATE
+                    ),
+                    new FilterOption(
+                            new UIItem("Quantity", "greaterThanQuantity"),
+                            new ArrayList<>(),
+                            FilterType.NUMBER
+                    ),
+                    new FilterOption(
+                            new UIItem("Status", "status"),
+                            List.of(new UIItem("Delivered", "DELIVERED"), new UIItem("Pending", "PENDING")),
+                            FilterType.ENUM
+                    )
+            ),
+            Map.of(
+                    "createdAt", "Created At",
+                    "estimatedDeliveryDate", "Estimated Delivery Date",
+                    "deliveryDate", "Delivery Date",
+                    "quantity", "Quantity"
+            )
+    );
+
     private static final SearchOptions FACTORY_INVENTORY_OPTIONS = new SearchOptions(
             List.of(
                     new FilterOption(
@@ -81,7 +107,8 @@ public class SearchOptionsConfiguration {
     private static final Map<Feature, SearchOptions> SEARCH_OPTIONS_MAP = Map.of(
             Feature.SUPPLIER_ORDER, SUPPLIER_ORDER_OPTIONS,
             Feature.SUPPLIER_SHIPMENT, SUPPLIER_SHIPMENT_OPTIONS,
-            Feature.FACTORY_INVENTORY, FACTORY_INVENTORY_OPTIONS
+            Feature.FACTORY_INVENTORY, FACTORY_INVENTORY_OPTIONS,
+            Feature.CLIENT_SHIPMENT, CLIENT_SHIPMENT_OPTIONS
     );
 
     public static SearchOptions getSearchOptions(Feature feature) {
