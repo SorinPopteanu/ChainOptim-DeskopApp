@@ -78,6 +78,7 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"),
             Map.entry("Update-Supplier", "/org/chainoptim/desktop/features/supplier/UpdateSupplierView.fxml"),
             Map.entry("Supplier-Orders", "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml"),
+            Map.entry("Supplier-Shipments", "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml"),
 
             Map.entry("Clients", "/org/chainoptim/desktop/features/client/ClientsView.fxml"),
             Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),

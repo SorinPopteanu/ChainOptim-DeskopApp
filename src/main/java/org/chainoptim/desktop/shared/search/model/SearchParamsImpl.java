@@ -20,7 +20,7 @@ public class SearchParamsImpl implements SearchParams {
     public SearchParamsImpl() {
         searchQuery = new SimpleStringProperty("");
         filters = new SimpleMapProperty<>(FXCollections.observableMap(new HashMap<>()));
-        sortOption = new SimpleStringProperty("createdAt");
+        sortOption = new SimpleStringProperty("quantity");
         ascending = new SimpleBooleanProperty(false);
         page = new SimpleIntegerProperty(1);
         itemsPerPage = new SimpleIntegerProperty(10);

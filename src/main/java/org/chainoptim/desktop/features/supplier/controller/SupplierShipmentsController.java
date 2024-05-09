@@ -2,7 +2,6 @@ package org.chainoptim.desktop.features.supplier.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.productpipeline.model.Component;
 import org.chainoptim.desktop.features.supplier.dto.CreateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
@@ -208,13 +207,6 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
     }
 
     private void configureColumnCellFactories() {
-        transporterTypeColumn.setCellFactory(column -> new EditableCell<TableData<SupplierShipment>, String>(
-                isEditMode, selectedRowsIndices, String::toString) {
-            @Override
-            protected void commitChange(TableData<SupplierShipment> item, String newValue) {
-                item.getData().setTransporterType(newValue);
-            }
-        });
         quantityColumn.setCellFactory(column -> new EditableCell<TableData<SupplierShipment>, Float>(
                 isEditMode, selectedRowsIndices, Float::parseFloat) {
             @Override
@@ -340,7 +332,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
 
         if (searchMode == SearchMode.SECONDARY) {
             if (supplierId == null) return;
-            supplierShipmentsService.getSupplierShipmentsAdvanced(supplierId, searchMode, searchParams)
+            supplierShipmentsService.getSupplierShipmentsAdvanced(32, searchMode, searchParams)
                     .thenApply(this::handleShipmentsResponse)
                     .exceptionally(this::handleShipmentsException);
         } else {
@@ -525,7 +517,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
             throw new IllegalArgumentException("Supplier Organization ID is missing");
         }
         createSupplierShipmentDTO.setOrganizationId(supplier.getOrganizationId());
-        createSupplierShipmentDTO.setSupplierOrderId(shipment.getSupplierOrderId());
+        createSupplierShipmentDTO.setSupplierOrderId(32);
         createSupplierShipmentDTO.setQuantity(shipment.getQuantity());
         createSupplierShipmentDTO.setShipmentStartingDate(shipment.getShipmentStartingDate());
         createSupplierShipmentDTO.setEstimatedArrivalDate(shipment.getEstimatedArrivalDate());
@@ -584,6 +576,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
 
     private UpdateSupplierShipmentDTO getUpdateSupplierShipmentDTO(SupplierShipment shipment) {
         UpdateSupplierShipmentDTO updateSupplierShipmentDTO = new UpdateSupplierShipmentDTO();
+        updateSupplierShipmentDTO.setId(shipment.getId());
         updateSupplierShipmentDTO.setOrganizationId(supplier.getOrganizationId());
         updateSupplierShipmentDTO.setSupplierOrderId(shipment.getSupplierOrderId());
         updateSupplierShipmentDTO.setQuantity(shipment.getQuantity());
