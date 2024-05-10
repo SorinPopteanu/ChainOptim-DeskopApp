@@ -145,7 +145,7 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
         this.warehouse = warehouse;
 
         searchParams.setItemsPerPage(20);
-        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.FACTORY_INVENTORY);
+        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.WAREHOUSE_INVENTORY);
         if (searchOptions == null) {
             throw new IllegalArgumentException("Search options not found");
         }
