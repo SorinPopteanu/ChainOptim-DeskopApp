@@ -23,15 +23,15 @@
                         <TableColumn text="Shipment ID" fx:id="shipmentIdColumn" minWidth="120"/>
                         <TableColumn text="Client Order ID" fx:id="clientOrderIdColumn" minWidth="150"/>
                         <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
-                        <TableColumn text="Shipment Starting Date" fx:id="shipmentStartingDateColumn" minWidth="150"/>
-                        <TableColumn text="Estimated Arrival Date" fx:id="estimatedArrivalDateColumn" minWidth="150"/>
+                        <TableColumn text="Shipment Starting Date" fx:id="shipmentStartingDateColumn" minWidth="200"/>
+                        <TableColumn text="Estimated Arrival Date" fx:id="estimatedArrivalDateColumn" minWidth="200"/>
                         <TableColumn text="Arrival Date" fx:id="arrivalDateColumn" minWidth="150"/>
                         <TableColumn text="Transporter Type" fx:id="transporterTypeColumn" minWidth="150"/>
                         <TableColumn text="Status" fx:id="statusColumn" minWidth="150"/>
                         <TableColumn text="Source Location" fx:id="sourceLocationColumn" minWidth="200"/>
                         <TableColumn text="Destination Location" fx:id="destinationLocationColumn" minWidth="200"/>
-                        <TableColumn text="Current Location Latitude" fx:id="currentLocationLatitudeColumn" minWidth="200"/>
-                        <TableColumn text="Current Location Longitude" fx:id="currentLocationLongitudeColumn" minWidth="200"/>
+                        <TableColumn text="Current Location Latitude" fx:id="currentLocationLatitudeColumn" minWidth="220"/>
+                        <TableColumn text="Current Location Longitude" fx:id="currentLocationLongitudeColumn" minWidth="220"/>
                     </columns>
                 </TableView>
                 <StackPane fx:id="pageSelectorContainer" style="-fx-background-color: yellow;"/>
