@@ -145,7 +145,7 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
         this.warehouse = warehouse;
 
         searchParams.setItemsPerPage(20);
-        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.FACTORY_INVENTORY);
+        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.WAREHOUSE_INVENTORY);
         if (searchOptions == null) {
             throw new IllegalArgumentException("Search options not found");
         }
@@ -228,7 +228,8 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
                 isEditMode, selectedRowsIndices, Float::parseFloat) {
             @Override
             protected void commitChange(TableData<WarehouseInventoryItem> item, Float newValue) {
-                item.getData().setQuantity(newValue);
+                item.getData().setMinimumRequiredQuantity(newValue);
+                System.out.println("Minimum required quantity: " + item.getData().getMinimumRequiredQuantity());
             }
         });
         createdAtColumn.setCellFactory(column -> new DateTimePickerCell<TableData<WarehouseInventoryItem>, LocalDateTime>(
@@ -577,6 +578,7 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
         updateWarehouseInventoryItemDTO.setMinimumRequiredQuantity(item.getMinimumRequiredQuantity());
         updateWarehouseInventoryItemDTO.setCompanyId(item.getCompanyId());
 
+        System.out.println("Updated item minimumQuantity: " + updateWarehouseInventoryItemDTO.getMinimumRequiredQuantity());
         return updateWarehouseInventoryItemDTO;
     }
 
@@ -608,9 +610,9 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
         return new Result<>();
     }
 
-    private void handleDeleteOrders(List<WarehouseInventoryItem> WarehouseInventoryItems) {
+    private void handleDeleteOrders(List<WarehouseInventoryItem> warehouseInventoryItems) {
         List<Integer> itemsToRemoveIds = new ArrayList<>();
-        for (WarehouseInventoryItem item : WarehouseInventoryItems) {
+        for (WarehouseInventoryItem item : warehouseInventoryItems) {
             itemsToRemoveIds.add(item.getId());
         }
 

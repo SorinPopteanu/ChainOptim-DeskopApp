@@ -228,7 +228,7 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
                 isEditMode, selectedRowsIndices, Float::parseFloat) {
             @Override
             protected void commitChange(TableData<FactoryInventoryItem> item, Float newValue) {
-                item.getData().setQuantity(newValue);
+                item.getData().setMinimumRequiredQuantity(newValue);
             }
         });
         createdAtColumn.setCellFactory(column -> new DateTimePickerCell<TableData<FactoryInventoryItem>, LocalDateTime>(

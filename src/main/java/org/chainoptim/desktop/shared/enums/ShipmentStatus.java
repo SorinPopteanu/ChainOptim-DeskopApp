@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.shared.enums;
 
-public enum OrderStatus {
+public enum ShipmentStatus {
     INITIATED,
     NEGOTIATED,
     PLACED,
@@ -12,8 +12,8 @@ public enum OrderStatus {
         return this.name().charAt(0) + this.name().substring(1).toLowerCase();
     }
 
-    public static OrderStatus fromString(String statusStr) {
-        for (OrderStatus status : values()) {
+    public static ShipmentStatus fromString(String statusStr) {
+        for (ShipmentStatus status : values()) {
             if (status.name().equalsIgnoreCase(statusStr)) {
                 return status;
             }

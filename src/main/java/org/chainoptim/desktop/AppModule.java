@@ -23,6 +23,7 @@ import org.chainoptim.desktop.core.settings.service.UserSettingsServiceImpl;
 import org.chainoptim.desktop.core.user.service.*;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.model.ClientOrder;
+import org.chainoptim.desktop.features.client.model.ClientShipment;
 import org.chainoptim.desktop.features.client.service.*;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.features.factory.model.FactoryInventoryItem;
@@ -48,6 +49,7 @@ import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerform
 import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceServiceImpl;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
+import org.chainoptim.desktop.features.supplier.model.SupplierShipment;
 import org.chainoptim.desktop.features.supplier.service.*;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.model.WarehouseInventoryItem;
@@ -152,6 +154,8 @@ public class AppModule extends AbstractModule {
         bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
         bind(SupplierOrdersService.class).to(SupplierOrdersServiceImpl.class);
         bind(SupplierOrdersWriteService.class).to(SupplierOrdersWriteServiceImpl.class);
+        bind(SupplierShipmentsService.class).to(SupplierShipmentsServiceImpl.class);
+        bind(SupplierShipmentsWriteService.class).to(SupplierShipmentsWriteServiceImpl.class);
 
         // - Components
         bind(ComponentService.class).to(ComponentServiceImpl.class);
@@ -161,6 +165,8 @@ public class AppModule extends AbstractModule {
         bind(ClientWriteService.class).to(ClientWriteServiceImpl.class);
         bind(ClientOrdersService.class).to(ClientOrdersServiceImpl.class);
         bind(ClientOrdersWriteService.class).to(ClientOrdersWriteServiceImpl.class);
+        bind(ClientShipmentsService.class).to(ClientShipmentsServiceImpl.class);
+        bind(ClientShipmentsWriteService.class).to(ClientShipmentsWriteServiceImpl.class);
 
         // - SC Analysis
         bind(ProductProductionGraphService.class).to(ProductProductionGraphServiceImpl.class);
@@ -214,11 +220,17 @@ public class AppModule extends AbstractModule {
         bind(new TypeLiteral<CachingService<PaginatedResults<SupplierOrder>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<SupplierOrder>>>() {})
                 .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<PaginatedResults<SupplierShipment>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<SupplierShipment>>>() {})
+                .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {})
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<ClientOrder>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<ClientOrder>>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<PaginatedResults<ClientShipment>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<ClientShipment>>>() {})
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<ResourceAllocationPlan>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<ResourceAllocationPlan>>() {})

@@ -41,7 +41,7 @@ public class RequestBuilderImpl implements RequestBuilder {
                 builder.PUT(HttpRequest.BodyPublishers.ofString(requestBodyString));
                 break;
             case DELETE:
-                builder.DELETE();
+                builder.method("DELETE", HttpRequest.BodyPublishers.ofString(requestBodyString));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported HTTP method: " + method);
