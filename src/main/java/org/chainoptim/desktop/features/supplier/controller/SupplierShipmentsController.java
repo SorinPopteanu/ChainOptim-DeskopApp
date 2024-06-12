@@ -541,14 +541,16 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         }
         createSupplierShipmentDTO.setOrganizationId(supplier.getOrganizationId());
         createSupplierShipmentDTO.setSupplierId(supplier.getId());
-//        createSupplierShipmentDTO.setComponentId(shipment.getComponent().getId());
-//        createSupplierShipmentDTO.setQuantity(shipment.getQuantity());
-//        createSupplierShipmentDTO.setDeliveredQuantity(shipment.getDeliveredQuantity());
-//        createSupplierShipmentDTO.setShipmentDate(shipment.getShipmentDate());
-//        createSupplierShipmentDTO.setEstimatedDeliveryDate(shipment.getEstimatedDeliveryDate());
-//        createSupplierShipmentDTO.setDeliveryDate(shipment.getDeliveryDate());
-//        createSupplierShipmentDTO.setStatus(shipment.getStatus());
-//        createSupplierShipmentDTO.setCompanyId(shipment.getCompanyId());
+        createSupplierShipmentDTO.setSupplierOrderId(shipment.getSupplierOrderId());
+        createSupplierShipmentDTO.setComponentId(shipment.getComponentId());
+        createSupplierShipmentDTO.setQuantity(shipment.getQuantity());
+        createSupplierShipmentDTO.setDeliveredQuantity(shipment.getDeliveredQuantity());
+        createSupplierShipmentDTO.setArrivalDate(shipment.getArrivalDate());
+        createSupplierShipmentDTO.setEstimatedArrivalDate(shipment.getEstimatedArrivalDate());
+        createSupplierShipmentDTO.setShipmentStartingDate(shipment.getShipmentStartingDate());
+        createSupplierShipmentDTO.setStatus(shipment.getStatus());
+
+        createSupplierShipmentDTO.setCompanyId(shipment.getCompanyId());
 
         return createSupplierShipmentDTO;
     }
@@ -601,7 +603,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         updateSupplierShipmentDTO.setId(shipment.getId());
         updateSupplierShipmentDTO.setOrganizationId(shipment.getOrganizationId());
 //        updateSupplierShipmentDTO.setComponentId(shipment.getComponent().getId());
-//        updateSupplierShipmentDTO.setQuantity(shipment.getQuantity());
+        updateSupplierShipmentDTO.setQuantity(shipment.getQuantity());
 //        updateSupplierShipmentDTO.setDeliveredQuantity(shipment.getDeliveredQuantity());
 //        updateSupplierShipmentDTO.setShipmentDate(shipment.getShipmentDate());
 //        updateSupplierShipmentDTO.setEstimatedDeliveryDate(shipment.getEstimatedDeliveryDate());

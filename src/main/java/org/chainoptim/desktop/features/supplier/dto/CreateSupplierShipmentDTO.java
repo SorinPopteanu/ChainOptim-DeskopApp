@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.supplier.dto;
 
+import org.chainoptim.desktop.shared.enums.ShipmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ public class CreateSupplierShipmentDTO {
     private Integer organizationId;
     private Integer supplierId;
     private Integer supplierOrderId;
+    private String companyId;
     private Integer componentId;
     private String componentName;
     private Float quantity;
@@ -21,7 +23,7 @@ public class CreateSupplierShipmentDTO {
     private LocalDateTime shipmentStartingDate;
     private LocalDateTime estimatedArrivalDate;
     private LocalDateTime arrivalDate;
-    private String status;
+    private ShipmentStatus status;
     private Integer sourceLocationId;
     private Integer destinationLocationId;
     private Float currentLocationLatitude;

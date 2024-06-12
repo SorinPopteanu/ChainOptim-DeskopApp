@@ -13,6 +13,7 @@ import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 
+import java.net.HttpURLConnection;
 import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -72,10 +73,12 @@ public class SupplierShipmentsWriteServiceImpl implements SupplierShipmentsWrite
         String routeAddress = "http://localhost:8080/api/v1/supplier-shipments/delete/bulk";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.DELETE, routeAddress, tokenManager.getToken(), shipmentIds);
+                HttpMethod.PUT, routeAddress, tokenManager.getToken(), shipmentIds);
 
-        return requestHandler.sendRequest(request, new TypeReference<List<Integer>>() {}, ids -> {
-            cachingService.clear(); // Invalidate cache
-        });
+        requestHandler.sendRequest(request, new TypeReference<>() {}, ids ->
+            cachingService.clear() // Invalidate cache
+        );
+
+        return CompletableFuture.completedFuture(new Result<>(shipmentIds, null, HttpURLConnection.HTTP_OK));
     }
 }
