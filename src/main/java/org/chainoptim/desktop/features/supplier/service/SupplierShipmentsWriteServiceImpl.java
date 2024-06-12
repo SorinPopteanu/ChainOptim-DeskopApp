@@ -80,5 +80,6 @@ public class SupplierShipmentsWriteServiceImpl implements SupplierShipmentsWrite
         );
 
         return CompletableFuture.completedFuture(new Result<>(shipmentIds, null, HttpURLConnection.HTTP_OK));
+
     }
 }

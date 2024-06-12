@@ -4,7 +4,7 @@ import org.chainoptim.desktop.shared.enums.ShipmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.chainoptim.desktop.shared.features.location.model.Location;
 import java.time.LocalDateTime;
 
 @Data
@@ -26,6 +26,8 @@ public class CreateSupplierShipmentDTO {
     private ShipmentStatus status;
     private Integer sourceLocationId;
     private Integer destinationLocationId;
+    private Location sourceLocation;
+    private Location destinationLocation;
     private Float currentLocationLatitude;
     private Float currentLocationLongitude;
 }

@@ -2,7 +2,10 @@ package org.chainoptim.desktop.features.supplier.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
+<<<<<<< HEAD
 import org.chainoptim.desktop.features.productpipeline.model.Component;
+=======
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 import org.chainoptim.desktop.features.supplier.dto.CreateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
@@ -17,6 +20,10 @@ import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.ShipmentStatus;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+<<<<<<< HEAD
+=======
+import org.chainoptim.desktop.shared.features.location.model.Location;
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.search.model.*;
@@ -25,8 +32,13 @@ import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
 import org.chainoptim.desktop.shared.table.edit.cell.DateTimePickerCell;
 import org.chainoptim.desktop.shared.table.edit.cell.EditableCell;
 import org.chainoptim.desktop.shared.table.model.TableData;
+<<<<<<< HEAD
 import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
+=======
+import org.chainoptim.desktop.shared.table.util.TableConfigurer;
+import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 import org.chainoptim.desktop.shared.toast.controller.ToastManager;
 import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -40,6 +52,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
+<<<<<<< HEAD
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -49,6 +62,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+=======
+import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
+
+import java.time.LocalDateTime;
+import java.util.*;
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 import java.util.function.Consumer;
 
 public class SupplierShipmentsController implements DataReceiver<SearchData<Supplier>> {
@@ -98,6 +118,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
     @FXML
     private TableColumn<TableData<SupplierShipment>, Integer> shipmentIdColumn;
     @FXML
+<<<<<<< HEAD
     private TableColumn<TableData<SupplierShipment>, String> companyIdColumn;
     @FXML
     private TableColumn<TableData<SupplierShipment>, String> supplierNameColumn;
@@ -110,12 +131,33 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
     @FXML
     private TableColumn<TableData<SupplierShipment>, ShipmentStatus> statusColumn;
     @FXML
+=======
+    private TableColumn<TableData<SupplierShipment>, Integer> supplierOrderIdColumn;
+    @FXML
+    private TableColumn<TableData<SupplierShipment>, Float> quantityColumn;
+    @FXML
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
     private TableColumn<TableData<SupplierShipment>, LocalDateTime> shipmentStartingDateColumn;
     @FXML
     private TableColumn<TableData<SupplierShipment>, LocalDateTime> estimatedArrivalDateColumn;
     @FXML
     private TableColumn<TableData<SupplierShipment>, LocalDateTime> arrivalDateColumn;
     @FXML
+<<<<<<< HEAD
+=======
+    private TableColumn<TableData<SupplierShipment>, String> transporterTypeColumn;
+    @FXML
+    private TableColumn<TableData<SupplierShipment>, ShipmentStatus> statusColumn;
+    @FXML
+    private TableColumn<TableData<SupplierShipment>, Location> sourceLocationColumn;
+    @FXML
+    private TableColumn<TableData<SupplierShipment>, Location> destinationLocationColumn;
+    @FXML
+    private TableColumn<TableData<SupplierShipment>, Float> currentLocationLatitudeColumn;
+    @FXML
+    private TableColumn<TableData<SupplierShipment>, Float> currentLocationLongitudeColumn;
+    @FXML
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
     private StackPane pageSelectorContainer;
     @FXML
     private StackPane confirmUpdateDialogContainer;
@@ -129,12 +171,21 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
 
     @Inject
     public SupplierShipmentsController(SupplierShipmentsService supplierShipmentsService,
+<<<<<<< HEAD
                                        SupplierShipmentsWriteService supplierShipmentsWriteService,
                                        CommonViewsLoader commonViewsLoader,
                                        SelectComponentLoader selectComponentLoader,
                                        ToastManager toastManager,
                                        FallbackManager fallbackManager,
                                        SearchParams searchParams) {
+=======
+                                    SupplierShipmentsWriteService supplierShipmentsWriteService,
+                                    CommonViewsLoader commonViewsLoader,
+                                    SelectComponentLoader selectComponentLoader,
+                                    ToastManager toastManager,
+                                    FallbackManager fallbackManager,
+                                    SearchParams searchParams) {
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
         this.supplierShipmentsService = supplierShipmentsService;
         this.supplierShipmentsWriteService = supplierShipmentsWriteService;
         this.commonViewsLoader = commonViewsLoader;
@@ -150,15 +201,25 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         this.searchMode = searchData.getSearchMode();
 
         searchParams.setItemsPerPage(20);
+<<<<<<< HEAD
         SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
+=======
+        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_SHIPMENT);
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
         tableToolbarController.initialize(new ListHeaderParams
                 (searchMode, searchParams,
+<<<<<<< HEAD
                 "Supplier Shipments", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
                 searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
                 () -> loadSupplierShipments(searchMode == SearchMode.SECONDARY ? supplier.getId() : null), null, null));
+=======
+                        "Supplier Shipments", "/img/box-solid.png", Feature.SUPPLIER_SHIPMENT,
+                        searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
+                        () -> loadSupplierShipments(searchMode == SearchMode.SECONDARY ? supplier.getId() : null), null, null));
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
 
@@ -191,6 +252,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         // Bind columns to data
         selectRowColumn.setCellValueFactory(data -> data.getValue().isSelectedProperty());
         shipmentIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getId()));
+<<<<<<< HEAD
         companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"));
         supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>("this.supplier.getName()"));
         componentNameColumn.setCellValueFactory(data -> {
@@ -203,11 +265,25 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         shipmentStartingDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getShipmentStartingDate()));
         estimatedArrivalDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getEstimatedArrivalDate()));
         arrivalDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getArrivalDate()));
+=======
+        supplierOrderIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getSupplierOrderId()));
+        quantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getQuantity()));
+        shipmentStartingDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getShipmentStartingDate()));
+        estimatedArrivalDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getEstimatedArrivalDate()));
+        arrivalDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getArrivalDate()));
+        transporterTypeColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getTransporterType()));
+        statusColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getStatus()));
+        sourceLocationColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getSourceLocation()));
+        destinationLocationColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getDestinationLocation()));
+        currentLocationLatitudeColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCurrentLocationLatitude()));
+        currentLocationLongitudeColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCurrentLocationLongitude()));
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 
         configureColumnCellFactories();
     }
 
     private void configureColumnCellFactories() {
+<<<<<<< HEAD
         companyIdColumn.setCellFactory(column -> new EditableCell<TableData<SupplierShipment>, String>(
                 isEditMode, selectedRowsIndices, String::toString) {
             @Override
@@ -215,6 +291,8 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
                 item.getData().setCompanyId(newValue);
             }
         });
+=======
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
         quantityColumn.setCellFactory(column -> new EditableCell<TableData<SupplierShipment>, Float>(
                 isEditMode, selectedRowsIndices, Float::parseFloat) {
             @Override
@@ -222,11 +300,19 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
                 item.getData().setQuantity(newValue);
             }
         });
+<<<<<<< HEAD
         deliveredQuantityColumn.setCellFactory(column -> new EditableCell<TableData<SupplierShipment>, Float>(
                 isEditMode, selectedRowsIndices, Float::parseFloat) {
             @Override
             protected void commitChange(TableData<SupplierShipment> item, Float newValue) {
                 item.getData().setDeliveredQuantity(newValue);
+=======
+        shipmentStartingDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
+                isEditMode, selectedRowsIndices, true) {
+            @Override
+            protected void commitChange(TableData<SupplierShipment> item, LocalDateTime newValue) {
+                item.getData().setShipmentStartingDate(newValue);
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
             }
         });
         estimatedArrivalDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
@@ -236,7 +322,10 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
                 item.getData().setEstimatedArrivalDate(newValue);
             }
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
         arrivalDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
                 isEditMode, selectedRowsIndices, true) {
             @Override
@@ -244,9 +333,12 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
                 item.getData().setArrivalDate(newValue);
             }
         });
+<<<<<<< HEAD
         shipmentStartingDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
                 isEditMode, selectedRowsIndices, false){});
 
+=======
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
         statusColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierShipment>, ShipmentStatus>(
                 isEditMode, selectedRowsIndices, null, statusOptions) {
             @Override
@@ -254,6 +346,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
                 item.getData().setStatus(newValue);
             }
         });
+<<<<<<< HEAD
         componentNameColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierShipment>, String>(
                 isEditMode, selectedRowsIndices, null, selectComponentLoader.getComponentsName()) {
             @Override
@@ -264,6 +357,8 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
                 item.getData().setComponentName(component.getName());
             }
         });
+=======
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
     }
 
     // - Listeners
@@ -312,7 +407,11 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
             }
         });
         tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));
+<<<<<<< HEAD
         tableToolbarController.getCreateNewShipmentButton().setOnAction(e -> addNewShipment());
+=======
+        tableToolbarController.getCreateNewOrderButton().setOnAction(e -> addNewShipment());
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
     }
 
     private void setUpConfirmDialogListeners() {
@@ -354,7 +453,11 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
 
         if (searchMode == SearchMode.SECONDARY) {
             if (supplierId == null) return;
+<<<<<<< HEAD
             supplierShipmentsService.getSupplierShipmentsAdvanced(supplierId, searchMode, searchParams)
+=======
+            supplierShipmentsService.getSupplierShipmentsAdvanced(32, searchMode, searchParams)
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
                     .thenApply(this::handleShipmentsResponse)
                     .exceptionally(this::handleShipmentsException);
         } else {
@@ -384,7 +487,11 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
             }
 
             for (SupplierShipment supplierShipment : paginatedResults.results) {
+<<<<<<< HEAD
                 SupplierShipment oldData = supplierShipment.deepCopy();
+=======
+                SupplierShipment oldData = new SupplierShipment(supplierShipment);
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
                 TableData<SupplierShipment> tableRow = new TableData<>(supplierShipment, oldData, new SimpleBooleanProperty(false));
                 setUpRowListeners(tableRow);
                 tableView.getItems().add(tableRow);
@@ -424,8 +531,12 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         isEditMode.set(true);
         for (Integer index : selectedRowsIndices) {
             TableData<SupplierShipment> tableRow = tableView.getItems().get(index);
+<<<<<<< HEAD
             SupplierShipment oldShipment = tableRow.getData().deepCopy();
             oldShipment.setComponentName(tableRow.getData().getComponentName());
+=======
+            SupplierShipment oldShipment = new SupplierShipment(tableRow.getData());
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
             tableRow.setOldData(oldShipment);
         }
         selectRowColumn.setEditable(false);
@@ -540,6 +651,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
             throw new IllegalArgumentException("Supplier Organization ID is missing");
         }
         createSupplierShipmentDTO.setOrganizationId(supplier.getOrganizationId());
+<<<<<<< HEAD
         createSupplierShipmentDTO.setSupplierId(supplier.getId());
         createSupplierShipmentDTO.setSupplierOrderId(shipment.getSupplierOrderId());
         createSupplierShipmentDTO.setComponentId(shipment.getComponentId());
@@ -551,6 +663,18 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         createSupplierShipmentDTO.setStatus(shipment.getStatus());
 
         createSupplierShipmentDTO.setCompanyId(shipment.getCompanyId());
+=======
+        createSupplierShipmentDTO.setSupplierOrderId(32);
+        createSupplierShipmentDTO.setQuantity(shipment.getQuantity());
+        createSupplierShipmentDTO.setShipmentStartingDate(shipment.getShipmentStartingDate());
+        createSupplierShipmentDTO.setEstimatedArrivalDate(shipment.getEstimatedArrivalDate());
+        createSupplierShipmentDTO.setArrivalDate(shipment.getArrivalDate());
+        createSupplierShipmentDTO.setStatus(shipment.getStatus());
+        createSupplierShipmentDTO.setSourceLocation(shipment.getSourceLocation());
+        createSupplierShipmentDTO.setDestinationLocation(shipment.getDestinationLocation());
+        createSupplierShipmentDTO.setCurrentLocationLatitude(shipment.getCurrentLocationLatitude());
+        createSupplierShipmentDTO.setCurrentLocationLongitude(shipment.getCurrentLocationLongitude());
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 
         return createSupplierShipmentDTO;
     }
@@ -601,6 +725,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
     private UpdateSupplierShipmentDTO getUpdateSupplierShipmentDTO(SupplierShipment shipment) {
         UpdateSupplierShipmentDTO updateSupplierShipmentDTO = new UpdateSupplierShipmentDTO();
         updateSupplierShipmentDTO.setId(shipment.getId());
+<<<<<<< HEAD
         updateSupplierShipmentDTO.setOrganizationId(shipment.getOrganizationId());
 //        updateSupplierShipmentDTO.setComponentId(shipment.getComponent().getId());
         updateSupplierShipmentDTO.setQuantity(shipment.getQuantity());
@@ -610,6 +735,19 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
 //        updateSupplierShipmentDTO.setDeliveryDate(shipment.getDeliveryDate());
 //        updateSupplierShipmentDTO.setStatus(shipment.getStatus());
 //        updateSupplierShipmentDTO.setCompanyId(shipment.getCompanyId());
+=======
+        updateSupplierShipmentDTO.setOrganizationId(supplier.getOrganizationId());
+        updateSupplierShipmentDTO.setSupplierOrderId(shipment.getSupplierOrderId());
+        updateSupplierShipmentDTO.setQuantity(shipment.getQuantity());
+        updateSupplierShipmentDTO.setShipmentStartingDate(shipment.getShipmentStartingDate());
+        updateSupplierShipmentDTO.setEstimatedArrivalDate(shipment.getEstimatedArrivalDate());
+        updateSupplierShipmentDTO.setArrivalDate(shipment.getArrivalDate());
+        updateSupplierShipmentDTO.setStatus(shipment.getStatus());
+        updateSupplierShipmentDTO.setSourceLocation(shipment.getSourceLocation());
+        updateSupplierShipmentDTO.setDestinationLocation(shipment.getDestinationLocation());
+        updateSupplierShipmentDTO.setCurrentLocationLatitude(shipment.getCurrentLocationLatitude());
+        updateSupplierShipmentDTO.setCurrentLocationLongitude(shipment.getCurrentLocationLongitude());
+>>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 
         return updateSupplierShipmentDTO;
     }

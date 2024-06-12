@@ -1,7 +1,7 @@
-package org.chainoptim.desktop.features.supplier.service;
+package org.chainoptim.desktop.features.client.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.supplier.model.SupplierShipment;
+import org.chainoptim.desktop.features.client.model.ClientShipment;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.enums.SearchMode;
@@ -17,42 +17,42 @@ import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class SupplierShipmentsServiceImpl implements SupplierShipmentsService {
+public class ClientShipmentsServiceImpl implements ClientShipmentsService {
 
-    private final CachingService<PaginatedResults<SupplierShipment>> cachingService;
+    private final CachingService<PaginatedResults<ClientShipment>> cachingService;
     private final RequestBuilder requestBuilder;
     private final RequestHandler requestHandler;
     private final TokenManager tokenManager;
     private static final int STALE_TIME = 300;
 
     @Inject
-    public SupplierShipmentsServiceImpl(CachingService<PaginatedResults<SupplierShipment>> cachingService,
-                                        RequestBuilder requestBuilder,
-                                        RequestHandler requestHandler,
-                                        TokenManager tokenManager) {
+    public ClientShipmentsServiceImpl(CachingService<PaginatedResults<ClientShipment>> cachingService,
+                                      RequestBuilder requestBuilder,
+                                      RequestHandler requestHandler,
+                                      TokenManager tokenManager) {
         this.cachingService = cachingService;
         this.requestBuilder = requestBuilder;
         this.requestHandler = requestHandler;
         this.tokenManager = tokenManager;
     }
 
-    public CompletableFuture<Result<List<SupplierShipment>>> getSupplierShipmentsByOrganizationId(Integer organizationId) {
-        String routeAddress = "http://localhost:8080/api/v1/supplier-shipments/organization/" + organizationId.toString();
+    public CompletableFuture<Result<List<ClientShipment>>> getClientShipmentsByOrganizationId(Integer organizationId) {
+        String routeAddress = "http://localhost:8080/api/v1/client-shipments/organization/" + organizationId.toString();
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
-        return requestHandler.sendRequest(request, new TypeReference<List<SupplierShipment>>() {});
+        return requestHandler.sendRequest(request, new TypeReference<List<ClientShipment>>() {});
     }
 
-    public CompletableFuture<Result<PaginatedResults<SupplierShipment>>> getSupplierShipmentsAdvanced(
+    public CompletableFuture<Result<PaginatedResults<ClientShipment>>> getClientShipmentsAdvanced(
             Integer entityId,
             SearchMode searchMode,
             SearchParams searchParams
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey(
-                "supplier-shipments",
-                searchMode == SearchMode.ORGANIZATION ? "organization" : "supplier", entityId.toString(),
+                "client-shipments",
+                searchMode == SearchMode.ORGANIZATION ? "organization" : "order", entityId.toString(),
                 searchParams);
         String routeAddress = rootAddress + cacheKey;
 
@@ -62,9 +62,9 @@ public class SupplierShipmentsServiceImpl implements SupplierShipmentsService {
             return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
         }
 
-        return requestHandler.sendRequest(request, new TypeReference<PaginatedResults<SupplierShipment>>() {}, supplierShipments -> {
+        return requestHandler.sendRequest(request, new TypeReference<PaginatedResults<ClientShipment>>() {}, clientShipments -> {
             cachingService.remove(cacheKey); // Ensure there isn't a stale cache entry
-            cachingService.add(cacheKey, supplierShipments, STALE_TIME);
+            cachingService.add(cacheKey, clientShipments, STALE_TIME);
         });
     }
 

@@ -45,7 +45,11 @@ public class RequestHandlerImpl implements RequestHandler {
                         return ErrorParser.parseError(response);
                     }
                     try {
-                        T data = JsonUtil.getObjectMapper().readValue(response.body(), typeReference);
+                        String responseBody = response.body();
+                        if (responseBody == null || responseBody.isEmpty()) {
+                            return new Result<>(null, null, response.statusCode()); // Return default value
+                        }
+                        T data = JsonUtil.getObjectMapper().readValue(responseBody, typeReference);
 
                         successHandler.accept(data);
 

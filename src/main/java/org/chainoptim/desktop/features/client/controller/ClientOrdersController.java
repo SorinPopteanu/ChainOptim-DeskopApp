@@ -149,13 +149,13 @@ public class ClientOrdersController implements DataReceiver<SearchData<Client>> 
         this.searchMode = searchData.getSearchMode();
 
         searchParams.setItemsPerPage(20);
-        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
+        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.CLIENT_ORDER);
 
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
         tableToolbarController.initialize(new ListHeaderParams
                 (searchMode, searchParams,
-                "Client Orders", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
+                "Client Orders", "/img/box-solid.png", Feature.CLIENT_ORDER,
                 searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
                 () -> loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null), null, null));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);

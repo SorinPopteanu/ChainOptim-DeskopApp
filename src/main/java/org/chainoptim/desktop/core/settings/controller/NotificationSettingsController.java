@@ -38,8 +38,8 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     private ChangeListener<Boolean> emailOverallChangeListener;
 
     // Constants
-    private static final List<Feature> notificationFeatures = List.of(Feature.SUPPLIER_ORDER, Feature.CLIENT_ORDER, Feature.FACTORY_INVENTORY, Feature.WAREHOUSE_INVENTORY);
-    private static final List<Feature> emailFeatures = List.of(Feature.SUPPLIER_ORDER, Feature.CLIENT_ORDER, Feature.FACTORY_INVENTORY, Feature.WAREHOUSE_INVENTORY);
+    private static final List<Feature> notificationFeatures = List.of(Feature.SUPPLIER_ORDER, Feature.SUPPLIER_SHIPMENT, Feature.CLIENT_ORDER, Feature.CLIENT_SHIPMENT, Feature.FACTORY_INVENTORY, Feature.WAREHOUSE_INVENTORY);
+    private static final List<Feature> emailFeatures = List.of(Feature.SUPPLIER_ORDER, Feature.SUPPLIER_SHIPMENT, Feature.CLIENT_ORDER, Feature.CLIENT_SHIPMENT, Feature.FACTORY_INVENTORY, Feature.WAREHOUSE_INVENTORY);
     private static final String NOTIFICATIONS = "Notifications";
     private static final String EMAILS = "Emails";
     
@@ -249,14 +249,18 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     // Utils
     private boolean aggregateNotificationSettings() {
         return userSettings.getNotificationSettings().isSupplierOrdersOn() &&
+                userSettings.getNotificationSettings().isSupplierShipmentsOn() &&
                 userSettings.getNotificationSettings().isClientOrdersOn() &&
+                userSettings.getNotificationSettings().isClientShipmentsOn() &&
                 userSettings.getNotificationSettings().isFactoryInventoryOn() &&
                 userSettings.getNotificationSettings().isWarehouseInventoryOn();
     }
 
     private boolean aggregateEmailSettings() {
         return userSettings.getNotificationSettings().isEmailSupplierOrdersOn() &&
+                userSettings.getNotificationSettings().isEmailSupplierShipmentsOn() &&
                 userSettings.getNotificationSettings().isEmailClientOrdersOn() &&
+                userSettings.getNotificationSettings().isEmailClientShipmentsOn() &&
                 userSettings.getNotificationSettings().isEmailFactoryInventoryOn() &&
                 userSettings.getNotificationSettings().isEmailWarehouseInventoryOn();
     }
@@ -264,7 +268,9 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     private boolean getNotificationFeatureSetting(Feature feature) {
         return switch (feature) {
             case SUPPLIER_ORDER -> userSettings.getNotificationSettings().isSupplierOrdersOn();
+            case SUPPLIER_SHIPMENT -> userSettings.getNotificationSettings().isSupplierShipmentsOn();
             case CLIENT_ORDER -> userSettings.getNotificationSettings().isClientOrdersOn();
+            case CLIENT_SHIPMENT -> userSettings.getNotificationSettings().isClientShipmentsOn();
             case FACTORY_INVENTORY -> userSettings.getNotificationSettings().isFactoryInventoryOn();
             case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().isWarehouseInventoryOn();
             default -> false;
@@ -274,7 +280,9 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     private boolean getEmailFeatureSetting(Feature feature) {
         return switch (feature) {
             case SUPPLIER_ORDER -> userSettings.getNotificationSettings().isEmailSupplierOrdersOn();
+            case SUPPLIER_SHIPMENT -> userSettings.getNotificationSettings().isEmailSupplierShipmentsOn();
             case CLIENT_ORDER -> userSettings.getNotificationSettings().isEmailClientOrdersOn();
+            case CLIENT_SHIPMENT -> userSettings.getNotificationSettings().isEmailClientShipmentsOn();
             case FACTORY_INVENTORY -> userSettings.getNotificationSettings().isEmailFactoryInventoryOn();
             case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().isEmailWarehouseInventoryOn();
             default -> false;
@@ -284,7 +292,9 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     private void setNotificationFeatureSetting(Feature feature, boolean isOn) {
         switch (feature) {
             case SUPPLIER_ORDER -> userSettings.getNotificationSettings().setSupplierOrdersOn(isOn);
+            case SUPPLIER_SHIPMENT -> userSettings.getNotificationSettings().setSupplierShipmentsOn(isOn);
             case CLIENT_ORDER -> userSettings.getNotificationSettings().setClientOrdersOn(isOn);
+            case CLIENT_SHIPMENT -> userSettings.getNotificationSettings().setClientShipmentsOn(isOn);
             case FACTORY_INVENTORY -> userSettings.getNotificationSettings().setFactoryInventoryOn(isOn);
             case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().setWarehouseInventoryOn(isOn);
             default -> throw new IllegalStateException("Unexpected value: " + feature);
@@ -294,7 +304,9 @@ public class NotificationSettingsController implements DataReceiver<UserSettings
     private void setEmailFeatureSetting(Feature feature, boolean isOn) {
         switch (feature) {
             case SUPPLIER_ORDER -> userSettings.getNotificationSettings().setEmailSupplierOrdersOn(isOn);
+            case SUPPLIER_SHIPMENT -> userSettings.getNotificationSettings().setEmailSupplierShipmentsOn(isOn);
             case CLIENT_ORDER -> userSettings.getNotificationSettings().setEmailClientOrdersOn(isOn);
+            case CLIENT_SHIPMENT -> userSettings.getNotificationSettings().setEmailClientShipmentsOn(isOn);
             case FACTORY_INVENTORY -> userSettings.getNotificationSettings().setEmailFactoryInventoryOn(isOn);
             case WAREHOUSE_INVENTORY -> userSettings.getNotificationSettings().setEmailWarehouseInventoryOn(isOn);
             default -> throw new IllegalStateException("Unexpected value: " + feature);

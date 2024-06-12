@@ -4,7 +4,6 @@ import org.chainoptim.desktop.features.supplier.dto.CreateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supplier.model.SupplierShipment;
 import org.chainoptim.desktop.shared.httphandling.Result;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
