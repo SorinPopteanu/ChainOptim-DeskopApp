@@ -14,7 +14,10 @@ public class CreateSupplierShipmentDTO {
     private Integer organizationId;
     private Integer supplierId;
     private Integer supplierOrderId;
+    private Integer componentId;
+    private String componentName;
     private Float quantity;
+    private Float deliveredQuantity;
     private LocalDateTime shipmentStartingDate;
     private LocalDateTime estimatedArrivalDate;
     private LocalDateTime arrivalDate;

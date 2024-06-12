@@ -3,6 +3,7 @@ package org.chainoptim.desktop.features.supplier.controller;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.productpipeline.model.Component;
+import org.chainoptim.desktop.features.supplier.dto.CreateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supplier.dto.UpdateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierShipment;
@@ -30,6 +31,7 @@ import org.chainoptim.desktop.shared.toast.controller.ToastManager;
 import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
+
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -47,6 +49,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class SupplierShipmentsController implements DataReceiver<SearchData<Supplier>> {
 
@@ -107,11 +110,11 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
     @FXML
     private TableColumn<TableData<SupplierShipment>, ShipmentStatus> statusColumn;
     @FXML
-    private TableColumn<TableData<SupplierShipment>, LocalDateTime> shipmentDateColumn;
+    private TableColumn<TableData<SupplierShipment>, LocalDateTime> shipmentStartingDateColumn;
     @FXML
-    private TableColumn<TableData<SupplierShipment>, LocalDateTime> estimatedDeliveryDateColumn;
+    private TableColumn<TableData<SupplierShipment>, LocalDateTime> estimatedArrivalDateColumn;
     @FXML
-    private TableColumn<TableData<SupplierShipment>, LocalDateTime> deliveryDateColumn;
+    private TableColumn<TableData<SupplierShipment>, LocalDateTime> arrivalDateColumn;
     @FXML
     private StackPane pageSelectorContainer;
     @FXML
@@ -191,16 +194,15 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"));
         supplierNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>("this.supplier.getName()"));
         componentNameColumn.setCellValueFactory(data -> {
-            Component component = data.getValue().getData().getComponent();
-            String componentName = component != null ? component.getName() : "N/A";
+            String componentName = data.getValue().getData().getComponentName();
             return new SimpleObjectProperty<>(componentName);
         });
         quantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getQuantity()));
         deliveredQuantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getDeliveredQuantity()));
         statusColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getStatus()));
-        shipmentDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getShipmentDate()));
-        estimatedDeliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getEstimatedDeliveryDate()));
-        deliveryDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getDeliveryDate()));
+        shipmentStartingDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getShipmentStartingDate()));
+        estimatedArrivalDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getEstimatedArrivalDate()));
+        arrivalDateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getArrivalDate()));
 
         configureColumnCellFactories();
     }
@@ -227,22 +229,22 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
                 item.getData().setDeliveredQuantity(newValue);
             }
         });
-        estimatedDeliveryDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
+        estimatedArrivalDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
                 isEditMode, selectedRowsIndices, true) {
             @Override
             protected void commitChange(TableData<SupplierShipment> item, LocalDateTime newValue) {
-                item.getData().setEstimatedDeliveryDate(newValue);
+                item.getData().setEstimatedArrivalDate(newValue);
             }
         });
 
-        deliveryDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
+        arrivalDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
                 isEditMode, selectedRowsIndices, true) {
             @Override
             protected void commitChange(TableData<SupplierShipment> item, LocalDateTime newValue) {
-                item.getData().setDeliveryDate(newValue);
+                item.getData().setArrivalDate(newValue);
             }
         });
-        shipmentDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
+        shipmentStartingDateColumn.setCellFactory(column -> new DateTimePickerCell<TableData<SupplierShipment>, LocalDateTime>(
                 isEditMode, selectedRowsIndices, false){});
 
         statusColumn.setCellFactory(column -> new ComboBoxEditableCell<TableData<SupplierShipment>, ShipmentStatus>(
@@ -259,7 +261,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
                 Component component = new Component();
                 component.setId(selectComponentLoader.getComponentIdByName(newValue));
                 component.setName(newValue);
-                item.getData().setComponent(component);
+                item.getData().setComponentName(component.getName());
             }
         });
     }
@@ -382,7 +384,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
             }
 
             for (SupplierShipment supplierShipment : paginatedResults.results) {
-                SupplierShipment oldData = new SupplierShipment(supplierShipment);
+                SupplierShipment oldData = supplierShipment.deepCopy();
                 TableData<SupplierShipment> tableRow = new TableData<>(supplierShipment, oldData, new SimpleBooleanProperty(false));
                 setUpRowListeners(tableRow);
                 tableView.getItems().add(tableRow);
@@ -422,8 +424,8 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         isEditMode.set(true);
         for (Integer index : selectedRowsIndices) {
             TableData<SupplierShipment> tableRow = tableView.getItems().get(index);
-            SupplierShipment oldShipment = new SupplierShipment(tableRow.getData());
-            oldShipment.setComponent(new Component(tableRow.getData().getComponent()));
+            SupplierShipment oldShipment = tableRow.getData().deepCopy();
+            oldShipment.setComponentName(tableRow.getData().getComponentName());
             tableRow.setOldData(oldShipment);
         }
         selectRowColumn.setEditable(false);
@@ -539,14 +541,14 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         }
         createSupplierShipmentDTO.setOrganizationId(supplier.getOrganizationId());
         createSupplierShipmentDTO.setSupplierId(supplier.getId());
-        createSupplierShipmentDTO.setComponentId(shipment.getComponent().getId());
-        createSupplierShipmentDTO.setQuantity(shipment.getQuantity());
-        createSupplierShipmentDTO.setDeliveredQuantity(shipment.getDeliveredQuantity());
-        createSupplierShipmentDTO.setShipmentDate(shipment.getShipmentDate());
-        createSupplierShipmentDTO.setEstimatedDeliveryDate(shipment.getEstimatedDeliveryDate());
-        createSupplierShipmentDTO.setDeliveryDate(shipment.getDeliveryDate());
-        createSupplierShipmentDTO.setStatus(shipment.getStatus());
-        createSupplierShipmentDTO.setCompanyId(shipment.getCompanyId());
+//        createSupplierShipmentDTO.setComponentId(shipment.getComponent().getId());
+//        createSupplierShipmentDTO.setQuantity(shipment.getQuantity());
+//        createSupplierShipmentDTO.setDeliveredQuantity(shipment.getDeliveredQuantity());
+//        createSupplierShipmentDTO.setShipmentDate(shipment.getShipmentDate());
+//        createSupplierShipmentDTO.setEstimatedDeliveryDate(shipment.getEstimatedDeliveryDate());
+//        createSupplierShipmentDTO.setDeliveryDate(shipment.getDeliveryDate());
+//        createSupplierShipmentDTO.setStatus(shipment.getStatus());
+//        createSupplierShipmentDTO.setCompanyId(shipment.getCompanyId());
 
         return createSupplierShipmentDTO;
     }
@@ -598,14 +600,14 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         UpdateSupplierShipmentDTO updateSupplierShipmentDTO = new UpdateSupplierShipmentDTO();
         updateSupplierShipmentDTO.setId(shipment.getId());
         updateSupplierShipmentDTO.setOrganizationId(shipment.getOrganizationId());
-        updateSupplierShipmentDTO.setComponentId(shipment.getComponent().getId());
-        updateSupplierShipmentDTO.setQuantity(shipment.getQuantity());
-        updateSupplierShipmentDTO.setDeliveredQuantity(shipment.getDeliveredQuantity());
-        updateSupplierShipmentDTO.setShipmentDate(shipment.getShipmentDate());
-        updateSupplierShipmentDTO.setEstimatedDeliveryDate(shipment.getEstimatedDeliveryDate());
-        updateSupplierShipmentDTO.setDeliveryDate(shipment.getDeliveryDate());
-        updateSupplierShipmentDTO.setStatus(shipment.getStatus());
-        updateSupplierShipmentDTO.setCompanyId(shipment.getCompanyId());
+//        updateSupplierShipmentDTO.setComponentId(shipment.getComponent().getId());
+//        updateSupplierShipmentDTO.setQuantity(shipment.getQuantity());
+//        updateSupplierShipmentDTO.setDeliveredQuantity(shipment.getDeliveredQuantity());
+//        updateSupplierShipmentDTO.setShipmentDate(shipment.getShipmentDate());
+//        updateSupplierShipmentDTO.setEstimatedDeliveryDate(shipment.getEstimatedDeliveryDate());
+//        updateSupplierShipmentDTO.setDeliveryDate(shipment.getDeliveryDate());
+//        updateSupplierShipmentDTO.setStatus(shipment.getStatus());
+//        updateSupplierShipmentDTO.setCompanyId(shipment.getCompanyId());
 
         return updateSupplierShipmentDTO;
     }

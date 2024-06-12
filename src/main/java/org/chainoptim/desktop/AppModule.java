@@ -48,6 +48,7 @@ import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerform
 import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceServiceImpl;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierOrder;
+import org.chainoptim.desktop.features.supplier.model.SupplierShipment;
 import org.chainoptim.desktop.features.supplier.service.*;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.model.WarehouseInventoryItem;
@@ -152,6 +153,8 @@ public class AppModule extends AbstractModule {
         bind(SupplierWriteService.class).to(SupplierWriteServiceImpl.class);
         bind(SupplierOrdersService.class).to(SupplierOrdersServiceImpl.class);
         bind(SupplierOrdersWriteService.class).to(SupplierOrdersWriteServiceImpl.class);
+        bind(SupplierShipmentsService.class).to(SupplierShipmentsServiceImpl.class);
+        bind(SupplierShipmentsWriteService.class).to(SupplierShipmentsWriteServiceImpl.class);
 
         // - Components
         bind(ComponentService.class).to(ComponentServiceImpl.class);
@@ -213,6 +216,9 @@ public class AppModule extends AbstractModule {
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<SupplierOrder>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<SupplierOrder>>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<CachingService<PaginatedResults<SupplierShipment>>>() {})
+                .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<SupplierShipment>>>() {})
                 .in(Singleton.class);
         bind(new TypeLiteral<CachingService<PaginatedResults<Client>>>() {})
                 .to(new TypeLiteral<CachingServiceImpl<PaginatedResults<Client>>>() {})

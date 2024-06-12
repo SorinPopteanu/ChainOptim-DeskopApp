@@ -312,7 +312,7 @@ public class ClientOrdersController implements DataReceiver<SearchData<Client>> 
             }
         });
         tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));
-        tableToolbarController.getCreateNewOrderButton().setOnAction(e -> addNewOrder());
+        tableToolbarController.getCreateNewShipmentButton().setOnAction(e -> addNewOrder());
     }
 
     private void setUpConfirmDialogListeners() {

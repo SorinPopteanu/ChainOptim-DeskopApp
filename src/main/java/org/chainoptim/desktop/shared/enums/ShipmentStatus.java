@@ -1,5 +1,9 @@
 package org.chainoptim.desktop.shared.enums;
 
+import org.chainoptim.desktop.shared.util.ShipmentStatusDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(using = ShipmentStatusDeserializer.class)
 public enum ShipmentStatus {
     INITIATED,
     NEGOTIATED,
@@ -11,6 +15,7 @@ public enum ShipmentStatus {
     public String toString() {
         return this.name().charAt(0) + this.name().substring(1).toLowerCase();
     }
+
 
     public static ShipmentStatus fromString(String statusStr) {
         for (ShipmentStatus status : values()) {

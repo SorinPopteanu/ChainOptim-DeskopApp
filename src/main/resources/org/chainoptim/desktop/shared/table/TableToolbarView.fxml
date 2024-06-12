@@ -37,7 +37,7 @@
             <Button fx:id="deleteSelectedRowsButton" styleClass="standard-delete-button"/>
             <Button fx:id="editSelectedRowsButton" text="Edit Orders" styleClass="standard-write-button"/>
             <Button fx:id="saveChangesButton" text="Save Changes" styleClass="standard-write-button"/>
-            <Button fx:id="createNewOrderButton" text="Add Order" styleClass="standard-write-button"/>
+            <Button fx:id="createNewShipmentButton" text="Add Order" styleClass="standard-write-button"/>
         </HBox>
     </VBox>
 

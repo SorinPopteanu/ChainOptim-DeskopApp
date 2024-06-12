@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.supplier.model;
 
+import org.chainoptim.desktop.shared.enums.ShipmentStatus;
 import org.chainoptim.desktop.shared.features.location.model.Location;
 import lombok.*;
 
@@ -14,12 +15,16 @@ public class SupplierShipment {
 
     private Integer id;
     private Integer supplierOrderId;
+    private String companyId;
+    private Integer componentId;
+    private String componentName;
     private Float quantity;
+    private Float deliveredQuantity;
     private LocalDateTime shipmentStartingDate;
     private LocalDateTime estimatedArrivalDate;
     private LocalDateTime arrivalDate;
     private String transporterType;
-    private String status;
+    private ShipmentStatus status;
     private Location sourceLocation;
     private Location destinationLocation;
     private Float currentLocationLatitude;
