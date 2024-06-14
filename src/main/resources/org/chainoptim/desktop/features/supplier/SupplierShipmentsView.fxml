@@ -5,11 +5,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-<<<<<<< HEAD
             fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierShipmentsController" >
-=======
-            fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierShipmentsController">
->>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
 
     <!-- Header -->
     <StackPane fx:id="tableToolbarContainer"/>
@@ -22,29 +18,14 @@
                     <columns>
                         <TableColumn fx:id="selectRowColumn" prefWidth="50"/>
                         <TableColumn text="Shipment ID" fx:id="shipmentIdColumn" minWidth="120"/>
-<<<<<<< HEAD
                         <TableColumn text="Company ID" fx:id="companyIdColumn" minWidth="150"/>
                         <TableColumn text="Supplier" fx:id="supplierNameColumn" minWidth="150"/>
                         <TableColumn text="Component" fx:id="componentNameColumn" minWidth="150"/>
                         <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
                         <TableColumn text="Delivered Quantity" fx:id="deliveredQuantityColumn" minWidth="150"/>
                         <TableColumn text="Status" fx:id="statusColumn" minWidth="150"/>
-                        <TableColumn text="Starting Date" fx:id="shipmentStartingDateColumn" minWidth="200"/>
                         <TableColumn text="Arrival Date" fx:id="arrivalDateColumn" minWidth="150"/>
                         <TableColumn text="Estimated Arrival Date" fx:id="estimatedArrivalDateColumn" minWidth="200"/>
-=======
-                        <TableColumn text="Supplier Order ID" fx:id="supplierOrderIdColumn" minWidth="150"/>
-                        <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
-                        <TableColumn text="Shipment Starting Date" fx:id="shipmentStartingDateColumn" minWidth="200"/>
-                        <TableColumn text="Estimated Arrival Date" fx:id="estimatedArrivalDateColumn" minWidth="200"/>
-                        <TableColumn text="Arrival Date" fx:id="arrivalDateColumn" minWidth="150"/>
-                        <TableColumn text="Transporter Type" fx:id="transporterTypeColumn" minWidth="150"/>
-                        <TableColumn text="Status" fx:id="statusColumn" minWidth="150"/>
-                        <TableColumn text="Source Location" fx:id="sourceLocationColumn" minWidth="200"/>
-                        <TableColumn text="Destination Location" fx:id="destinationLocationColumn" minWidth="200"/>
-                        <TableColumn text="Current Location Latitude" fx:id="currentLocationLatitudeColumn" minWidth="220"/>
-                        <TableColumn text="Current Location Longitude" fx:id="currentLocationLongitudeColumn" minWidth="220"/>
->>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af
                     </columns>
                 </TableView>
                 <StackPane fx:id="pageSelectorContainer" style="-fx-background-color: yellow;"/>
@@ -58,9 +39,4 @@
         <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
         <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
     </StackPane>
-<<<<<<< HEAD
 </VBox>
-=======
-
-</VBox>
->>>>>>> 7134550b09d6001d5ce347aaf8ec256d3aec77af

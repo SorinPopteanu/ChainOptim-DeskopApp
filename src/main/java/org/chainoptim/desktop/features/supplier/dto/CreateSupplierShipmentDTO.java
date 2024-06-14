@@ -23,7 +23,7 @@ public class CreateSupplierShipmentDTO {
     private LocalDateTime shipmentStartingDate;
     private LocalDateTime estimatedArrivalDate;
     private LocalDateTime arrivalDate;
-    private ShipmentStatus status;
+    private String status;
     private Integer sourceLocationId;
     private Integer destinationLocationId;
     private Location sourceLocation;
