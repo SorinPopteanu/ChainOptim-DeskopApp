@@ -296,7 +296,7 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
             }
         });
         tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
-        tableToolbarController.getCreateNewOrderButton().setOnAction(e -> addNewOrder());
+        tableToolbarController.getCreateNewShipmentButton().setOnAction(e -> addNewOrder());
     }
 
     private void setUpConfirmDialogListeners() {

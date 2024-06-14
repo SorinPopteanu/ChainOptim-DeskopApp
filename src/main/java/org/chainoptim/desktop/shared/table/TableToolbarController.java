@@ -5,7 +5,6 @@ import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.search.filters.FilterBar;
-import org.chainoptim.desktop.shared.search.filters.FilterOption;
 import org.chainoptim.desktop.shared.search.model.ListHeaderParams;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 
@@ -17,7 +16,6 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import lombok.Getter;
@@ -62,7 +60,7 @@ public class TableToolbarController {
     @FXML @Getter
     private Button saveChangesButton;
     @FXML @Getter
-    private Button createNewOrderButton;
+    private Button createNewShipmentButton;
 
     // Icons
     private Image sortUpIcon;
@@ -94,7 +92,7 @@ public class TableToolbarController {
         setDeleteSelectedRowsButton();
         setEditSelectedRowsButton();
         setSaveChangesButton();
-        setCreateNewOrderButton();
+        setCreateNewShipmentButton();
 
         toggleButtonVisibilityOnCancel();
     }
@@ -190,13 +188,13 @@ public class TableToolbarController {
         toggleButtonVisibility(saveChangesButton, false);
     }
 
-    private void setCreateNewOrderButton() {
+    private void setCreateNewShipmentButton() {
         ImageView plusImageView = createImageView(plusIcon, 14, 14);
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(1);
         plusImageView.setEffect(colorAdjust);
-        createNewOrderButton.setGraphic(plusImageView);
-        createNewOrderButton.setContentDisplay(ContentDisplay.LEFT);
+        createNewShipmentButton.setGraphic(plusImageView);
+        createNewShipmentButton.setContentDisplay(ContentDisplay.LEFT);
     }
 
     public void toggleButtonVisibilityOnSelection(boolean isSelection) {
@@ -212,7 +210,7 @@ public class TableToolbarController {
     }
 
     public void toggleButtonVisibilityOnCreate(boolean isNewOrderMode) {
-        toggleButtonVisibility(createNewOrderButton, isNewOrderMode);
+        toggleButtonVisibility(createNewShipmentButton, isNewOrderMode);
         toggleButtonVisibility(saveChangesButton, isNewOrderMode);
         toggleButtonVisibility(cancelRowSelectionButton, isNewOrderMode);
         toggleButtonVisibility(deleteSelectedRowsButton, !isNewOrderMode);

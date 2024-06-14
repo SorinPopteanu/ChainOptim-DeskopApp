@@ -52,7 +52,7 @@ public class SupplierShipmentsServiceImpl implements SupplierShipmentsService {
         String rootAddress = "http://localhost:8080/api/v1/";
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey(
                 "supplier-shipments",
-                searchMode == SearchMode.ORGANIZATION ? "organization" : "order", entityId.toString(),
+                searchMode == SearchMode.ORGANIZATION ? "organization" : "supplier", entityId.toString(),
                 searchParams);
         String routeAddress = rootAddress + cacheKey;
 
