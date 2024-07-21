@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.shared.common.uielements.performance;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -45,5 +46,10 @@ public class ScoreDisplay extends StackPane {
         } else {
             arcDisplay.getStyleClass().add("good-arc");
         }
+    }
+
+    public void setTooltipText(String text) {
+        Tooltip tooltip = new Tooltip(text);
+        Tooltip.install(this, tooltip);
     }
 }

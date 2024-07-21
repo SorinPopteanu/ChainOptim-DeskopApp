@@ -33,7 +33,6 @@ public class SupplierController implements Initializable {
     private final SupplierService supplierService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final FXMLLoaderService fxmlLoaderService;
     private final ControllerFactory controllerFactory;
     private final FallbackManager fallbackManager;
 
@@ -58,13 +57,11 @@ public class SupplierController implements Initializable {
     public SupplierController(SupplierService supplierService,
                               NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
-                              FXMLLoaderService fxmlLoaderService,
                               ControllerFactory controllerFactory,
                               FallbackManager fallbackManager) {
         this.supplierService = supplierService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.fxmlLoaderService = fxmlLoaderService;
         this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
     }
