@@ -22,6 +22,7 @@
         <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
             <Tab fx:id="overviewTab" text="Overview"/>
             <Tab fx:id="inventoryTab" text="Inventory"/>
+            <Tab fx:id="storageTab" text="Storage"/>
         </TabPane>
 
         <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
