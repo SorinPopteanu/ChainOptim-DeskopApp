@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.warehouse.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.features.warehouse.dto.CreateCompartmentDTO;
 import org.chainoptim.desktop.features.warehouse.model.*;
 import org.chainoptim.desktop.features.warehouse.service.CompartmentService;
 import org.chainoptim.desktop.features.warehouse.service.CrateService;
@@ -11,12 +12,15 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Popup;
 
 import java.util.List;
 
@@ -120,65 +124,77 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
         compartmentsVBox.setSpacing(10);
 
         for (Compartment compartment : compartments) {
-            FlowPane compartmentFlowPlane = new FlowPane(16, 8);
-            compartmentFlowPlane.setAlignment(Pos.CENTER_LEFT);
-            compartmentsVBox.getChildren().add(compartmentFlowPlane);
+            renderCompartment(compartment);
+        }
+    }
 
-            Label compartmentName = new Label(compartment.getName());
-            compartmentName.getStyleClass().add("entity-name-label");
-            compartmentFlowPlane.getChildren().add(compartmentName);
+    private void renderCompartment(Compartment compartment) {
+        FlowPane compartmentFlowPlane = new FlowPane(16, 16);
+        compartmentFlowPlane.setAlignment(Pos.CENTER_LEFT);
+        compartmentsVBox.getChildren().add(compartmentFlowPlane);
 
-            List<CrateSpec> crateSpecs = compartment.getData().getCrateSpecs();
-            if (crateSpecs == null || crateSpecs.isEmpty()) {
+        Label compartmentName = new Label(compartment.getName());
+        compartmentName.getStyleClass().add("entity-name-label");
+        compartmentFlowPlane.getChildren().add(compartmentName);
+
+        CompartmentData compartmentData = compartment.getData();
+        if (compartmentData == null) {
+            return;
+        }
+        List<CrateSpec> crateSpecs = compartmentData.getCrateSpecs();
+        if (crateSpecs == null || crateSpecs.isEmpty()) {
+            return;
+        }
+
+        for (CrateSpec crateSpec : crateSpecs) {
+            Integer crateId = crateSpec.getCrateId();
+            if (crateId == null) {
                 continue;
             }
 
-            for (CrateSpec crateSpec : crateSpecs) {
-                Integer crateId = crateSpec.getCrateId();
-                if (crateId == null) {
-                    continue;
-                }
+            CrateData crateData = compartment.getData().getCurrentCrates().stream()
+                    .filter(cd -> cd.getCrateId().equals(crateId))
+                    .findFirst()
+                    .orElse(null);
 
-                CrateData crateData = compartment.getData().getCurrentCrates().stream()
-                        .filter(cd -> cd.getCrateId().equals(crateId))
-                        .findFirst()
-                        .orElse(null);
-
-                float numberOfCrates = 0;
-                float maxCrates = 1;
-                if (crateData == null) {
-                    continue;
-                }
-                numberOfCrates = crateData.getNumberOfCrates();
-                maxCrates = crateSpec.getMaxCrates();
-                double occupiedRatio = (double) numberOfCrates / maxCrates;
-
-                Crate correspCrate = crates.stream()
-                        .filter(c -> c.getId().equals(crateId))
-                        .findFirst()
-                        .orElse(null);
-                if (correspCrate == null) {
-                    continue;
-                }
-
-                HBox crateHBox = new HBox(8);
-                crateHBox.setStyle("-fx-padding: 8px; -fx-border-color: #E0E0E0; -fx-border-width: 1px; -fx-border-radius: 4px;");
-                compartmentFlowPlane.getChildren().add(crateHBox);
-
-                Label crateName = new Label(correspCrate.getName());
-                crateName.getStyleClass().add("general-label");
-                crateHBox.getChildren().add(crateName);
-
-                ProgressBar progressBar = new ProgressBar();
-                progressBar.setProgress(occupiedRatio);
-                crateHBox.getChildren().add(progressBar);
-                updateProgressBarColor(progressBar, occupiedRatio);
-
-                Label occupiedRatioLabel = new Label(String.format("%.2f", occupiedRatio * 100) + "%");
-                occupiedRatioLabel.getStyleClass().add("general-label");
-                crateHBox.getChildren().add(occupiedRatioLabel);
+            float numberOfCrates = 0;
+            float maxCrates = 1;
+            if (crateData == null) {
+                continue;
             }
+            numberOfCrates = crateData.getNumberOfCrates();
+            maxCrates = crateSpec.getMaxCrates();
+            double occupiedRatio = (double) numberOfCrates / maxCrates;
+
+            Crate correspCrate = crates.stream()
+                    .filter(c -> c.getId().equals(crateId))
+                    .findFirst()
+                    .orElse(null);
+            if (correspCrate == null) {
+                continue;
+            }
+
+            renderCrates(compartmentFlowPlane, correspCrate, occupiedRatio);
         }
+    }
+
+    private void renderCrates(FlowPane compartmentFlowPane, Crate correspCrate, double occupiedRatio) {
+        HBox crateHBox = new HBox(8);
+        crateHBox.setStyle("-fx-padding: 8px; -fx-border-color: #E0E0E0; -fx-border-width: 1px; -fx-border-radius: 4px;");
+        compartmentFlowPane.getChildren().add(crateHBox);
+
+        Label crateName = new Label(correspCrate.getName());
+        crateName.getStyleClass().add("general-label");
+        crateHBox.getChildren().add(crateName);
+
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.setProgress(occupiedRatio);
+        crateHBox.getChildren().add(progressBar);
+        updateProgressBarColor(progressBar, occupiedRatio);
+
+        Label occupiedRatioLabel = new Label(String.format("%.2f", occupiedRatio * 100) + "%");
+        occupiedRatioLabel.getStyleClass().add("general-label");
+        crateHBox.getChildren().add(occupiedRatioLabel);
     }
 
     private void updateProgressBarColor(ProgressBar progressBar, double progress) {
@@ -195,6 +211,57 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
 
     @FXML
     private void handleAddCompartment() {
-        System.out.println("Add compartment");
+        FlowPane newCompartmentFlowPane = new FlowPane(16, 16);
+        newCompartmentFlowPane.setAlignment(Pos.CENTER_LEFT);
+        compartmentsVBox.getChildren().add(newCompartmentFlowPane);
+
+        TextField compartmentNameField = new TextField();
+        compartmentNameField.setPromptText("Compartment name");
+        newCompartmentFlowPane.getChildren().add(compartmentNameField);
+
+        Button newCrateButton = new Button("Add Crate");
+        newCrateButton.setOnAction(event -> handleAddCrate(newCompartmentFlowPane));
+        newCompartmentFlowPane.getChildren().add(newCrateButton);
+
+        Button confirmButton = new Button("Confirm");
+        confirmButton.setOnAction(event -> handleCreateCompartment(compartmentNameField));
+        newCompartmentFlowPane.getChildren().add(confirmButton);
+    }
+
+    private void handleAddCrate(FlowPane compartmentFlowPane) {
+        System.out.println("Adding crate to compartment");
+        HBox newCrateHBox = new HBox(8);
+        newCrateHBox.setStyle("-fx-padding: 8px; -fx-border-color: #E0E0E0; -fx-border-width: 1px; -fx-border-radius: 4px;");
+        compartmentFlowPane.getChildren().add(newCrateHBox);
+    }
+
+    private void handleCreateCompartment(TextField compartmentNameField) {
+        CreateCompartmentDTO compartmentDTO = new CreateCompartmentDTO();
+        compartmentDTO.setWarehouseId(warehouse.getId());
+        compartmentDTO.setName(compartmentNameField.getText());
+        compartmentDTO.setOrganizationId(TenantContext.getCurrentUser().getOrganization().getId());
+
+        compartmentService.createCompartment(compartmentDTO)
+                .thenApply(this::handleCreateCompartmentResponse)
+                .exceptionally(this::handleCreateCompartmentError);
+    }
+
+    private Result<Compartment> handleCreateCompartmentResponse(Result<Compartment> compartment) {
+        Platform.runLater(() -> {
+            if (compartment.getError() != null) {
+                fallbackManager.setErrorMessage(compartment.getError().getMessage());
+                return;
+            }
+
+            compartmentsVBox.getChildren().removeLast();
+
+            renderCompartment(compartment.getData());
+        });
+        return compartment;
+    }
+
+    private Result<Compartment> handleCreateCompartmentError(Throwable throwable) {
+        fallbackManager.setErrorMessage("Failed to create compartment");
+        return new Result<>();
     }
 }
