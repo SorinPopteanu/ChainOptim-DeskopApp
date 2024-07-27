@@ -13,6 +13,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -118,13 +120,13 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
         compartmentsVBox.setSpacing(10);
 
         for (Compartment compartment : compartments) {
-            HBox compartmentHBox = new HBox(10);
-            compartmentHBox.setAlignment(Pos.CENTER_LEFT);
-            compartmentsVBox.getChildren().add(compartmentHBox);
+            FlowPane compartmentFlowPlane = new FlowPane(16, 8);
+            compartmentFlowPlane.setAlignment(Pos.CENTER_LEFT);
+            compartmentsVBox.getChildren().add(compartmentFlowPlane);
 
             Label compartmentName = new Label(compartment.getName());
             compartmentName.getStyleClass().add("entity-name-label");
-            compartmentHBox.getChildren().add(compartmentName);
+            compartmentFlowPlane.getChildren().add(compartmentName);
 
             List<CrateSpec> crateSpecs = compartment.getData().getCrateSpecs();
             if (crateSpecs == null || crateSpecs.isEmpty()) {
@@ -137,38 +139,62 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
                     continue;
                 }
 
-//                Crate crate = crates.stream()
-//                        .filter(c -> c.getId().equals(crateId))
-//                        .findFirst()
-//                        .orElse(null);
-//                if (crate == null) {
-//                    continue;
-//                }
-//
-//                Label crateName = new Label(crate.getName());
-//                crateName.getStyleClass().add("entity-name-label");
-//                compartmentHBox.getChildren().add(crateName);
-
                 CrateData crateData = compartment.getData().getCurrentCrates().stream()
                         .filter(cd -> cd.getCrateId().equals(crateId))
                         .findFirst()
                         .orElse(null);
+
+                float numberOfCrates = 0;
+                float maxCrates = 1;
                 if (crateData == null) {
                     continue;
                 }
+                numberOfCrates = crateData.getNumberOfCrates();
+                maxCrates = crateSpec.getMaxCrates();
+                double occupiedRatio = (double) numberOfCrates / maxCrates;
 
-                String crateQuantityText = crateData.getNumberOfCrates() + " / " + crateSpec.getMaxCrates();
-                Label crateQuantity = new Label(crateQuantityText);
-                compartmentHBox.getChildren().add(crateQuantity);
+                Crate correspCrate = crates.stream()
+                        .filter(c -> c.getId().equals(crateId))
+                        .findFirst()
+                        .orElse(null);
+                if (correspCrate == null) {
+                    continue;
+                }
+
+                HBox crateHBox = new HBox(8);
+                crateHBox.setStyle("-fx-padding: 8px; -fx-border-color: #E0E0E0; -fx-border-width: 1px; -fx-border-radius: 4px;");
+                compartmentFlowPlane.getChildren().add(crateHBox);
+
+                Label crateName = new Label(correspCrate.getName());
+                crateName.getStyleClass().add("general-label");
+                crateHBox.getChildren().add(crateName);
 
                 ProgressBar progressBar = new ProgressBar();
-                progressBar.setProgress((double) crateData.getNumberOfCrates() / crateSpec.getMaxCrates());
-                compartmentHBox.getChildren().add(progressBar);
+                progressBar.setProgress(occupiedRatio);
+                crateHBox.getChildren().add(progressBar);
+                updateProgressBarColor(progressBar, occupiedRatio);
 
-                float occupiedRatio = crateData.getNumberOfCrates() / crateSpec.getMaxCrates();
                 Label occupiedRatioLabel = new Label(String.format("%.2f", occupiedRatio * 100) + "%");
-                compartmentHBox.getChildren().add(occupiedRatioLabel);
+                occupiedRatioLabel.getStyleClass().add("general-label");
+                crateHBox.getChildren().add(occupiedRatioLabel);
             }
         }
+    }
+
+    private void updateProgressBarColor(ProgressBar progressBar, double progress) {
+        if (progress < 0.25) {
+            progressBar.setStyle("-fx-accent: #4CAF50;");
+        } else if (progress < 0.5) {
+            progressBar.setStyle("-fx-accent: #FF7934;");
+        } else if (progress < 0.75) {
+            progressBar.setStyle("-fx-accent: #FFC107;");
+        } else {
+            progressBar.setStyle("-fx-accent: #F44336;");
+        }
+    }
+
+    @FXML
+    private void handleAddCompartment() {
+        System.out.println("Add compartment");
     }
 }
