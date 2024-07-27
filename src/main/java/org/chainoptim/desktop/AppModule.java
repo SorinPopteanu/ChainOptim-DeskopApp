@@ -149,6 +149,7 @@ public class AppModule extends AbstractModule {
         bind(WarehouseInventoryItemService.class).to(WarehouseInventoryItemServiceImpl.class);
         bind(WarehouseInventoryItemWriteService.class).to(WarehouseInventoryItemWriteServiceImpl.class);
         bind(CompartmentService.class).to(CompartmentServiceImpl.class);
+        bind(CrateService.class).to(CrateServiceImpl.class);
 
         // - Supplier
         bind(SupplierService.class).to(SupplierServiceImpl.class);
