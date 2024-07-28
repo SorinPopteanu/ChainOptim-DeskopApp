@@ -12,14 +12,8 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.Popup;
 
 import java.util.List;
@@ -211,28 +205,60 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
 
     @FXML
     private void handleAddCompartment() {
+        VBox compartmentCreationVBox = new VBox(16);
+        compartmentsVBox.getChildren().add(compartmentCreationVBox);
+
         FlowPane newCompartmentFlowPane = new FlowPane(16, 16);
         newCompartmentFlowPane.setAlignment(Pos.CENTER_LEFT);
-        compartmentsVBox.getChildren().add(newCompartmentFlowPane);
+        compartmentCreationVBox.getChildren().add(newCompartmentFlowPane);
 
         TextField compartmentNameField = new TextField();
+        compartmentNameField.getStyleClass().add("custom-text-field");
         compartmentNameField.setPromptText("Compartment name");
         newCompartmentFlowPane.getChildren().add(compartmentNameField);
 
-        Button newCrateButton = new Button("Add Crate");
-        newCrateButton.setOnAction(event -> handleAddCrate(newCompartmentFlowPane));
+        Button newCrateButton = new Button("Add Allowed Crates");
+        newCrateButton.setOnAction(event -> handleAddCrate(compartmentCreationVBox));
         newCompartmentFlowPane.getChildren().add(newCrateButton);
 
-        Button confirmButton = new Button("Confirm");
+        Button confirmButton = new Button("Confirm Creation");
+        confirmButton.getStyleClass().add("standard-write-button");
         confirmButton.setOnAction(event -> handleCreateCompartment(compartmentNameField));
         newCompartmentFlowPane.getChildren().add(confirmButton);
     }
 
-    private void handleAddCrate(FlowPane compartmentFlowPane) {
-        System.out.println("Adding crate to compartment");
-        HBox newCrateHBox = new HBox(8);
-        newCrateHBox.setStyle("-fx-padding: 8px; -fx-border-color: #E0E0E0; -fx-border-width: 1px; -fx-border-radius: 4px;");
-        compartmentFlowPane.getChildren().add(newCrateHBox);
+    private void handleAddCrate(VBox compartmentCreationVBox) {
+        VBox cratesVBox = new VBox(16);
+        compartmentCreationVBox.getChildren().add(cratesVBox);
+
+        HBox crateHBox = new HBox(16);
+        cratesVBox.getChildren().add(crateHBox);
+
+        ComboBox<Crate> crateComboBox = new ComboBox<>();
+        crateComboBox.getStyleClass().add("custom-combo-box");
+        crateComboBox.getItems().addAll(crates);
+        crateComboBox.setPromptText("Select crate");
+        crateHBox.getChildren().add(crateComboBox);
+
+        crateComboBox.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(Crate item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getName());
+            }
+        });
+        crateComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Crate item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getName());
+            }
+        });
+
+        TextField maxCratesField = new TextField();
+        maxCratesField.getStyleClass().add("custom-text-field");
+        maxCratesField.setPromptText("Max crates allowed");
+        crateHBox.getChildren().add(maxCratesField);
     }
 
     private void handleCreateCompartment(TextField compartmentNameField) {
