@@ -8,14 +8,19 @@ import org.chainoptim.desktop.features.warehouse.service.CrateService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+
 import com.google.inject.Inject;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.stage.Popup;
+import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WarehouseStorageController implements DataReceiver<Warehouse> {
@@ -29,10 +34,14 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
 
     private Warehouse warehouse;
     private List<Crate> crates;
+    private final BooleanProperty isCreatingCompartment = new SimpleBooleanProperty(false);
+    private CompartmentData newCompartmentData = new CompartmentData();
 
     // FXML
     @FXML
     private VBox compartmentsVBox;
+    @FXML
+    private Button addCompartmentButton;
 
     @Inject
     public WarehouseStorageController(CompartmentService compartmentService,
@@ -46,12 +55,22 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
     public void setData(Warehouse warehouse) {
         this.warehouse = warehouse;
 
+        setUpListeners();
+
         if (TenantContext.getCurrentUser() == null) {
             fallbackManager.setErrorMessage("User not logged in");
             return;
         }
         Integer organizationId = TenantContext.getCurrentUser().getOrganization().getId();
         loadCrates(organizationId);
+    }
+
+    private void setUpListeners() {
+        isCreatingCompartment.addListener((observable, oldValue, newValue) -> {
+            addCompartmentButton.setDisable(newValue);
+            addCompartmentButton.getStyleClass().clear();
+            addCompartmentButton.getStyleClass().add(Boolean.TRUE.equals(newValue) ? "standard-write-button-disabled" : "standard-write-button");
+        });
     }
 
     private void loadCrates(Integer organizationId) {
@@ -124,6 +143,7 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
 
     private void renderCompartment(Compartment compartment) {
         FlowPane compartmentFlowPlane = new FlowPane(16, 16);
+        compartmentFlowPlane.setMinWidth(800);
         compartmentFlowPlane.setAlignment(Pos.CENTER_LEFT);
         compartmentsVBox.getChildren().add(compartmentFlowPlane);
 
@@ -146,19 +166,7 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
                 continue;
             }
 
-            CrateData crateData = compartment.getData().getCurrentCrates().stream()
-                    .filter(cd -> cd.getCrateId().equals(crateId))
-                    .findFirst()
-                    .orElse(null);
-
-            float numberOfCrates = 0;
-            float maxCrates = 1;
-            if (crateData == null) {
-                continue;
-            }
-            numberOfCrates = crateData.getNumberOfCrates();
-            maxCrates = crateSpec.getMaxCrates();
-            double occupiedRatio = (double) numberOfCrates / maxCrates;
+            float occupiedRatio = determineOccupiedRation(compartment, crateSpec, crateId);
 
             Crate correspCrate = crates.stream()
                     .filter(c -> c.getId().equals(crateId))
@@ -170,6 +178,27 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
 
             renderCrates(compartmentFlowPlane, correspCrate, occupiedRatio);
         }
+    }
+
+    private float determineOccupiedRation(Compartment compartment, CrateSpec crateSpec, Integer crateId) {
+        float numberOfCrates = 0;
+        float maxCrates = 1;
+
+        if (compartment.getData().getCurrentCrates() == null) {
+            return 0.0f;
+        }
+        CrateData crateData = compartment.getData().getCurrentCrates().stream()
+                .filter(cd -> cd.getCrateId().equals(crateId))
+                .findFirst()
+                .orElse(null);
+        if (crateData == null) {
+            return 0.0f;
+        }
+
+        numberOfCrates = crateData.getNumberOfCrates();
+
+        maxCrates = crateSpec.getMaxCrates();
+        return numberOfCrates / maxCrates;
     }
 
     private void renderCrates(FlowPane compartmentFlowPane, Crate correspCrate, double occupiedRatio) {
@@ -205,32 +234,36 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
 
     @FXML
     private void handleAddCompartment() {
+        isCreatingCompartment.set(true);
+
         VBox compartmentCreationVBox = new VBox(16);
         compartmentsVBox.getChildren().add(compartmentCreationVBox);
 
-        FlowPane newCompartmentFlowPane = new FlowPane(16, 16);
-        newCompartmentFlowPane.setAlignment(Pos.CENTER_LEFT);
-        compartmentCreationVBox.getChildren().add(newCompartmentFlowPane);
+        VBox cratesVBox = new VBox(16);
+
+        HBox newCompartmentHBox = new HBox(16);
+        newCompartmentHBox.setAlignment(Pos.CENTER_LEFT);
+        compartmentCreationVBox.getChildren().add(newCompartmentHBox);
 
         TextField compartmentNameField = new TextField();
         compartmentNameField.getStyleClass().add("custom-text-field");
         compartmentNameField.setPromptText("Compartment name");
-        newCompartmentFlowPane.getChildren().add(compartmentNameField);
+        newCompartmentHBox.getChildren().add(compartmentNameField);
 
         Button newCrateButton = new Button("Add Allowed Crates");
-        newCrateButton.setOnAction(event -> handleAddCrate(compartmentCreationVBox));
-        newCompartmentFlowPane.getChildren().add(newCrateButton);
+        newCrateButton.getStyleClass().add("standard-action-button");
+        newCrateButton.setOnAction(event -> handleAddCrate(cratesVBox));
+        newCompartmentHBox.getChildren().add(newCrateButton);
 
         Button confirmButton = new Button("Confirm Creation");
         confirmButton.getStyleClass().add("standard-write-button");
-        confirmButton.setOnAction(event -> handleCreateCompartment(compartmentNameField));
-        newCompartmentFlowPane.getChildren().add(confirmButton);
+        confirmButton.setOnAction(event -> handleCreateCompartment(compartmentNameField, cratesVBox));
+        newCompartmentHBox.getChildren().add(confirmButton);
+
+        compartmentCreationVBox.getChildren().add(cratesVBox);
     }
 
-    private void handleAddCrate(VBox compartmentCreationVBox) {
-        VBox cratesVBox = new VBox(16);
-        compartmentCreationVBox.getChildren().add(cratesVBox);
-
+    private void handleAddCrate(VBox cratesVBox) {
         HBox crateHBox = new HBox(16);
         cratesVBox.getChildren().add(crateHBox);
 
@@ -261,15 +294,53 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
         crateHBox.getChildren().add(maxCratesField);
     }
 
-    private void handleCreateCompartment(TextField compartmentNameField) {
-        CreateCompartmentDTO compartmentDTO = new CreateCompartmentDTO();
-        compartmentDTO.setWarehouseId(warehouse.getId());
-        compartmentDTO.setName(compartmentNameField.getText());
-        compartmentDTO.setOrganizationId(TenantContext.getCurrentUser().getOrganization().getId());
+    private void handleCreateCompartment(TextField compartmentNameField, VBox cratesVBox) {
+        CreateCompartmentDTO compartmentDTO = getCompartmentDTO(compartmentNameField.getText(), cratesVBox);
 
         compartmentService.createCompartment(compartmentDTO)
                 .thenApply(this::handleCreateCompartmentResponse)
                 .exceptionally(this::handleCreateCompartmentError);
+    }
+
+    private CreateCompartmentDTO getCompartmentDTO(String compartmentName, VBox cratesVBox) {
+        CreateCompartmentDTO compartmentDTO = new CreateCompartmentDTO();
+        compartmentDTO.setWarehouseId(warehouse.getId());
+        compartmentDTO.setName(compartmentName);
+        compartmentDTO.setOrganizationId(TenantContext.getCurrentUser().getOrganization().getId());
+
+        CompartmentData compartmentData = new CompartmentData();
+        compartmentDTO.setData(compartmentData);
+        compartmentData.setCrateSpecs(new ArrayList<>());
+
+        for (Node node : cratesVBox.getChildren()) {
+            CrateSpec crateSpec = findCrateSpecs(node);
+            if (crateSpec != null) {
+                compartmentDTO.getData().getCrateSpecs().add(crateSpec);
+            }
+        }
+
+        return compartmentDTO;
+    }
+
+    private CrateSpec findCrateSpecs(Node node) {
+        if (!(node instanceof HBox crateHBox)) {
+            return null;
+        }
+
+        ComboBox<Crate> crateComboBox = (ComboBox<Crate>) crateHBox.getChildren().getFirst();
+        TextField maxCratesField = (TextField) crateHBox.getChildren().get(1);
+
+        Crate crate = crateComboBox.getValue();
+        if (crate == null) {
+            return null;
+        }
+
+        Float maxCrates = Float.parseFloat(maxCratesField.getText());
+        CrateSpec crateSpec = new CrateSpec();
+        crateSpec.setCrateId(crate.getId());
+        crateSpec.setMaxCrates(maxCrates);
+
+        return crateSpec;
     }
 
     private Result<Compartment> handleCreateCompartmentResponse(Result<Compartment> compartment) {
@@ -282,6 +353,8 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
             compartmentsVBox.getChildren().removeLast();
 
             renderCompartment(compartment.getData());
+
+            isCreatingCompartment.set(false);
         });
         return compartment;
     }

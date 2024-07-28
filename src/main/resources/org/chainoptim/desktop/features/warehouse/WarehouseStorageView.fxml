@@ -12,9 +12,9 @@
     <HBox alignment="CENTER_LEFT">
         <Label text="Compartments" styleClass="tab-title"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Add Compartment" onAction="#handleAddCompartment" styleClass="standard-write-button"/>
+        <Button fx:id="addCompartmentButton" text="Add Compartment" onAction="#handleAddCompartment" styleClass="standard-write-button"/>
     </HBox>
-    <ScrollPane VBox.vgrow="ALWAYS" style="-fx-border-color: red;">
+    <ScrollPane VBox.vgrow="ALWAYS" minHeight="600">
         <VBox fx:id="compartmentsVBox" style="-fx-padding: 10px;"/>
     </ScrollPane>
 </VBox>
