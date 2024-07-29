@@ -4,13 +4,18 @@ import org.chainoptim.desktop.core.settings.model.UserSettings;
 import org.chainoptim.desktop.shared.common.uielements.settings.EnumSelector;
 import org.chainoptim.desktop.shared.enums.InfoLevel;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.version.VersionCheckerService;
 
+import com.google.inject.Inject;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import lombok.Setter;
 
 public class GeneralSettingsController implements DataReceiver<UserSettings> {
+
+    // Services
+    private final VersionCheckerService versionCheckerService;
 
     // Listeners
     @Setter
@@ -24,6 +29,11 @@ public class GeneralSettingsController implements DataReceiver<UserSettings> {
     @FXML
     private EnumSelector<InfoLevel> infoLevelSelector;
 
+    @Inject
+    public GeneralSettingsController(VersionCheckerService versionCheckerService) {
+        this.versionCheckerService = versionCheckerService;
+    }
+
     @Override
     public void setData(UserSettings data) {
         this.userSettings = data;
@@ -32,6 +42,7 @@ public class GeneralSettingsController implements DataReceiver<UserSettings> {
         infoLevelSelector.initializeSelector(InfoLevel.class, userSettings.getGeneralSettings().getInfoLevel());
 
         setUpListeners();
+        checkSoftwareVersion();
     }
 
     private void setUpListeners() {
@@ -47,7 +58,12 @@ public class GeneralSettingsController implements DataReceiver<UserSettings> {
         infoLevelSelector.getValueProperty().addListener(overallChangeListener);
     }
 
+    private void checkSoftwareVersion() {
+
+    }
+
     public void cancelChanges(UserSettings originalUserSettings) {
         infoLevelSelector.selectValue(originalUserSettings.getGeneralSettings().getInfoLevel(), InfoLevel.class);
     }
+
 }

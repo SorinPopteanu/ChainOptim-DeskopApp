@@ -113,6 +113,7 @@ public class WarehouseStorageController implements DataReceiver<Warehouse> {
 
     private Result<List<Compartment>> handleCompartmentsResponse(Result<List<Compartment>> result) {
         Platform.runLater(() -> {
+            System.out.println("Result: " + result);
             if (result.getError() != null) {
                 fallbackManager.setErrorMessage(result.getError().getMessage());
                 return;

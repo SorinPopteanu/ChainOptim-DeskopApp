@@ -72,6 +72,8 @@ import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoaderImpl;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderServiceImpl;
+import org.chainoptim.desktop.shared.version.VersionCheckerService;
+import org.chainoptim.desktop.shared.version.VersionCheckerServiceImpl;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -196,6 +198,9 @@ public class AppModule extends AbstractModule {
 
         // - Toast
         bind(ToastManager.class).to(ToastManagerImpl.class);
+
+        // - Software versions
+        bind(VersionCheckerService.class).to(VersionCheckerServiceImpl.class);
 
         // - Caching
         bind(new TypeLiteral<CachingService<PaginatedResults<NotificationUser>>>() {})
