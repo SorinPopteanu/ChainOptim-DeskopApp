@@ -7,9 +7,9 @@ import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.inject.Inject;
 
 import java.net.http.HttpRequest;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class VersionCheckerServiceImpl implements VersionCheckerService {
@@ -18,6 +18,7 @@ public class VersionCheckerServiceImpl implements VersionCheckerService {
     private final RequestHandler requestHandler;
     private final TokenManager tokenManager;
 
+    @Inject
     public VersionCheckerServiceImpl(RequestBuilder requestBuilder,
                                      RequestHandler requestHandler,
                                      TokenManager tokenManager) {
