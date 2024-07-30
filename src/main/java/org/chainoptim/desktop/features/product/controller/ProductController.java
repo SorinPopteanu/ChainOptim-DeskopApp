@@ -42,6 +42,8 @@ public class ProductController implements Initializable {
     @FXML
     private Tab productionTab;
     @FXML
+    private Tab pricingTab;
+    @FXML
     private Tab evaluationTab;
     @FXML
     private StackPane fallbackContainer;
@@ -80,6 +82,11 @@ public class ProductController implements Initializable {
         productionTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && productionTab.getContent() == null) {
                 commonViewsLoader.loadTabContent(productionTab, "/org/chainoptim/desktop/features/product/ProductProductionView.fxml", this.product);
+            }
+        });
+        pricingTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && pricingTab.getContent() == null) {
+                commonViewsLoader.loadTabContent(pricingTab, "/org/chainoptim/desktop/features/product/ProductPricingView.fxml", this.product);
             }
         });
         evaluationTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {

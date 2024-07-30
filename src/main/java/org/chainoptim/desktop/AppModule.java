@@ -136,6 +136,7 @@ public class AppModule extends AbstractModule {
         bind(StageService.class).to(StageServiceImpl.class);
         bind(StageWriteService.class).to(StageWriteServiceImpl.class);
         bind(UnitOfMeasurementService.class).to(UnitOfMeasurementServiceImpl.class);
+        bind(PricingService.class).to(PricingServiceImpl.class);
 
         // - Factory
         bind(FactoryService.class).to(FactoryServiceImpl.class);

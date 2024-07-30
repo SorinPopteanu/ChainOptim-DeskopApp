@@ -25,6 +25,7 @@
         <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
             <Tab fx:id="overviewTab" text="Overview"/>
             <Tab fx:id="productionTab" text="Production"/>
+            <Tab fx:id="pricingTab" text="Pricing"/>
             <Tab fx:id="evaluationTab" text="Evaluation"/>
         </TabPane>
 
