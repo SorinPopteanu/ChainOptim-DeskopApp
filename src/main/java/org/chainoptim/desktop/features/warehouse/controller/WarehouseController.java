@@ -39,6 +39,8 @@ public class WarehouseController implements Initializable {
     @FXML
     private Tab inventoryTab;
     @FXML
+    private Tab storageTab;
+    @FXML
     private Label warehouseName;
     @FXML
     private Label warehouseLocation;
@@ -79,6 +81,11 @@ public class WarehouseController implements Initializable {
         inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
                 commonViewsLoader.loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", this.warehouse);
+            }
+        });
+        storageTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+            if (Boolean.TRUE.equals(isNowSelected) && storageTab.getContent() == null) {
+                commonViewsLoader.loadTabContent(storageTab, "/org/chainoptim/desktop/features/warehouse/WarehouseStorageView.fxml", this.warehouse);
             }
         });
 

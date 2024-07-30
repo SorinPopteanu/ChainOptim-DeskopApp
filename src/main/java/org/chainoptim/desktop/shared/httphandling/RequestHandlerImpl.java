@@ -32,7 +32,7 @@ public class RequestHandlerImpl implements RequestHandler {
                         return new Result<>(data, null, response.statusCode());
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Error error = new Error(new Date(), "An unknown error occurred.", "");
+                        Error error = new Error(new Date(), "An error occurred while deserializing the received data.", "");
                         return new Result<>(null, error, response.statusCode());
                     }
                 });
@@ -56,7 +56,7 @@ public class RequestHandlerImpl implements RequestHandler {
                         return new Result<>(data, null, response.statusCode());
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Error error = new Error(new Date(), "An unknown error occurred.", "");
+                        Error error = new Error(new Date(), "An error occurred while deserializing the received data.", "");
                         return new Result<>(null, error, response.statusCode());
                     }
                 });
