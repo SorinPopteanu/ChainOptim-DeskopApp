@@ -7,22 +7,26 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.core.settings.controller.GeneralSettingsController"
-      prefHeight="400.0" prefWidth="600.0" styleClass="settings-tab-container" spacing="15">
+      prefHeight="400.0" prefWidth="600.0" styleClass="settings-tab-container" spacing="20">
 
-    <HBox>
-        <Label text="Software Updates" styleClass="general-label-large"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="checkForUpdatesButton" text="Check for Updates" onAction="#checkForUpdates" styleClass="standard-action-button"/>
-    </HBox>
-    <HBox spacing="5">
-        <Label text="Version: " styleClass="general-label-medium-large"/>
-        <Label fx:id="versionLabel" styleClass="general-label"/>
-        <Label fx:id="latestVersionLabel" visible="false"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="updateStatusLabel" styleClass="general-label" visible="false"/>
-        <Button fx:id="updateButton" text="Update" onAction="#updateToLatest" styleClass="standard-write-button" visible="false"/>
-    </HBox>
+    <VBox spacing="15">
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Software Updates" styleClass="general-label-large"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="checkForUpdatesButton" text="Check for Updates" onAction="#checkForUpdates" styleClass="standard-action-button"/>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Version: " styleClass="general-label-medium-large"/>
+            <Label fx:id="versionLabel" styleClass="general-label"/>
+            <Label fx:id="latestVersionLabel" styleClass="general-label" visible="false" managed="false"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="updateStatusLabel" styleClass="general-label" visible="false" managed="false"/>
+            <Button fx:id="updateButton" text="Update" onAction="#updateToLatest" styleClass="standard-write-button" visible="false" managed="false"/>
+        </HBox>
+    </VBox>
 
-    <Label text="Info Level" styleClass="general-label-large"/>
-    <EnumSelector fx:id="infoLevelSelector"/>
+    <VBox spacing="15">
+        <Label text="Info Level" styleClass="general-label-large"/>
+        <EnumSelector fx:id="infoLevelSelector"/>
+    </VBox>
 </VBox>

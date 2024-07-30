@@ -20,7 +20,7 @@ public class VersionManager {
                 ObjectNode node = mapper.readValue(jsonData, ObjectNode.class);
                 return node.get("version").asText();
             } else {
-                return "1.0.1";
+                return "1.0.3";
             }
         } catch (IOException e) {
             e.printStackTrace();

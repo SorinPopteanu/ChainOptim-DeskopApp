@@ -89,18 +89,19 @@ public class GeneralSettingsController implements DataReceiver<UserSettings> {
             if (result.getError() != null) {
                 return;
             }
-
             CheckVersionResponse checkVersionResponse = result.getData();
-            latestVersionLabel.setText(checkVersionResponse.getLatestVersion());
-            latestVersionLabel.setVisible(true);
+
             updateStatusLabel.setVisible(true);
+            updateStatusLabel.setManaged(true);
             if (checkVersionResponse.isUpdateAvailable()) {
+                latestVersionLabel.setText(" -> " + checkVersionResponse.getLatestVersion());
+                latestVersionLabel.setVisible(true);
+                latestVersionLabel.setManaged(true);
                 updateStatusLabel.setText("Update available");
                 updateButton.setVisible(true);
-                System.out.println("Update available");
+                updateButton.setManaged(true);
             } else {
-                updateStatusLabel.setText("No update available");
-                System.out.println("No update available");
+                updateStatusLabel.setText("Your version is up to date");
             }
         });
         return result;
