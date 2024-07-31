@@ -13,6 +13,7 @@ import org.chainoptim.desktop.features.product.service.ProductWriteService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
 import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateUnitOfMeasurementController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectUnitOfMeasurement;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -53,9 +54,7 @@ public class CreateProductController {
     @FXML
     private FormField<String> descriptionFormField;
     @FXML
-    private ComboBox<StandardUnit> unitComboBox;
-    @FXML
-    private ComboBox<UnitMagnitude> magnitudeComboBox;
+    private SelectUnitOfMeasurement unitOfMeasurementSelect;
 
     @Inject
     public CreateProductController(
@@ -84,8 +83,6 @@ public class CreateProductController {
     private void initializeFormFields() {
         nameFormField.initialize(String::new, "Name", true, null, "Your input is not valid.");
         descriptionFormField.initialize(String::new, "Description", false, null, "Your input is not valid.");
-        unitComboBox.setItems(FXCollections.observableArrayList(StandardUnit.values()));
-        magnitudeComboBox.setItems(FXCollections.observableArrayList(UnitMagnitude.values()));
     }
 
     @FXML
@@ -122,7 +119,7 @@ public class CreateProductController {
                     productDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
                 }
             }
-            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitComboBox.getValue(), magnitudeComboBox.getValue());
+            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
             productDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;

@@ -10,7 +10,7 @@ public enum UnitMagnitude {
     MILLI("Milli", "m", 0.001f),
     CENTI("Centi", "c", 0.01f),
     DECI("Deci", "d", 0.1f),
-    BASE("", "", 1f),
+    BASE("Base", "", 1f),
     DECA("Deca", "da", 10f),
     HECTO("Hecto", "h", 100f),
     KILO("Kilo", "k", 1000f);
