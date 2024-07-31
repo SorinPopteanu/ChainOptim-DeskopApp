@@ -5,11 +5,15 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.dto.CreateProductDTO;
+import org.chainoptim.desktop.features.product.model.NewUnitOfMeasurement;
 import org.chainoptim.desktop.features.product.model.Product;
+import org.chainoptim.desktop.features.product.model.StandardUnit;
+import org.chainoptim.desktop.features.product.model.UnitMagnitude;
 import org.chainoptim.desktop.features.product.service.ProductWriteService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
 import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateUnitOfMeasurementController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectUnitOfMeasurement;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -19,9 +23,11 @@ import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
@@ -47,6 +53,8 @@ public class CreateProductController {
     private FormField<String> nameFormField;
     @FXML
     private FormField<String> descriptionFormField;
+    @FXML
+    private SelectUnitOfMeasurement unitOfMeasurementSelect;
 
     @Inject
     public CreateProductController(
@@ -111,6 +119,8 @@ public class CreateProductController {
                     productDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
                 }
             }
+            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
+            productDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;
         }
