@@ -11,6 +11,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,6 +26,7 @@ public class ProductPricingController implements DataReceiver<Product> {
     private final FallbackManager fallbackManager;
     private Product product;
     private Pricing pricing;
+    private boolean isEditing = false;
 
     // FXML
     @FXML
@@ -34,6 +37,8 @@ public class ProductPricingController implements DataReceiver<Product> {
     private Label pricePerUnitLabel;
     @FXML
     private Slider quantitySlider;
+    @FXML
+    private VBox pricingGrid;
 
     @Inject
     public ProductPricingController(PricingService pricingService,
@@ -69,19 +74,13 @@ public class ProductPricingController implements DataReceiver<Product> {
             System.out.println("Pricing loaded: " + result.getData().getProductPricing().getPricePerUnit());
             this.pricing = result.getData();
 
+            renderPricing();
+
             quantitySlider.valueProperty().addListener((obs, oldVal, newVal) -> {
                 updatePricing(newVal.floatValue());
             });
-
         });
         return result;
-    }
-
-    private void updatePricing(float quantity) {
-        quantityLabel.setText(String.valueOf(quantity));
-        float totalPrice = calculatePrice(quantity);
-        totalPriceLabel.setText(String.valueOf(totalPrice));
-        pricePerUnitLabel.setText(String.valueOf(totalPrice / quantity));
     }
 
     private Result<Pricing> handlePricingError(Throwable throwable) {
@@ -90,6 +89,13 @@ public class ProductPricingController implements DataReceiver<Product> {
             fallbackManager.setLoading(false);
         });
         return new Result<>();
+    }
+
+    private void updatePricing(float quantity) {
+        quantityLabel.setText(String.valueOf(quantity));
+        float totalPrice = calculatePrice(quantity);
+        totalPriceLabel.setText(String.valueOf(totalPrice));
+        pricePerUnitLabel.setText(String.valueOf(totalPrice / quantity));
     }
 
     private float calculatePrice(float quantity) {
@@ -105,5 +111,43 @@ public class ProductPricingController implements DataReceiver<Product> {
             return quantity * pricePerUnit;
         }
         return quantity * pricePerVolume.firstEntry().getValue();
+    }
+
+    private void renderPricing() {
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(20);
+
+        float previousQuantity = 0;
+        int rowIndex = 0;
+
+        for (Map.Entry<Float, Float> entry : this.pricing.getProductPricing().getPricePerVolume().entrySet()) {
+            String rangeLabelContent;
+            if (previousQuantity == 0) {
+                rangeLabelContent = String.format("0 - %.2f:", entry.getKey());
+            } else {
+                rangeLabelContent = String.format("%.2f - %.2f:", previousQuantity, entry.getKey());
+            }
+
+            Label rangeLabel = new Label(rangeLabelContent);
+            rangeLabel.getStyleClass().add("general-label-medium-large");
+            gridPane.add(rangeLabel, 0, rowIndex);
+
+            String priceLabelContent = String.format("$%.2f per unit", entry.getValue());
+
+            Label priceLabel = new Label(priceLabelContent);
+            priceLabel.getStyleClass().add("general-label-medium-large");
+            gridPane.add(priceLabel, 1, rowIndex);
+
+            rowIndex++;
+            previousQuantity = entry.getKey();
+        }
+
+        pricingGrid.getChildren().add(gridPane);
+    }
+
+    @FXML
+    private void handleEditPricing() {
+        System.out.println("Edit pricing");
     }
 }
