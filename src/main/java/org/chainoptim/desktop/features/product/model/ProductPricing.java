@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 @Data
 @AllArgsConstructor
@@ -12,5 +13,5 @@ import java.util.Map;
 public class ProductPricing {
 
     private Float pricePerUnit;
-    private Map<Float, Float> pricePerVolume;
+    private TreeMap<Float, Float> pricePerVolume;
 }
