@@ -22,6 +22,7 @@ public class Product {
         this.updatedAt = newProduct.getUpdatedAt();
         this.organizationId = newProduct.getOrganizationId();
         this.unit = newProduct.getUnit();
+        this.newUnit = newProduct.getNewUnit();
         this.stages = newProduct.getStages();
     }
 
@@ -32,5 +33,6 @@ public class Product {
     private LocalDateTime updatedAt;
     private Integer organizationId;
     private UnitOfMeasurement unit;
+    private NewUnitOfMeasurement newUnit;
     private List<Stage> stages;
 }

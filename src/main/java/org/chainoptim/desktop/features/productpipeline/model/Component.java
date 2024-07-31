@@ -3,6 +3,7 @@ package org.chainoptim.desktop.features.productpipeline.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.chainoptim.desktop.features.product.model.NewUnitOfMeasurement;
 import org.chainoptim.desktop.features.product.model.UnitOfMeasurement;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class Component {
         this.updatedAt = data.updatedAt;
         this.organizationId = data.organizationId;
         this.unit = data.unit;
+        this.newUnit = data.newUnit;
     }
 
     private Integer id;
@@ -29,4 +31,5 @@ public class Component {
     private LocalDateTime updatedAt;
     private Integer organizationId;
     private UnitOfMeasurement unit;
+    private NewUnitOfMeasurement newUnit;
 }

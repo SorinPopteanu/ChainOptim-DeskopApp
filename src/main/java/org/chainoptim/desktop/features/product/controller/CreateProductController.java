@@ -5,7 +5,10 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.product.dto.CreateProductDTO;
+import org.chainoptim.desktop.features.product.model.NewUnitOfMeasurement;
 import org.chainoptim.desktop.features.product.model.Product;
+import org.chainoptim.desktop.features.product.model.StandardUnit;
+import org.chainoptim.desktop.features.product.model.UnitMagnitude;
 import org.chainoptim.desktop.features.product.service.ProductWriteService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
 import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
@@ -19,9 +22,11 @@ import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
@@ -47,6 +52,10 @@ public class CreateProductController {
     private FormField<String> nameFormField;
     @FXML
     private FormField<String> descriptionFormField;
+    @FXML
+    private ComboBox<StandardUnit> unitComboBox;
+    @FXML
+    private ComboBox<UnitMagnitude> magnitudeComboBox;
 
     @Inject
     public CreateProductController(
@@ -75,6 +84,8 @@ public class CreateProductController {
     private void initializeFormFields() {
         nameFormField.initialize(String::new, "Name", true, null, "Your input is not valid.");
         descriptionFormField.initialize(String::new, "Description", false, null, "Your input is not valid.");
+        unitComboBox.setItems(FXCollections.observableArrayList(StandardUnit.values()));
+        magnitudeComboBox.setItems(FXCollections.observableArrayList(UnitMagnitude.values()));
     }
 
     @FXML
@@ -111,6 +122,8 @@ public class CreateProductController {
                     productDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
                 }
             }
+            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitComboBox.getValue(), magnitudeComboBox.getValue());
+            productDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;
         }
