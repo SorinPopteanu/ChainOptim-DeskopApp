@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.product.controller;
 
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -23,6 +24,7 @@ public class ProductController implements Initializable {
 
     // Services
     private final ProductService productService;
+    private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
 
@@ -51,11 +53,13 @@ public class ProductController implements Initializable {
     @Inject
     public ProductController(ProductService productService,
                              CommonViewsLoader commonViewsLoader,
+                             NavigationService navigationService,
                              CurrentSelectionService currentSelectionService,
                              FallbackManager fallbackManager) {
         this.productService = productService;
-        this.currentSelectionService = currentSelectionService;
         this.commonViewsLoader = commonViewsLoader;
+        this.navigationService = navigationService;
+        this.currentSelectionService = currentSelectionService;
         this.fallbackManager = fallbackManager;
     }
 
@@ -138,7 +142,8 @@ public class ProductController implements Initializable {
 
     @FXML
     private void handleEditProduct() {
-        System.out.println("Edit Product Working");
+        currentSelectionService.setSelectedId(product.getId());
+        navigationService.switchView("Update-Product?id=" + product.getId(), true, null);
     }
 
 }

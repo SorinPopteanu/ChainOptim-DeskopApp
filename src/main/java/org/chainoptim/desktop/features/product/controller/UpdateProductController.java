@@ -4,9 +4,10 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.product.dto.CreateProductDTO;
+import org.chainoptim.desktop.features.product.dto.UpdateProductDTO;
 import org.chainoptim.desktop.features.product.model.NewUnitOfMeasurement;
 import org.chainoptim.desktop.features.product.model.Product;
+import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.features.product.service.ProductWriteService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
 import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
@@ -23,8 +24,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 
-public class CreateProductController {
+public class UpdateProductController {
 
+    private final ProductService productService;
     private final ProductWriteService productWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
@@ -44,7 +46,8 @@ public class CreateProductController {
     private SelectUnitOfMeasurement unitOfMeasurementSelect;
 
     @Inject
-    public CreateProductController(
+    public UpdateProductController(
+            ProductService productService,
             ProductWriteService productWriteService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
@@ -52,6 +55,7 @@ public class CreateProductController {
             ToastManager toastManager,
             FallbackManager fallbackManager
     ) {
+        this.productService = productService;
         this.productWriteService = productWriteService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
@@ -63,12 +67,41 @@ public class CreateProductController {
     public void initialize() {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
 
-        initializeFormFields();
+        loadProduct(currentSelectionService.getSelectedId());
     }
 
-    private void initializeFormFields() {
-        nameFormField.initialize(String::new, "Name", true, null, "Your input is not valid.");
-        descriptionFormField.initialize(String::new, "Description", false, null, "Your input is not valid.");
+    private void loadProduct(Integer productId) {
+        fallbackManager.reset();
+        fallbackManager.setLoading(true);
+
+        productService.getProductWithStages(productId)
+                .thenApply(this::handleProductResponse)
+                .exceptionally(this::handleProductException);
+    }
+
+    private Result<Product> handleProductResponse(Result<Product> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                fallbackManager.setErrorMessage("Failed to load product");
+                return;
+            }
+
+            Product product = result.getData();
+            initializeFormFields(product);
+            fallbackManager.setLoading(false);
+        });
+        return result;
+    }
+
+    private Result<Product> handleProductException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load product."));
+        return new Result<>();
+    }
+
+    private void initializeFormFields(Product product) {
+        nameFormField.initialize(String::new, "Name", true, product.getName(), "Your input is not valid.");
+        descriptionFormField.initialize(String::new,"Description", false, product.getDescription(), "Your input is not valid.");
+        unitOfMeasurementSelect.initialize(product.getNewUnit().getStandardUnit(), product.getNewUnit().getUnitMagnitude());
     }
 
     @FXML
@@ -79,19 +112,20 @@ public class CreateProductController {
         }
         Integer organizationId = currentUser.getOrganization().getId();
 
-        CreateProductDTO productDTO = getCreateProductDTO(organizationId);
+        UpdateProductDTO productDTO = getUpdateProductDTO(organizationId);
         if (productDTO == null) return;
 
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        productWriteService.createProduct(productDTO)
-                .thenApply(this::handleCreateProductResponse)
-                .exceptionally(this::handleCreateProductException);
+        productWriteService.updateProduct(productDTO)
+                .thenApply(this::handleUpdateProductResponse)
+                .exceptionally(this::handleUpdateProductException);
     }
 
-    private CreateProductDTO getCreateProductDTO(Integer organizationId) {
-        CreateProductDTO productDTO = new CreateProductDTO();
+    private UpdateProductDTO getUpdateProductDTO(Integer organizationId) {
+        UpdateProductDTO productDTO = new UpdateProductDTO();
+        productDTO.setId(currentSelectionService.getSelectedId());
         productDTO.setOrganizationId(organizationId);
         try {
             productDTO.setName(nameFormField.handleSubmit());
@@ -105,17 +139,17 @@ public class CreateProductController {
         return productDTO;
     }
 
-    private Result<Product> handleCreateProductResponse(Result<Product> result) {
+    private Result<Product> handleUpdateProductResponse(Result<Product> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
                 toastManager.addToast(new ToastInfo(
-                        "Error", "Failed to create product.", OperationOutcome.ERROR));
+                        "Error", "Failed to update product.", OperationOutcome.ERROR));
                 return;
             }
             Product product = result.getData();
             fallbackManager.setLoading(false);
             toastManager.addToast(new ToastInfo
-                    ("Product created.", "Product has been successfully created.", OperationOutcome.SUCCESS));
+                    ("Product updated.", "Product has been successfully updated.", OperationOutcome.SUCCESS));
 
             currentSelectionService.setSelectedId(product.getId());
             navigationService.switchView("Product?id=" + product.getId(), true, null);
@@ -123,9 +157,9 @@ public class CreateProductController {
         return result;
     }
 
-    private Result<Product> handleCreateProductException(Throwable ex) {
+    private Result<Product> handleUpdateProductException(Throwable ex) {
         Platform.runLater(() -> toastManager.addToast(new ToastInfo(
-                "An error occurred.", "Failed to create product.", OperationOutcome.ERROR)));
+                "An error occurred.", "Failed to update product.", OperationOutcome.ERROR)));
         return new Result<>();
     }
 }

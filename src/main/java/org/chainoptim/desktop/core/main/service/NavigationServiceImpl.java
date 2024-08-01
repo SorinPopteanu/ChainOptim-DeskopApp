@@ -60,6 +60,7 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
             Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
             Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
+            Map.entry("Update-Product", "/org/chainoptim/desktop/features/product/UpdateProductView.fxml"),
             Map.entry("Stages", "/org/chainoptim/desktop/features/productpipeline/StagesView.fxml"),
             Map.entry("Components", "/org/chainoptim/desktop/features/productpipeline/ComponentsView.fxml"),
 

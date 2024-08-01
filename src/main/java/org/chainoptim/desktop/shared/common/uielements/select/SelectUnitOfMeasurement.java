@@ -10,8 +10,8 @@ import javafx.util.StringConverter;
 
 public class SelectUnitOfMeasurement extends HBox {
 
-    private ComboBox<StandardUnit> unitComboBox;
-    private ComboBox<UnitMagnitude> magnitudeComboBox;
+    private final ComboBox<StandardUnit> unitComboBox;
+    private final ComboBox<UnitMagnitude> magnitudeComboBox;
 
     public SelectUnitOfMeasurement() {
         super();
@@ -45,6 +45,11 @@ public class SelectUnitOfMeasurement extends HBox {
         magnitudeComboBox.getItems().addAll(UnitMagnitude.values());
 
         getChildren().addAll(unitComboBox, magnitudeComboBox);
+    }
+
+    public void initialize(StandardUnit unit, UnitMagnitude magnitude) {
+        unitComboBox.getSelectionModel().select(unit);
+        magnitudeComboBox.getSelectionModel().select(magnitude);
     }
 
     public StandardUnit getSelectedUnit() {
