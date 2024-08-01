@@ -1,14 +1,13 @@
-package org.chainoptim.desktop.features.product.controller;
+package org.chainoptim.desktop.features.productpipeline.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.product.dto.UpdateProductDTO;
+import org.chainoptim.desktop.features.productpipeline.dto.UpdateComponentDTO;
 import org.chainoptim.desktop.features.product.model.NewUnitOfMeasurement;
-import org.chainoptim.desktop.features.product.model.Product;
-import org.chainoptim.desktop.features.product.service.ProductService;
-import org.chainoptim.desktop.features.product.service.ProductWriteService;
+import org.chainoptim.desktop.features.productpipeline.model.Component;
+import org.chainoptim.desktop.features.productpipeline.service.ComponentService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
 import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectUnitOfMeasurement;
@@ -18,16 +17,14 @@ import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.toast.controller.ToastManager;
 import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 
-public class UpdateProductController {
+public class UpdateComponentController {
 
-    private final ProductService productService;
-    private final ProductWriteService productWriteService;
+    private final ComponentService componentService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
@@ -46,17 +43,15 @@ public class UpdateProductController {
     private SelectUnitOfMeasurement unitOfMeasurementSelect;
 
     @Inject
-    public UpdateProductController(
-            ProductService productService,
-            ProductWriteService productWriteService,
+    public UpdateComponentController(
+            ComponentService componentService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
             CommonViewsLoader commonViewsLoader,
             ToastManager toastManager,
             FallbackManager fallbackManager
     ) {
-        this.productService = productService;
-        this.productWriteService = productWriteService;
+        this.componentService = componentService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.commonViewsLoader = commonViewsLoader;
@@ -67,42 +62,42 @@ public class UpdateProductController {
     public void initialize() {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
 
-        loadProduct(currentSelectionService.getSelectedId());
+        loadComponent(currentSelectionService.getSelectedId());
     }
 
-    private void loadProduct(Integer productId) {
+    private void loadComponent(Integer componentId) {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        productService.getProductWithStages(productId)
-                .thenApply(this::handleProductResponse)
-                .exceptionally(this::handleProductException);
+        componentService.getComponentById(componentId)
+                .thenApply(this::handleComponentResponse)
+                .exceptionally(this::handleComponentException);
     }
 
-    private Result<Product> handleProductResponse(Result<Product> result) {
+    private Result<Component> handleComponentResponse(Result<Component> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
-                fallbackManager.setErrorMessage("Failed to load product");
+                fallbackManager.setErrorMessage("Failed to load component");
                 return;
             }
 
-            Product product = result.getData();
-            initializeFormFields(product);
+            Component component = result.getData();
+            initializeFormFields(component);
             fallbackManager.setLoading(false);
         });
         return result;
     }
 
-    private Result<Product> handleProductException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load product."));
+    private Result<Component> handleComponentException(Throwable ex) {
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load component."));
         return new Result<>();
     }
 
-    private void initializeFormFields(Product product) {
-        nameFormField.initialize(String::new, "Name", true, product.getName(), "Your input is not valid.");
-        descriptionFormField.initialize(String::new,"Description", false, product.getDescription(), "Your input is not valid.");
-        if (product.getNewUnit() != null) {
-            unitOfMeasurementSelect.initialize(product.getNewUnit().getStandardUnit(), product.getNewUnit().getUnitMagnitude());
+    private void initializeFormFields(Component component) {
+        nameFormField.initialize(String::new, "Name", true, component.getName(), "Your input is not valid.");
+        descriptionFormField.initialize(String::new,"Description", false, component.getDescription(), "Your input is not valid.");
+        if (component.getNewUnit() != null) {
+            unitOfMeasurementSelect.initialize(component.getNewUnit().getStandardUnit(), component.getNewUnit().getUnitMagnitude());
         }
     }
 
@@ -114,54 +109,54 @@ public class UpdateProductController {
         }
         Integer organizationId = currentUser.getOrganization().getId();
 
-        UpdateProductDTO productDTO = getUpdateProductDTO(organizationId);
-        if (productDTO == null) return;
+        UpdateComponentDTO componentDTO = getUpdateComponentDTO(organizationId);
+        if (componentDTO == null) return;
 
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
-        productWriteService.updateProduct(productDTO)
-                .thenApply(this::handleUpdateProductResponse)
-                .exceptionally(this::handleUpdateProductException);
+        componentService.updateComponent(componentDTO)
+                .thenApply(this::handleUpdateComponentResponse)
+                .exceptionally(this::handleUpdateComponentException);
     }
 
-    private UpdateProductDTO getUpdateProductDTO(Integer organizationId) {
-        UpdateProductDTO productDTO = new UpdateProductDTO();
-        productDTO.setId(currentSelectionService.getSelectedId());
-        productDTO.setOrganizationId(organizationId);
+    private UpdateComponentDTO getUpdateComponentDTO(Integer organizationId) {
+        UpdateComponentDTO componentDTO = new UpdateComponentDTO();
+        componentDTO.setId(currentSelectionService.getSelectedId());
+        componentDTO.setOrganizationId(organizationId);
         try {
-            productDTO.setName(nameFormField.handleSubmit());
-            productDTO.setDescription(descriptionFormField.handleSubmit());
+            componentDTO.setName(nameFormField.handleSubmit());
+            componentDTO.setDescription(descriptionFormField.handleSubmit());
             NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
-            productDTO.setNewUnit(newUnit);
+            componentDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;
         }
 
-        return productDTO;
+        return componentDTO;
     }
 
-    private Result<Product> handleUpdateProductResponse(Result<Product> result) {
+    private Result<Component> handleUpdateComponentResponse(Result<Component> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
                 toastManager.addToast(new ToastInfo(
-                        "Error", "Failed to update product.", OperationOutcome.ERROR));
+                        "Error", "Failed to update component.", OperationOutcome.ERROR));
                 return;
             }
-            Product product = result.getData();
+            Component component = result.getData();
             fallbackManager.setLoading(false);
             toastManager.addToast(new ToastInfo
-                    ("Product updated.", "Product has been successfully updated.", OperationOutcome.SUCCESS));
+                    ("Component updated.", "Component has been successfully updated.", OperationOutcome.SUCCESS));
 
-            currentSelectionService.setSelectedId(product.getId());
-            navigationService.switchView("Product?id=" + product.getId(), true, null);
+            currentSelectionService.setSelectedId(component.getId());
+            navigationService.switchView("Component?id=" + component.getId(), true, null);
         });
         return result;
     }
 
-    private Result<Product> handleUpdateProductException(Throwable ex) {
+    private Result<Component> handleUpdateComponentException(Throwable ex) {
         Platform.runLater(() -> toastManager.addToast(new ToastInfo(
-                "An error occurred.", "Failed to update product.", OperationOutcome.ERROR)));
+                "An error occurred.", "Failed to update component.", OperationOutcome.ERROR)));
         return new Result<>();
     }
 }
