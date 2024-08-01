@@ -1,71 +1,74 @@
 package org.chainoptim.desktop.features.productpipeline.controller;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.features.product.model.NewUnitOfMeasurement;
 import org.chainoptim.desktop.features.productpipeline.dto.CreateComponentDTO;
-import org.chainoptim.desktop.features.productpipeline.model.Component;
 import org.chainoptim.desktop.features.productpipeline.service.ComponentService;
+import org.chainoptim.desktop.features.productpipeline.model.Component;
+import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
 import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateUnitOfMeasurementController;
+import org.chainoptim.desktop.shared.common.uielements.select.SelectUnitOfMeasurement;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
+import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class CreateComponentController implements Initializable {
+public class CreateComponentController {
 
     private final ComponentService componentService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+    private final ToastManager toastManager;
     private final FallbackManager fallbackManager;
-
-    private SelectOrCreateUnitOfMeasurementController unitOfMeasurementController;
 
     @FXML
     private StackPane fallbackContainer;
     @FXML
     private StackPane unitOfMeasurementContainer;
     @FXML
-    private TextField nameField;
+    private FormField<String> nameFormField;
     @FXML
-    private TextField descriptionField;
+    private FormField<String> descriptionFormField;
+    @FXML
+    private SelectUnitOfMeasurement unitOfMeasurementSelect;
 
     @Inject
     public CreateComponentController(
             ComponentService componentService,
             NavigationService navigationService,
             CurrentSelectionService currentSelectionService,
-            FallbackManager fallbackManager,
-            CommonViewsLoader commonViewsLoader
+            CommonViewsLoader commonViewsLoader,
+            ToastManager toastManager,
+            FallbackManager fallbackManager
     ) {
         this.componentService = componentService;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.commonViewsLoader = commonViewsLoader;
+        this.toastManager = toastManager;
         this.fallbackManager = fallbackManager;
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize() {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
-        unitOfMeasurementController = commonViewsLoader.loadSelectOrCreateUnitOfMeasurement(unitOfMeasurementContainer);
-        unitOfMeasurementController.initialize();
+
+        initializeFormFields();
+    }
+
+    private void initializeFormFields() {
+        nameFormField.initialize(String::new, "Name", true, null, "Your input is not valid.");
+        descriptionFormField.initialize(String::new, "Description", false, null, "Your input is not valid.");
     }
 
     @FXML
@@ -77,49 +80,52 @@ public class CreateComponentController implements Initializable {
         Integer organizationId = currentUser.getOrganization().getId();
 
         CreateComponentDTO componentDTO = getCreateComponentDTO(organizationId);
-        System.out.println("CreateComponent: " + componentDTO);
         if (componentDTO == null) return;
 
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
         componentService.createComponent(componentDTO)
-                .thenAccept(result ->
-                        // Navigate to component page
-                        Platform.runLater(() -> {
-                            if (result.getError() != null) {
-                                fallbackManager.setErrorMessage("Failed to create component.");
-                                return;
-                            }
-                            Component component = result.getData();
-                            fallbackManager.setLoading(false);
-                            currentSelectionService.setSelectedId(component.getId());
-                            navigationService.switchView("Component?id=" + component.getId(), true, null);
-                        })
-                )
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return null;
-                });
+                .thenApply(this::handleCreateComponentResponse)
+                .exceptionally(this::handleCreateComponentException);
     }
 
     private CreateComponentDTO getCreateComponentDTO(Integer organizationId) {
         CreateComponentDTO componentDTO = new CreateComponentDTO();
         componentDTO.setOrganizationId(organizationId);
         try {
-            componentDTO.setName(nameField.getText());
-            componentDTO.setDescription(descriptionField.getText());
-            if (unitOfMeasurementController.isCreatingNewUnit()) {
-                componentDTO.setCreateUnit(true);
-                componentDTO.setUnitDTO(unitOfMeasurementController.getNewUnitDTO());
-            } else {
-                componentDTO.setCreateUnit(false);
-                componentDTO.setUnitId(unitOfMeasurementController.getSelectedUnit().getId());
-            }
+            componentDTO.setName(nameFormField.handleSubmit());
+            componentDTO.setDescription(descriptionFormField.handleSubmit());
+            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
+            componentDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;
         }
 
         return componentDTO;
+    }
+
+    private Result<Component> handleCreateComponentResponse(Result<Component> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                toastManager.addToast(new ToastInfo(
+                        "Error", "Failed to create component.", OperationOutcome.ERROR));
+                return;
+            }
+            Component component = result.getData();
+            fallbackManager.setLoading(false);
+            toastManager.addToast(new ToastInfo
+                    ("Component created.", "Component has been successfully created.", OperationOutcome.SUCCESS));
+
+            currentSelectionService.setSelectedId(component.getId());
+            navigationService.switchView("Component?id=" + component.getId(), true, null);
+        });
+        return result;
+    }
+
+    private Result<Component> handleCreateComponentException(Throwable ex) {
+        Platform.runLater(() -> toastManager.addToast(new ToastInfo(
+                "An error occurred.", "Failed to create component.", OperationOutcome.ERROR)));
+        return new Result<>();
     }
 }

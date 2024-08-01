@@ -67,6 +67,14 @@ public class ComponentServiceImpl implements ComponentService {
         return requestHandler.sendRequest(request, new TypeReference<PaginatedResults<Component>>() {});
     }
 
+    public CompletableFuture<Result<Component>> getComponentById(Integer id) {
+        String routeAddress = "http://localhost:8080/api/v1/components/" + id.toString();
+
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
+
+        return requestHandler.sendRequest(request, new TypeReference<Component>() {});
+    }
+
     // Create
     public CompletableFuture<Result<Component>> createComponent(CreateComponentDTO componentDTO) {
         String routeAddress = "http://localhost:8080/api/v1/components/create";
