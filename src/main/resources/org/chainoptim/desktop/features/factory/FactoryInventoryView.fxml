@@ -30,9 +30,8 @@
         </ScrollPane>
     </VBox>
 
+    <!-- Fallback and Confirm Dialogs -->
     <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px;"/>
     <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
     <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
-
-
 </StackPane>

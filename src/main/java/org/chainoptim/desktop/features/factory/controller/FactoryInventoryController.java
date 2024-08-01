@@ -49,7 +49,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class FactoryInventoryController implements DataReceiver<Factory> {
+public class FactoryInventoryController implements DataReceiver<SearchData<Factory>> {
 
     // Services
     private final FactoryInventoryItemService factoryInventoryItemService;
@@ -69,9 +69,8 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
     // State
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
-
+    private SearchMode searchMode;
     private Factory factory;
-    private final List<OrderStatus> statusOptions = Arrays.asList(OrderStatus.values());
     private long totalRowsCount;
     private int newInventoryItemCount = 0;
     private final List<Integer> selectedRowsIndices = new ArrayList<>();
@@ -141,8 +140,9 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
     }
 
     @Override
-    public void setData(Factory factory) {
-        this.factory = factory;
+    public void setData(SearchData<Factory> searchData) {
+        this.factory = searchData.getData();
+        this.searchMode = searchData.getSearchMode();
 
         searchParams.setItemsPerPage(20);
         SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.FACTORY_INVENTORY);
@@ -152,10 +152,10 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
 
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
         tableToolbarController.initialize(new ListHeaderParams(
-                SearchMode.SECONDARY, searchParams,
+                searchMode, searchParams,
                 "Factory Inventory", "/img/box-solid.png", Feature.FACTORY_INVENTORY,
                 searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
-                () -> loadFactoryInventoryItems(factory.getId()), null, null));
+                () -> loadFactoryInventoryItems(searchMode == SearchMode.SECONDARY ? factory.getId() : null, searchMode), null, null));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
         selectProductLoader.initialize();
@@ -165,7 +165,7 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
         setUpListeners();
         loadConfirmDialogs();
 
-        loadFactoryInventoryItems(factory.getId());
+        loadFactoryInventoryItems(searchMode == SearchMode.SECONDARY ? factory.getId() : null, searchMode);
     }
 
     // Loading
@@ -267,13 +267,13 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
     }
 
     private void setUpSearchListeners() {
-        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadFactoryInventoryItems(factory.getId()));
-        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadFactoryInventoryItems(factory.getId()));
-        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadFactoryInventoryItems(factory.getId()));
-        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadFactoryInventoryItems(factory.getId()));
+        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadFactoryInventoryItems(factory.getId(), searchMode));
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadFactoryInventoryItems(factory.getId(), searchMode));
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadFactoryInventoryItems(factory.getId(), searchMode));
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadFactoryInventoryItems(factory.getId(), searchMode));
         searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
             if (searchParams.getFiltersProperty().entrySet().size() == 1) { // Allow only one filter at a time
-                loadFactoryInventoryItems(factory.getId());
+                loadFactoryInventoryItems(factory.getId(), searchMode);
             }
         });
     }
@@ -312,20 +312,20 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
         confirmDialogCreateListener = new RunnableConfirmDialogActionListener<>(onConfirmCreate, onCancelCreate);
     }
 
-    private void setUpRowListeners(TableData<FactoryInventoryItem> FactoryInventoryItem) {
+    private void setUpRowListeners(TableData<FactoryInventoryItem> factoryInventoryItem) {
         // Add listener to the selectedProperty
-        FactoryInventoryItem.isSelectedProperty().addListener((obs, wasSelected, isSelected) -> {
+        factoryInventoryItem.isSelectedProperty().addListener((obs, wasSelected, isSelected) -> {
             if (Boolean.TRUE.equals(isSelected)) {
-                selectedRowsIndices.add(tableView.getItems().indexOf(FactoryInventoryItem));
+                selectedRowsIndices.add(tableView.getItems().indexOf(factoryInventoryItem));
             } else {
-                selectedRowsIndices.remove(Integer.valueOf(tableView.getItems().indexOf(FactoryInventoryItem)));
+                selectedRowsIndices.remove(Integer.valueOf(tableView.getItems().indexOf(factoryInventoryItem)));
             }
             selectedCount.set(selectedRowsIndices.size());
         });
     }
 
     // Data loading
-    private void loadFactoryInventoryItems(Integer factoryId) {
+    private void loadFactoryInventoryItems(Integer factoryId, SearchMode searchMode) {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
@@ -335,9 +335,17 @@ public class FactoryInventoryController implements DataReceiver<Factory> {
             return;
         }
 
-        factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(factoryId, searchParams)
-                .thenApply(this::handleOrdersResponse)
-                .exceptionally(this::handleOrdersException);
+        if (searchMode == SearchMode.SECONDARY) {
+            if (factoryId == null) return;
+            factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(factoryId, searchParams, searchMode)
+                    .thenApply(this::handleOrdersResponse)
+                    .exceptionally(this::handleOrdersException);
+        } else {
+            if (currentUser.getOrganization().getId() == null) return;
+            factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(currentUser.getOrganization().getId(), searchParams, searchMode)
+                    .thenApply(this::handleOrdersResponse)
+                    .exceptionally(this::handleOrdersException);
+        }
     }
 
     private Result<PaginatedResults<FactoryInventoryItem>> handleOrdersResponse(Result<PaginatedResults<FactoryInventoryItem>> result) {

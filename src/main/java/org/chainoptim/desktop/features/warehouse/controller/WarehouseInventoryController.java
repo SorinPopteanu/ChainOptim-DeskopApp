@@ -49,7 +49,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class WarehouseInventoryController implements DataReceiver<Warehouse> {
+public class WarehouseInventoryController implements DataReceiver<SearchData<Warehouse>> {
 
     // Services
     private final WarehouseInventoryItemService warehouseInventoryItemService;
@@ -71,7 +71,6 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
     private final SearchParams searchParams;
 
     private Warehouse warehouse;
-    private final List<OrderStatus> statusOptions = Arrays.asList(OrderStatus.values());
     private long totalRowsCount;
     private int newInventoryItemCount = 0;
     private final List<Integer> selectedRowsIndices = new ArrayList<>();
@@ -141,8 +140,8 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
     }
 
     @Override
-    public void setData(Warehouse warehouse) {
-        this.warehouse = warehouse;
+    public void setData(SearchData<Warehouse> searchData) {
+        this.warehouse = searchData.getData();
 
         searchParams.setItemsPerPage(20);
         SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.WAREHOUSE_INVENTORY);
@@ -152,7 +151,7 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
 
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
         tableToolbarController.initialize(new ListHeaderParams(
-                SearchMode.SECONDARY, searchParams,
+                searchData.getSearchMode(), searchParams,
                 "Factory Inventory", "/img/box-solid.png", Feature.WAREHOUSE_INVENTORY,
                 searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
                 () -> loadWarehouseInventoryItems(warehouse.getId()), null, null));
@@ -229,7 +228,6 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
             @Override
             protected void commitChange(TableData<WarehouseInventoryItem> item, Float newValue) {
                 item.getData().setMinimumRequiredQuantity(newValue);
-                System.out.println("Minimum required quantity: " + item.getData().getMinimumRequiredQuantity());
             }
         });
         createdAtColumn.setCellFactory(column -> new DateTimePickerCell<TableData<WarehouseInventoryItem>, LocalDateTime>(
@@ -295,7 +293,7 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
                 openConfirmUpdateDialog(selectedRowsIndices);
             }
         });
-        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
+        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));
         tableToolbarController.getCreateNewShipmentButton().setOnAction(e -> addNewOrder());
     }
 
@@ -313,13 +311,13 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
         confirmDialogCreateListener = new RunnableConfirmDialogActionListener<>(onConfirmCreate, onCancelCreate);
     }
 
-    private void setUpRowListeners(TableData<WarehouseInventoryItem> WarehouseInventoryItem) {
+    private void setUpRowListeners(TableData<WarehouseInventoryItem> warehouseInventoryItem) {
         // Add listener to the selectedProperty
-        WarehouseInventoryItem.isSelectedProperty().addListener((obs, wasSelected, isSelected) -> {
+        warehouseInventoryItem.isSelectedProperty().addListener((obs, wasSelected, isSelected) -> {
             if (Boolean.TRUE.equals(isSelected)) {
-                selectedRowsIndices.add(tableView.getItems().indexOf(WarehouseInventoryItem));
+                selectedRowsIndices.add(tableView.getItems().indexOf(warehouseInventoryItem));
             } else {
-                selectedRowsIndices.remove(Integer.valueOf(tableView.getItems().indexOf(WarehouseInventoryItem)));
+                selectedRowsIndices.remove(Integer.valueOf(tableView.getItems().indexOf(warehouseInventoryItem)));
             }
             selectedCount.set(selectedRowsIndices.size());
         });
@@ -494,9 +492,9 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
 
     // Backend calls
     // - Create
-    private void handleCreateOrders(List<WarehouseInventoryItem> WarehouseInventoryItems) {
+    private void handleCreateOrders(List<WarehouseInventoryItem> warehouseInventoryItem) {
         List<CreateWarehouseInventoryItemDTO> createWarehouseInventoryItemDTOs = new ArrayList<>();
-        for (WarehouseInventoryItem item : WarehouseInventoryItems) {
+        for (WarehouseInventoryItem item : warehouseInventoryItem) {
             CreateWarehouseInventoryItemDTO createWarehouseInventoryItemDTO = getCreateWarehouseInventoryItemDTO(item);
 
             createWarehouseInventoryItemDTOs.add(createWarehouseInventoryItemDTO);
@@ -532,7 +530,6 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Warehouse Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
-                System.out.println("Error creating warehouse orders: " + result.getError().getMessage());
                 return;
             }
             isNewOrderMode.set(false);
@@ -552,10 +549,10 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
         return new Result<>();
     }
 
-    private void handleUpdateOrders(List<WarehouseInventoryItem> WarehouseInventoryItems) {
+    private void handleUpdateOrders(List<WarehouseInventoryItem> warehouseInventoryItems) {
         List<UpdateWarehouseInventoryItemDTO> updateWarehouseInventoryItemDTOs = new ArrayList<>();
 
-        for (WarehouseInventoryItem item : WarehouseInventoryItems) {
+        for (WarehouseInventoryItem item : warehouseInventoryItems) {
             UpdateWarehouseInventoryItemDTO updateWarehouseInventoryItemDTO = getUpdateWarehouseInventoryItemDTO(item);
 
             updateWarehouseInventoryItemDTOs.add(updateWarehouseInventoryItemDTO);
@@ -578,7 +575,6 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
         updateWarehouseInventoryItemDTO.setMinimumRequiredQuantity(item.getMinimumRequiredQuantity());
         updateWarehouseInventoryItemDTO.setCompanyId(item.getCompanyId());
 
-        System.out.println("Updated item minimumQuantity: " + updateWarehouseInventoryItemDTO.getMinimumRequiredQuantity());
         return updateWarehouseInventoryItemDTO;
     }
 
@@ -589,7 +585,6 @@ public class WarehouseInventoryController implements DataReceiver<Warehouse> {
             if (result.getError() != null) {
                 ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Warehouse Orders.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
-                System.out.println("Error updating warehouse orders: " + result.getError().getMessage());
                 return;
             }
 

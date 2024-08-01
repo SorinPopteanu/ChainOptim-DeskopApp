@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -12,7 +8,7 @@
 
     <VBox VBox.vgrow="ALWAYS">
         <StackPane fx:id="tableToolbarContainer"/>
-        <ScrollPane fx:id="factoryInventoryScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
+        <ScrollPane fx:id="warehouseInventoryScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
             <VBox>
                 <TableView fx:id="tableView" styleClass="table-view">
                     <columns>
