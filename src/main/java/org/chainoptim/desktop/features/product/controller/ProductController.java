@@ -26,8 +26,6 @@ import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
@@ -238,7 +236,7 @@ public class ProductController implements Initializable {
 
             toastManager.addToast(new ToastInfo(
                     "Product deleted.",
-                    "The Product \"" + product.getName() + "\" has been successfully deleted",
+                    "The Product \"" + product.getName() + "\" has been successfully deleted.",
                     OperationOutcome.SUCCESS)
             );
 

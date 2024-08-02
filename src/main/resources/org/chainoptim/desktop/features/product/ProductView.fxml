@@ -10,7 +10,7 @@
       fx:controller="org.chainoptim.desktop.features.product.controller.ProductController">
 
     <!-- Header -->
-    <VBox style="-fx-background-color: #ffffff;">
+    <VBox>
         <HBox alignment="CENTER_LEFT" styleClass="entity-header-container">
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
                 <Label fx:id="productName" styleClass="entity-page-title"/>
