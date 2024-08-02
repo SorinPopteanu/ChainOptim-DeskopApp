@@ -6,6 +6,7 @@ import lombok.Data;
 public class UpdateWarehouseInventoryItemDTO {
 
     private Integer id;
+    private Integer organizationId;
     private Integer warehouseId;
     private Integer productId;
     private Integer componentId;

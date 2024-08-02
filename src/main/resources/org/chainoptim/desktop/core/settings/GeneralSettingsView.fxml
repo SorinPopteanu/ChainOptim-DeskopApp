@@ -7,7 +7,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.core.settings.controller.GeneralSettingsController"
-      prefHeight="400.0" prefWidth="600.0" styleClass="settings-tab-container" spacing="20">
+      prefHeight="400.0" prefWidth="600.0" styleClass="settings-tab-container" spacing="30">
 
     <VBox spacing="15">
         <HBox alignment="CENTER_LEFT">

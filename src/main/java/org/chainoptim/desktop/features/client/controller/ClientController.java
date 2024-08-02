@@ -2,39 +2,64 @@ package org.chainoptim.desktop.features.client.controller;
 
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.service.ClientService;
+import org.chainoptim.desktop.features.client.service.ClientWriteService;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.SearchData;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class ClientController implements Initializable {
 
+    // Services
     private final ClientService clientService;
+    private final ClientWriteService clientWriteService;
+    private final CommonViewsLoader commonViewsLoader;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final CommonViewsLoader commonViewsLoader;
-    private final FallbackManager fallbackManager;
 
+    // Controllers
+    private GenericConfirmDialogController<Client> confirmClientDeleteController;
+
+    // Listeners
+    private RunnableConfirmDialogActionListener<Client> confirmDialogDeleteListener;
+
+    // State
+    private final FallbackManager fallbackManager;
+    private final ToastManager toastManager;
     private Client client;
 
+    // FXML
     @FXML
-    private StackPane fallbackContainer;
+    private Label clientName;
+    @FXML
+    private Label clientLocation;
+    @FXML
+    private Button deleteButton;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -46,27 +71,33 @@ public class ClientController implements Initializable {
     @FXML
     private Tab evaluationTab;
     @FXML
-    private Label clientName;
+    private StackPane fallbackContainer;
     @FXML
-    private Label clientLocation;
+    private StackPane confirmDeleteDialogContainer;
 
     @Inject
     public ClientController(ClientService clientService,
+                            ClientWriteService clientWriteService,
+                            CommonViewsLoader commonViewsLoader,
                             NavigationService navigationService,
                             CurrentSelectionService currentSelectionService,
-                            CommonViewsLoader commonViewsLoader,
-                            FallbackManager fallbackManager) {
+                            FallbackManager fallbackManager,
+                            ToastManager toastManager) {
         this.clientService = clientService;
+        this.clientWriteService = clientWriteService;
+        this.commonViewsLoader = commonViewsLoader;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.commonViewsLoader = commonViewsLoader;
         this.fallbackManager = fallbackManager;
+        this.toastManager = toastManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
+        loadDeleteButton();
+        loadComponents();
 
         Integer clientId = currentSelectionService.getSelectedId();
         if (clientId != null) {
@@ -78,6 +109,21 @@ public class ClientController implements Initializable {
     }
 
     private void setupListeners() {
+        setUpFallbackListeners();
+        setUpTabListeners();
+        setUpDialogListeners();
+    }
+
+    private void setUpFallbackListeners() {
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
+    }
+
+    private void setUpTabListeners() {
         overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
                 commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/client/ClientOverviewView.fxml", new SearchData<>(this.client, SearchMode.SECONDARY));
@@ -98,13 +144,28 @@ public class ClientController implements Initializable {
                 commonViewsLoader.loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/client/ClientEvaluationView.fxml", new SearchData<>(this.client, SearchMode.SECONDARY));
             }
         });
+    }
 
-        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
-            tabPane.setVisible(newValue);
-            tabPane.setManaged(newValue);
-            fallbackContainer.setVisible(!newValue);
-            fallbackContainer.setManaged(!newValue);
-        });
+    private void setUpDialogListeners() {
+        Consumer<Client> onConfirmDelete = this::handleDeleteClient;
+        Runnable onCancelDelete = this::closeConfirmDeleteDialog;
+        confirmDialogDeleteListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
+    }
+
+    private void loadDeleteButton() {
+        Image deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
+        ImageView deleteImageView = new ImageView(deleteImage);
+        deleteImageView.setFitWidth(14);
+        deleteImageView.setFitHeight(14);
+        deleteButton.setGraphic(deleteImageView);
+        deleteButton.setTooltip(new Tooltip("Delete client"));
+        deleteButton.setOnAction(event -> openConfirmDeleteDialog(client));
+    }
+
+    private void loadComponents() {
+        confirmClientDeleteController = commonViewsLoader.loadConfirmDialog(confirmDeleteDialogContainer);
+        confirmClientDeleteController.setActionListener(confirmDialogDeleteListener);
+        closeConfirmDeleteDialog();
     }
 
     private void loadClient(Integer clientId) {
@@ -143,10 +204,71 @@ public class ClientController implements Initializable {
         return new Result<>();
     }
 
+    // Actions
     @FXML
     private void handleEditClient() {
         currentSelectionService.setSelectedId(client.getId());
         navigationService.switchView("Update-Client?id=" + client.getId(), true, null);
     }
 
+    private void openConfirmDeleteDialog(Client client) {
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
+                "Confirm Client Delete",
+                "Are you sure you want to delete this client?",
+                null);
+        confirmClientDeleteController.setData(client, confirmDialogInput);
+        toggleDialogVisibility(confirmDeleteDialogContainer, true);
+    }
+
+    private void handleDeleteClient(Client client) {
+        fallbackManager.setLoading(true);
+
+        clientWriteService.deleteClient(client.getId())
+                .thenApply(this::handleDeleteResponse)
+                .exceptionally(this::handleDeleteException);
+    }
+
+    private Result<Integer> handleDeleteResponse(Result<Integer> result) {
+        Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
+            if (result.getError() != null) {
+                toastManager.addToast(new ToastInfo(
+                        "Failed to delete client.",
+                        "An error occurred while deleting the client.",
+                        OperationOutcome.ERROR)
+                );
+                return;
+            }
+
+            toastManager.addToast(new ToastInfo(
+                    "Client deleted.",
+                    "The Client \"" + client.getName() + "\" has been successfully deleted.",
+                    OperationOutcome.SUCCESS)
+            );
+
+            NavigationServiceImpl.invalidateViewCache("Clients");
+            navigationService.switchView("Clients", true, null);
+        });
+        return result;
+    }
+
+    private Result<Integer> handleDeleteException(Throwable ex) {
+        Platform.runLater(() ->
+                toastManager.addToast(new ToastInfo(
+                        "Failed to delete client.",
+                        "An error occurred while deleting the client.",
+                        OperationOutcome.ERROR)
+                )
+        );
+        return new Result<>();
+    }
+
+    private void closeConfirmDeleteDialog() {
+        toggleDialogVisibility(confirmDeleteDialogContainer, false);
+    }
+
+    private void toggleDialogVisibility(StackPane dialogContainer, boolean isVisible) {
+        dialogContainer.setVisible(isVisible);
+        dialogContainer.setManaged(isVisible);
+    }
 }

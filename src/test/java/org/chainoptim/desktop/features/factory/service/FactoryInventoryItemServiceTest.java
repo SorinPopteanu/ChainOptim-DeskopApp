@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.factory.model.FactoryInventoryItem;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -83,7 +84,7 @@ class FactoryInventoryItemServiceTest {
         when(mockCachingService.get(cacheKey)).thenReturn(cachedResults);
 
         // Act
-        CompletableFuture<Result<PaginatedResults<FactoryInventoryItem>>> resultFuture = factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(clientId, searchParams);
+        CompletableFuture<Result<PaginatedResults<FactoryInventoryItem>>> resultFuture = factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(clientId, searchParams, SearchMode.SECONDARY);
 
         // Assert
         verify(mockCachingService).get(cacheKey);
@@ -111,7 +112,7 @@ class FactoryInventoryItemServiceTest {
         when(mockTokenManager.getToken()).thenReturn(fakeToken);
 
         // Act
-        CompletableFuture<Result<PaginatedResults<FactoryInventoryItem>>> resultFuture = factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(clientId, searchParams);
+        CompletableFuture<Result<PaginatedResults<FactoryInventoryItem>>> resultFuture = factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(clientId, searchParams, SearchMode.SECONDARY);
 
         // Assert
         verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<PaginatedResults<FactoryInventoryItem>>>any(), any());

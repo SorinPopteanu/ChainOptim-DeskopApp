@@ -7,7 +7,7 @@ import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.search.model.SearchData;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
-public class ClientOverviewController implements DataReceiver<SearchData<Client>> {
+public class ClientOverviewController implements DataReceiver<Client> {
 
     private Client client;
 
@@ -15,8 +15,8 @@ public class ClientOverviewController implements DataReceiver<SearchData<Client>
     private Label clientName;
 
     @Override
-    public void setData(SearchData<Client> searchData) {
-        this.client = searchData.getData();
+    public void setData(Client client) {
+        this.client = client;
         clientName.setText(client.getName());
         System.out.println("Client received in overview: " + client.getName());
     }

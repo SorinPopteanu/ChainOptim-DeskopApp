@@ -74,10 +74,10 @@ public class SidebarNavigationConfiguration {
                                     .name("Factories")
                                     .key("Factories")
                                     .build(),
-                            SidebarSubsection.builder()
-                                    .name("Factory Stages")
-                                    .key("Factory-Stages")
-                                    .build(),
+//                            SidebarSubsection.builder()
+//                                    .name("Factory Stages")
+//                                    .key("Factory-Stages")
+//                                    .build(),
                             SidebarSubsection.builder()
                                     .name("Factory Inventory")
                                     .key("Factory-Inventory")

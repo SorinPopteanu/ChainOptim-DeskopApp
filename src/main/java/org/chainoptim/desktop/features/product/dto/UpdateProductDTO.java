@@ -7,6 +7,7 @@ import lombok.Data;
 public class UpdateProductDTO {
 
     private Integer id;
+    private Integer organizationId;
     private String name;
     private String description;
     private Integer unitId;

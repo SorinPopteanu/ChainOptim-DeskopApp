@@ -5,9 +5,8 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.ScrollPane?>
 <?import org.chainoptim.desktop.shared.common.uielements.forms.FormField?>
-
-<?import javafx.scene.control.ComboBox?>
 <?import org.chainoptim.desktop.shared.common.uielements.select.SelectUnitOfMeasurement?>
+
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.features.product.controller.CreateProductController">
@@ -21,9 +20,6 @@
             <FormField fx:id="nameFormField"/>
 
             <FormField fx:id="descriptionFormField"/>
-
-            <Label text="Unit of Measurement:" styleClass="form-label"/>
-            <StackPane fx:id="unitOfMeasurementContainer"/>
 
             <Label text="Unit of Measurement:" styleClass="form-label"/>
             <SelectUnitOfMeasurement fx:id="unitOfMeasurementSelect"/>

@@ -148,18 +148,7 @@ public class ClientOrdersController implements DataReceiver<SearchData<Client>> 
         this.client = searchData.getData();
         this.searchMode = searchData.getSearchMode();
 
-        searchParams.setItemsPerPage(20);
-        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.CLIENT_ORDER);
-
-        commonViewsLoader.loadFallbackManager(fallbackContainer);
-        tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(new ListHeaderParams
-                (searchMode, searchParams,
-                "Client Orders", "/img/box-solid.png", Feature.CLIENT_ORDER,
-                searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
-                () -> loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null), null, null));
-        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
-        selectProductLoader.initialize();
+        loadComponents();
 
         TableConfigurer.configureTableView(tableView, selectRowColumn);
         configureTableColumns();
@@ -170,6 +159,21 @@ public class ClientOrdersController implements DataReceiver<SearchData<Client>> 
     }
 
     // Loading
+    private void loadComponents() {
+        searchParams.setItemsPerPage(20);
+        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.CLIENT_ORDER);
+
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
+        tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
+        tableToolbarController.initialize(new ListHeaderParams
+                (searchMode, searchParams,
+                        "Client Orders", "/img/box-solid.png", Feature.CLIENT_ORDER,
+                        searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
+                        () -> loadClientOrders(searchMode == SearchMode.SECONDARY ? client.getId() : null), null, null));
+        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
+        selectProductLoader.initialize();
+    }
+
     private void loadConfirmDialogs() {
         confirmClientOrderCreateController = commonViewsLoader.loadConfirmDialog(confirmCreateDialogContainer);
         confirmClientOrderCreateController.setActionListener(confirmDialogCreateListener);
@@ -379,7 +383,7 @@ public class ClientOrdersController implements DataReceiver<SearchData<Client>> 
 
             tableView.getItems().clear();
             if (paginatedResults.results.isEmpty()) {
-                fallbackManager.setNoResults(true);
+//                fallbackManager.setNoResults(true);
                 return;
             }
 

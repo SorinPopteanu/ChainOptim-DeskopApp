@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.productpipeline.controller.ComponentController">
+
+    <!-- Header -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" style="-fx-background-color: #ffffff;">
+        <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
+                <Label fx:id="componentName" styleClass="entity-page-title"/>
+                <Label fx:id="componentDescription" styleClass="entity-page-description"/>
+            </VBox>
+            <Button text="Edit Component" onAction="#handleEditComponent" styleClass="standard-write-button"/>
+        </HBox>
+    </VBox>
+
+    <!-- Content -->
+    <StackPane>
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
+    </StackPane>
+</VBox>

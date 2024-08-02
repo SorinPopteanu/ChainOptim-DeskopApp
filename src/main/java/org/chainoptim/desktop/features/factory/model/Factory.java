@@ -16,5 +16,9 @@ public class Factory {
     private LocalDateTime updatedAt;
     private Integer organizationId;
     private Location location;
+    private Float overallScore;
+    private Float resourceDistributionScore;
+    private Float resourceReadinessScore;
+    private Float resourceUtilizationScore;
     private Set<FactoryStage> factoryStages;
 }

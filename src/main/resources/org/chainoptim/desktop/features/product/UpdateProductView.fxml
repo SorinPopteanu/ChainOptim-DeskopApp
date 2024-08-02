@@ -9,12 +9,12 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.productpipeline.controller.CreateComponentController">
+      fx:controller="org.chainoptim.desktop.features.product.controller.UpdateProductController">
 
     <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
         <VBox VBox.vgrow="ALWAYS" styleClass="form-container">
             <HBox styleClass="title-container">
-                <Text text="Create Component" styleClass="form-title"/>
+                <Text text="Update Product" styleClass="form-title"/>
             </HBox>
 
             <FormField fx:id="nameFormField"/>
@@ -25,7 +25,7 @@
             <SelectUnitOfMeasurement fx:id="unitOfMeasurementSelect"/>
 
             <HBox alignment="TOP_RIGHT" style="-fx-padding: 20px 0px 0px 0px;">
-                <Button text="Create" onAction="#handleSubmit" styleClass="standard-write-button"/>
+                <Button text="Update" onAction="#handleSubmit" styleClass="standard-write-button"/>
             </HBox>
         </VBox>
     </ScrollPane>

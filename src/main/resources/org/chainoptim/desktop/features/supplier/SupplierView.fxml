@@ -7,13 +7,17 @@
             fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierController">
 
     <!-- Header -->
-    <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" style="-fx-background-color: #ffffff;">
+    <VBox>
         <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
                 <Label fx:id="supplierName" styleClass="entity-page-title"/>
                 <Label fx:id="supplierLocation" styleClass="entity-page-description"/>
             </VBox>
-            <Button text="Edit Supplier" onAction="#handleEditSupplier" styleClass="standard-write-button"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox spacing="10">
+                <Button fx:id="deleteButton" styleClass="standard-delete-button"/>
+                <Button text="Edit Supplier" onAction="#handleEditSupplier" styleClass="standard-write-button"/>
+            </HBox>
         </HBox>
     </VBox>
 
@@ -25,5 +29,9 @@
             <Tab fx:id="shipmentsTab" text="Shipments"/>
             <Tab fx:id="performanceTab" text="Performance"/>
         </TabPane>
+
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
+
+        <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
     </StackPane>
 </VBox>

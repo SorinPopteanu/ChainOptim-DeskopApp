@@ -18,6 +18,7 @@ public interface ComponentService {
             Integer organizationId,
             SearchParams searchParams
     );
+    CompletableFuture<Result<Component>> getComponentById(Integer id);
 
     CompletableFuture<Result<List<ComponentsSearchDTO>>> getComponentsByOrganizationIdSmall(Integer organizationId);
 
