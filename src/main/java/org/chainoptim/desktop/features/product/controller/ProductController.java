@@ -6,6 +6,9 @@ import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.features.product.service.ProductWriteService;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
@@ -23,8 +26,11 @@ import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class ProductController implements Initializable {
 
@@ -34,6 +40,12 @@ public class ProductController implements Initializable {
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
+
+    // Controllers
+    private GenericConfirmDialogController<Product> confirmProductDeleteController;
+
+    // Listeners
+    private RunnableConfirmDialogActionListener<Product> confirmDialogDeleteListener;
 
     // State
     private final FallbackManager fallbackManager;
@@ -59,6 +71,8 @@ public class ProductController implements Initializable {
     private Tab evaluationTab;
     @FXML
     private StackPane fallbackContainer;
+    @FXML
+    private StackPane confirmDeleteDialogContainer;
 
     @Inject
     public ProductController(ProductService productService,
@@ -81,7 +95,8 @@ public class ProductController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
-        loadImages();
+        loadDeleteButton();
+        loadComponents();
 
         Integer productId = currentSelectionService.getSelectedId();
         if (productId != null) {
@@ -91,7 +106,23 @@ public class ProductController implements Initializable {
         }
     }
 
+    // Listeners
     private void setupListeners() {
+        setUpFallbackListeners();
+        setUpTabListeners();
+        setUpDialogListeners();
+    }
+
+    private void setUpFallbackListeners() {
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
+    }
+
+    private void setUpTabListeners() {
         overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
                 commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/product/ProductOverviewView.fxml", this.product);
@@ -112,22 +143,29 @@ public class ProductController implements Initializable {
                 commonViewsLoader.loadTabContent(evaluationTab, "/org/chainoptim/desktop/features/product/ProductEvaluationView.fxml", this.product);
             }
         });
-
-        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
-            tabPane.setVisible(newValue);
-            tabPane.setManaged(newValue);
-            fallbackContainer.setVisible(!newValue);
-            fallbackContainer.setManaged(!newValue);
-        });
     }
 
-    private void loadImages() {
+    private void setUpDialogListeners() {
+        Consumer<Product> onConfirmDelete = this::handleDeleteProduct;
+        Runnable onCancelDelete = this::closeConfirmDeleteDialog;
+        confirmDialogDeleteListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
+    }
+
+    // Loading
+    private void loadDeleteButton() {
         Image deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
         ImageView deleteImageView = new ImageView(deleteImage);
         deleteImageView.setFitWidth(14);
         deleteImageView.setFitHeight(14);
         deleteButton.setGraphic(deleteImageView);
         deleteButton.setTooltip(new Tooltip("Delete product"));
+        deleteButton.setOnAction(event -> openConfirmDeleteDialog(product));
+    }
+
+    private void loadComponents() {
+        confirmProductDeleteController = commonViewsLoader.loadConfirmDialog(confirmDeleteDialogContainer);
+        confirmProductDeleteController.setActionListener(confirmDialogDeleteListener);
+        closeConfirmDeleteDialog();
     }
 
     private void loadProduct(Integer productId) {
@@ -162,14 +200,23 @@ public class ProductController implements Initializable {
         return new Result<>();
     }
 
+    // Actions
     @FXML
     private void handleEditProduct() {
         currentSelectionService.setSelectedId(product.getId());
         navigationService.switchView("Update-Product?id=" + product.getId(), true, null);
     }
 
-    @FXML
-    private void handleDeleteProduct() {
+    private void openConfirmDeleteDialog(Product product) {
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
+                "Confirm Product Delete",
+                "Are you sure you want to delete this product?",
+                null);
+        confirmProductDeleteController.setData(product, confirmDialogInput);
+        toggleDialogVisibility(confirmDeleteDialogContainer, true);
+    }
+
+    private void handleDeleteProduct(Product product) {
         fallbackManager.setLoading(true);
 
         productWriteService.deleteProduct(product.getId())
@@ -212,4 +259,12 @@ public class ProductController implements Initializable {
         return new Result<>();
     }
 
+    private void closeConfirmDeleteDialog() {
+        toggleDialogVisibility(confirmDeleteDialogContainer, false);
+    }
+
+    private void toggleDialogVisibility(StackPane dialogContainer, boolean isVisible) {
+        dialogContainer.setVisible(isVisible);
+        dialogContainer.setManaged(isVisible);
+    }
 }

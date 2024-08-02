@@ -18,7 +18,7 @@
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
             <HBox spacing="10">
-                <Button fx:id="deleteButton" onAction="#handleDeleteProduct" styleClass="standard-delete-button"/>
+                <Button fx:id="deleteButton" styleClass="standard-delete-button"/>
                 <Button text="Edit Product" onAction="#handleEditProduct" styleClass="standard-write-button"/>
             </HBox>
         </HBox>
@@ -34,5 +34,7 @@
         </TabPane>
 
         <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
+
+        <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
     </StackPane>
 </VBox>
