@@ -72,6 +72,7 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Create-Factory", "/org/chainoptim/desktop/features/factory/CreateFactoryView.fxml"),
             Map.entry("Update-Factory", "/org/chainoptim/desktop/features/factory/UpdateFactoryView.fxml"),
             Map.entry("Factory-Inventory", "/org/chainoptim/desktop/features/factory/FactoryInventoryView.fxml"),
+            Map.entry("Factory-Performances", "/org/chainoptim/desktop/features/factory/FactoryPerformancesView.fxml"),
 
             Map.entry("Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml"),
             Map.entry("Warehouse", "/org/chainoptim/desktop/features/warehouse/WarehouseView.fxml"),

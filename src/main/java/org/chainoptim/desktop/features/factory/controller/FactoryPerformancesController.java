@@ -53,9 +53,9 @@ public class FactoryPerformancesController implements Initializable {
 
     // FXML
     @FXML
-    private ScrollPane factorysScrollPane;
+    private ScrollPane factoriesScrollPane;
     @FXML
-    private VBox factorysVBox;
+    private VBox factoriesVBox;
     @FXML
     private StackPane headerContainer;
     @FXML
@@ -81,29 +81,29 @@ public class FactoryPerformancesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         headerController = commonViewsLoader.loadListHeader(headerContainer);
-        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Factorys", "/img/truck-arrow-right-solid.png", Feature.SUPPLIER, sortOptions, null, this::loadFactorys, "Factory", "Create-Factory"));
+        headerController.initializeHeader(new ListHeaderParams(null, searchParams, "Factories", "/img/truck-arrow-right-solid.png", Feature.SUPPLIER, sortOptions, null, this::loadFactories, "Factory", "Create-Factory"));
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setUpListeners();
-        loadFactorys();
+        loadFactories();
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
     }
 
     private void setUpListeners() {
-        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadFactorys());
-        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadFactorys());
-        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadFactorys());
-        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadFactorys());
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadFactories());
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadFactories());
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadFactories());
+        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadFactories());
 
         // Listen to empty fallback state
         fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
-            factorysScrollPane.setVisible(newValue);
-            factorysScrollPane.setManaged(newValue);
+            factoriesScrollPane.setVisible(newValue);
+            factoriesScrollPane.setManaged(newValue);
             fallbackContainer.setVisible(!newValue);
             fallbackContainer.setManaged(!newValue);
         });
     }
 
-    private void loadFactorys() {
+    private void loadFactories() {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
@@ -122,7 +122,7 @@ public class FactoryPerformancesController implements Initializable {
     private Result<PaginatedResults<Factory>> handleFactoryResponse(Result<PaginatedResults<Factory>> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
-               fallbackManager.setErrorMessage("Failed to load factorys.");
+               fallbackManager.setErrorMessage("Failed to load factories.");
                return;
             }
             PaginatedResults<Factory> paginatedResults = result.getData();
@@ -130,10 +130,10 @@ public class FactoryPerformancesController implements Initializable {
 
             totalCount = paginatedResults.getTotalCount();
             pageSelectorController.initialize(searchParams, totalCount);
-            int factorysLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxFactories();
-            headerController.disableCreateButton(factorysLimit != -1 && totalCount >= factorysLimit, "You have reached the limit of factorys allowed by your current subscription plan.");
+            int factoriesLimit = TenantContext.getCurrentUser().getOrganization().getSubscriptionPlan().getMaxFactories();
+            headerController.disableCreateButton(factoriesLimit != -1 && totalCount >= factoriesLimit, "You have reached the limit of factories allowed by your current subscription plan.");
 
-            factorysVBox.getChildren().clear();
+            factoriesVBox.getChildren().clear();
             if (paginatedResults.results.isEmpty()) {
                 fallbackManager.setNoResults(true);
                 return;
@@ -148,7 +148,7 @@ public class FactoryPerformancesController implements Initializable {
     }
 
     private Result<PaginatedResults<Factory>> handleFactoryException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factorys."));
+        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factories."));
         return new Result<>();
     }
 
@@ -186,17 +186,17 @@ public class FactoryPerformancesController implements Initializable {
         factoryButton.getStyleClass().add("entity-card");
         factoryButton.setGraphic(cardHBox);
         factoryButton.setMaxWidth(Double.MAX_VALUE);
-        factoryButton.prefWidthProperty().bind(factorysVBox.widthProperty());
+        factoryButton.prefWidthProperty().bind(factoriesVBox.widthProperty());
         factoryButton.setOnAction(event -> openFactoryDetails(factory.getId()));
 
-        factorysVBox.getChildren().add(factoryButton);
+        factoriesVBox.getChildren().add(factoryButton);
     }
 
     private void drawFactoryScores(Factory factory, HBox factoryScoresHBox) {
         addScore(factory.getOverallScore(), factoryScoresHBox, "Overall Score");
-        addScore(factory.getTimelinessScore(), factoryScoresHBox, "Timeliness Score");
-        addScore(factory.getAvailabilityScore(), factoryScoresHBox, "Availability Score");
-        addScore(factory.getQualityScore(), factoryScoresHBox, "Quality Score");
+        addScore(factory.getResourceDistributionScore(), factoryScoresHBox, "Resource Distribution Score");
+        addScore(factory.getResourceReadinessScore(), factoryScoresHBox, "Resource Readiness Score");
+        addScore(factory.getResourceUtilizationScore(), factoryScoresHBox, "Resource Utilization Score");
     }
 
     private void addScore(Float score, HBox factoryScoresHBox, String tooltipText) {
