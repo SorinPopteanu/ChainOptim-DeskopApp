@@ -357,7 +357,7 @@ public class ClientShipmentsController implements DataReceiver<SearchData<Client
 
             tableView.getItems().clear();
             if (paginatedResults.results.isEmpty()) {
-                fallbackManager.setNoResults(true);
+//                fallbackManager.setNoResults(true);
                 return;
             }
 

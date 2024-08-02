@@ -139,12 +139,12 @@ public class SupplierController implements Initializable {
         });
         shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                commonViewsLoader.loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
+                commonViewsLoader.loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", new SearchData<>(this.supplier, SearchMode.SECONDARY));
             }
         });
         performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
-                commonViewsLoader.loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", this.supplier);
+                commonViewsLoader.loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", new SearchData<>(this.supplier, SearchMode.SECONDARY));
             }
         });
     }

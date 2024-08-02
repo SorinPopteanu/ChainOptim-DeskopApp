@@ -4,7 +4,13 @@
 
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierOverviewController">
+            fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierOverviewController"
+            style="-fx-padding: 30px;" spacing="30">
 
-    <Label fx:id="supplierName"/>
+    <!-- Location -->
+    <VBox fx:id="locationVBox" spacing="15">
+        <Label text="Location" styleClass="general-label-large"/>
+
+    </VBox>
+
 </VBox>

@@ -74,7 +74,6 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
 
     private SearchMode searchMode;
     private Supplier supplier;
-    private final List<ShipmentStatus> statusOptions = Arrays.asList(ShipmentStatus.values());
     private long totalRowsCount;
     private int newShipmentCount = 0;
     private final List<Integer> selectedRowsIndices = new ArrayList<>();
@@ -161,21 +160,11 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
         this.supplier = searchData.getData();
         this.searchMode = searchData.getSearchMode();
 
-        searchParams.setItemsPerPage(20);
-        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
-
-        commonViewsLoader.loadFallbackManager(fallbackContainer);
-        tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
-        tableToolbarController.initialize(new ListHeaderParams
-                (searchMode, searchParams,
-                "Supplier Shipments", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
-                searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
-                () -> loadSupplierShipments(searchMode == SearchMode.SECONDARY ? supplier.getId() : null), null, null));
-        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
-        selectComponentLoader.initialize();
+        loadComponents();
 
         TableConfigurer.configureTableView(tableView, selectRowColumn);
         configureTableColumns();
+
         setUpListeners();
         loadConfirmDialogs();
 
@@ -183,6 +172,21 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
     }
 
     // Loading
+    private void loadComponents() {
+        searchParams.setItemsPerPage(20);
+        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.SUPPLIER_ORDER);
+
+        commonViewsLoader.loadFallbackManager(fallbackContainer);
+        tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
+        tableToolbarController.initialize(new ListHeaderParams
+                (searchMode, searchParams,
+                        "Supplier Shipments", "/img/box-solid.png", Feature.SUPPLIER_ORDER,
+                        searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
+                        () -> loadSupplierShipments(searchMode == SearchMode.SECONDARY ? supplier.getId() : null), null, null));
+        pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
+        selectComponentLoader.initialize();
+    }
+
     private void loadConfirmDialogs() {
         confirmSupplierShipmentCreateController = commonViewsLoader.loadConfirmDialog(confirmCreateDialogContainer);
         confirmSupplierShipmentCreateController.setActionListener(confirmDialogCreateListener);
@@ -394,7 +398,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
 
             tableView.getItems().clear();
             if (paginatedResults.results.isEmpty()) {
-                fallbackManager.setNoResults(true);
+//                fallbackManager.setNoResults(true);
                 return;
             }
 
