@@ -6,7 +6,7 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.search.model.SearchData;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
-public class SupplierOverviewController implements DataReceiver<SearchData<Supplier>> {
+public class SupplierOverviewController implements DataReceiver<Supplier> {
 
     private Supplier supplier;
 
@@ -14,8 +14,8 @@ public class SupplierOverviewController implements DataReceiver<SearchData<Suppl
     private Label supplierName;
 
     @Override
-    public void setData(SearchData<Supplier> searchData) {
-        this.supplier = searchData.getData();
+    public void setData(Supplier supplier) {
+        this.supplier = supplier;
         supplierName.setText(supplier.getName());
         System.out.println("Supplier received in overview: " + supplier.getName());
     }

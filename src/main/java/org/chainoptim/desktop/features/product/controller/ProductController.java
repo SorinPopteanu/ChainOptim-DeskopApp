@@ -35,9 +35,9 @@ public class ProductController implements Initializable {
     // Services
     private final ProductService productService;
     private final ProductWriteService productWriteService;
+    private final CommonViewsLoader commonViewsLoader;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final CommonViewsLoader commonViewsLoader;
 
     // Controllers
     private GenericConfirmDialogController<Product> confirmProductDeleteController;

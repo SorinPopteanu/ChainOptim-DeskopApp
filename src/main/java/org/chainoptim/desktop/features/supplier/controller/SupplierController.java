@@ -6,38 +6,64 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
+import org.chainoptim.desktop.features.supplier.service.SupplierWriteService;
+import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.SearchData;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
+import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.chainoptim.desktop.features.supplier.service.SupplierService;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class SupplierController implements Initializable {
 
+    // Services
     private final SupplierService supplierService;
+    private final SupplierWriteService supplierWriteService;
+    private final CommonViewsLoader commonViewsLoader;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
-    private final ControllerFactory controllerFactory;
-    private final FallbackManager fallbackManager;
 
+    // Controllers
+    private GenericConfirmDialogController<Supplier> confirmSupplierDeleteController;
+
+    // Listeners
+    private RunnableConfirmDialogActionListener<Supplier> confirmDialogDeleteListener;
+
+    // State
+    private final FallbackManager fallbackManager;
+    private final ToastManager toastManager;
     private Supplier supplier;
 
+    // FXML
+    @FXML
+    private Label supplierName;
+    @FXML
+    private Label supplierLocation;
+    @FXML
+    private Button deleteButton;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -49,26 +75,32 @@ public class SupplierController implements Initializable {
     @FXML
     private Tab performanceTab;
     @FXML
-    private Label supplierName;
+    private StackPane fallbackContainer;
     @FXML
-    private Label supplierLocation;
+    private StackPane confirmDeleteDialogContainer;
 
     @Inject
     public SupplierController(SupplierService supplierService,
+                              SupplierWriteService supplierWriteService,
+                              CommonViewsLoader commonViewsLoader,
                               NavigationService navigationService,
                               CurrentSelectionService currentSelectionService,
-                              ControllerFactory controllerFactory,
-                              FallbackManager fallbackManager) {
+                              FallbackManager fallbackManager,
+                              ToastManager toastManager) {
         this.supplierService = supplierService;
+        this.supplierWriteService = supplierWriteService;
+        this.commonViewsLoader = commonViewsLoader;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
-        this.controllerFactory = controllerFactory;
         this.fallbackManager = fallbackManager;
+        this.toastManager = toastManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupListeners();
+        loadDeleteButton();
+        loadComponents();
 
         Integer supplierId = currentSelectionService.getSelectedId();
         if (supplierId != null) {
@@ -80,27 +112,66 @@ public class SupplierController implements Initializable {
     }
 
     private void setupListeners() {
+        setUpFallbackListeners();
+        setUpTabListeners();
+        setUpDialogListeners();
+    }
+
+    private void setUpFallbackListeners() {
+        fallbackManager.isEmptyProperty().addListener((observable, oldValue, newValue) -> {
+            tabPane.setVisible(newValue);
+            tabPane.setManaged(newValue);
+            fallbackContainer.setVisible(!newValue);
+            fallbackContainer.setManaged(!newValue);
+        });
+    }
+    
+    private void setUpTabListeners() {
         overviewTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && overviewTab.getContent() == null) {
-                loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
+                commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
             }
         });
         ordersTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && ordersTab.getContent() == null) {
-                loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml", this.supplier);
+                commonViewsLoader.loadTabContent(ordersTab, "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml", new SearchData<>(this.supplier, SearchMode.SECONDARY));
             }
         });
         shipmentsTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && shipmentsTab.getContent() == null) {
-                loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
+                commonViewsLoader.loadTabContent(shipmentsTab, "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml", this.supplier);
             }
         });
         performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && performanceTab.getContent() == null) {
-                loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", this.supplier);
+                commonViewsLoader.loadTabContent(performanceTab, "/org/chainoptim/desktop/features/supplier/SupplierPerformanceView.fxml", this.supplier);
             }
         });
     }
+    
+    private void setUpDialogListeners() {
+        Consumer<Supplier> onConfirmDelete = this::handleDeleteSupplier;
+        Runnable onCancelDelete = this::closeConfirmDeleteDialog;
+        confirmDialogDeleteListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
+    }
+
+    // Loading
+    private void loadDeleteButton() {
+        Image deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
+        ImageView deleteImageView = new ImageView(deleteImage);
+        deleteImageView.setFitWidth(14);
+        deleteImageView.setFitHeight(14);
+        deleteButton.setGraphic(deleteImageView);
+        deleteButton.setTooltip(new Tooltip("Delete supplier"));
+        deleteButton.setOnAction(event -> openConfirmDeleteDialog(supplier));
+    }
+
+    private void loadComponents() {
+        confirmSupplierDeleteController = commonViewsLoader.loadConfirmDialog(confirmDeleteDialogContainer);
+        confirmSupplierDeleteController.setActionListener(confirmDialogDeleteListener);
+        closeConfirmDeleteDialog();
+    }
+
 
     private void loadSupplier(Integer supplierId) {
         fallbackManager.setLoading(true);
@@ -126,7 +197,7 @@ public class SupplierController implements Initializable {
                 supplierLocation.setText("");
             }
 
-            loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
+            commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/supplier/SupplierOverviewView.fxml", this.supplier);
         });
         return result;
     }
@@ -136,22 +207,71 @@ public class SupplierController implements Initializable {
         return new Result<>();
     }
 
-    private void loadTabContent(Tab tab, String fxmlFilepath, Supplier supplier) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilepath));
-            loader.setControllerFactory(controllerFactory::createController);
-            Node content = loader.load();
-            DataReceiver<SearchData<Supplier>> controller = loader.getController();
-            controller.setData(new SearchData<>(supplier, SearchMode.SECONDARY));
-            tab.setContent(content);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    // Actions
     @FXML
     private void handleEditSupplier() {
         currentSelectionService.setSelectedId(supplier.getId());
         navigationService.switchView("Update-Supplier?id=" + supplier.getId(), true, null);
+    }
+
+    private void openConfirmDeleteDialog(Supplier supplier) {
+        ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
+                "Confirm Supplier Delete",
+                "Are you sure you want to delete this supplier?",
+                null);
+        confirmSupplierDeleteController.setData(supplier, confirmDialogInput);
+        toggleDialogVisibility(confirmDeleteDialogContainer, true);
+    }
+
+    private void handleDeleteSupplier(Supplier supplier) {
+        fallbackManager.setLoading(true);
+
+        supplierWriteService.deleteSupplier(supplier.getId())
+                .thenApply(this::handleDeleteResponse)
+                .exceptionally(this::handleDeleteException);
+    }
+
+    private Result<Integer> handleDeleteResponse(Result<Integer> result) {
+        Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
+            if (result.getError() != null) {
+                toastManager.addToast(new ToastInfo(
+                        "Failed to delete supplier.",
+                        "An error occurred while deleting the supplier.",
+                        OperationOutcome.ERROR)
+                );
+                return;
+            }
+
+            toastManager.addToast(new ToastInfo(
+                    "Supplier deleted.",
+                    "The Supplier \"" + supplier.getName() + "\" has been successfully deleted.",
+                    OperationOutcome.SUCCESS)
+            );
+
+            NavigationServiceImpl.invalidateViewCache("Suppliers");
+            navigationService.switchView("Suppliers", true, null);
+        });
+        return result;
+    }
+
+    private Result<Integer> handleDeleteException(Throwable ex) {
+        Platform.runLater(() ->
+                toastManager.addToast(new ToastInfo(
+                        "Failed to delete supplier.",
+                        "An error occurred while deleting the supplier.",
+                        OperationOutcome.ERROR)
+                )
+        );
+        return new Result<>();
+    }
+
+    private void closeConfirmDeleteDialog() {
+        toggleDialogVisibility(confirmDeleteDialogContainer, false);
+    }
+
+    private void toggleDialogVisibility(StackPane dialogContainer, boolean isVisible) {
+        dialogContainer.setVisible(isVisible);
+        dialogContainer.setManaged(isVisible);
     }
 }
