@@ -1,7 +1,9 @@
 package org.chainoptim.desktop.features.factory.controller;
 
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.search.model.SearchData;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.factory.model.Factory;
@@ -121,7 +123,7 @@ public class FactoryController implements Initializable {
         });
         inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
-                commonViewsLoader.loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/factory/FactoryInventoryView.fxml", this.factory);
+                commonViewsLoader.loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/factory/FactoryInventoryView.fxml", new SearchData<>(this.factory, SearchMode.SECONDARY));
             }
         });
         performanceTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {

@@ -367,7 +367,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
             tableView.getItems().clear();
             if (paginatedResults.results.isEmpty()) {
-                fallbackManager.setNoResults(true);
+//                fallbackManager.setNoResults(true);
                 return;
             }
 

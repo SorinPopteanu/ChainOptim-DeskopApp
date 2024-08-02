@@ -4,8 +4,10 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.search.model.SearchData;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;
@@ -80,7 +82,7 @@ public class WarehouseController implements Initializable {
         });
         inventoryTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
             if (Boolean.TRUE.equals(isNowSelected) && inventoryTab.getContent() == null) {
-                commonViewsLoader.loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", this.warehouse);
+                commonViewsLoader.loadTabContent(inventoryTab, "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml", new SearchData<>(this.warehouse, SearchMode.SECONDARY));
             }
         });
         storageTab.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {

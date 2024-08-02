@@ -361,7 +361,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
 
             tableView.getItems().clear();
             if (paginatedResults.results.isEmpty()) {
-                fallbackManager.setNoResults(true);
+//                fallbackManager.setNoResults(true);
                 return;
             }
 
