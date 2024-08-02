@@ -15,6 +15,9 @@ public class NewUnitOfMeasurement {
 
     @JsonIgnore
     public String getFullName() {
+        if (unitMagnitude == null || standardUnit == null) {
+            return "";
+        }
         return unitMagnitude.getName() + standardUnit.getName();
     }
 

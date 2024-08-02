@@ -2,34 +2,42 @@ package org.chainoptim.desktop.features.product.controller;
 
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
+import org.chainoptim.desktop.features.product.service.ProductWriteService;
+import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.shared.httphandling.Result;
+import org.chainoptim.desktop.shared.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class ProductController implements Initializable {
 
     // Services
     private final ProductService productService;
+    private final ProductWriteService productWriteService;
     private final NavigationService navigationService;
     private final CurrentSelectionService currentSelectionService;
     private final CommonViewsLoader commonViewsLoader;
 
     // State
     private final FallbackManager fallbackManager;
+    private final ToastManager toastManager;
     private Product product;
 
     // FXML
@@ -37,6 +45,8 @@ public class ProductController implements Initializable {
     private Label productName;
     @FXML
     private Label productDescription;
+    @FXML
+    private Button deleteButton;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -52,27 +62,31 @@ public class ProductController implements Initializable {
 
     @Inject
     public ProductController(ProductService productService,
+                             ProductWriteService productWriteService,
                              CommonViewsLoader commonViewsLoader,
                              NavigationService navigationService,
                              CurrentSelectionService currentSelectionService,
-                             FallbackManager fallbackManager) {
+                             FallbackManager fallbackManager,
+                             ToastManager toastManager) {
         this.productService = productService;
+        this.productWriteService = productWriteService;
         this.commonViewsLoader = commonViewsLoader;
         this.navigationService = navigationService;
         this.currentSelectionService = currentSelectionService;
         this.fallbackManager = fallbackManager;
+        this.toastManager = toastManager;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
         setupListeners();
+        loadImages();
 
         Integer productId = currentSelectionService.getSelectedId();
         if (productId != null) {
             loadProduct(productId);
         } else {
-            System.out.println("Missing product id.");
             fallbackManager.setErrorMessage("Failed to load product: missing product ID.");
         }
     }
@@ -107,6 +121,15 @@ public class ProductController implements Initializable {
         });
     }
 
+    private void loadImages() {
+        Image deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/trash-solid.png")));
+        ImageView deleteImageView = new ImageView(deleteImage);
+        deleteImageView.setFitWidth(14);
+        deleteImageView.setFitHeight(14);
+        deleteButton.setGraphic(deleteImageView);
+        deleteButton.setTooltip(new Tooltip("Delete product"));
+    }
+
     private void loadProduct(Integer productId) {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
@@ -126,7 +149,6 @@ public class ProductController implements Initializable {
             this.product = result.getData();
             productName.setText(product.getName());
             productDescription.setText(product.getDescription());
-            System.out.println("Product: " + product);
 
             // Load overview tab
             commonViewsLoader.loadTabContent(overviewTab, "/org/chainoptim/desktop/features/product/ProductOverviewView.fxml", this.product);
@@ -144,6 +166,50 @@ public class ProductController implements Initializable {
     private void handleEditProduct() {
         currentSelectionService.setSelectedId(product.getId());
         navigationService.switchView("Update-Product?id=" + product.getId(), true, null);
+    }
+
+    @FXML
+    private void handleDeleteProduct() {
+        fallbackManager.setLoading(true);
+
+        productWriteService.deleteProduct(product.getId())
+                .thenApply(this::handleDeleteResponse)
+                .exceptionally(this::handleDeleteException);
+    }
+
+    private Result<Integer> handleDeleteResponse(Result<Integer> result) {
+        Platform.runLater(() -> {
+            fallbackManager.setLoading(false);
+            if (result.getError() != null) {
+                toastManager.addToast(new ToastInfo(
+                        "Failed to delete product.",
+                        "An error occurred while deleting the product.",
+                        OperationOutcome.ERROR)
+                );
+                return;
+            }
+
+            toastManager.addToast(new ToastInfo(
+                    "Product deleted.",
+                    "The Product \"" + product.getName() + "\" has been successfully deleted",
+                    OperationOutcome.SUCCESS)
+            );
+
+            NavigationServiceImpl.invalidateViewCache("Products");
+            navigationService.switchView("Products", true, null);
+        });
+        return result;
+    }
+
+    private Result<Integer> handleDeleteException(Throwable ex) {
+        Platform.runLater(() ->
+            toastManager.addToast(new ToastInfo(
+                    "Failed to delete product.",
+                    "An error occurred while deleting the product.",
+                    OperationOutcome.ERROR)
+            )
+        );
+        return new Result<>();
     }
 
 }

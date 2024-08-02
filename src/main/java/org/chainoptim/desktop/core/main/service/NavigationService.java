@@ -9,4 +9,5 @@ public interface NavigationService {
     void setMainContentArea(StackPane contentArea);
 
     void goBack();
+
 }
