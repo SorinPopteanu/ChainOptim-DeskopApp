@@ -16,7 +16,7 @@
                         <TableColumn fx:id="selectRowColumn" prefWidth="50"/>
                         <TableColumn text="Inventory ID" fx:id="inventoryIdColumn" minWidth="120"/>
                         <TableColumn text="Company ID" fx:id="companyIdColumn" minWidth="150"/>
-                        <TableColumn text="Factory" fx:id="factoryNameColumn" minWidth="150"/>
+<!--                        <TableColumn text="Factory" fx:id="factoryNameColumn" minWidth="150"/>-->
                         <TableColumn text="Component" fx:id="componentNameColumn" minWidth="150"/>
                         <TableColumn text="Product" fx:id="productNameColumn" minWidth="150"/>
                         <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>

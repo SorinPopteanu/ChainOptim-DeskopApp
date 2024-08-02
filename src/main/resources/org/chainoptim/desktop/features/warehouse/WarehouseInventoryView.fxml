@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -15,7 +16,7 @@
                         <TableColumn fx:id="selectRowColumn" prefWidth="50"/>
                         <TableColumn text="Inventory ID" fx:id="inventoryIdColumn" minWidth="120"/>
                         <TableColumn text="Company ID" fx:id="companyIdColumn" minWidth="150"/>
-                        <TableColumn text="Warehouse" fx:id="warehouseNameColumn" minWidth="150"/>
+<!--                        <TableColumn text="Warehouse" fx:id="warehouseNameColumn" minWidth="150"/>-->
                         <TableColumn text="Component" fx:id="componentNameColumn" minWidth="150"/>
                         <TableColumn text="Product" fx:id="productNameColumn" minWidth="150"/>
                         <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
@@ -29,9 +30,8 @@
         </ScrollPane>
     </VBox>
 
+    <!-- Fallback and Confirm Dialogs -->
     <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px;"/>
     <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
     <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
-
-
 </StackPane>

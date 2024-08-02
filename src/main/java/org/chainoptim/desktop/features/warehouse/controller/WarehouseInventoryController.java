@@ -2,20 +2,19 @@ package org.chainoptim.desktop.features.warehouse.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.features.warehouse.dto.CreateWarehouseInventoryItemDTO;
+import org.chainoptim.desktop.features.warehouse.dto.UpdateWarehouseInventoryItemDTO;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.model.WarehouseInventoryItem;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseInventoryItemService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseInventoryItemWriteService;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.productpipeline.model.Component;
-import org.chainoptim.desktop.features.warehouse.dto.CreateWarehouseInventoryItemDTO;
-import org.chainoptim.desktop.features.warehouse.dto.UpdateWarehouseInventoryItemDTO;
 import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
-import org.chainoptim.desktop.shared.enums.OrderStatus;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -26,14 +25,13 @@ import org.chainoptim.desktop.shared.table.edit.cell.ComboBoxEditableCell;
 import org.chainoptim.desktop.shared.table.edit.cell.DateTimePickerCell;
 import org.chainoptim.desktop.shared.table.edit.cell.EditableCell;
 import org.chainoptim.desktop.shared.table.model.TableData;
+import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
 import org.chainoptim.desktop.shared.table.util.SelectProductLoader;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
-import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
 import org.chainoptim.desktop.shared.toast.controller.ToastManager;
 import org.chainoptim.desktop.shared.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -42,11 +40,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class WarehouseInventoryController implements DataReceiver<SearchData<Warehouse>> {
@@ -69,14 +70,14 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
     // State
     private final FallbackManager fallbackManager;
     private final SearchParams searchParams;
-
+    private SearchMode searchMode;
     private Warehouse warehouse;
     private long totalRowsCount;
     private int newInventoryItemCount = 0;
     private final List<Integer> selectedRowsIndices = new ArrayList<>();
     private final SimpleIntegerProperty selectedCount = new SimpleIntegerProperty(0);
     private final BooleanProperty isEditMode = new SimpleBooleanProperty(false);
-    private final SimpleBooleanProperty isNewOrderMode = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty isNewItemMode = new SimpleBooleanProperty(false);
 
     // Confirm Dialog Listeners
     private RunnableConfirmDialogActionListener<List<WarehouseInventoryItem>> confirmDialogUpdateListener;
@@ -96,8 +97,8 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
     private TableColumn<TableData<WarehouseInventoryItem>, Integer> inventoryIdColumn;
     @FXML
     private TableColumn<TableData<WarehouseInventoryItem>, String> companyIdColumn;
-    @FXML
-    private TableColumn<TableData<WarehouseInventoryItem>, String> warehouseNameColumn;
+//    @FXML
+//    private TableColumn<TableData<WarehouseInventoryItem>, String> warehouseNameColumn;
     @FXML
     private TableColumn<TableData<WarehouseInventoryItem>, String> componentNameColumn;
     @FXML
@@ -122,13 +123,13 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
     @Inject
     public WarehouseInventoryController(WarehouseInventoryItemService warehouseInventoryItemService,
-                                      WarehouseInventoryItemWriteService warehouseInventoryItemWriteService,
-                                      CommonViewsLoader commonViewsLoader,
-                                      SelectComponentLoader selectComponentLoader,
-                                      SelectProductLoader selectProductLoader,
-                                      ToastManager toastManager,
-                                      FallbackManager fallbackManager,
-                                      SearchParams searchParams) {
+                                        WarehouseInventoryItemWriteService warehouseInventoryItemWriteService,
+                                        CommonViewsLoader commonViewsLoader,
+                                        SelectComponentLoader selectComponentLoader,
+                                        SelectProductLoader selectProductLoader,
+                                        ToastManager toastManager,
+                                        FallbackManager fallbackManager,
+                                        SearchParams searchParams) {
         this.warehouseInventoryItemService = warehouseInventoryItemService;
         this.warehouseInventoryItemWriteService = warehouseInventoryItemWriteService;
         this.commonViewsLoader = commonViewsLoader;
@@ -142,19 +143,20 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
     @Override
     public void setData(SearchData<Warehouse> searchData) {
         this.warehouse = searchData.getData();
+        this.searchMode = searchData.getSearchMode();
 
         searchParams.setItemsPerPage(20);
-        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.WAREHOUSE_INVENTORY);
+        SearchOptions searchOptions = SearchOptionsConfiguration.getSearchOptions(Feature.FACTORY_INVENTORY);
         if (searchOptions == null) {
             throw new IllegalArgumentException("Search options not found");
         }
 
         tableToolbarController = commonViewsLoader.initializeTableToolbar(tableToolbarContainer);
         tableToolbarController.initialize(new ListHeaderParams(
-                searchData.getSearchMode(), searchParams,
-                "Factory Inventory", "/img/box-solid.png", Feature.WAREHOUSE_INVENTORY,
+                searchMode, searchParams,
+                "Warehouse Inventory", "/img/box-solid.png", Feature.FACTORY_INVENTORY,
                 searchOptions.getSortOptions(), searchOptions.getFilterOptions(),
-                () -> loadWarehouseInventoryItems(warehouse.getId()), null, null));
+                () -> loadWarehouseInventoryItems(searchMode == SearchMode.SECONDARY ? warehouse.getId() : null, searchMode), null, null));
         pageSelectorController = commonViewsLoader.loadPageSelector(pageSelectorContainer);
         selectComponentLoader.initialize();
         selectProductLoader.initialize();
@@ -164,7 +166,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
         setUpListeners();
         loadConfirmDialogs();
 
-        loadWarehouseInventoryItems(warehouse.getId());
+        loadWarehouseInventoryItems(searchMode == SearchMode.SECONDARY ? warehouse.getId() : null, searchMode);
     }
 
     // Loading
@@ -189,7 +191,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
         selectRowColumn.setCellValueFactory(data -> data.getValue().isSelectedProperty());
         inventoryIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getId()));
         companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"));
-        warehouseNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.warehouse.getName()));
+//        warehouseNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.warehouse.getName()));
         componentNameColumn.setCellValueFactory(data -> {
             Component component = data.getValue().getData().getComponent();
             String componentName = component != null ? component.getName() : "N/A";
@@ -266,13 +268,17 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
     }
 
     private void setUpSearchListeners() {
-        searchParams.getPageProperty().addListener((observable, oldPage, newPage) -> loadWarehouseInventoryItems(warehouse.getId()));
-        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) -> loadWarehouseInventoryItems(warehouse.getId()));
-        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) -> loadWarehouseInventoryItems(warehouse.getId()));
-        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) -> loadWarehouseInventoryItems(warehouse.getId()));
+        searchParams.getPageProperty().addListener((observable, oldPage, newPage) ->
+                loadWarehouseInventoryItems(searchMode == SearchMode.SECONDARY ? warehouse.getId() : null, searchMode));
+        searchParams.getSortOptionProperty().addListener((observable, oldValue, newValue) ->
+                loadWarehouseInventoryItems(searchMode == SearchMode.SECONDARY ? warehouse.getId() : null, searchMode));
+        searchParams.getAscendingProperty().addListener((observable, oldValue, newValue) ->
+                loadWarehouseInventoryItems(searchMode == SearchMode.SECONDARY ? warehouse.getId() : null, searchMode));
+        searchParams.getSearchQueryProperty().addListener((observable, oldValue, newValue) ->
+                loadWarehouseInventoryItems(searchMode == SearchMode.SECONDARY ? warehouse.getId() : null, searchMode));
         searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
             if (searchParams.getFiltersProperty().entrySet().size() == 1) { // Allow only one filter at a time
-                loadWarehouseInventoryItems(warehouse.getId());
+                loadWarehouseInventoryItems(searchMode == SearchMode.SECONDARY ? warehouse.getId() : null, searchMode);
             }
         });
     }
@@ -287,26 +293,26 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
         tableToolbarController.getCancelRowSelectionButton().setOnAction(e -> cancelSelectionsAndEdit());
         tableToolbarController.getEditSelectedRowsButton().setOnAction(e -> editSelectedRows());
         tableToolbarController.getSaveChangesButton().setOnAction(e -> {
-            if (isNewOrderMode.get()) {
+            if (isNewItemMode.get()) {
                 openConfirmCreateDialog();
             } else {
                 openConfirmUpdateDialog(selectedRowsIndices);
             }
         });
         tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));
-        tableToolbarController.getCreateNewShipmentButton().setOnAction(e -> addNewOrder());
+        tableToolbarController.getCreateNewShipmentButton().setOnAction(e -> addNewItem());
     }
 
     private void setUpConfirmDialogListeners() {
-        Consumer<List<WarehouseInventoryItem>> onConfirmDelete = this::handleDeleteOrders;
+        Consumer<List<WarehouseInventoryItem>> onConfirmDelete = this::handleDeleteItems;
         Runnable onCancelDelete = this::closeConfirmDeleteDialog;
         confirmDialogDeleteListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
 
-        Consumer<List<WarehouseInventoryItem>> onConfirmUpdate = this::handleUpdateOrders;
+        Consumer<List<WarehouseInventoryItem>> onConfirmUpdate = this::handleUpdateItems;
         Runnable onCancelUpdate = this::closeConfirmUpdateDialog;
         confirmDialogUpdateListener = new RunnableConfirmDialogActionListener<>(onConfirmUpdate, onCancelUpdate);
 
-        Consumer<List<WarehouseInventoryItem>> onConfirmCreate = this::handleCreateOrders;
+        Consumer<List<WarehouseInventoryItem>> onConfirmCreate = this::handleCreateItems;
         Runnable onCancelCreate = this::closeConfirmCreateDialog;
         confirmDialogCreateListener = new RunnableConfirmDialogActionListener<>(onConfirmCreate, onCancelCreate);
     }
@@ -324,7 +330,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
     }
 
     // Data loading
-    private void loadWarehouseInventoryItems(Integer warehouseId) {
+    private void loadWarehouseInventoryItems(Integer warehouseId, SearchMode searchMode) {
         fallbackManager.reset();
         fallbackManager.setLoading(true);
 
@@ -334,12 +340,20 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
             return;
         }
 
-        warehouseInventoryItemService.getWarehouseInventoryItemsByWarehouseIdAdvanced(warehouseId, searchParams)
-                .thenApply(this::handleOrdersResponse)
-                .exceptionally(this::handleOrdersException);
+        if (searchMode == SearchMode.SECONDARY) {
+            if (warehouseId == null) return;
+            warehouseInventoryItemService.getWarehouseInventoryItemsByWarehouseIdAdvanced(warehouseId, searchParams, searchMode)
+                    .thenApply(this::handleItemsResponse)
+                    .exceptionally(this::handleItemsException);
+        } else {
+            if (currentUser.getOrganization().getId() == null) return;
+            warehouseInventoryItemService.getWarehouseInventoryItemsByWarehouseIdAdvanced(currentUser.getOrganization().getId(), searchParams, searchMode)
+                    .thenApply(this::handleItemsResponse)
+                    .exceptionally(this::handleItemsException);
+        }
     }
 
-    private Result<PaginatedResults<WarehouseInventoryItem>> handleOrdersResponse(Result<PaginatedResults<WarehouseInventoryItem>> result) {
+    private Result<PaginatedResults<WarehouseInventoryItem>> handleItemsResponse(Result<PaginatedResults<WarehouseInventoryItem>> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
                 fallbackManager.setErrorMessage("No items found");
@@ -368,20 +382,20 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
         return result;
     }
 
-    private Result<PaginatedResults<WarehouseInventoryItem>> handleOrdersException(Throwable ex) {
+    private Result<PaginatedResults<WarehouseInventoryItem>> handleItemsException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load warehouse items."));
         return new Result<>();
     }
 
     // UI Actions
-    private void addNewOrder() {
-        isNewOrderMode.set(true);
-        tableToolbarController.toggleButtonVisibilityOnCreate(isNewOrderMode.get());
+    private void addNewItem() {
+        isNewItemMode.set(true);
+        tableToolbarController.toggleButtonVisibilityOnCreate(isNewItemMode.get());
 
-        WarehouseInventoryItem newOrder = new WarehouseInventoryItem();
-        TableData<WarehouseInventoryItem> newOrderRow = new TableData<>(newOrder, newOrder, new SimpleBooleanProperty(false));
-        tableView.getItems().addFirst(newOrderRow);
-        newOrderRow.setSelected(true);
+        WarehouseInventoryItem newItem = new WarehouseInventoryItem();
+        TableData<WarehouseInventoryItem> newItemRow = new TableData<>(newItem, newItem, new SimpleBooleanProperty(false));
+        tableView.getItems().addFirst(newItemRow);
+        newItemRow.setSelected(true);
 
         selectedRowsIndices.clear();
         for (int i = 0; i <= newInventoryItemCount; i++) {
@@ -398,9 +412,9 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
         isEditMode.set(true);
         for (Integer index : selectedRowsIndices) {
             TableData<WarehouseInventoryItem> tableRow = tableView.getItems().get(index);
-            WarehouseInventoryItem oldOrder = new WarehouseInventoryItem(tableRow.getData());
-            oldOrder.setComponent(new Component(tableRow.getData().getComponent()));
-            tableRow.setOldData(oldOrder);
+            WarehouseInventoryItem oldItem = new WarehouseInventoryItem(tableRow.getData());
+            oldItem.setComponent(new Component(tableRow.getData().getComponent()));
+            tableRow.setOldData(oldItem);
         }
         selectRowColumn.setEditable(false);
         tableView.refresh();
@@ -422,11 +436,11 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
         selectedRowsIndices.clear();
 
         // Delete created new items
-        if (isNewOrderMode.get()) {
+        if (isNewItemMode.get()) {
             for (int i = 0; i < newInventoryItemCount; i++) {
                 tableView.getItems().removeFirst();
             }
-            isNewOrderMode.set(false);
+            isNewItemMode.set(false);
             newInventoryItemCount = 0;
         }
         selectRowColumn.setEditable(true);
@@ -436,7 +450,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
     // Confirm Dialogs
     private void openConfirmCreateDialog() {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
-                "Confirm Warehouse Orders Create",
+                "Confirm Warehouse Items Create",
                 "Are you sure you want to create new items?",
                 null);
         List<WarehouseInventoryItem> selectedItems = new ArrayList<>();
@@ -453,7 +467,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
     private void openConfirmUpdateDialog(List<Integer> selectedRowsIndices) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
-                "Confirm Warehouse Orders Update",
+                "Confirm Warehouse Items Update",
                 "Are you sure you want to update selected items?",
                 null);
         List<WarehouseInventoryItem> selectedItems = new ArrayList<>();
@@ -470,7 +484,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
     private void openConfirmDeleteDialog(List<Integer> selectedRowsIndices) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
-                "Confirm Warehouse Orders Delete",
+                "Confirm Warehouse Items Delete",
                 "Are you sure you want to delete selected items?",
                 null);
         List<WarehouseInventoryItem> selectedItems = new ArrayList<>();
@@ -492,9 +506,9 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
     // Backend calls
     // - Create
-    private void handleCreateOrders(List<WarehouseInventoryItem> warehouseInventoryItem) {
+    private void handleCreateItems(List<WarehouseInventoryItem> warehouseInventoryItems) {
         List<CreateWarehouseInventoryItemDTO> createWarehouseInventoryItemDTOs = new ArrayList<>();
-        for (WarehouseInventoryItem item : warehouseInventoryItem) {
+        for (WarehouseInventoryItem item : warehouseInventoryItems) {
             CreateWarehouseInventoryItemDTO createWarehouseInventoryItemDTO = getCreateWarehouseInventoryItemDTO(item);
 
             createWarehouseInventoryItemDTOs.add(createWarehouseInventoryItemDTO);
@@ -528,14 +542,14 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
         Platform.runLater(() -> {
             fallbackManager.setLoading(false);
             if (result.getError() != null) {
-                ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Warehouse Orders.", OperationOutcome.ERROR);
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Warehouse Items.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            isNewOrderMode.set(false);
+            isNewItemMode.set(false);
             closeConfirmCreateDialog();
             updateUIOnSuccessfulOperation();
-            ToastInfo toastInfo = new ToastInfo("Success", "Warehouse Orders created successfully.", OperationOutcome.SUCCESS);
+            ToastInfo toastInfo = new ToastInfo("Success", "Warehouse Items created successfully.", OperationOutcome.SUCCESS);
             toastManager.addToast(toastInfo);
         });
         return  result;
@@ -543,13 +557,13 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
     private Result<List<WarehouseInventoryItem>> handleCreateWarehouseInventoryItemsException(Throwable throwable) {
         Platform.runLater(() -> {
-            ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Warehouse Orders.", OperationOutcome.ERROR);
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Warehouse Items.", OperationOutcome.ERROR);
             toastManager.addToast(toastInfo);
         });
         return new Result<>();
     }
 
-    private void handleUpdateOrders(List<WarehouseInventoryItem> warehouseInventoryItems) {
+    private void handleUpdateItems(List<WarehouseInventoryItem> warehouseInventoryItems) {
         List<UpdateWarehouseInventoryItemDTO> updateWarehouseInventoryItemDTOs = new ArrayList<>();
 
         for (WarehouseInventoryItem item : warehouseInventoryItems) {
@@ -568,6 +582,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
     private UpdateWarehouseInventoryItemDTO getUpdateWarehouseInventoryItemDTO(WarehouseInventoryItem item) {
         UpdateWarehouseInventoryItemDTO updateWarehouseInventoryItemDTO = new UpdateWarehouseInventoryItemDTO();
+        updateWarehouseInventoryItemDTO.setOrganizationId(warehouse.getOrganizationId());
         updateWarehouseInventoryItemDTO.setId(item.getId());
         updateWarehouseInventoryItemDTO.setComponentId(item.getComponent().getId());
         updateWarehouseInventoryItemDTO.setProductId(item.getProduct().getId());
@@ -583,15 +598,15 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
             fallbackManager.setLoading(false);
 
             if (result.getError() != null) {
-                ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Warehouse Orders.", OperationOutcome.ERROR);
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Warehouse Items.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
 
-            isNewOrderMode.set(false);
+            isNewItemMode.set(false);
             closeConfirmUpdateDialog();
             updateUIOnSuccessfulOperation();
-            ToastInfo toastInfo = new ToastInfo("Success", "Warehouse Orders updated successfully.", OperationOutcome.SUCCESS);
+            ToastInfo toastInfo = new ToastInfo("Success", "Warehouse Items updated successfully.", OperationOutcome.SUCCESS);
             toastManager.addToast(toastInfo);
         });
         return  result;
@@ -599,13 +614,13 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
     private Result<List<WarehouseInventoryItem>> handleUpdateWarehouseInventoryItemsException(Throwable throwable) {
         Platform.runLater(() -> {
-            ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Warehouse Orders.", OperationOutcome.ERROR);
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Warehouse Items.", OperationOutcome.ERROR);
             toastManager.addToast(toastInfo);
         });
         return new Result<>();
     }
 
-    private void handleDeleteOrders(List<WarehouseInventoryItem> warehouseInventoryItems) {
+    private void handleDeleteItems(List<WarehouseInventoryItem> warehouseInventoryItems) {
         List<Integer> itemsToRemoveIds = new ArrayList<>();
         for (WarehouseInventoryItem item : warehouseInventoryItems) {
             itemsToRemoveIds.add(item.getId());
@@ -624,7 +639,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
             fallbackManager.setLoading(false);
 
             if (result.getError() != null) {
-                ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Warehouse Orders.", OperationOutcome.ERROR);
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Warehouse Items.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
@@ -635,7 +650,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
             isEditMode.set(false);
             tableView.refresh();
             selectedRowsIndices.clear();
-            ToastInfo toastInfo = new ToastInfo("Success", "Warehouse Orders deleted successfully.", OperationOutcome.SUCCESS);
+            ToastInfo toastInfo = new ToastInfo("Success", "Warehouse Items deleted successfully.", OperationOutcome.SUCCESS);
             toastManager.addToast(toastInfo);
         });
         return  result;
@@ -643,7 +658,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
 
     private Result<List<Integer>> handleDeleteWarehouseInventoryItemsException(Throwable throwable) {
         Platform.runLater(() -> {
-            ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Warehouse Orders.", OperationOutcome.ERROR);
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Warehouse Items.", OperationOutcome.ERROR);
             toastManager.addToast(toastInfo);
         });
         return new Result<>();

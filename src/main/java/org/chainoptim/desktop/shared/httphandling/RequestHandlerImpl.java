@@ -41,6 +41,7 @@ public class RequestHandlerImpl implements RequestHandler {
     public <T> CompletableFuture<Result<T>> sendRequest(HttpRequest request, TypeReference<T> typeReference, Consumer<T> successHandler) {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
+                    System.out.println("Response: " + response.body());
                     if (response.statusCode() != HttpURLConnection.HTTP_OK) {
                         return ErrorParser.parseError(response);
                     }

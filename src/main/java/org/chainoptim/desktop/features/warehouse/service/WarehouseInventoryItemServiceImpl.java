@@ -5,6 +5,7 @@ import org.chainoptim.desktop.features.warehouse.model.WarehouseInventoryItem;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseInventoryItemService;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -48,12 +49,15 @@ public class WarehouseInventoryItemServiceImpl implements WarehouseInventoryItem
     }
 
     public CompletableFuture<Result<PaginatedResults<WarehouseInventoryItem>>> getWarehouseInventoryItemsByWarehouseIdAdvanced(
-            Integer warehouseId,
-            SearchParams searchParams
+            Integer entityId,
+            SearchParams searchParams,
+            SearchMode searchMode
     ) {
         String rootAddress = "http://localhost:8080/api/v1/";
-        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey("warehouse-inventory-items", "warehouse", warehouseId.toString(), searchParams);
-
+        String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey(
+                "warehouse-inventory-items",
+                searchMode == SearchMode.ORGANIZATION ? "organization" : "warehouse", entityId.toString(),
+                searchParams);
         String routeAddress = rootAddress + cacheKey;
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());

@@ -15,7 +15,6 @@ import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDia
 import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
-import org.chainoptim.desktop.shared.enums.OrderStatus;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -76,7 +75,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
     private final List<Integer> selectedRowsIndices = new ArrayList<>();
     private final SimpleIntegerProperty selectedCount = new SimpleIntegerProperty(0);
     private final BooleanProperty isEditMode = new SimpleBooleanProperty(false);
-    private final SimpleBooleanProperty isNewOrderMode = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty isNewItemMode = new SimpleBooleanProperty(false);
 
     // Confirm Dialog Listeners
     private RunnableConfirmDialogActionListener<List<FactoryInventoryItem>> confirmDialogUpdateListener;
@@ -96,8 +95,8 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
     private TableColumn<TableData<FactoryInventoryItem>, Integer> inventoryIdColumn;
     @FXML
     private TableColumn<TableData<FactoryInventoryItem>, String> companyIdColumn;
-    @FXML
-    private TableColumn<TableData<FactoryInventoryItem>, String> factoryNameColumn;
+//    @FXML
+//    private TableColumn<TableData<FactoryInventoryItem>, String> factoryNameColumn;
     @FXML
     private TableColumn<TableData<FactoryInventoryItem>, String> componentNameColumn;
     @FXML
@@ -190,7 +189,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
         selectRowColumn.setCellValueFactory(data -> data.getValue().isSelectedProperty());
         inventoryIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getId()));
         companyIdColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getData().getCompanyId() != null ? data.getValue().getData().getCompanyId() : "N/A"));
-        factoryNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.factory.getName()));
+//        factoryNameColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(this.factory.getName()));
         componentNameColumn.setCellValueFactory(data -> {
             Component component = data.getValue().getData().getComponent();
             String componentName = component != null ? component.getName() : "N/A";
@@ -288,26 +287,26 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
         tableToolbarController.getCancelRowSelectionButton().setOnAction(e -> cancelSelectionsAndEdit());
         tableToolbarController.getEditSelectedRowsButton().setOnAction(e -> editSelectedRows());
         tableToolbarController.getSaveChangesButton().setOnAction(e -> {
-            if (isNewOrderMode.get()) {
+            if (isNewItemMode.get()) {
                 openConfirmCreateDialog();
             } else {
                 openConfirmUpdateDialog(selectedRowsIndices);
             }
         });
-        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));;
-        tableToolbarController.getCreateNewShipmentButton().setOnAction(e -> addNewOrder());
+        tableToolbarController.getDeleteSelectedRowsButton().setOnAction(e -> openConfirmDeleteDialog(selectedRowsIndices));
+        tableToolbarController.getCreateNewShipmentButton().setOnAction(e -> addNewItem());
     }
 
     private void setUpConfirmDialogListeners() {
-        Consumer<List<FactoryInventoryItem>> onConfirmDelete = this::handleDeleteOrders;
+        Consumer<List<FactoryInventoryItem>> onConfirmDelete = this::handleDeleteItems;
         Runnable onCancelDelete = this::closeConfirmDeleteDialog;
         confirmDialogDeleteListener = new RunnableConfirmDialogActionListener<>(onConfirmDelete, onCancelDelete);
 
-        Consumer<List<FactoryInventoryItem>> onConfirmUpdate = this::handleUpdateOrders;
+        Consumer<List<FactoryInventoryItem>> onConfirmUpdate = this::handleUpdateItems;
         Runnable onCancelUpdate = this::closeConfirmUpdateDialog;
         confirmDialogUpdateListener = new RunnableConfirmDialogActionListener<>(onConfirmUpdate, onCancelUpdate);
 
-        Consumer<List<FactoryInventoryItem>> onConfirmCreate = this::handleCreateOrders;
+        Consumer<List<FactoryInventoryItem>> onConfirmCreate = this::handleCreateItems;
         Runnable onCancelCreate = this::closeConfirmCreateDialog;
         confirmDialogCreateListener = new RunnableConfirmDialogActionListener<>(onConfirmCreate, onCancelCreate);
     }
@@ -338,17 +337,17 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
         if (searchMode == SearchMode.SECONDARY) {
             if (factoryId == null) return;
             factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(factoryId, searchParams, searchMode)
-                    .thenApply(this::handleOrdersResponse)
-                    .exceptionally(this::handleOrdersException);
+                    .thenApply(this::handleItemsResponse)
+                    .exceptionally(this::handleItemsException);
         } else {
             if (currentUser.getOrganization().getId() == null) return;
             factoryInventoryItemService.getFactoryInventoryItemsByFactoryIdAdvanced(currentUser.getOrganization().getId(), searchParams, searchMode)
-                    .thenApply(this::handleOrdersResponse)
-                    .exceptionally(this::handleOrdersException);
+                    .thenApply(this::handleItemsResponse)
+                    .exceptionally(this::handleItemsException);
         }
     }
 
-    private Result<PaginatedResults<FactoryInventoryItem>> handleOrdersResponse(Result<PaginatedResults<FactoryInventoryItem>> result) {
+    private Result<PaginatedResults<FactoryInventoryItem>> handleItemsResponse(Result<PaginatedResults<FactoryInventoryItem>> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
                 fallbackManager.setErrorMessage("No items found");
@@ -377,20 +376,20 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
         return result;
     }
 
-    private Result<PaginatedResults<FactoryInventoryItem>> handleOrdersException(Throwable ex) {
+    private Result<PaginatedResults<FactoryInventoryItem>> handleItemsException(Throwable ex) {
         Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factory items."));
         return new Result<>();
     }
 
     // UI Actions
-    private void addNewOrder() {
-        isNewOrderMode.set(true);
-        tableToolbarController.toggleButtonVisibilityOnCreate(isNewOrderMode.get());
+    private void addNewItem() {
+        isNewItemMode.set(true);
+        tableToolbarController.toggleButtonVisibilityOnCreate(isNewItemMode.get());
 
-        FactoryInventoryItem newOrder = new FactoryInventoryItem();
-        TableData<FactoryInventoryItem> newOrderRow = new TableData<>(newOrder, newOrder, new SimpleBooleanProperty(false));
-        tableView.getItems().addFirst(newOrderRow);
-        newOrderRow.setSelected(true);
+        FactoryInventoryItem newItem = new FactoryInventoryItem();
+        TableData<FactoryInventoryItem> newItemRow = new TableData<>(newItem, newItem, new SimpleBooleanProperty(false));
+        tableView.getItems().addFirst(newItemRow);
+        newItemRow.setSelected(true);
 
         selectedRowsIndices.clear();
         for (int i = 0; i <= newInventoryItemCount; i++) {
@@ -407,9 +406,9 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
         isEditMode.set(true);
         for (Integer index : selectedRowsIndices) {
             TableData<FactoryInventoryItem> tableRow = tableView.getItems().get(index);
-            FactoryInventoryItem oldOrder = new FactoryInventoryItem(tableRow.getData());
-            oldOrder.setComponent(new Component(tableRow.getData().getComponent()));
-            tableRow.setOldData(oldOrder);
+            FactoryInventoryItem oldItem = new FactoryInventoryItem(tableRow.getData());
+            oldItem.setComponent(new Component(tableRow.getData().getComponent()));
+            tableRow.setOldData(oldItem);
         }
         selectRowColumn.setEditable(false);
         tableView.refresh();
@@ -431,11 +430,11 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
         selectedRowsIndices.clear();
 
         // Delete created new items
-        if (isNewOrderMode.get()) {
+        if (isNewItemMode.get()) {
             for (int i = 0; i < newInventoryItemCount; i++) {
                 tableView.getItems().removeFirst();
             }
-            isNewOrderMode.set(false);
+            isNewItemMode.set(false);
             newInventoryItemCount = 0;
         }
         selectRowColumn.setEditable(true);
@@ -445,7 +444,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
     // Confirm Dialogs
     private void openConfirmCreateDialog() {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
-                "Confirm Factory Orders Create",
+                "Confirm Factory Items Create",
                 "Are you sure you want to create new items?",
                 null);
         List<FactoryInventoryItem> selectedItems = new ArrayList<>();
@@ -462,7 +461,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
 
     private void openConfirmUpdateDialog(List<Integer> selectedRowsIndices) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
-                "Confirm Factory Orders Update",
+                "Confirm Factory Items Update",
                 "Are you sure you want to update selected items?",
                 null);
         List<FactoryInventoryItem> selectedItems = new ArrayList<>();
@@ -479,7 +478,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
 
     private void openConfirmDeleteDialog(List<Integer> selectedRowsIndices) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
-                "Confirm Factory Orders Delete",
+                "Confirm Factory Items Delete",
                 "Are you sure you want to delete selected items?",
                 null);
         List<FactoryInventoryItem> selectedItems = new ArrayList<>();
@@ -501,9 +500,9 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
 
     // Backend calls
     // - Create
-    private void handleCreateOrders(List<FactoryInventoryItem> FactoryInventoryItems) {
+    private void handleCreateItems(List<FactoryInventoryItem> factoryInventoryItems) {
         List<CreateFactoryInventoryItemDTO> createFactoryInventoryItemDTOs = new ArrayList<>();
-        for (FactoryInventoryItem item : FactoryInventoryItems) {
+        for (FactoryInventoryItem item : factoryInventoryItems) {
             CreateFactoryInventoryItemDTO createFactoryInventoryItemDTO = getCreateFactoryInventoryItemDTO(item);
 
             createFactoryInventoryItemDTOs.add(createFactoryInventoryItemDTO);
@@ -537,14 +536,14 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
         Platform.runLater(() -> {
             fallbackManager.setLoading(false);
             if (result.getError() != null) {
-                ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Factory Orders.", OperationOutcome.ERROR);
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Factory Items.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
-            isNewOrderMode.set(false);
+            isNewItemMode.set(false);
             closeConfirmCreateDialog();
             updateUIOnSuccessfulOperation();
-            ToastInfo toastInfo = new ToastInfo("Success", "Factory Orders created successfully.", OperationOutcome.SUCCESS);
+            ToastInfo toastInfo = new ToastInfo("Success", "Factory Items created successfully.", OperationOutcome.SUCCESS);
             toastManager.addToast(toastInfo);
         });
         return  result;
@@ -552,16 +551,16 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
 
     private Result<List<FactoryInventoryItem>> handleCreateFactoryInventoryItemsException(Throwable throwable) {
         Platform.runLater(() -> {
-            ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Factory Orders.", OperationOutcome.ERROR);
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error creating the Factory Items.", OperationOutcome.ERROR);
             toastManager.addToast(toastInfo);
         });
         return new Result<>();
     }
 
-    private void handleUpdateOrders(List<FactoryInventoryItem> FactoryInventoryItems) {
+    private void handleUpdateItems(List<FactoryInventoryItem> factoryInventoryItems) {
         List<UpdateFactoryInventoryItemDTO> updateFactoryInventoryItemDTOs = new ArrayList<>();
 
-        for (FactoryInventoryItem item : FactoryInventoryItems) {
+        for (FactoryInventoryItem item : factoryInventoryItems) {
             UpdateFactoryInventoryItemDTO updateFactoryInventoryItemDTO = getUpdateFactoryInventoryItemDTO(item);
 
             updateFactoryInventoryItemDTOs.add(updateFactoryInventoryItemDTO);
@@ -593,15 +592,15 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
             fallbackManager.setLoading(false);
 
             if (result.getError() != null) {
-                ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Factory Orders.", OperationOutcome.ERROR);
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Factory Items.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
 
-            isNewOrderMode.set(false);
+            isNewItemMode.set(false);
             closeConfirmUpdateDialog();
             updateUIOnSuccessfulOperation();
-            ToastInfo toastInfo = new ToastInfo("Success", "Factory Orders updated successfully.", OperationOutcome.SUCCESS);
+            ToastInfo toastInfo = new ToastInfo("Success", "Factory Items updated successfully.", OperationOutcome.SUCCESS);
             toastManager.addToast(toastInfo);
         });
         return  result;
@@ -609,15 +608,15 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
 
     private Result<List<FactoryInventoryItem>> handleUpdateFactoryInventoryItemsException(Throwable throwable) {
         Platform.runLater(() -> {
-            ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Factory Orders.", OperationOutcome.ERROR);
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error updating the Factory Items.", OperationOutcome.ERROR);
             toastManager.addToast(toastInfo);
         });
         return new Result<>();
     }
 
-    private void handleDeleteOrders(List<FactoryInventoryItem> FactoryInventoryItems) {
+    private void handleDeleteItems(List<FactoryInventoryItem> factoryInventoryItems) {
         List<Integer> itemsToRemoveIds = new ArrayList<>();
-        for (FactoryInventoryItem item : FactoryInventoryItems) {
+        for (FactoryInventoryItem item : factoryInventoryItems) {
             itemsToRemoveIds.add(item.getId());
         }
 
@@ -634,7 +633,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
             fallbackManager.setLoading(false);
 
             if (result.getError() != null) {
-                ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Factory Orders.", OperationOutcome.ERROR);
+                ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Factory Items.", OperationOutcome.ERROR);
                 toastManager.addToast(toastInfo);
                 return;
             }
@@ -645,7 +644,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
             isEditMode.set(false);
             tableView.refresh();
             selectedRowsIndices.clear();
-            ToastInfo toastInfo = new ToastInfo("Success", "Factory Orders deleted successfully.", OperationOutcome.SUCCESS);
+            ToastInfo toastInfo = new ToastInfo("Success", "Factory Items deleted successfully.", OperationOutcome.SUCCESS);
             toastManager.addToast(toastInfo);
         });
         return  result;
@@ -653,7 +652,7 @@ public class FactoryInventoryController implements DataReceiver<SearchData<Facto
 
     private Result<List<Integer>> handleDeleteFactoryInventoryItemsException(Throwable throwable) {
         Platform.runLater(() -> {
-            ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Factory Orders.", OperationOutcome.ERROR);
+            ToastInfo toastInfo = new ToastInfo("Error", "There was an error deleting the Factory Items.", OperationOutcome.ERROR);
             toastManager.addToast(toastInfo);
         });
         return new Result<>();
