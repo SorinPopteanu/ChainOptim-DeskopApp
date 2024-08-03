@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.confirmdialog.controller;
+package org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller;
 
 import java.util.function.Consumer;
 

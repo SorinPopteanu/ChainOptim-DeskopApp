@@ -5,9 +5,9 @@ import org.chainoptim.desktop.core.organization.dto.CreateCustomRoleDTO;
 import org.chainoptim.desktop.core.organization.dto.UpdateCustomRoleDTO;
 import org.chainoptim.desktop.core.organization.model.*;
 import org.chainoptim.desktop.core.organization.service.CustomRoleService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -154,7 +154,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private void loadConfirmUpdateDialog() {
         // Load view into fallbackContainer
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml",
+                "/org/chainoptim/desktop/shared/common/uielements/confirmdialog/GenericConfirmDialogView.fxml",
                 controllerFactory::createController
         );
         try {
@@ -170,7 +170,7 @@ public class OrganizationCustomRolesController implements DataReceiver<Organizat
     private void loadConfirmDeleteDialog() {
         // Load view into fallbackContainer
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml",
+                "/org/chainoptim/desktop/shared/common/uielements/confirmdialog/GenericConfirmDialogView.fxml",
                 controllerFactory::createController
         );
         try {

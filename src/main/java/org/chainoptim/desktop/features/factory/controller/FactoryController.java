@@ -3,9 +3,9 @@ package org.chainoptim.desktop.features.factory.controller;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.features.factory.service.FactoryWriteService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -209,7 +209,7 @@ public class FactoryController implements Initializable {
     private void openConfirmDeleteDialog(Factory factory) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
                 "Confirm Factory Delete",
-                "Are you sure you want to delete this factory?",
+                "Are you sure you want to delete this factory? This action cannot be undone.",
                 null);
         confirmFactoryDeleteController.setData(factory, confirmDialogInput);
         toggleDialogVisibility(confirmDeleteDialogContainer, true);

@@ -7,9 +7,9 @@ import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.core.user.service.UserService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -36,7 +36,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.awt.Desktop;
 
@@ -418,7 +417,7 @@ public class OrganizationOverviewController implements DataReceiver<Organization
 
     private void loadConfirmDeleteDialog(User user) {
         // Load confirm dialog
-        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/common/uielements/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
 
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Member Removal", "Are you sure you want to remove " + user.getUsername() + "?", null);
 

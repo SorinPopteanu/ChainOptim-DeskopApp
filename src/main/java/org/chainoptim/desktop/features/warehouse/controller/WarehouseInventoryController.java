@@ -10,9 +10,9 @@ import org.chainoptim.desktop.features.warehouse.service.WarehouseInventoryItemS
 import org.chainoptim.desktop.features.warehouse.service.WarehouseInventoryItemWriteService;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.productpipeline.model.Component;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.SearchMode;
@@ -485,7 +485,7 @@ public class WarehouseInventoryController implements DataReceiver<SearchData<War
     private void openConfirmDeleteDialog(List<Integer> selectedRowsIndices) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
                 "Confirm Warehouse Items Delete",
-                "Are you sure you want to delete selected items?",
+                "Are you sure you want to delete selected items? This action cannot be undone.",
                 null);
         List<WarehouseInventoryItem> selectedItems = new ArrayList<>();
         for (Integer index : selectedRowsIndices) {

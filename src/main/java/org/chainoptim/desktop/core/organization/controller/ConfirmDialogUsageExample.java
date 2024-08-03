@@ -3,9 +3,9 @@ package org.chainoptim.desktop.core.organization.controller;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import com.google.inject.Inject;
@@ -70,7 +70,7 @@ public class ConfirmDialogUsageExample implements DataReceiver<OrganizationViewD
 
     private void loadUpdateConfirmDialog() {
         // Load confirm dialog
-        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/common/uielements/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
 
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Custom Role Update", "Are you sure you want to update this role?", "/org/chainoptim/desktop/core/user/UsersListByCustomRoleView.fxml");
         CustomRole customRole = new CustomRole();
@@ -89,7 +89,7 @@ public class ConfirmDialogUsageExample implements DataReceiver<OrganizationViewD
 
     private void loadDeleteConfirmDialog() {
         // Load confirm dialog
-        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/common/uielements/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
 
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput("Confirm Custom Role Delete", "Are you sure you want to delete this role?", "/org/chainoptim/desktop/core/user/UsersListByCustomRoleView.fxml");
         CustomRole customRole = new CustomRole();

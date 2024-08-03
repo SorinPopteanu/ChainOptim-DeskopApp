@@ -8,9 +8,9 @@ import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.model.ClientShipment;
 import org.chainoptim.desktop.features.client.service.ClientShipmentsService;
 import org.chainoptim.desktop.features.client.service.ClientShipmentsWriteService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.ShipmentStatus;
@@ -474,7 +474,7 @@ public class ClientShipmentsController implements DataReceiver<SearchData<Client
     private void openConfirmDeleteDialog(List<Integer> selectedRowsIndices) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
                 "Confirm Client Shipments Delete",
-                "Are you sure you want to delete selected shipments?",
+                "Are you sure you want to delete selected shipments? This action cannot be undone.",
                 null);
         List<ClientShipment> selectedShipments = new ArrayList<>();
         for (Integer index : selectedRowsIndices) {

@@ -79,7 +79,7 @@ public class CreateProductStageController implements Initializable {
     private void loadSelectProductView() {
         // Initialize time selection input view
         FXMLLoader selectProductLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/SelectProductView.fxml",
+                "/org/chainoptim/desktop/shared/common/uielements/Select/SelectProductView.fxml",
                 controllerFactory::createController
         );
         try {

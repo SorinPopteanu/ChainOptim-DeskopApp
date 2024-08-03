@@ -1,8 +1,8 @@
-package org.chainoptim.desktop.shared.confirmdialog.controller;
+package org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller;
 
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogDataReceiver;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogDataReceiver;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 

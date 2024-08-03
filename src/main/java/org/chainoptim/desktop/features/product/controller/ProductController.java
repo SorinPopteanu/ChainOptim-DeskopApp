@@ -6,9 +6,9 @@ import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.features.product.model.Product;
 import org.chainoptim.desktop.features.product.service.ProductService;
 import org.chainoptim.desktop.features.product.service.ProductWriteService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
@@ -208,7 +208,7 @@ public class ProductController implements Initializable {
     private void openConfirmDeleteDialog(Product product) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
                 "Confirm Product Delete",
-                "Are you sure you want to delete this product?",
+                "Are you sure you want to delete this product? This action cannot be undone.",
                 null);
         confirmProductDeleteController.setData(product, confirmDialogInput);
         toggleDialogVisibility(confirmDeleteDialogContainer, true);
