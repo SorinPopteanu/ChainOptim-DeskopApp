@@ -2,6 +2,7 @@ package org.chainoptim.desktop.features.factory.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.factory.dto.FactoriesSearchDTO;
+import org.chainoptim.desktop.features.factory.dto.FactoryOverviewDTO;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
@@ -80,5 +81,13 @@ public class FactoryServiceImpl implements FactoryService {
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<Factory>() {});
+    }
+
+    public CompletableFuture<Result<FactoryOverviewDTO>> getFactoryOverview(Integer factoryId) {
+        String routeAddress = "http://localhost:8080/api/v1/factories/" + factoryId.toString() + "/overview";
+
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
+
+        return requestHandler.sendRequest(request, new TypeReference<FactoryOverviewDTO>() {});
     }
 }
