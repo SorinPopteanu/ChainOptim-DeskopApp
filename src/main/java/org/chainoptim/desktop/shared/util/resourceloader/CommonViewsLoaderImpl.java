@@ -2,6 +2,7 @@ package org.chainoptim.desktop.shared.util.resourceloader;
 
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.map.MapController;
 import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.shared.common.uielements.select.*;
 import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
@@ -178,6 +179,21 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
             Node selectFactoryView = selectFactoryLoader.load();
             selectFactoryContainer.getChildren().add(selectFactoryView);
             return selectFactoryLoader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public MapController loadSupplyChainMap(StackPane mapContainer) {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/map/MapView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node mapView = loader.load();
+            mapContainer.getChildren().add(mapView);
+            return loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
             return null;

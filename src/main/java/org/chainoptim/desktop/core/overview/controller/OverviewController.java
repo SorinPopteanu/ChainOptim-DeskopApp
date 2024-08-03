@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.map.MapController;
 import org.chainoptim.desktop.core.map.model.SupplyChainMap;
 import org.chainoptim.desktop.core.map.service.SupplyChainMapService;
 import org.chainoptim.desktop.core.notification.model.NotificationExtraInfo;
@@ -23,6 +24,7 @@ import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -53,6 +55,9 @@ public class OverviewController implements Initializable {
     private final NavigationService navigationService;
     private final CommonViewsLoader commonViewsLoader;
 
+    // Controllers
+    private MapController mapController;
+
     // State
     private final SearchParams searchParams;
     private final FallbackManager fallbackManager;
@@ -80,6 +85,10 @@ public class OverviewController implements Initializable {
     private Label notificationsLabel;
     @FXML
     private VBox notificationsVBox;
+    @FXML
+    private Button renderMapButton;
+    @FXML
+    private StackPane mapContainer;
 
     @Inject
     public OverviewController(SupplyChainSnapshotService supplyChainSnapshotService,
@@ -199,10 +208,21 @@ public class OverviewController implements Initializable {
             fallbackManager.setLoading(false);
 
             System.out.println("Map: " + map);
+            loadMap(map);
 
         });
 
         return result;
+    }
+
+    private void loadMap(SupplyChainMap map) {
+        if (map == null) return;
+
+        mapController = commonViewsLoader.loadSupplyChainMap(mapContainer);
+        mapController.setData(map);
+        renderMapButton.setOnAction(event -> {
+            mapController.renderMap();
+        });
     }
 
     // UI Rendering

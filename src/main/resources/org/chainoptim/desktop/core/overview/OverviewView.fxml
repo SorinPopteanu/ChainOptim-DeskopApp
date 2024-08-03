@@ -27,6 +27,9 @@
                     <VBox fx:id="notificationsVBox"/>
                 </ScrollPane>
             </VBox>
+
+            <Button fx:id="renderMapButton" styleClass="standard-action-button"/>
+            <StackPane fx:id="mapContainer"/>
         </VBox>
 
         <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
