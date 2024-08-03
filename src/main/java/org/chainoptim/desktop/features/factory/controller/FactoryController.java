@@ -51,6 +51,7 @@ public class FactoryController implements Initializable {
     private final FallbackManager fallbackManager;
     private final ToastManager toastManager;
     private Factory factory;
+    private static final String GENERIC_ERROR_MESSAGE = "Failed to load factory.";
 
     // FXML
     @FXML
@@ -103,7 +104,7 @@ public class FactoryController implements Initializable {
             loadFactory(factoryId);
         } else {
             System.out.println("Missing factory id.");
-            fallbackManager.setErrorMessage("Failed to load factory.");
+            fallbackManager.setErrorMessage(GENERIC_ERROR_MESSAGE);
         }
     }
 
@@ -120,7 +121,7 @@ public class FactoryController implements Initializable {
     private Result<Factory> handleFactoryResponse(Result<Factory> result) {
         Platform.runLater(() -> {
             if (result.getError() != null) {
-                fallbackManager.setErrorMessage("Failed to load factory.");
+                fallbackManager.setErrorMessage(GENERIC_ERROR_MESSAGE);
                 return;
             }
             this.factory = result.getData();
@@ -134,7 +135,7 @@ public class FactoryController implements Initializable {
     }
 
     private Result<Factory> handleFactoryException(Throwable ex) {
-        Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load factory."));
+        Platform.runLater(() -> fallbackManager.setErrorMessage(GENERIC_ERROR_MESSAGE));
         return new Result<>();
     }
 

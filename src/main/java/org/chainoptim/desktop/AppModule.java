@@ -8,6 +8,8 @@ import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
+import org.chainoptim.desktop.core.map.service.SupplyChainMapService;
+import org.chainoptim.desktop.core.map.service.SupplyChainMapServiceImpl;
 import org.chainoptim.desktop.core.notification.controller.NotificationManager;
 import org.chainoptim.desktop.core.notification.model.NotificationUser;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
@@ -122,6 +124,9 @@ public class AppModule extends AbstractModule {
 
         // - Overview
         bind(SupplyChainSnapshotService.class).to(SupplyChainSnapshotServiceImpl.class);
+
+        // - Map
+        bind(SupplyChainMapService.class).to(SupplyChainMapServiceImpl.class);
 
         // - Notifications
         bind(NotificationPersistenceService.class).to(NotificationPersistenceServiceImpl.class);

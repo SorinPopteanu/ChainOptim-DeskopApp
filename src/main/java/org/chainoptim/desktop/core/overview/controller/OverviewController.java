@@ -4,6 +4,8 @@ import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
+import org.chainoptim.desktop.core.map.model.SupplyChainMap;
+import org.chainoptim.desktop.core.map.service.SupplyChainMapService;
 import org.chainoptim.desktop.core.notification.model.NotificationExtraInfo;
 import org.chainoptim.desktop.core.notification.model.NotificationUser;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
@@ -47,11 +49,12 @@ public class OverviewController implements Initializable {
     // Services
     private final SupplyChainSnapshotService supplyChainSnapshotService;
     private final NotificationPersistenceService notificationPersistenceService;
+    private final SupplyChainMapService supplyChainMapService;
     private final NavigationService navigationService;
     private final CommonViewsLoader commonViewsLoader;
 
     // State
-    private SearchParams searchParams;
+    private final SearchParams searchParams;
     private final FallbackManager fallbackManager;
     private Snapshot snapshot;
     private final SupplyChainSnapshotContext snapshotContext;
@@ -59,10 +62,6 @@ public class OverviewController implements Initializable {
     private int lastPage = 1;
     private boolean clearNotifications = true;
     private Button currentLoadMoreButton;
-    private final Map<String, String> sortOptions = Map.of(
-            "createdAt", "Created At",
-            "updatedAt", "Updated At"
-    );
 
     // FXML
     @FXML
@@ -82,12 +81,10 @@ public class OverviewController implements Initializable {
     @FXML
     private VBox notificationsVBox;
 
-    // Icons
-    private Image alertImage;
-
     @Inject
     public OverviewController(SupplyChainSnapshotService supplyChainSnapshotService,
                               NotificationPersistenceService notificationPersistenceService,
+                              SupplyChainMapService supplyChainMapService,
                               NavigationService navigationService,
                               CommonViewsLoader commonViewsLoader,
                               SearchParams searchParams,
@@ -95,6 +92,7 @@ public class OverviewController implements Initializable {
                               SupplyChainSnapshotContext snapshotContext) {
         this.supplyChainSnapshotService = supplyChainSnapshotService;
         this.notificationPersistenceService = notificationPersistenceService;
+        this.supplyChainMapService = supplyChainMapService;
         this.navigationService = navigationService;
         this.commonViewsLoader = commonViewsLoader;
         this.searchParams = searchParams;
@@ -152,6 +150,13 @@ public class OverviewController implements Initializable {
                     Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load notifications."));
                     return new Result<>();
                 });
+
+        supplyChainMapService.getMapByOrganizationId(organizationId, true)
+                .thenApply(this::handleMapResponse)
+                .exceptionally(ex -> {
+                    Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supply chain map."));
+                    return new Result<>();
+                });
     }
 
     // Fetches
@@ -180,6 +185,20 @@ public class OverviewController implements Initializable {
 
             totalCount = notifications.getTotalCount();
             renderNotificationsVBox(notifications.getResults());
+        });
+
+        return result;
+    }
+
+    private Result<SupplyChainMap> handleMapResponse(Result<SupplyChainMap> result) {
+        Platform.runLater(() -> {
+            if (result.getError() != null) {
+                return;
+            }
+            SupplyChainMap map = result.getData();
+            fallbackManager.setLoading(false);
+
+            System.out.println("Map: " + map);
         });
 
         return result;
