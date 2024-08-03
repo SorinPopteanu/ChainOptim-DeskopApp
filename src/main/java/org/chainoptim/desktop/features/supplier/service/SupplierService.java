@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.supplier.service;
 
+import org.chainoptim.desktop.features.supplier.dto.SupplierOverviewDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -17,4 +18,5 @@ public interface SupplierService {
             SearchParams searchParams
     );
     CompletableFuture<Result<Supplier>> getSupplierById(Integer supplierId);
+    CompletableFuture<Result<SupplierOverviewDTO>> getSupplierOverview(Integer supplierId);
 }

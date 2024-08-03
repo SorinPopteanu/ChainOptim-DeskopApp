@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.factory.service;
 
 import org.chainoptim.desktop.features.factory.dto.FactoriesSearchDTO;
+import org.chainoptim.desktop.features.factory.dto.FactoryOverviewDTO;
 import org.chainoptim.desktop.features.factory.model.Factory;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -19,4 +20,5 @@ public interface FactoryService {
             SearchParams searchParams
     );
     CompletableFuture<Result<Factory>> getFactoryById(Integer factoryId);
+    CompletableFuture<Result<FactoryOverviewDTO>> getFactoryOverview(Integer factoryId);
 }

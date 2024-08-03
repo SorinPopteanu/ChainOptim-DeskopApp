@@ -1,5 +1,6 @@
 package org.chainoptim.desktop.features.warehouse.service;
 
+import org.chainoptim.desktop.features.warehouse.dto.WarehouseOverviewDTO;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
@@ -17,4 +18,5 @@ public interface WarehouseService {
             SearchParams searchParams
     );
     CompletableFuture<Result<Warehouse>> getWarehouseById(Integer warehouseId);
+    CompletableFuture<Result<WarehouseOverviewDTO>> getWarehouseOverview(Integer warehouseId);
 }

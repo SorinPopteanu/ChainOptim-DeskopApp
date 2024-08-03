@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.supplier.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.features.supplier.dto.SupplierOverviewDTO;
 import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
@@ -72,5 +73,13 @@ public class SupplierServiceImpl implements SupplierService {
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<Supplier>() {});
+    }
+
+    public CompletableFuture<Result<SupplierOverviewDTO>> getSupplierOverview(Integer supplierId) {
+        String routeAddress = "http://localhost:8080/api/v1/suppliers/" + supplierId.toString() + "/overview";
+
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
+
+        return requestHandler.sendRequest(request, new TypeReference<SupplierOverviewDTO>() {});
     }
 }
