@@ -84,7 +84,6 @@ public class ComponentController implements Initializable {
 
             componentName.setText(component.getName());
             componentDescription.setText(component.getDescription());
-            System.out.println("Component: " + component);
         });
 
         return result;

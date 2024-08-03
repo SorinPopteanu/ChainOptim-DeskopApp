@@ -5,12 +5,11 @@
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.chainoptim.desktop.features.supplier.controller.SupplierOverviewController"
-            style="-fx-padding: 30px;" spacing="30">
+            style="-fx-padding: 30px;" spacing="30" minHeight="600">
 
-    <!-- Location -->
-    <VBox fx:id="locationVBox" spacing="15">
-        <Label text="Location" styleClass="general-label-large"/>
+    <!-- Details -->
+    <VBox fx:id="detailsVBox" spacing="15"/>
 
-    </VBox>
-
+    <!-- Entities -->
+    <VBox fx:id="entitiesVBox"/>
 </VBox>
