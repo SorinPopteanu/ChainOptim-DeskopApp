@@ -75,12 +75,9 @@ public class SupplierOverviewController implements DataReceiver<Supplier> {
                 return;
             }
             fallbackManager.setLoading(false);
-
             SupplierOverviewDTO supplierOverviewDTO = result.getData();
 
-            renderDates();
-            renderLocation();
-            renderEntityFlowPane("Supplied Components", supplierOverviewDTO.getSuppliedComponents(), "Component");
+            renderUI(supplierOverviewDTO);
         });
         return result;
     }
@@ -90,6 +87,14 @@ public class SupplierOverviewController implements DataReceiver<Supplier> {
             fallbackManager.setErrorMessage("Failed to load supplier overview")
         );
         return new Result<>();
+    }
+
+    private void renderUI(SupplierOverviewDTO supplierOverviewDTO) {
+        renderDates();
+        renderLocation();
+        renderEntityFlowPane("Supplied Components", supplierOverviewDTO.getSuppliedComponents(), "Component");
+        renderEntityFlowPane("Delivered to Factories", supplierOverviewDTO.getDeliveredToFactories(), "Factory");
+        renderEntityFlowPane("Delivered to Warehouses", supplierOverviewDTO.getDeliveredToWarehouses(), "Warehouse");
     }
 
     private void renderDates() {
@@ -105,7 +110,7 @@ public class SupplierOverviewController implements DataReceiver<Supplier> {
             return;
         }
 
-        Label locationLabel = new Label("Location");
+        Label locationLabel = new Label("• Location");
         locationLabel.getStyleClass().setAll("general-label-large");
         detailsVBox.getChildren().add(locationLabel);
 
