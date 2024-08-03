@@ -199,6 +199,7 @@ public class OverviewController implements Initializable {
             fallbackManager.setLoading(false);
 
             System.out.println("Map: " + map);
+
         });
 
         return result;
