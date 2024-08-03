@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.warehouse.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.features.warehouse.dto.WarehouseOverviewDTO;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
@@ -71,5 +72,13 @@ public class WarehouseServiceImpl implements WarehouseService {
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<Warehouse>() {});
+    }
+
+    public CompletableFuture<Result<WarehouseOverviewDTO>> getWarehouseOverview(Integer warehouseId) {
+        String routeAddress = "http://localhost:8080/api/v1/warehouses/" + warehouseId.toString() + "/overview";
+
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
+
+        return requestHandler.sendRequest(request, new TypeReference<WarehouseOverviewDTO>() {});
     }
 }
