@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.control.Label?>
-<AnchorPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOverviewController">
+            fx:controller="org.chainoptim.desktop.features.client.controller.ClientOverviewController"
+            style="-fx-padding: 30px;" minHeight="600" spacing="20">
 
+    <!-- Details -->
+    <VBox fx:id="detailsVBox" spacing="15"/>
 
-    <Label fx:id="clientName" />
-</AnchorPane>
+    <!-- Entities -->
+    <VBox fx:id="entitiesVBox" spacing="15"/>
+</VBox>

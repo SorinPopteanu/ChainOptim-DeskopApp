@@ -1,6 +1,7 @@
 package org.chainoptim.desktop.features.client.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.features.client.dto.ClientOverviewDTO;
 import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
@@ -71,5 +72,13 @@ public class ClientServiceImpl implements ClientService {
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         return requestHandler.sendRequest(request, new TypeReference<Client>() {});
+    }
+
+    public CompletableFuture<Result<ClientOverviewDTO>> getClientOverview(Integer clientId) {
+        String routeAddress = "http://localhost:8080/api/v1/clients/" + clientId.toString() + "/overview";
+
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
+
+        return requestHandler.sendRequest(request, new TypeReference<ClientOverviewDTO>() {});
     }
 }
