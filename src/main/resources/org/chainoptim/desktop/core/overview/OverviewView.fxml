@@ -14,11 +14,11 @@
     <StackPane fx:id="contentStackPane" style="-fx-padding: 20px 0px;">
 
         <VBox fx:id="contentContainer" spacing="40">
-            <HBox fx:id="entityCountsHBox" visible="false" managed="false">
+            <HBox fx:id="entityCountsHBox">
                 <!-- Counts of organization entities -->
             </HBox>
 
-            <VBox styleClass="notifications-box" visible="false" managed="false">
+            <VBox styleClass="notifications-box">
                 <HBox styleClass="notifications-box-label-container">
                     <Label fx:id="notificationsLabel" styleClass="notifications-box-label"/>
                 </HBox>

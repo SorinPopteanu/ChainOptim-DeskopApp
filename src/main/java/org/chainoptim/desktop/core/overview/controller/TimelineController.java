@@ -38,6 +38,8 @@ public class TimelineController {
 
     // FXML
     @FXML
+    private Label titleLabel;
+    @FXML
     private ComboBox<Feature> entityTypeComboBox;
     @FXML
     private ComboBox<String> timeframeComboBox;
@@ -68,13 +70,13 @@ public class TimelineController {
     private void initializeUI() {
         Image refreshIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/rotate-right-solid.png")));
         ImageView imageView = new ImageView(refreshIcon);
-        imageView.setFitWidth(12);
-        imageView.setFitHeight(12);
+        imageView.setFitWidth(14);
+        imageView.setFitHeight(14);
         refreshButton.setGraphic(imageView);
     }
 
     private void setUpEntityTypeComboBox() {
-        entityTypeComboBox.getItems().addAll(Feature.values());
+        entityTypeComboBox.getItems().addAll(Feature.NONE, Feature.SUPPLIER_ORDER, Feature.CLIENT_ORDER, Feature.SUPPLIER_SHIPMENT, Feature.CLIENT_SHIPMENT);
         entityTypeComboBox.getSelectionModel().select(Feature.NONE);
 
         entityTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -134,6 +136,7 @@ public class TimelineController {
     }
 
     private void renderTimeline() {
+        titleLabel.setText("Upcoming Events (" + events.size() + ")");
         eventsHBox.getChildren().clear();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");

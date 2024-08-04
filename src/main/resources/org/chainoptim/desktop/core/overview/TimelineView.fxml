@@ -10,11 +10,16 @@
       fx:controller="org.chainoptim.desktop.core.overview.controller.TimelineController" spacing="20">
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Upcoming Events" styleClass="general-label-large"/>
+        <Label fx:id="titleLabel" styleClass="general-label-large"/>
+
         <Region HBox.hgrow="ALWAYS"/>
 
+        <Label text="Entity Type" styleClass="general-label-medium-large"/>
         <ComboBox fx:id="entityTypeComboBox" styleClass="custom-combo-box"/>
+
+        <Label text="Period" styleClass="general-label-medium-large"/>
         <ComboBox fx:id="timeframeComboBox" styleClass="custom-combo-box"/>
+
         <Button fx:id="refreshButton" onAction="#refreshEvents" styleClass="standard-action-button"/>
     </HBox>
 
