@@ -27,5 +27,6 @@ public interface SearchParams {
     void setPage(Integer page);
     void setItemsPerPage(Integer itemsPerPage);
     void setFilters(Map<String, String> filters);
+    void removeFilter(String key);
     void updateFilter(String key, String value);
 }

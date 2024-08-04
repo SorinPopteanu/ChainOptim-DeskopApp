@@ -75,6 +75,9 @@ public class SearchParamsImpl implements SearchParams {
     public void updateFilter(String key, String value) {
         this.filters.put(key, value);
     }
+    public void removeFilter(String key) {
+        this.filters.remove(key);
+    }
     public void setSortOption(String sortOption) {
         this.page.set(1);
         this.sortOption.set(sortOption);

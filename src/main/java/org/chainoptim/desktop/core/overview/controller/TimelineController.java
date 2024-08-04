@@ -3,6 +3,7 @@ package org.chainoptim.desktop.core.overview.controller;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.overview.model.UpcomingEvent;
 import org.chainoptim.desktop.core.overview.service.UpcomingEventService;
+import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import com.google.inject.Inject;
@@ -37,6 +38,8 @@ public class TimelineController {
 
     // FXML
     @FXML
+    private ComboBox<Feature> entityTypeComboBox;
+    @FXML
     private ComboBox<String> timeframeComboBox;
     @FXML
     private Button refreshButton;
@@ -52,11 +55,14 @@ public class TimelineController {
 
     public void initializeTimeline() {
         initializeUI();
+        setUpEntityTypeComboBox();
         setUpTimeframeComboBox();
-        searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
-            loadEvents();
-        });
-        timeframeComboBox.getSelectionModel().selectFirst();
+
+        loadEvents();
+
+        searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) ->
+            loadEvents()
+        );
     }
 
     private void initializeUI() {
@@ -67,14 +73,22 @@ public class TimelineController {
         refreshButton.setGraphic(imageView);
     }
 
-    private void loadEvents() {
-        upcomingEventService.getUpcomingEventsByOrganizationIdAdvanced(TenantContext.getCurrentUser().getOrganization().getId(), searchParams)
-                .thenApply(this::handleEventsResponse)
-                .exceptionally(this::handleEventsException);
+    private void setUpEntityTypeComboBox() {
+        entityTypeComboBox.getItems().addAll(Feature.values());
+        entityTypeComboBox.getSelectionModel().select(Feature.NONE);
+
+        entityTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == Feature.NONE) {
+                searchParams.removeFilter("associatedEntityType");
+            } else {
+                searchParams.updateFilter("associatedEntityType", newValue.toString());
+            }
+        });
     }
 
     private void setUpTimeframeComboBox() {
         timeframeComboBox.getItems().addAll("Today", "This Week", "This Month", "This Year");
+        timeframeComboBox.getSelectionModel().select(2);
 
         LocalDateTime now = LocalDateTime.now();
         Map<String, String> initialFilters = searchParams.getFilters();
@@ -92,6 +106,12 @@ public class TimelineController {
 
             searchParams.updateFilter("dateTimeEnd", endDate.toString());
         });
+    }
+
+    private void loadEvents() {
+        upcomingEventService.getUpcomingEventsByOrganizationIdAdvanced(TenantContext.getCurrentUser().getOrganization().getId(), searchParams)
+                .thenApply(this::handleEventsResponse)
+                .exceptionally(this::handleEventsException);
     }
 
     private Result<List<UpcomingEvent>> handleEventsResponse(Result<List<UpcomingEvent>> result) {

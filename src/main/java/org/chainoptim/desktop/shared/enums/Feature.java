@@ -34,7 +34,10 @@ public enum Feature {
     CLIENT_EVALUATION,
 
     // Overview
-    UPCOMING_EVENT;
+    UPCOMING_EVENT,
+
+
+    NONE;
 
     @Override
     public String toString() {

@@ -13,11 +13,12 @@
         <Label text="Upcoming Events" styleClass="general-label-large"/>
         <Region HBox.hgrow="ALWAYS"/>
 
+        <ComboBox fx:id="entityTypeComboBox" styleClass="custom-combo-box"/>
         <ComboBox fx:id="timeframeComboBox" styleClass="custom-combo-box"/>
         <Button fx:id="refreshButton" onAction="#refreshEvents" styleClass="standard-action-button"/>
     </HBox>
 
-    <ScrollPane minHeight="90">
+    <ScrollPane fitToHeight="true">
         <HBox fx:id="eventsHBox" spacing="40" styleClass="timeline-container"/>
     </ScrollPane>
 
