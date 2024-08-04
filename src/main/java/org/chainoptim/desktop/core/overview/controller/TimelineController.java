@@ -54,9 +54,7 @@ public class TimelineController {
         initializeUI();
         setUpTimeframeComboBox();
         searchParams.getFiltersProperty().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
-            if (searchParams.getFiltersProperty().entrySet().size() == 1) {
-                loadEvents();
-            }
+            loadEvents();
         });
         timeframeComboBox.getSelectionModel().selectFirst();
     }
@@ -78,10 +76,12 @@ public class TimelineController {
     private void setUpTimeframeComboBox() {
         timeframeComboBox.getItems().addAll("Today", "This Week", "This Month", "This Year");
 
-        timeframeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            Map<String, String> filters = searchParams.getFilters();
-            LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
+        Map<String, String> initialFilters = searchParams.getFilters();
+        initialFilters.put("dateTimeStart", now.toString());
+        searchParams.setFilters(initialFilters);
 
+        timeframeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             LocalDateTime endDate = switch (newValue) {
                 case "Today" -> now.plusDays(1);
                 case "This Week" -> now.plusWeeks(1);
@@ -89,9 +89,8 @@ public class TimelineController {
                 case "This Year" -> now.plusYears(1);
                 default -> now;
             };
-            filters.put("dateTimeStart", now.toString());
-            filters.put("dateTimeEnd", endDate.toString());
-            searchParams.setFilters(filters);
+
+            searchParams.updateFilter("dateTimeEnd", endDate.toString());
         });
     }
 

@@ -282,7 +282,7 @@ public class SidebarController {
             button.setGraphic(imageView);
             button.setGraphicTextGap(10);
         } catch (Exception e) {
-            System.out.println("Icon not added yet: " + imagePath);
+            // Do nothing
         }
     }
 
