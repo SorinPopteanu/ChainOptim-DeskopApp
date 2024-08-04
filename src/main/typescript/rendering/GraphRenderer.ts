@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { InteractionManager } from "./InteractionManager";
 import { NodeRenderer } from "./NodeRenderer";
 import { EdgeRenderer } from "./EdgeRenderer";
-import { FactoryProductionGraph, GenericGraph } from "../types/dataTypes";
+import { GenericGraph } from "../types/dataTypes";
 import { GraphUIConfig } from "../config/GraphUIConfig";
 import { GraphPreprocessor } from "./GraphPreprocessor";
 import { InfoRenderer } from "./InfoRenderer";

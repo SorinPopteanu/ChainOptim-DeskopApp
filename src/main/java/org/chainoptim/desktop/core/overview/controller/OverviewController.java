@@ -51,12 +51,8 @@ public class OverviewController implements Initializable {
     // Services
     private final SupplyChainSnapshotService supplyChainSnapshotService;
     private final NotificationPersistenceService notificationPersistenceService;
-    private final SupplyChainMapService supplyChainMapService;
     private final NavigationService navigationService;
     private final CommonViewsLoader commonViewsLoader;
-
-    // Controllers
-    private MapController mapController;
 
     // State
     private final SearchParams searchParams;
@@ -93,7 +89,6 @@ public class OverviewController implements Initializable {
     @Inject
     public OverviewController(SupplyChainSnapshotService supplyChainSnapshotService,
                               NotificationPersistenceService notificationPersistenceService,
-                              SupplyChainMapService supplyChainMapService,
                               NavigationService navigationService,
                               CommonViewsLoader commonViewsLoader,
                               SearchParams searchParams,
@@ -101,7 +96,6 @@ public class OverviewController implements Initializable {
                               SupplyChainSnapshotContext snapshotContext) {
         this.supplyChainSnapshotService = supplyChainSnapshotService;
         this.notificationPersistenceService = notificationPersistenceService;
-        this.supplyChainMapService = supplyChainMapService;
         this.navigationService = navigationService;
         this.commonViewsLoader = commonViewsLoader;
         this.searchParams = searchParams;
@@ -159,13 +153,6 @@ public class OverviewController implements Initializable {
                     Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load notifications."));
                     return new Result<>();
                 });
-
-        supplyChainMapService.getMapByOrganizationId(organizationId, true)
-                .thenApply(this::handleMapResponse)
-                .exceptionally(ex -> {
-                    Platform.runLater(() -> fallbackManager.setErrorMessage("Failed to load supply chain map."));
-                    return new Result<>();
-                });
     }
 
     // Fetches
@@ -197,32 +184,6 @@ public class OverviewController implements Initializable {
         });
 
         return result;
-    }
-
-    private Result<SupplyChainMap> handleMapResponse(Result<SupplyChainMap> result) {
-        Platform.runLater(() -> {
-            if (result.getError() != null) {
-                return;
-            }
-            SupplyChainMap map = result.getData();
-            fallbackManager.setLoading(false);
-
-            System.out.println("Map: " + map);
-            loadMap(map);
-
-        });
-
-        return result;
-    }
-
-    private void loadMap(SupplyChainMap map) {
-        if (map == null) return;
-
-        mapController = commonViewsLoader.loadSupplyChainMap(mapContainer);
-        mapController.setData(map);
-        renderMapButton.setOnAction(event -> {
-            mapController.displayMap();
-        });
     }
 
     // UI Rendering

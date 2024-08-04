@@ -27,14 +27,33 @@ export class MapRenderer {
     }
 
     private initMap(): void {
-        this.map = L.map("map").setView([0, 0], 2);
+        this.map = L.map('map', {
+            center: [39.8282, -98.5795],
+            zoom: 5,
+            worldCopyJump: true,
+        });
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-            maxZoom: 18,
-        }).addTo(this.map);
+        const tiles = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                maxZoom: 18,
+                minZoom: 3,
+                attribution:
+                    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            }
+        );
+        tiles.addTo(this.map);
+
+        this.map.on('click', (e: L.LeafletMouseEvent) => {
+            const clickedLat = e.latlng.lat;
+            const clickedLng = e.latlng.lng;
+            console.log(
+                `Latitude: ${clickedLat}, Longitude: ${clickedLng}`
+            );
+
+        });
     }
-    
+
     private generatePopupContent(facility: Facility): string {
         return `<b>${facility.name}</b><br>Type: ${facility.type}<br>`;
     }
