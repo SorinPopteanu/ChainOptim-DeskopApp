@@ -1,0 +1,13 @@
+.timeline-container {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 5;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+    -fx-padding: 8px;
+}
+
+.event-dot {
+    -fx-background-color: #0078d4;
+    -fx-background-radius: 5;
+}

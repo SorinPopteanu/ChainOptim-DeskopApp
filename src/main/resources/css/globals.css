@@ -19,6 +19,7 @@
 @import url("reports.css");
 @import url("dates.css");
 @import url("scrollbar.css");
+@import url("timeline.css");
 
 .root {
     -fx-font-family: 'Roboto';

@@ -20,6 +20,7 @@ public interface SearchParams {
     Boolean getAscending();
     Integer getPage();
     Integer getItemsPerPage();
+    Map<String, String> getFilters();
     void setSearchQuery(String searchQuery);
     void setFilters(Map<String, String> filters);
     void setSortOption(String sortOption);

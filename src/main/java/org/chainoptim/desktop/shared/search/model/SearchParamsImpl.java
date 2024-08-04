@@ -59,6 +59,9 @@ public class SearchParamsImpl implements SearchParams {
     public Integer getItemsPerPage() {
         return itemsPerPage.get();
     }
+    public Map<String, String> getFilters() {
+        return new HashMap<>(filters);
+    }
 
     public void setSearchQuery(String searchQuery) {
         this.page.set(1);
