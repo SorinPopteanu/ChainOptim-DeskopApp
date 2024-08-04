@@ -1,12 +1,8 @@
 package org.chainoptim.desktop.core.overview.controller;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.map.MapController;
-import org.chainoptim.desktop.core.map.model.SupplyChainMap;
-import org.chainoptim.desktop.core.map.service.SupplyChainMapService;
 import org.chainoptim.desktop.core.notification.model.NotificationExtraInfo;
 import org.chainoptim.desktop.core.notification.model.NotificationUser;
 import org.chainoptim.desktop.core.notification.service.NotificationPersistenceService;
@@ -21,17 +17,14 @@ import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -82,9 +75,7 @@ public class OverviewController implements Initializable {
     @FXML
     private VBox notificationsVBox;
     @FXML
-    private Button renderMapButton;
-    @FXML
-    private Timeline timeline;
+    private StackPane timelineContainer;
 
     @Inject
     public OverviewController(SupplyChainSnapshotService supplyChainSnapshotService,
@@ -106,8 +97,8 @@ public class OverviewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
+        TimelineController timelineController = commonViewsLoader.loadTimeline(timelineContainer);
 
-        timeline.initialize(new ArrayList<>());
         setUpListeners();
         initializeUI();
     }

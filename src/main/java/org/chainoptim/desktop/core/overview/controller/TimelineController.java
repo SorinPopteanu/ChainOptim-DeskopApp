@@ -1,9 +1,9 @@
 package org.chainoptim.desktop.core.overview.controller;
 
 import org.chainoptim.desktop.core.overview.model.Event;
-
-import javafx.geometry.Insets;
+import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -14,18 +14,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Timeline extends HBox {
+
+public class TimelineController {
 
     private List<Event> events;
 
-    public Timeline() {
-        super(40);
-        this.setMinWidth(40);
-        this.setStyle("-fx-background-color: #f4f4f4; -fx-background-radius: 5; -fx-border-color: #e0e0e0; -fx-border-radius: 5; -fx-border-width: 1; -fx-padding: 8px;");
-    }
+    @FXML
+    private Button refreshButton;
+    @FXML
+    private HBox eventsHBox;
 
-    public void initialize(List<Event> events) {
-        this.events = events;
+    public void initialize() {
+        eventsHBox.setSpacing(40);
+        eventsHBox.setStyle("-fx-background-color: #f4f4f4; -fx-background-radius: 5; -fx-border-color: #e0e0e0; -fx-border-radius: 5; -fx-border-width: 1; -fx-padding: 8px;");
 
         events = new ArrayList<>();
         events.add(new Event("Supply Order Arrival", LocalDateTime.now().plusDays(1), "Expected to arrive tomorrow"));
@@ -40,9 +41,7 @@ public class Timeline extends HBox {
         events.add(new Event("Supply Order Arrival", LocalDateTime.now().plusDays(1), "Expected to arrive tomorrow"));
         events.add(new Event("Inventory Restock", LocalDateTime.now().plusDays(3), "New stock of products arriving"));
         events.add(new Event("Monthly Review Meeting", LocalDateTime.now().plusDays(5), "Discuss supply chain performance"));
-        this.events = events;
 
-        System.out.println("Events: " + events);
         renderTimeline();
     }
 
@@ -51,7 +50,7 @@ public class Timeline extends HBox {
 
         for (Event event : events) {
             VBox eventBox = createEventBox(event, formatter);
-            this.getChildren().add(eventBox);
+            eventsHBox.getChildren().add(eventBox);
         }
     }
 
@@ -80,5 +79,10 @@ public class Timeline extends HBox {
         // Add components to the event box
         eventBox.getChildren().addAll(dot, title, dateTime, message);
         return eventBox;
+    }
+
+    @FXML
+    private void refreshEvents() {
+        System.out.println("Refreshing events...");
     }
 }

@@ -2,7 +2,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import org.chainoptim.desktop.core.overview.controller.Timeline?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.core.overview.controller.OverviewController"
@@ -29,9 +28,7 @@
                 </ScrollPane>
             </VBox>
 
-            <ScrollPane minHeight="90">
-                <Timeline fx:id="timeline"/>
-            </ScrollPane>
+            <StackPane fx:id="timelineContainer"/>
         </VBox>
 
         <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>

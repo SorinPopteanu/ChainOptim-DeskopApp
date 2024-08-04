@@ -3,6 +3,7 @@ package org.chainoptim.desktop.shared.util.resourceloader;
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.map.MapController;
+import org.chainoptim.desktop.core.overview.controller.TimelineController;
 import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.shared.common.uielements.select.*;
 import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
@@ -193,6 +194,21 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
         try {
             Node mapView = loader.load();
             mapContainer.getChildren().add(mapView);
+            return loader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public TimelineController loadTimeline(StackPane timelineContainer) {
+        FXMLLoader loader = fxmlLoaderService.setUpLoader(
+                "/org/chainoptim/desktop/core/overview/TimelineView.fxml",
+                controllerFactory::createController
+        );
+        try {
+            Node timelineView = loader.load();
+            timelineContainer.getChildren().add(timelineView);
             return loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
