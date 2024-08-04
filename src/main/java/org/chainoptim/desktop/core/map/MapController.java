@@ -47,17 +47,24 @@ public class MapController implements DataReceiver<SupplyChainMap> {
 
     private void initializeWebView() {
         webView = new WebView();
-        webView.getEngine().loadContent(Objects.requireNonNull(getClass().getResource("/html/supplychainmap.html")).toExternalForm());
+        webView.getEngine().load(Objects.requireNonNull(getClass().getResource("/html/supplychainmap.html")).toExternalForm());
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
                 JSObject jsObject = (JSObject) webView.getEngine().executeScript("window");
                 javaConnector = new JavaConnector();
                 jsObject.setMember("javaConnector", javaConnector);
+
+                try {
+                    Object result = webView.getEngine().executeScript("typeof window.renderFactoryGraph");
+                    System.out.println("SupplyChainMap renderFactoryGraph available: " + result);
+                } catch (Exception e) {
+                    System.err.println("Failed to evaluate script: " + e.getMessage());
+                }
             }
         });
     }
 
-    private void displayMap() {
+    public void displayMap() {
         if (webView.getEngine().getLoadWorker().getState() == Worker.State.SUCCEEDED) {
             renderMap();
         }
@@ -74,7 +81,7 @@ public class MapController implements DataReceiver<SupplyChainMap> {
     public void renderMap() {
         String escapedJsonString = prepareJsonString(supplyChainMap);
 
-        String script = "window.renderFactoryGraph('" + escapedJsonString + "');";
+        String script = "window.renderMap('" + escapedJsonString + "');";
         try {
             webView.getEngine().executeScript(script);
         } catch (Exception e) {

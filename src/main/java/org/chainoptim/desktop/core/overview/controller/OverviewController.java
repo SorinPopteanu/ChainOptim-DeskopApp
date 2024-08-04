@@ -221,7 +221,7 @@ public class OverviewController implements Initializable {
         mapController = commonViewsLoader.loadSupplyChainMap(mapContainer);
         mapController.setData(map);
         renderMapButton.setOnAction(event -> {
-            mapController.renderMap();
+            mapController.displayMap();
         });
     }
 
