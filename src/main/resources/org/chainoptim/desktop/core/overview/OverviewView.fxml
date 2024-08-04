@@ -2,10 +2,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import org.chainoptim.desktop.core.overview.controller.Timeline?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.overview.controller.OverviewController"
-            styleClass="overview-container">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.core.overview.controller.OverviewController"
+      styleClass="overview-container">
 
     <VBox fx:id="headerContainer">
         <Label fx:id="titleLabel" text="Overview" styleClass="overview-page-title"/>
@@ -14,11 +15,11 @@
     <StackPane fx:id="contentStackPane" style="-fx-padding: 20px 0px;">
 
         <VBox fx:id="contentContainer" spacing="40">
-            <HBox fx:id="entityCountsHBox">
+            <HBox fx:id="entityCountsHBox" visible="false" managed="false">
                 <!-- Counts of organization entities -->
             </HBox>
 
-            <VBox styleClass="notifications-box">
+            <VBox styleClass="notifications-box" visible="false" managed="false">
                 <HBox styleClass="notifications-box-label-container">
                     <Label fx:id="notificationsLabel" styleClass="notifications-box-label"/>
                 </HBox>
@@ -27,6 +28,10 @@
                     <VBox fx:id="notificationsVBox"/>
                 </ScrollPane>
             </VBox>
+
+            <ScrollPane minHeight="90">
+                <Timeline fx:id="timeline"/>
+            </ScrollPane>
         </VBox>
 
         <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>

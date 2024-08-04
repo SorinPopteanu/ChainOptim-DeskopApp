@@ -1,10 +1,8 @@
 import { GraphUIConfig } from "../config/GraphUIConfig";
-import { FactoryGraph, GenericGraph } from "../types/dataTypes";
-import { FactoryGraphUI, GenericGraphUI } from "../types/uiTypes";
+import { GenericGraph } from "../types/dataTypes";
+import { GenericGraphUI } from "../types/uiTypes";
 
 export class GraphPreprocessor {
-    constructor() {}
-
     
     public preprocessGraph = (genericGraph: GenericGraph): GenericGraphUI => {
         const startingNodeIds = this.findStartingNodes(genericGraph);

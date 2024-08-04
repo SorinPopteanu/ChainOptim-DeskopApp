@@ -84,7 +84,7 @@ public class OverviewController implements Initializable {
     @FXML
     private Button renderMapButton;
     @FXML
-    private StackPane mapContainer;
+    private Timeline timeline;
 
     @Inject
     public OverviewController(SupplyChainSnapshotService supplyChainSnapshotService,
@@ -106,6 +106,8 @@ public class OverviewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
+
+        timeline.initialize(new ArrayList<>());
         setUpListeners();
         initializeUI();
     }

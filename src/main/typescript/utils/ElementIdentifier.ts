@@ -1,5 +1,4 @@
 export class ElementIdentifier {
-    constructor() {}
 
     // Nodes
     encodeStageNodeId(stageNodeId: number | string) {
