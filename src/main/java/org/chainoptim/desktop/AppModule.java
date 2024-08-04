@@ -20,6 +20,8 @@ import org.chainoptim.desktop.core.organization.service.OrganizationService;
 import org.chainoptim.desktop.core.organization.service.OrganizationServiceImpl;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotService;
 import org.chainoptim.desktop.core.overview.service.SupplyChainSnapshotServiceImpl;
+import org.chainoptim.desktop.core.overview.service.UpcomingEventService;
+import org.chainoptim.desktop.core.overview.service.UpcomingEventServiceImpl;
 import org.chainoptim.desktop.core.settings.service.UserSettingsService;
 import org.chainoptim.desktop.core.settings.service.UserSettingsServiceImpl;
 import org.chainoptim.desktop.core.user.service.*;
@@ -124,6 +126,7 @@ public class AppModule extends AbstractModule {
 
         // - Overview
         bind(SupplyChainSnapshotService.class).to(SupplyChainSnapshotServiceImpl.class);
+        bind(UpcomingEventService.class).to(UpcomingEventServiceImpl.class);
 
         // - Map
         bind(SupplyChainMapService.class).to(SupplyChainMapServiceImpl.class);

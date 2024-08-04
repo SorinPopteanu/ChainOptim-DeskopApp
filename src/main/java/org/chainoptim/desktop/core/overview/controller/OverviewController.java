@@ -47,6 +47,9 @@ public class OverviewController implements Initializable {
     private final NavigationService navigationService;
     private final CommonViewsLoader commonViewsLoader;
 
+    // Controllers
+    private TimelineController timelineController;
+
     // State
     private final SearchParams searchParams;
     private final FallbackManager fallbackManager;
@@ -97,7 +100,7 @@ public class OverviewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
-        TimelineController timelineController = commonViewsLoader.loadTimeline(timelineContainer);
+        timelineController = commonViewsLoader.loadTimeline(timelineContainer);
 
         setUpListeners();
         initializeUI();
@@ -113,7 +116,10 @@ public class OverviewController implements Initializable {
         });
 
         // Listen to current user changes
-        TenantContext.currentUserProperty().addListener((observable, oldValue, newValue) -> loadData(newValue));
+        TenantContext.currentUserProperty().addListener((observable, oldValue, newValue) -> {
+            loadData(newValue);
+            timelineController.initializeTimeline();
+        });
     }
 
     private void initializeUI() {
