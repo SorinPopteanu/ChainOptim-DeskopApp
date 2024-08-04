@@ -9,12 +9,11 @@ import org.chainoptim.desktop.features.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supplier.model.SupplierShipment;
 import org.chainoptim.desktop.features.supplier.service.SupplierShipmentsService;
 import org.chainoptim.desktop.features.supplier.service.SupplierShipmentsWriteService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
-import org.chainoptim.desktop.shared.enums.ShipmentStatus;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.model.Location;
@@ -48,7 +47,6 @@ import javafx.scene.layout.StackPane;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -516,7 +514,7 @@ public class SupplierShipmentsController implements DataReceiver<SearchData<Supp
     private void openConfirmDeleteDialog(List<Integer> selectedRowsIndices) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
                 "Confirm Supplier Shipments Delete",
-                "Are you sure you want to delete selected shipments?",
+                "Are you sure you want to delete selected shipments? This action cannot be undone.",
                 null);
         List<SupplierShipment> selectedShipments = new ArrayList<>();
         for (Integer index : selectedRowsIndices) {

@@ -38,9 +38,9 @@
         <!-- Fallback and Confirm Dialogs -->
         <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
 
-        <StackPane fx:id="confirmUpdateDialogContainer" style="-fx-padding: 64px;"/>
-        <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
-        <StackPane fx:id="confirmCreateDialogContainer" style="-fx-padding: 64px;"/>
+        <StackPane fx:id="confirmUpdateDialogContainer" styleClass="dialog-outside-padding"/>
+        <StackPane fx:id="confirmDeleteDialogContainer" styleClass="dialog-outside-padding"/>
+        <StackPane fx:id="confirmCreateDialogContainer" styleClass="dialog-outside-padding"/>
     </StackPane>
 
 </VBox>

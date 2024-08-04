@@ -35,6 +35,6 @@
 
         <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
 
-        <StackPane fx:id="confirmDeleteDialogContainer" style="-fx-padding: 64px;"/>
+        <StackPane fx:id="confirmDeleteDialogContainer" styleClass="dialog-outside-padding"/>
     </StackPane>
 </VBox>

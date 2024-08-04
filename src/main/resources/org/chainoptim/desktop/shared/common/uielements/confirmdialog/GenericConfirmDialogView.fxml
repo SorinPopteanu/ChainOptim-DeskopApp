@@ -7,8 +7,8 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController"
-      prefHeight="400.0" prefWidth="400.0" styleClass="generic-dialog">
+      fx:controller="org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController"
+      styleClass="generic-dialog">
 
     <Label fx:id="titleLabel" styleClass="dialog-title"/>
 
@@ -17,9 +17,7 @@
             <!-- Message -->
         </TextFlow>
 
-        <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">
-            <StackPane fx:id="extraStackPane" style="-fx-padding: 10; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-        </ScrollPane>
+        <StackPane fx:id="extraStackPane" styleClass="dialog-extra-pane"/>
     </VBox>
 
     <Pane VBox.vgrow="ALWAYS" />

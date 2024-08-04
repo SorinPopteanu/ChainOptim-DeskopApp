@@ -22,7 +22,7 @@ export class NodeRenderer {
         const { stageWidth, stageHeight, stageBoxWidth, stageBoxHeight, subnodeRadius } = GraphUIConfig.node;
 
         // Render main stage box
-        const { x: stageBoxX, y: stageBoxY } = this.renderMainNode(nodeUI, stageNodeId, centerX, centerY, stageBoxWidth, stageBoxHeight);
+        const { x, y: stageBoxY } = this.renderMainNode(nodeUI, stageNodeId, centerX, centerY, stageBoxWidth, stageBoxHeight);
 
         // Add stage input and output subnodes
         this.renderStageInputs(nodeUI, stageNodeId, centerX, centerY, stageWidth, stageHeight, subnodeRadius, stageBoxY);

@@ -6,9 +6,9 @@ import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.features.warehouse.model.Warehouse;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
 import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
@@ -201,7 +201,7 @@ public class WarehouseController implements Initializable {
     private void openConfirmDeleteDialog(Warehouse warehouse) {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
                 "Confirm Warehouse Delete",
-                "Are you sure you want to delete this warehouse?",
+                "Are you sure you want to delete this warehouse? This action cannot be undone.",
                 null);
         confirmWarehouseDeleteController.setData(warehouse, confirmDialogInput);
         toggleDialogVisibility(confirmDeleteDialogContainer, true);

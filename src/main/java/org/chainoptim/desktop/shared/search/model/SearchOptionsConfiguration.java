@@ -150,13 +150,27 @@ public class SearchOptionsConfiguration {
             )
     );
 
+    private static final SearchOptions UPCOMING_EVENT_OPTIONS = new SearchOptions(
+            List.of(
+                    new FilterOption(
+                            new UIItem("Date Time End", "dateTimeEnd"),
+                            new ArrayList<>(),
+                            FilterType.DATE
+                    )
+            ),
+            Map.of(
+                    "dateTime", "dateTime"
+            )
+    );
+
     private static final Map<Feature, SearchOptions> SEARCH_OPTIONS_MAP = Map.of(
             Feature.SUPPLIER_ORDER, SUPPLIER_ORDER_OPTIONS,
             Feature.SUPPLIER_SHIPMENT, SUPPLIER_SHIPMENT_OPTIONS,
             Feature.FACTORY_INVENTORY, FACTORY_INVENTORY_OPTIONS,
             Feature.WAREHOUSE_INVENTORY, WAREHOUSE_INVENTORY_OPTIONS,
             Feature.CLIENT_ORDER, CLIENT_ORDER_OPTIONS,
-            Feature.CLIENT_SHIPMENT, CLIENT_SHIPMENT_OPTIONS
+            Feature.CLIENT_SHIPMENT, CLIENT_SHIPMENT_OPTIONS,
+            Feature.UPCOMING_EVENT, UPCOMING_EVENT_OPTIONS
     );
 
     public static SearchOptions getSearchOptions(Feature feature) {

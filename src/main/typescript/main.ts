@@ -1,8 +1,11 @@
 import { FactoryProductionGraph, GenericGraph, ProductProductionGraph } from "./types/dataTypes";
 import { GraphRenderer } from "./rendering/GraphRenderer";
 import { transformFactoryToGenericGraph, transformProductToGenericGraph } from "./utils/utils";
+import { SupplyChainMap } from "./maps/types/dataTypes";
+import { MapRenderer } from "./maps/rendering/MapRenderer";
 export {};
 
+// Production Graphs
 let factoryGraphRenderer: GraphRenderer | null = null;
 let productGraphRenderer: GraphRenderer | null = null;
 
@@ -36,5 +39,17 @@ function renderProductGraph(jsonData: string) {
     productGraphRenderer.renderGraph(genericGraph);
 }
 
+// Maps
+let mapRenderer: MapRenderer | null = null;
+function renderMap(jsonData: string) {
+    const data: SupplyChainMap = JSON.parse(jsonData);
+
+    mapRenderer = mapRenderer ?? new MapRenderer();
+    mapRenderer.renderMap(data.mapData);
+}
+
+
+// Bind functions to window for JavaFX access
 window.renderProductGraph = renderProductGraph;
 window.renderFactoryGraph = renderFactoryGraph;
+window.renderMap = renderMap;

@@ -1,4 +1,4 @@
-import { FactoryEdge, FactoryInventoryItem, ResourceAllocation, FactoryStageNode, GenericNode, GenericEdge } from "./dataTypes";
+import { FactoryEdge, FactoryStageNode, GenericNode, GenericEdge } from "./dataTypes";
 
 export interface GenericGraphUI {
     nodes: Record<number, GenericNodeUI>;

@@ -3,9 +3,9 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.overview.controller.OverviewController"
-            styleClass="overview-container">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.core.overview.controller.OverviewController"
+      styleClass="overview-container">
 
     <VBox fx:id="headerContainer">
         <Label fx:id="titleLabel" text="Overview" styleClass="overview-page-title"/>
@@ -27,6 +27,8 @@
                     <VBox fx:id="notificationsVBox"/>
                 </ScrollPane>
             </VBox>
+
+            <StackPane fx:id="timelineContainer"/>
         </VBox>
 
         <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>

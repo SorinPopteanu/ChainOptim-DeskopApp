@@ -1,13 +1,11 @@
 package org.chainoptim.desktop.core.settings.controller;
 
-import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.SceneManager;
 import org.chainoptim.desktop.core.settings.model.UserSettings;
 import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
-import org.chainoptim.desktop.shared.enums.InfoLevel;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 import com.google.inject.Inject;

@@ -1,6 +1,5 @@
 package org.chainoptim.desktop.core.overview.controller;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
 import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
@@ -18,7 +17,6 @@ import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.search.model.PaginatedResults;
 import org.chainoptim.desktop.shared.search.model.SearchParams;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.geometry.Pos;
@@ -27,7 +25,6 @@ import javafx.scene.image.Image;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -50,8 +47,11 @@ public class OverviewController implements Initializable {
     private final NavigationService navigationService;
     private final CommonViewsLoader commonViewsLoader;
 
+    // Controllers
+    private TimelineController timelineController;
+
     // State
-    private SearchParams searchParams;
+    private final SearchParams searchParams;
     private final FallbackManager fallbackManager;
     private Snapshot snapshot;
     private final SupplyChainSnapshotContext snapshotContext;
@@ -59,10 +59,6 @@ public class OverviewController implements Initializable {
     private int lastPage = 1;
     private boolean clearNotifications = true;
     private Button currentLoadMoreButton;
-    private final Map<String, String> sortOptions = Map.of(
-            "createdAt", "Created At",
-            "updatedAt", "Updated At"
-    );
 
     // FXML
     @FXML
@@ -81,9 +77,8 @@ public class OverviewController implements Initializable {
     private Label notificationsLabel;
     @FXML
     private VBox notificationsVBox;
-
-    // Icons
-    private Image alertImage;
+    @FXML
+    private StackPane timelineContainer;
 
     @Inject
     public OverviewController(SupplyChainSnapshotService supplyChainSnapshotService,
@@ -105,6 +100,8 @@ public class OverviewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         commonViewsLoader.loadFallbackManager(fallbackContainer);
+        timelineController = commonViewsLoader.loadTimeline(timelineContainer);
+
         setUpListeners();
         initializeUI();
     }
@@ -119,7 +116,10 @@ public class OverviewController implements Initializable {
         });
 
         // Listen to current user changes
-        TenantContext.currentUserProperty().addListener((observable, oldValue, newValue) -> loadData(newValue));
+        TenantContext.currentUserProperty().addListener((observable, oldValue, newValue) -> {
+            loadData(newValue);
+            timelineController.initializeTimeline();
+        });
     }
 
     private void initializeUI() {

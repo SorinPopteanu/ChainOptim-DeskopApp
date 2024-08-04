@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.shared.confirmdialog.model;
+package org.chainoptim.desktop.shared.common.uielements.confirmdialog.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

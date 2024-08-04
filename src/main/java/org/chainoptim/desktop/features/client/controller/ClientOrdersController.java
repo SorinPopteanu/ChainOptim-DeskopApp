@@ -9,9 +9,9 @@ import org.chainoptim.desktop.features.client.model.Client;
 import org.chainoptim.desktop.features.client.model.ClientOrder;
 import org.chainoptim.desktop.features.client.service.ClientOrdersService;
 import org.chainoptim.desktop.features.client.service.ClientOrdersWriteService;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.OrderStatus;
@@ -467,7 +467,7 @@ public class ClientOrdersController implements DataReceiver<SearchData<Client>> 
     private void openConfirmCreateDialog() {
         ConfirmDialogInput confirmDialogInput = new ConfirmDialogInput(
                 "Confirm Client Orders Create",
-                "Are you sure you want to create new orders?",
+                "Are you sure you want to create new orders? This action cannot be undone.",
                 null);
         List<ClientOrder> selectedOrders = new ArrayList<>();
         for (Integer index : selectedRowsIndices) {

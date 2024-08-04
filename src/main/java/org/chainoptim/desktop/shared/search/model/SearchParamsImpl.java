@@ -59,6 +59,9 @@ public class SearchParamsImpl implements SearchParams {
     public Integer getItemsPerPage() {
         return itemsPerPage.get();
     }
+    public Map<String, String> getFilters() {
+        return new HashMap<>(filters);
+    }
 
     public void setSearchQuery(String searchQuery) {
         this.page.set(1);
@@ -68,6 +71,12 @@ public class SearchParamsImpl implements SearchParams {
         this.page.set(1);
         this.filters.clear();
         this.filters.putAll(filters);
+    }
+    public void updateFilter(String key, String value) {
+        this.filters.put(key, value);
+    }
+    public void removeFilter(String key) {
+        this.filters.remove(key);
     }
     public void setSortOption(String sortOption) {
         this.page.set(1);

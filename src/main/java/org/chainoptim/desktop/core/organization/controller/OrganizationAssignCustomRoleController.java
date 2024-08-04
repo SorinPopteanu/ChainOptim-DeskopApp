@@ -3,7 +3,7 @@ package org.chainoptim.desktop.core.organization.controller;
 import org.chainoptim.desktop.core.organization.model.CustomRole;
 import org.chainoptim.desktop.core.organization.model.FeaturePermissions;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import javafx.event.ActionEvent;

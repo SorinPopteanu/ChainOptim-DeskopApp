@@ -4,6 +4,7 @@ import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.warehouse.model.WarehouseInventoryItem;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
+import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;
 import org.chainoptim.desktop.shared.httphandling.Result;
@@ -84,7 +85,7 @@ class WarehouseInventoryItemServiceTest {
         when(mockCachingService.get(cacheKey)).thenReturn(cachedResults);
 
         // Act
-        CompletableFuture<Result<PaginatedResults<WarehouseInventoryItem>>> resultFuture = warehouseInventoryItemService.getWarehouseInventoryItemsByWarehouseIdAdvanced(clientId, searchParams);
+        CompletableFuture<Result<PaginatedResults<WarehouseInventoryItem>>> resultFuture = warehouseInventoryItemService.getWarehouseInventoryItemsByWarehouseIdAdvanced(clientId, searchParams, SearchMode.SECONDARY);
 
         // Assert
         verify(mockCachingService).get(cacheKey);
@@ -112,7 +113,7 @@ class WarehouseInventoryItemServiceTest {
         when(mockTokenManager.getToken()).thenReturn(fakeToken);
 
         // Act
-        CompletableFuture<Result<PaginatedResults<WarehouseInventoryItem>>> resultFuture = warehouseInventoryItemService.getWarehouseInventoryItemsByWarehouseIdAdvanced(clientId, searchParams);
+        CompletableFuture<Result<PaginatedResults<WarehouseInventoryItem>>> resultFuture = warehouseInventoryItemService.getWarehouseInventoryItemsByWarehouseIdAdvanced(clientId, searchParams, SearchMode.SECONDARY);
 
         // Assert
         verify(mockRequestHandler).sendRequest(eq(fakeRequest), ArgumentMatchers.<TypeReference<PaginatedResults<WarehouseInventoryItem>>>any(), any());

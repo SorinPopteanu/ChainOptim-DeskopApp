@@ -1,9 +1,7 @@
 package org.chainoptim.desktop.core.organization.controller;
 
-import org.chainoptim.desktop.core.organization.model.CustomRole;
-import org.chainoptim.desktop.core.organization.model.FeaturePermissions;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.shared.confirmdialog.controller.GenericConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogActionListener;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,10 +14,7 @@ import javafx.scene.text.TextFlow;
 import javafx.util.Pair;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.Objects;
-
-import static org.chainoptim.desktop.core.user.model.User.Role.ADMIN;
 
 public class OrganizationAssignBasicRoleController implements DataReceiver<User> {
 

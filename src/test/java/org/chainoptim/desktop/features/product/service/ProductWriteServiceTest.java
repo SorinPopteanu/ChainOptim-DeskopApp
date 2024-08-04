@@ -116,7 +116,7 @@ class ProductWriteServiceTest {
         when(tokenManager.getToken()).thenReturn(fakeToken);
 
         // Act
-        CompletableFuture<Result<Void>> resultFuture = productWriteService.deleteProduct(productId);
+        CompletableFuture<Result<Integer>> resultFuture = productWriteService.deleteProduct(productId);
 
         // Assert
         verify(requestBuilder).buildWriteRequest(HttpMethod.DELETE, "http://localhost:8080/api/v1/products/delete/" + productId, fakeToken, null);
