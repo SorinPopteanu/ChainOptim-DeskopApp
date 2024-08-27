@@ -138,6 +138,12 @@ public class TimelineController {
     private void renderTimeline() {
         titleLabel.setText("Upcoming Events (" + events.size() + ")");
         eventsHBox.getChildren().clear();
+        if (events.isEmpty()) {
+            Label noEventsLabel = new Label("No upcoming events");
+            noEventsLabel.getStyleClass().add("general-label-large");
+            eventsHBox.getChildren().add(noEventsLabel);
+            return;
+        }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");
 

@@ -111,7 +111,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
     public SelectOrCreateLocationController loadSelectOrCreateLocation(StackPane selectOrCreateLocationContainer) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/Select/SelectOrCreateLocationView.fxml",
+                "/org/chainoptim/desktop/shared/common/uielements/select/SelectOrCreateLocationView.fxml",
                 controllerFactory::createController
         );
         try {
@@ -126,7 +126,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
     public SelectOrCreateUnitOfMeasurementController loadSelectOrCreateUnitOfMeasurement(StackPane unitOfMeasurementContainer) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/Select/SelectOrCreateUnitOfMeasurementView.fxml",
+                "/org/chainoptim/desktop/shared/common/uielements/select/SelectOrCreateUnitOfMeasurementView.fxml",
                 controllerFactory::createController
         );
         try {
@@ -141,7 +141,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
     public SelectDurationController loadSelectDurationView(StackPane durationInputContainer) {
         FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/Select/SelectDurationView.fxml",
+                "/org/chainoptim/desktop/shared/common/uielements/select/SelectDurationView.fxml",
                 controllerFactory::createController
         );
         try {
@@ -157,7 +157,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
     public SelectStageController loadSelectStageView(StackPane selectStageContainer) {
         // Initialize time selection input view
         FXMLLoader selectStageLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/Select/SelectStageView.fxml",
+                "/org/chainoptim/desktop/shared/common/uielements/select/SelectStageView.fxml",
                 controllerFactory::createController
         );
         try {
@@ -173,7 +173,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
     public SelectFactoryController loadSelectFactoryView(StackPane selectFactoryContainer) {
         // Initialize time selection input view
         FXMLLoader selectFactoryLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/Select/SelectFactoryView.fxml",
+                "/org/chainoptim/desktop/shared/common/uielements/select/SelectFactoryView.fxml",
                 MainApplication.injector::getInstance
         );
         try {

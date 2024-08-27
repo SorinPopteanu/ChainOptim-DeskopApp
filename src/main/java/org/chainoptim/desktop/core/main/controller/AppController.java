@@ -24,7 +24,6 @@ import org.chainoptim.desktop.shared.httphandling.Result;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.function.Consumer;
-import static org.chainoptim.desktop.core.organization.model.Organization.SubscriptionPlanTier.PRO;
 
 /**
  * Root controller managing the currently displayed main content
@@ -103,7 +102,7 @@ public class AppController {
 
             User user = result.getData();
 
-            user.getOrganization().setSubscriptionPlanTier(PRO);
+            user.getOrganization().setSubscriptionPlanTier(result.getData().getOrganization().getSubscriptionPlanTier());
 
             // Set user to TenantContext for reuse throughout the app
             TenantContext.setCurrentUser(user);

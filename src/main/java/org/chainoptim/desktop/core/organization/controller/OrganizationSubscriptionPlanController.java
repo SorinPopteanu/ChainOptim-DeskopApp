@@ -1,10 +1,7 @@
 package org.chainoptim.desktop.core.organization.controller;
 
 import org.chainoptim.desktop.core.context.SupplyChainSnapshotContext;
-import org.chainoptim.desktop.core.organization.model.Organization;
-import org.chainoptim.desktop.core.organization.model.OrganizationViewData;
-import org.chainoptim.desktop.core.organization.model.PlanDetails;
-import org.chainoptim.desktop.core.organization.model.SubscriptionPlans;
+import org.chainoptim.desktop.core.organization.model.*;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 
 import com.google.inject.Inject;
@@ -31,8 +28,8 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
     private OrganizationViewData organizationViewData;
     private final SupplyChainSnapshotContext snapshotContext;
     private PlanDetails planDetails;
-    private Organization.SubscriptionPlanTier currentPlan;
-    private Organization.SubscriptionPlanTier currentPreviewedPlan;
+    private SubscriptionPlanTier currentPlan;
+    private SubscriptionPlanTier currentPreviewedPlan;
 
     // FXML
     @FXML
@@ -194,7 +191,7 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
         contextMenu.getItems().add(new SeparatorMenuItem());
 
         // List of plans
-        for (Organization.SubscriptionPlanTier plan : Organization.SubscriptionPlanTier.values()) {
+        for (SubscriptionPlanTier plan : SubscriptionPlanTier.values()) {
             MenuItem planItem = new MenuItem(plan.toString());
             if (plan == currentPlan) {
                 planItem.getStyleClass().add("general-label");
@@ -206,7 +203,7 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
         return contextMenu;
     }
 
-    private void handlePreviewPlan(Organization.SubscriptionPlanTier plan) {
+    private void handlePreviewPlan(SubscriptionPlanTier plan) {
         toggleButtonsVisibility(true);
 
         previewPlan(plan);
@@ -220,10 +217,10 @@ public class OrganizationSubscriptionPlanController implements DataReceiver<Orga
         previewPlan(currentPlan);
     }
 
-    private void previewPlan(Organization.SubscriptionPlanTier plan) {
+    private void previewPlan(SubscriptionPlanTier plan) {
         if (currentPreviewedPlan == plan) return;
         currentPreviewedPlan = plan;
-        planDetails = SubscriptionPlans.getPlans().get(plan);
+        planDetails = BaseSubscriptionPlans.getPlans().get(plan);
         // Rerender UI
         tabTitle.setText("Subscription Plan: " + plan.toString());
         renderGridPane();

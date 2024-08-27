@@ -99,8 +99,11 @@ public class ProductPricingController implements DataReceiver<Product> {
     }
 
     private float calculatePrice(float quantity) {
-        TreeMap<Float, Float> pricePerVolume = this.pricing.getProductPricing().getPricePerVolume();
-        if (pricePerVolume == null || pricePerVolume.isEmpty()) {
+        TreeMap<Float, Float> pricePerVolume = new TreeMap<>();
+        if (this.pricing.getProductPricing().getPricePerVolume() != null) {
+            pricePerVolume.putAll(this.pricing.getProductPricing().getPricePerVolume());
+        }
+        if (pricePerVolume.isEmpty()) {
             return quantity * this.pricing.getProductPricing().getPricePerUnit();
         }
 
@@ -120,6 +123,10 @@ public class ProductPricingController implements DataReceiver<Product> {
 
         float previousQuantity = 0;
         int rowIndex = 0;
+
+        if (this.pricing.getProductPricing().getPricePerVolume() == null) {
+            return;
+        }
 
         for (Map.Entry<Float, Float> entry : this.pricing.getProductPricing().getPricePerVolume().entrySet()) {
             String rangeLabelContent;

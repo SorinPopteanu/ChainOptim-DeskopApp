@@ -18,18 +18,7 @@ public class Organization {
 
     private Set<User> users;
 
-    public enum SubscriptionPlanTier {
-        NONE,
-        BASIC,
-        PRO;
-
-        @Override
-        public String toString() {
-            return name().charAt(0) + name().substring(1).toLowerCase();
-        }
-    }
-
     public PlanDetails getSubscriptionPlan() {
-        return SubscriptionPlans.getPlans().get(subscriptionPlanTier);
+        return BaseSubscriptionPlans.getPlans().get(subscriptionPlanTier);
     }
 }

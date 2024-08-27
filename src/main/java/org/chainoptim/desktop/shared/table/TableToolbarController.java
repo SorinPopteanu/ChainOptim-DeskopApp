@@ -118,7 +118,7 @@ public class TableToolbarController {
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(-0.84);
         titleIconView.setEffect(colorAdjust);
-        title.setGraphic(titleIconView);
+//        title.setGraphic(titleIconView);
         title.setContentDisplay(ContentDisplay.LEFT);
     }
 

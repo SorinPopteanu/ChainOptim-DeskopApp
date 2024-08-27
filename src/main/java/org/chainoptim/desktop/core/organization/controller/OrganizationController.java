@@ -13,7 +13,6 @@ import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
-import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -29,9 +28,7 @@ import javafx.scene.layout.StackPane;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
-import static org.chainoptim.desktop.core.organization.model.Organization.SubscriptionPlanTier.PRO;
 
 public class OrganizationController implements Initializable {
 
@@ -166,7 +163,7 @@ public class OrganizationController implements Initializable {
             }
             organizationViewData.setOrganization(result.getData());
 
-            organizationViewData.getOrganization().setSubscriptionPlanTier(PRO);
+            organizationViewData.getOrganization().setSubscriptionPlanTier(result.getData().getSubscriptionPlanTier());
 
             initializeUI();
 
