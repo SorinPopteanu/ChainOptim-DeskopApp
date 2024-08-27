@@ -538,7 +538,7 @@ public class SupplierOrdersController implements DataReceiver<SearchData<Supplie
         }
         createSupplierOrderDTO.setOrganizationId(supplier.getOrganizationId());
         createSupplierOrderDTO.setSupplierId(supplier.getId());
-        createSupplierOrderDTO.setComponentId(order.getComponent().getId());
+        createSupplierOrderDTO.setComponentId(order.getComponent() != null ? order.getComponent().getId() : null);
         createSupplierOrderDTO.setQuantity(order.getQuantity());
         createSupplierOrderDTO.setDeliveredQuantity(order.getDeliveredQuantity());
         createSupplierOrderDTO.setOrderDate(order.getOrderDate());

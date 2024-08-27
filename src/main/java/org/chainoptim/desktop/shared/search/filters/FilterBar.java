@@ -47,7 +47,7 @@ public class FilterBar extends HBox {
 
     private void setUpKeyComboBox() {
         keyComboBox.setPromptText("Filter by...");
-        keyComboBox.getStyleClass().setAll("custom-combo-box");
+        keyComboBox.getStyleClass().add("custom-combo-box");
         keyComboBox.getItems().addAll(filterOptions.stream().map(FilterOption::getKey).toList());
 
         keyComboBox.valueProperty().addListener((observable, oldValue, newValue) ->

@@ -46,6 +46,7 @@ public class UpcomingEventServiceImpl implements UpcomingEventService {
         String cacheKey = CacheKeyBuilder.buildAdvancedSearchKey(
                 "upcoming-events", "organization", organizationId.toString(), searchParams);
         String routeAddress = rootAddress + cacheKey;
+        System.out.println("Route address: " + routeAddress);
 
         HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
