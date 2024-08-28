@@ -3,7 +3,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.user.controller.UsersListByCustomRoleController">
+            fx:controller="org.chainoptim.desktop.core.tenant.user.controller.UsersListByCustomRoleController">
 
     <VBox fx:id="usersVBox"/>
 </AnchorPane>

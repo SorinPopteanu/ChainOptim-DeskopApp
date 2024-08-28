@@ -6,7 +6,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.organization.controller.OrganizationSubscriptionPlanController"
+      fx:controller="org.chainoptim.desktop.core.tenant.organization.controller.OrganizationSubscriptionPlanController"
       spacing="10">
 
     <HBox styleClass="tab-title-container" spacing="10" alignment="CENTER">

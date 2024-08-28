@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.organization.controller.OrganizationAssignCustomRoleController"
+      fx:controller="org.chainoptim.desktop.core.tenant.customrole.controller.OrganizationAssignCustomRoleController"
       prefHeight="480.0" prefWidth="480.0" styleClass="generic-dialog">
 
     <Label fx:id="titleLabel" styleClass="dialog-title"/>

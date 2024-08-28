@@ -5,7 +5,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="main-container"
-      fx:controller="org.chainoptim.desktop.features.productpipeline.controller.StagesController">
+      fx:controller="org.chainoptim.desktop.features.goods.stage.controller.StagesController">
 
     <StackPane fx:id="headerContainer"/>
 

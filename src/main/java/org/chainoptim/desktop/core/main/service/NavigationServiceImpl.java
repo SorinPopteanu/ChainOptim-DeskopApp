@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.core.main.service;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
-import org.chainoptim.desktop.core.abstraction.ThreadRunner;
+import org.chainoptim.desktop.core.main.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.main.abstraction.ThreadRunner;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -13,7 +13,6 @@ import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,45 +56,45 @@ public class NavigationServiceImpl implements NavigationService {
             Map.entry("Update-Organization", "/org/chainoptim/desktop/core/organization/UpdateOrganizationView.fxml"),
             Map.entry("Add-New-Members", "/org/chainoptim/desktop/core/organization/AddNewMembersView.fxml"),
 
-            Map.entry("Products", "/org/chainoptim/desktop/features/product/ProductsView.fxml"),
-            Map.entry("Product", "/org/chainoptim/desktop/features/product/ProductView.fxml"),
-            Map.entry("Create-Product", "/org/chainoptim/desktop/features/product/CreateProductView.fxml"),
-            Map.entry("Update-Product", "/org/chainoptim/desktop/features/product/UpdateProductView.fxml"),
+            Map.entry("Products", "/org/chainoptim/desktop/features/goods/ProductsView.fxml"),
+            Map.entry("Product", "/org/chainoptim/desktop/features/goods/ProductView.fxml"),
+            Map.entry("Create-Product", "/org/chainoptim/desktop/features/goods/CreateProductView.fxml"),
+            Map.entry("Update-Product", "/org/chainoptim/desktop/features/goods/UpdateProductView.fxml"),
             Map.entry("Stages", "/org/chainoptim/desktop/features/productpipeline/StagesView.fxml"),
             Map.entry("Components", "/org/chainoptim/desktop/features/productpipeline/ComponentsView.fxml"),
             Map.entry("Component", "/org/chainoptim/desktop/features/productpipeline/ComponentView.fxml"),
             Map.entry("Create-Component", "/org/chainoptim/desktop/features/productpipeline/CreateComponentView.fxml"),
             Map.entry("Update-Component", "/org/chainoptim/desktop/features/productpipeline/UpdateComponentView.fxml"),
 
-            Map.entry("Factories", "/org/chainoptim/desktop/features/factory/FactoriesView.fxml"),
-            Map.entry("Factory", "/org/chainoptim/desktop/features/factory/FactoryView.fxml"),
-            Map.entry("Create-Factory", "/org/chainoptim/desktop/features/factory/CreateFactoryView.fxml"),
-            Map.entry("Update-Factory", "/org/chainoptim/desktop/features/factory/UpdateFactoryView.fxml"),
-            Map.entry("Factory-Inventory", "/org/chainoptim/desktop/features/factory/FactoryInventoryView.fxml"),
-            Map.entry("Factory-Performances", "/org/chainoptim/desktop/features/factory/FactoryPerformancesView.fxml"),
+            Map.entry("Factories", "/org/chainoptim/desktop/features/production/FactoriesView.fxml"),
+            Map.entry("Factory", "/org/chainoptim/desktop/features/production/FactoryView.fxml"),
+            Map.entry("Create-Factory", "/org/chainoptim/desktop/features/production/CreateFactoryView.fxml"),
+            Map.entry("Update-Factory", "/org/chainoptim/desktop/features/production/UpdateFactoryView.fxml"),
+            Map.entry("Factory-Inventory", "/org/chainoptim/desktop/features/production/FactoryInventoryView.fxml"),
+            Map.entry("Factory-Performances", "/org/chainoptim/desktop/features/production/FactoryPerformancesView.fxml"),
 
-            Map.entry("Warehouses", "/org/chainoptim/desktop/features/warehouse/WarehousesView.fxml"),
-            Map.entry("Warehouse", "/org/chainoptim/desktop/features/warehouse/WarehouseView.fxml"),
-            Map.entry("Create-Warehouse", "/org/chainoptim/desktop/features/warehouse/CreateWarehouseView.fxml"),
-            Map.entry("Update-Warehouse", "/org/chainoptim/desktop/features/warehouse/UpdateWarehouseView.fxml"),
-            Map.entry("Warehouse-Inventory", "/org/chainoptim/desktop/features/warehouse/WarehouseInventoryView.fxml"),
+            Map.entry("Warehouses", "/org/chainoptim/desktop/features/storage/WarehousesView.fxml"),
+            Map.entry("Warehouse", "/org/chainoptim/desktop/features/storage/WarehouseView.fxml"),
+            Map.entry("Create-Warehouse", "/org/chainoptim/desktop/features/storage/CreateWarehouseView.fxml"),
+            Map.entry("Update-Warehouse", "/org/chainoptim/desktop/features/storage/UpdateWarehouseView.fxml"),
+            Map.entry("Warehouse-Inventory", "/org/chainoptim/desktop/features/storage/WarehouseInventoryView.fxml"),
 
-            Map.entry("Suppliers", "/org/chainoptim/desktop/features/supplier/SuppliersView.fxml"),
-            Map.entry("Supplier", "/org/chainoptim/desktop/features/supplier/SupplierView.fxml"),
-            Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supplier/CreateSupplierView.fxml"),
-            Map.entry("Update-Supplier", "/org/chainoptim/desktop/features/supplier/UpdateSupplierView.fxml"),
-            Map.entry("Supplier-Orders", "/org/chainoptim/desktop/features/supplier/SupplierOrdersView.fxml"),
-            Map.entry("Supplier-Shipments", "/org/chainoptim/desktop/features/supplier/SupplierShipmentsView.fxml"),
-            Map.entry("Supplier-Performances", "/org/chainoptim/desktop/features/supplier/SupplierPerformancesView.fxml"),
+            Map.entry("Suppliers", "/org/chainoptim/desktop/features/supply/SuppliersView.fxml"),
+            Map.entry("Supplier", "/org/chainoptim/desktop/features/supply/SupplierView.fxml"),
+            Map.entry("Create-Supplier", "/org/chainoptim/desktop/features/supply/CreateSupplierView.fxml"),
+            Map.entry("Update-Supplier", "/org/chainoptim/desktop/features/supply/UpdateSupplierView.fxml"),
+            Map.entry("Supplier-Orders", "/org/chainoptim/desktop/features/supply/SupplierOrdersView.fxml"),
+            Map.entry("Supplier-Shipments", "/org/chainoptim/desktop/features/supply/SupplierShipmentsView.fxml"),
+            Map.entry("Supplier-Performances", "/org/chainoptim/desktop/features/supply/SupplierPerformancesView.fxml"),
 
-            Map.entry("Clients", "/org/chainoptim/desktop/features/client/ClientsView.fxml"),
-            Map.entry("Client", "/org/chainoptim/desktop/features/client/ClientView.fxml"),
-            Map.entry("Create-Client", "/org/chainoptim/desktop/features/client/CreateClientView.fxml"),
-            Map.entry("Update-Client", "/org/chainoptim/desktop/features/client/UpdateClientView.fxml"),
-            Map.entry("Client-Orders", "/org/chainoptim/desktop/features/client/ClientOrdersView.fxml"),
-            Map.entry("Client-Shipments", "/org/chainoptim/desktop/features/client/ClientShipmentsView.fxml"),
+            Map.entry("Clients", "/org/chainoptim/desktop/features/demand/ClientsView.fxml"),
+            Map.entry("Client", "/org/chainoptim/desktop/features/demand/ClientView.fxml"),
+            Map.entry("Create-Client", "/org/chainoptim/desktop/features/demand/CreateClientView.fxml"),
+            Map.entry("Update-Client", "/org/chainoptim/desktop/features/demand/UpdateClientView.fxml"),
+            Map.entry("Client-Orders", "/org/chainoptim/desktop/features/demand/ClientOrdersView.fxml"),
+            Map.entry("Client-Shipments", "/org/chainoptim/desktop/features/demand/ClientShipmentsView.fxml"),
 
-            Map.entry("Create-Stage", "/org/chainoptim/desktop/features/client/CreateFactoryStageView.fxml"),
+            Map.entry("Create-Stage", "/org/chainoptim/desktop/features/demand/CreateFactoryStageView.fxml"),
 
             Map.entry("Settings", "/org/chainoptim/desktop/core/settings/SettingsView.fxml")
     );

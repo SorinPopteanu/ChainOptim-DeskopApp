@@ -7,7 +7,7 @@
 <?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.settings.controller.SettingsController">
+      fx:controller="org.chainoptim.desktop.core.tenant.settings.controller.SettingsController">
 
     <!-- Header -->
     <VBox AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0">

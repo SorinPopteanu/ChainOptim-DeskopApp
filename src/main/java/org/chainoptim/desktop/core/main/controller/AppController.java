@@ -8,17 +8,17 @@ import javafx.scene.layout.StackPane;
 
 import javafx.fxml.FXML;
 import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.context.TenantSettingsContext;
+import org.chainoptim.desktop.core.main.context.TenantContext;
+import org.chainoptim.desktop.core.main.context.TenantSettingsContext;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.notification.controller.NotificationManager;
-import org.chainoptim.desktop.core.notification.model.Notification;
-import org.chainoptim.desktop.core.notification.service.NotificationWebSocketClient;
-import org.chainoptim.desktop.core.settings.service.UserSettingsService;
-import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.core.user.service.AuthenticationService;
-import org.chainoptim.desktop.core.user.service.UserService;
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.overview.notification.controller.NotificationManager;
+import org.chainoptim.desktop.core.overview.notification.model.Notification;
+import org.chainoptim.desktop.core.overview.notification.service.NotificationWebSocketClient;
+import org.chainoptim.desktop.core.tenant.settings.service.UserSettingsService;
+import org.chainoptim.desktop.core.tenant.user.model.User;
+import org.chainoptim.desktop.core.tenant.user.service.AuthenticationService;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.UserService;
 import org.chainoptim.desktop.shared.httphandling.Result;
 
 import java.net.URI;
@@ -36,6 +36,7 @@ public class AppController {
     private final NavigationService navigationService;
     private final AuthenticationService authenticationService;
     private final UserService userService;
+    private final TokenManager tokenManager;
     private final UserSettingsService userSettingsService;
     private final NotificationManager notificationManager;
 
@@ -52,12 +53,14 @@ public class AppController {
     public AppController(NavigationService navigationService,
                          AuthenticationService authenticationService,
                          UserService userService,
+                         TokenManager tokenManager,
                          UserSettingsService userSettingsService,
                          NotificationManager notificationManager,
                          SidebarController sidebarController) {
         this.navigationService = navigationService;
         this.authenticationService = authenticationService;
         this.userService = userService;
+        this.tokenManager = tokenManager;
         this.userSettingsService = userSettingsService;
         this.notificationManager = notificationManager;
         this.sidebarController = sidebarController;
@@ -72,7 +75,7 @@ public class AppController {
         User currentUser = TenantContext.getCurrentUser();
         if (currentUser != null) return;
 
-        String jwtToken = TokenManager.getToken();
+        String jwtToken = tokenManager.getToken();
         if (jwtToken == null) return;
 
         authenticationService.getUsernameFromJWTToken(jwtToken).ifPresent(this::fetchAndSetUser);

@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.shared.toast.controller.ToastController"
+      fx:controller="org.chainoptim.desktop.shared.common.ui.toast.controller.ToastController"
       styleClass="custom-toast-container" minWidth="360" maxWidth="360" minHeight="100" maxHeight="100">
 
     <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS" spacing="16">

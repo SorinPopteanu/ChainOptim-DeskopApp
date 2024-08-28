@@ -6,7 +6,7 @@
 <?import javafx.scene.control.Label?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.user.controller.PublicUsersSearchAndSelectionController"
+      fx:controller="org.chainoptim.desktop.core.tenant.user.controller.PublicUsersSearchAndSelectionController"
       prefHeight="360.0" prefWidth="240.0" spacing="4">
 
     <Label text="Invite Existing Users" styleClass="general-label"/>

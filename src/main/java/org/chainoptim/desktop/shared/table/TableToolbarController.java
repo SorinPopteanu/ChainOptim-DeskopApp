@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.shared.table;
 
-import org.chainoptim.desktop.core.context.TenantSettingsContext;
-import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
+import org.chainoptim.desktop.core.main.context.TenantSettingsContext;
+import org.chainoptim.desktop.shared.common.ui.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.SearchMode;
 import org.chainoptim.desktop.shared.search.filters.FilterBar;

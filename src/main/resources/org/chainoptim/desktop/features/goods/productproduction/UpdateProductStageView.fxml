@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.goods.product.controller.productproduction.UpdateProductStageController"
+            fitToWidth="true">
+    <VBox styleClass="create-stage-form" spacing="10">
+
+        <HBox styleClass="title-container">
+            <Text text="Update Factory Stage" styleClass="form-title"/>
+        </HBox>
+
+        <Label text="Stage Name *:" styleClass="form-label"/>
+        <TextField fx:id="stageNameField" styleClass="custom-text-field"/>
+
+        <Label text="Stage Description:" styleClass="form-label"/>
+        <TextField fx:id="stageDescriptionField" styleClass="custom-text-field"/>
+
+        <HBox alignment="TOP_RIGHT" style="-fx-padding: 10px 0px;">
+            <Button text="Update Stage" onAction="#handleSubmit" styleClass="standard-write-button"/>
+        </HBox>
+
+        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+    </VBox>
+</ScrollPane>

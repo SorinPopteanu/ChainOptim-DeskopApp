@@ -3,7 +3,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.core.map.MapController">
+            fx:controller="org.chainoptim.desktop.core.overview.map.controller.MapController">
 
     <StackPane fx:id="mapContainer"/>
 </VBox>

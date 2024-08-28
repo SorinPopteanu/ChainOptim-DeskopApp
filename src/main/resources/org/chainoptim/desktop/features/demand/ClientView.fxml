@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.demand.client.controller.ClientController">
+
+    <!-- Header -->
+    <VBox>
+        <HBox alignment="CENTER_LEFT" spacing="60" styleClass="entity-header-container">
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
+                <Label fx:id="clientName" styleClass="entity-page-title"/>
+                <Label fx:id="clientLocation" styleClass="entity-page-description"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox spacing="10">
+                <Button fx:id="deleteButton" styleClass="standard-delete-button"/>
+                <Button text="Edit Client" onAction="#handleEditClient" styleClass="standard-write-button"/>
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <!-- Content -->
+    <StackPane>
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+            <Tab fx:id="overviewTab" text="Overview"/>
+            <Tab fx:id="ordersTab" text="Orders"/>
+            <Tab fx:id="shipmentsTab" text="Shipments"/>
+            <Tab fx:id="evaluationTab" text="Evaluation"/>
+        </TabPane>
+
+        <StackPane fx:id="fallbackContainer" styleClass="page-fallback-container"/>
+
+        <StackPane fx:id="confirmDeleteDialogContainer" styleClass="dialog-outside-padding"/>
+    </StackPane>
+</VBox>

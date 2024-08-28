@@ -6,7 +6,7 @@
 <?import javafx.scene.text.TextFlow?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.notification.controller.NotificationPopupController"
+      fx:controller="org.chainoptim.desktop.core.overview.notification.controller.NotificationPopupController"
       prefHeight="400.0" prefWidth="600.0" spacing="10"
       styleClass="notification-card">
 

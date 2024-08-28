@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.chainoptim.desktop.shared.search.filters.FilterBar?>
 
-<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
+<?import org.chainoptim.desktop.shared.common.ui.info.InfoLabel?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.chainoptim.desktop.shared.table.TableToolbarController" styleClass="table-toolbar">
