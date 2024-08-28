@@ -1,8 +1,9 @@
 package org.chainoptim.desktop.features.demand.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.demand.dto.CreateClientOrderDTO;
-import org.chainoptim.desktop.features.demand.model.ClientOrder;
+import org.chainoptim.desktop.features.demand.clientorder.dto.CreateClientOrderDTO;
+import org.chainoptim.desktop.features.demand.clientorder.model.ClientOrder;
+import org.chainoptim.desktop.features.demand.clientorder.service.ClientOrdersWriteServiceImpl;
 import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;

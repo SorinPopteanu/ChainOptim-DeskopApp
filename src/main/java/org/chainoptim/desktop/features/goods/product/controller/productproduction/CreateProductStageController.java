@@ -7,7 +7,7 @@ import org.chainoptim.desktop.features.goods.product.model.TabsActionListener;
 import org.chainoptim.desktop.features.goods.stage.dto.CreateStageDTO;
 import org.chainoptim.desktop.features.goods.stage.model.Stage;
 import org.chainoptim.desktop.features.goods.stage.service.StageWriteService;
-import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
+import org.chainoptim.desktop.features.goods.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.shared.common.uielements.select.SelectProductController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;

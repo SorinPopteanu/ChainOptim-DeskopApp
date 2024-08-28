@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.production.controller.FactoryController">
+            fx:controller="org.chainoptim.desktop.features.production.factory.controller.FactoryController">
 
     <!-- Header -->
     <VBox>

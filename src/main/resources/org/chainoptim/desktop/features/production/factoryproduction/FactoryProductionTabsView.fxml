@@ -3,7 +3,7 @@
 <?import javafx.scene.control.TabPane?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.production.controller.factoryproduction.FactoryProductionTabsController">
+            fx:controller="org.chainoptim.desktop.features.production.factory.controller.factoryproduction.FactoryProductionTabsController">
 
     <TabPane fx:id="productionTabPane" style="-fx-background-color: white;"
              AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"

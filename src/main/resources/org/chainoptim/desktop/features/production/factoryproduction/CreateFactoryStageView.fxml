@@ -8,7 +8,7 @@
 
 <ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.production.controller.factoryproduction.CreateFactoryStageController"
+            fx:controller="org.chainoptim.desktop.features.production.factory.controller.factoryproduction.CreateFactoryStageController"
             fitToWidth="true">
 
     <VBox styleClass="create-stage-form">

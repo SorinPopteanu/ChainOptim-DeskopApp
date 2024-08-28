@@ -2,8 +2,9 @@ package org.chainoptim.desktop.features.demand.controller;
 
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.features.demand.model.Client;
-import org.chainoptim.desktop.features.demand.service.ClientService;
+import org.chainoptim.desktop.features.demand.client.controller.ClientsController;
+import org.chainoptim.desktop.features.demand.client.model.Client;
+import org.chainoptim.desktop.features.demand.client.service.ClientService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.features.location.model.Location;
 import org.chainoptim.desktop.shared.httphandling.Result;

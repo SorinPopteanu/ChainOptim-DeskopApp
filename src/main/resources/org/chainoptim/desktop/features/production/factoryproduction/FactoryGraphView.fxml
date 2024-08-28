@@ -2,7 +2,7 @@
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.production.controller.factoryproduction.FactoryGraphController">
+            fx:controller="org.chainoptim.desktop.features.production.factory.controller.factoryproduction.FactoryGraphController">
 
     <StackPane fx:id="graphContainer" style="-fx-border-color: #c0c0c0; -fx-border-width: 1px;"/>
 </AnchorPane>

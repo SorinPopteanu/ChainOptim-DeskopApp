@@ -1,9 +1,10 @@
 package org.chainoptim.desktop.features.production.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.production.dto.CreateFactoryDTO;
-import org.chainoptim.desktop.features.production.dto.UpdateFactoryDTO;
-import org.chainoptim.desktop.features.production.model.Factory;
+import org.chainoptim.desktop.features.production.factory.dto.CreateFactoryDTO;
+import org.chainoptim.desktop.features.production.factory.dto.UpdateFactoryDTO;
+import org.chainoptim.desktop.features.production.factory.model.Factory;
+import org.chainoptim.desktop.features.production.factory.service.FactoryWriteServiceImpl;
 import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;

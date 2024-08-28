@@ -5,7 +5,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.demand.controller.ClientShipmentsController">
+      fx:controller="org.chainoptim.desktop.features.demand.clientshipment.controller.ClientShipmentsController">
 
     <!-- Header -->
     <StackPane fx:id="tableToolbarContainer"/>

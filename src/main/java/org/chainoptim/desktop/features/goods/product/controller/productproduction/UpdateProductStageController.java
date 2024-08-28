@@ -8,7 +8,7 @@ import org.chainoptim.desktop.features.goods.stage.dto.UpdateStageDTO;
 import org.chainoptim.desktop.features.goods.stage.model.Stage;
 import org.chainoptim.desktop.features.goods.stage.service.StageService;
 import org.chainoptim.desktop.features.goods.stage.service.StageWriteService;
-import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
+import org.chainoptim.desktop.features.goods.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;

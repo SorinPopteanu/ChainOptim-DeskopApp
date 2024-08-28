@@ -6,7 +6,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="main-container"
-      fx:controller="org.chainoptim.desktop.features.demand.controller.ClientsController">
+      fx:controller="org.chainoptim.desktop.features.demand.client.controller.ClientsController">
 
     <StackPane fx:id="headerContainer"/>
 

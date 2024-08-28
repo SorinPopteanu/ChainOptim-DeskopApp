@@ -1,7 +1,8 @@
 package org.chainoptim.desktop.features.production.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.production.model.FactoryInventoryItem;
+import org.chainoptim.desktop.features.production.inventory.model.FactoryInventoryItem;
+import org.chainoptim.desktop.features.production.inventory.service.FactoryInventoryItemServiceImpl;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.enums.SearchMode;

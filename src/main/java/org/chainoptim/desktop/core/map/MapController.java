@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.core.map;
 
 import org.chainoptim.desktop.core.map.model.SupplyChainMap;
-import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
+import org.chainoptim.desktop.features.production.analysis.factorygraph.service.JavaConnector;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import com.google.inject.Inject;

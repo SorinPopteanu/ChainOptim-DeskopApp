@@ -3,7 +3,7 @@ package org.chainoptim.desktop.features.goods.product.controller.productproducti
 import org.chainoptim.desktop.MainApplication;
 import org.chainoptim.desktop.features.goods.product.model.TabsActionListener;
 import org.chainoptim.desktop.features.goods.product.model.Product;
-import org.chainoptim.desktop.features.scanalysis.productgraph.model.ProductProductionGraph;
+import org.chainoptim.desktop.features.goods.productgraph.model.ProductProductionGraph;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
 import com.google.inject.Inject;

@@ -8,7 +8,7 @@
 
 <ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.production.controller.FactoryPerformanceController"
+            fx:controller="org.chainoptim.desktop.features.production.performance.controller.FactoryPerformanceController"
             fitToHeight="true" fitToWidth="true">
 
     <VBox style="-fx-padding: 10px 20px;" spacing="16">

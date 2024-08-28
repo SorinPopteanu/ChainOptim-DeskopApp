@@ -1,10 +1,10 @@
 package org.chainoptim.desktop.features.supply.controller;
 
 import org.chainoptim.desktop.core.context.TenantSettingsContext;
-import org.chainoptim.desktop.features.scanalysis.supply.model.ComponentDeliveryPerformance;
-import org.chainoptim.desktop.features.scanalysis.supply.model.SupplierPerformance;
-import org.chainoptim.desktop.features.scanalysis.supply.model.SupplierPerformanceReport;
-import org.chainoptim.desktop.features.scanalysis.supply.service.SupplierPerformanceService;
+import org.chainoptim.desktop.features.supply.performance.model.ComponentDeliveryPerformance;
+import org.chainoptim.desktop.features.supply.performance.model.SupplierPerformance;
+import org.chainoptim.desktop.features.supply.performance.model.SupplierPerformanceReport;
+import org.chainoptim.desktop.features.supply.performance.service.SupplierPerformanceService;
 import org.chainoptim.desktop.features.supply.model.Supplier;
 import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;

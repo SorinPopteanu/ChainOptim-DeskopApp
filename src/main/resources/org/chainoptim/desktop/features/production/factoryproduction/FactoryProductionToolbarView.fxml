@@ -7,7 +7,7 @@
 <?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.production.controller.factoryproduction.FactoryProductionToolbarController"
+      fx:controller="org.chainoptim.desktop.features.production.factory.controller.factoryproduction.FactoryProductionToolbarController"
       prefHeight="400.0" prefWidth="600.0"
       spacing="12" style="-fx-padding: 10; -fx-background-color: #ffffff;">
 

@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.features.goods.product.controller.productproduction;
 
-import org.chainoptim.desktop.features.scanalysis.productgraph.model.ProductProductionGraph;
-import org.chainoptim.desktop.features.scanalysis.productgraph.service.ProductProductionGraphService;
+import org.chainoptim.desktop.features.goods.productgraph.model.ProductProductionGraph;
+import org.chainoptim.desktop.features.goods.productgraph.service.ProductProductionGraphService;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 

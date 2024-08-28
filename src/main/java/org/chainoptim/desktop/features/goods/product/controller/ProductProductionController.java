@@ -5,7 +5,7 @@ import org.chainoptim.desktop.features.goods.product.model.ProductionToolbarActi
 import org.chainoptim.desktop.features.goods.product.controller.productproduction.ProductProductionTabsController;
 import org.chainoptim.desktop.features.goods.product.controller.productproduction.ProductProductionToolbarController;
 import org.chainoptim.desktop.features.goods.product.model.Product;
-import org.chainoptim.desktop.features.scanalysis.factorygraph.service.JavaConnector;
+import org.chainoptim.desktop.features.production.analysis.factorygraph.service.JavaConnector;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 
