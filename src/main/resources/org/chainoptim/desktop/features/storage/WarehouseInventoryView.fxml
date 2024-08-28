@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.storage.controller.WarehouseInventoryController">
+
+    <VBox VBox.vgrow="ALWAYS">
+        <StackPane fx:id="tableToolbarContainer"/>
+        <ScrollPane fx:id="warehouseInventoryScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
+            <VBox>
+                <TableView fx:id="tableView" styleClass="table-view">
+                    <columns>
+                        <TableColumn fx:id="selectRowColumn" prefWidth="50"/>
+                        <TableColumn text="Inventory ID" fx:id="inventoryIdColumn" minWidth="120"/>
+                        <TableColumn text="Company ID" fx:id="companyIdColumn" minWidth="150"/>
+<!--                        <TableColumn text="Warehouse" fx:id="warehouseNameColumn" minWidth="150"/>-->
+                        <TableColumn text="Component" fx:id="componentNameColumn" minWidth="150"/>
+                        <TableColumn text="Product" fx:id="productNameColumn" minWidth="150"/>
+                        <TableColumn text="Quantity" fx:id="quantityColumn" minWidth="150"/>
+                        <TableColumn text="Minimum Required Quantity" fx:id="minimumRequiredQuantityColumn" minWidth="150"/>
+                        <TableColumn text="Created At" fx:id="createdAtColumn" minWidth="200"/>
+                        <TableColumn text="Updated At" fx:id="updatedAtColumn" minWidth="200"/>
+                    </columns>
+                </TableView>
+                <StackPane fx:id="pageSelectorContainer"/>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+
+    <!-- Fallback and Confirm Dialogs -->
+    <StackPane fx:id="confirmUpdateDialogContainer" styleClass="dialog-outside-padding"/>
+    <StackPane fx:id="confirmDeleteDialogContainer" styleClass="dialog-outside-padding"/>
+    <StackPane fx:id="confirmCreateDialogContainer" styleClass="dialog-outside-padding"/>
+</StackPane>

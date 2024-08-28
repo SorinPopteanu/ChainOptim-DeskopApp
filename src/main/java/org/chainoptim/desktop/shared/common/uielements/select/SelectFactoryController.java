@@ -2,8 +2,8 @@ package org.chainoptim.desktop.shared.common.uielements.select;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.factory.dto.FactoriesSearchDTO;
-import org.chainoptim.desktop.features.factory.service.FactoryService;
+import org.chainoptim.desktop.features.production.dto.FactoriesSearchDTO;
+import org.chainoptim.desktop.features.production.service.FactoryService;
 import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
@@ -13,7 +13,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 
 import java.util.List;
-import java.util.Optional;
 
 public class SelectFactoryController {
 

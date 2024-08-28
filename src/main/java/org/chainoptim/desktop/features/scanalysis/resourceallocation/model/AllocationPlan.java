@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.chainoptim.desktop.features.scanalysis.factorygraph.model.FactoryGraph;
-import org.chainoptim.desktop.features.factory.model.FactoryInventoryItem;
+import org.chainoptim.desktop.features.production.model.FactoryInventoryItem;
 
 import java.util.List;
 import java.util.Map;

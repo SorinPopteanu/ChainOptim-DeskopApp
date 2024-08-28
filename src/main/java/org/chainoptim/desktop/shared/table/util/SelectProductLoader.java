@@ -2,8 +2,8 @@ package org.chainoptim.desktop.shared.table.util;
 
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.product.dto.ProductsSearchDTO;
-import org.chainoptim.desktop.features.product.service.ProductService;
+import org.chainoptim.desktop.features.goods.product.dto.ProductsSearchDTO;
+import org.chainoptim.desktop.features.goods.product.service.ProductService;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import com.google.inject.Inject;
 import javafx.application.Platform;

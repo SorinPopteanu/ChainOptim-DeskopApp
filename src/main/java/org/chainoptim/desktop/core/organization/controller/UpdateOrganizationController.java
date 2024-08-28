@@ -1,19 +1,13 @@
 package org.chainoptim.desktop.core.organization.controller;
 
 import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.core.organization.dto.UpdateOrganizationDTO;
 import org.chainoptim.desktop.core.organization.model.Organization;
 import org.chainoptim.desktop.core.organization.service.OrganizationService;
-import org.chainoptim.desktop.features.warehouse.dto.UpdateWarehouseDTO;
-import org.chainoptim.desktop.features.warehouse.model.Warehouse;
-import org.chainoptim.desktop.features.warehouse.service.WarehouseService;
-import org.chainoptim.desktop.features.warehouse.service.WarehouseWriteService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
 import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;

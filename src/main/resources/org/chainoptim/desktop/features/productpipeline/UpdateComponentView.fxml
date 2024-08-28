@@ -9,7 +9,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.productpipeline.controller.UpdateComponentController">
+      fx:controller="org.chainoptim.desktop.features.goods.component.controller.UpdateComponentController">
 
     <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
         <VBox VBox.vgrow="ALWAYS" styleClass="form-container">

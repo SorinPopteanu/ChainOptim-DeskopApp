@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.chart.AreaChart?>
+
+<?import javafx.scene.control.Button?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.production.controller.factoryproduction.ProductionHistoryController"
+      spacing="10" style="-fx-border-color: #c0c0c0; -fx-border-width: 1px; -fx-padding: 10px;">
+
+    <HBox>
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <Label text="Component: " styleClass="general-label"/>
+            <ComboBox fx:id="componentsComboBox" prefWidth="150.0" styleClass="custom-combo-box"/>
+        </HBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="addRecordButton" text="Add New Record" styleClass="standard-write-button" onAction="#addProductionRecord"/>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="16">
+        <VBox spacing="8">
+            <AreaChart fx:id="areaChart" maxWidth="360" maxHeight="240">
+                <xAxis>
+                    <NumberAxis/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis/>
+                </yAxis>
+            </AreaChart>
+
+            <StackPane fx:id="legendPane"/>
+        </VBox>
+
+        <ComboBox fx:id="chartDurationComboBox" prefWidth="150.0" styleClass="custom-combo-box"/>
+    </HBox>
+</VBox>

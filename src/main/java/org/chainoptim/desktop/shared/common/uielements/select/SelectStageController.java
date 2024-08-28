@@ -5,17 +5,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.productpipeline.dto.StagesSearchDTO;
-import org.chainoptim.desktop.features.productpipeline.service.StageService;
+import org.chainoptim.desktop.features.goods.stage.dto.StagesSearchDTO;
+import org.chainoptim.desktop.features.goods.stage.service.StageService;
 import org.chainoptim.desktop.shared.httphandling.Result;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class SelectStageController {
 

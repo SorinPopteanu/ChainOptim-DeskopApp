@@ -7,15 +7,14 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.product.dto.CreateUnitOfMeasurementDTO;
-import org.chainoptim.desktop.features.product.model.UnitOfMeasurement;
-import org.chainoptim.desktop.features.product.service.UnitOfMeasurementService;
+import org.chainoptim.desktop.features.goods.dto.CreateUnitOfMeasurementDTO;
+import org.chainoptim.desktop.features.goods.dto.UnitOfMeasurement;
+import org.chainoptim.desktop.features.goods.dto.UnitOfMeasurementService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
 import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
 import org.chainoptim.desktop.shared.httphandling.Result;
 
 import java.util.List;
-import java.util.Optional;
 
 public class SelectOrCreateUnitOfMeasurementController {
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.chainoptim.desktop.features.production.controller.factoryproduction.UpdateFactoryStageController"
+            fitToWidth="true">
+    <VBox styleClass="create-stage-form">
+
+        <HBox styleClass="title-container">
+            <Text text="Update Factory Stage" styleClass="form-title"/>
+        </HBox>
+
+        <Label fx:id="stageNameLabel" styleClass="form-label"/>
+
+        <Label text="Capacity:" styleClass="form-label"/>
+        <TextField fx:id="capacityField" styleClass="custom-text-field"/>
+
+        <Label text="Duration:" styleClass="form-label"/>
+        <StackPane fx:id="durationInputContainer"/>
+
+        <Label text="Priority:" styleClass="form-label"/>
+        <TextField fx:id="priorityField" styleClass="custom-text-field"/>
+
+        <Label text="Minimum Required Capacity:" styleClass="form-label"/>
+        <TextField fx:id="minimumRequiredCapacityField" styleClass="custom-text-field"/>
+
+        <HBox alignment="TOP_RIGHT" style="-fx-padding: 20px 0px 0px 0px;">
+            <Button text="Update Stage" onAction="#handleSubmit" styleClass="standard-write-button"/>
+        </HBox>
+
+        <StackPane fx:id="fallbackContainer" VBox.vgrow="ALWAYS"/>
+    </VBox>
+</ScrollPane>

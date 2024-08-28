@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.shared.common.uielements.select;
 
-import org.chainoptim.desktop.features.product.model.StandardUnit;
-import org.chainoptim.desktop.features.product.model.UnitMagnitude;
+import org.chainoptim.desktop.features.goods.unit.model.StandardUnit;
+import org.chainoptim.desktop.features.goods.unit.model.UnitMagnitude;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;

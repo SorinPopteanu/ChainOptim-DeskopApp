@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Button?>
+<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.chainoptim.desktop.features.supply.controller.SupplierPerformanceController"
+      prefHeight="400.0" prefWidth="600.0" style="-fx-padding: 10px 20px;" spacing="4">
+
+    <HBox alignment="CENTER_LEFT" spacing="6" style="-fx-padding: 10px 0px;">
+        <Label text="Performance Report" styleClass="general-label-extra-large"/>
+        <InfoLabel fx:id="supplierPerformanceInfoLabel"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="refreshReportButton" styleClass="standard-cancel-button"/>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" style="-fx-padding: 0px 10px 0px 0px;" spacing="4">
+        <Label text="Total Delivered Orders:" styleClass="general-label-medium-large"/>
+        <Label fx:id="totalDeliveredOrders" styleClass="count-label"/>
+    </HBox>
+
+    <Label text="Timeliness" styleClass="general-label-large" style="-fx-padding: 8px 0px;"/>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="• Total Delay Time:" styleClass="general-label"/>
+        <Label fx:id="totalDelays" styleClass="count-label"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="• Average Delay Time Per Order:" styleClass="general-label"/>
+        <Label fx:id="averageDelayPerOrder" styleClass="count-label"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="• Average Time To Ship Order:" styleClass="general-label"/>
+        <Label fx:id="averageTimeToShipOrder" styleClass="count-label"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="4">
+        <Label text="• Orders Delivered On Time:" styleClass="general-label"/>
+        <Label fx:id="onTimeOrdersPercentage" styleClass="count-label"/>
+    </HBox>
+
+    <Label text="Component Quantities" styleClass="general-label-large" style="-fx-padding: 8px 0px;"/>
+    <VBox spacing="4">
+        <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 10px;">
+            <Label text="Component: " styleClass="general-label"/>
+            <ComboBox fx:id="componentsComboBox" prefWidth="150.0" styleClass="custom-combo-box"/>
+        </HBox>
+        <HBox spacing="16" alignment="CENTER_LEFT">
+            <VBox>
+                <HBox alignment="CENTER_LEFT" spacing="4">
+                    <Label text="• Total Delivered Component Orders:" styleClass="general-label"/>
+                    <Label fx:id="componentTotalDeliveredOrders" styleClass="count-label"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="4">
+                    <Label text="• Total Delivered Quantity:" styleClass="general-label"/>
+                    <Label fx:id="totalDeliveredQuantity" styleClass="count-label"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="4">
+                    <Label text="• Average Delivered Quantity:" styleClass="general-label"/>
+                    <Label fx:id="averageDeliveredQuantity" styleClass="count-label"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="4">
+                    <Label text="• Average Order Quantity:" styleClass="general-label"/>
+                    <Label fx:id="averageOrderQuantity" styleClass="count-label"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="4">
+                    <Label text="• Average Shipment Quantity:" styleClass="general-label"/>
+                    <Label fx:id="averageShipmentQuantity" styleClass="count-label"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="4">
+                    <Label text="• Delivered Vs Ordered Percentage:" styleClass="general-label"/>
+                    <Label fx:id="deliveredPerOrderedPercentage" styleClass="count-label"/>
+                </HBox>
+            </VBox>
+
+            <LineChart fx:id="lineChart" maxWidth="420.0" minHeight="240.0">
+                <xAxis>
+                    <CategoryAxis/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Delivered Quantity" styleClass="general-label"/>
+                </yAxis>
+            </LineChart>
+        </HBox>
+    </VBox>
+
+
+</VBox>

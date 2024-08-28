@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.shared.util;
 
-import org.chainoptim.desktop.features.product.model.NewUnitOfMeasurement;
-import org.chainoptim.desktop.features.product.model.StandardUnit;
+import org.chainoptim.desktop.features.goods.unit.model.NewUnitOfMeasurement;
+import org.chainoptim.desktop.features.goods.unit.model.StandardUnit;
 
 import javafx.util.Pair;
 
