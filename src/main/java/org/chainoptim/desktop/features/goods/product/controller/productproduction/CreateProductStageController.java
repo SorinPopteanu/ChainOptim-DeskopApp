@@ -1,14 +1,14 @@
 package org.chainoptim.desktop.features.goods.product.controller.productproduction;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
-import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.main.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.main.context.TenantContext;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.goods.product.model.TabsActionListener;
 import org.chainoptim.desktop.features.goods.stage.dto.CreateStageDTO;
 import org.chainoptim.desktop.features.goods.stage.model.Stage;
 import org.chainoptim.desktop.features.goods.stage.service.StageWriteService;
 import org.chainoptim.desktop.features.goods.productgraph.service.ProductProductionGraphService;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectProductController;
+import org.chainoptim.desktop.shared.common.ui.select.SelectProductController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
@@ -79,7 +79,7 @@ public class CreateProductStageController implements Initializable {
     private void loadSelectProductView() {
         // Initialize time selection input view
         FXMLLoader selectProductLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/select/SelectProductView.fxml",
+                "/org/chainoptim/desktop/shared/common/ui/select/SelectProductView.fxml",
                 controllerFactory::createController
         );
         try {

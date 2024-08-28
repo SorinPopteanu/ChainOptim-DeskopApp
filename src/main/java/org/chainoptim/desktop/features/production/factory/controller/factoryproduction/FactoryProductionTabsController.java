@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.production.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.main.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.production.factory.model.Factory;
 import org.chainoptim.desktop.features.production.analysis.factorygraph.model.FactoryProductionGraph;
 import org.chainoptim.desktop.features.production.analysis.productionhistory.model.FactoryProductionHistory;

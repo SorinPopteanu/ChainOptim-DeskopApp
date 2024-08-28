@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.demand.clientshipment.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.demand.clientshipment.dto.CreateClientShipmentDTO;
 import org.chainoptim.desktop.features.demand.clientshipment.dto.UpdateClientShipmentDTO;
 import org.chainoptim.desktop.features.demand.clientshipment.model.ClientShipment;

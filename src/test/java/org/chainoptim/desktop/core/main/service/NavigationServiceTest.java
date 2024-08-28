@@ -2,8 +2,8 @@ package org.chainoptim.desktop.core.main.service;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
-import org.chainoptim.desktop.core.abstraction.ThreadRunner;
+import org.chainoptim.desktop.core.main.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.main.abstraction.ThreadRunner;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.util.resourceloader.FXMLLoaderService;
 import org.junit.jupiter.api.Assertions;

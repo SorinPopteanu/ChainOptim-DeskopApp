@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.supply.suppliershipment.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.supply.suppliershipment.dto.CreateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supply.suppliershipment.dto.UpdateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supply.suppliershipment.model.SupplierShipment;

@@ -1,8 +1,8 @@
 package org.chainoptim.desktop.features.goods.product.controller.productproduction;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
-import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.main.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.main.context.TenantContext;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.goods.product.model.TabsActionListener;
 import org.chainoptim.desktop.features.goods.stage.dto.UpdateStageDTO;
 import org.chainoptim.desktop.features.goods.stage.model.Stage;

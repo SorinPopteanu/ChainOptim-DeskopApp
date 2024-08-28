@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.production.inventory.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.production.inventory.dto.CreateFactoryInventoryItemDTO;
 import org.chainoptim.desktop.features.production.inventory.dto.UpdateFactoryInventoryItemDTO;
 import org.chainoptim.desktop.features.production.inventory.model.FactoryInventoryItem;

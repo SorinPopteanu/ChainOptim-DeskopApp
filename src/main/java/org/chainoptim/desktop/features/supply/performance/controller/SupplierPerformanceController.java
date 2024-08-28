@@ -1,12 +1,12 @@
 package org.chainoptim.desktop.features.supply.performance.controller;
 
-import org.chainoptim.desktop.core.context.TenantSettingsContext;
+import org.chainoptim.desktop.core.main.context.TenantSettingsContext;
 import org.chainoptim.desktop.features.supply.performance.model.ComponentDeliveryPerformance;
 import org.chainoptim.desktop.features.supply.performance.model.SupplierPerformance;
 import org.chainoptim.desktop.features.supply.performance.model.SupplierPerformanceReport;
 import org.chainoptim.desktop.features.supply.performance.service.SupplierPerformanceService;
 import org.chainoptim.desktop.features.supply.supplier.model.Supplier;
-import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
+import org.chainoptim.desktop.shared.common.ui.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;

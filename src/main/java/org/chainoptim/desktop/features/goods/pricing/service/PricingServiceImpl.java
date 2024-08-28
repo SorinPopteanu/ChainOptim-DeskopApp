@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.goods.pricing.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.goods.pricing.dto.CreatePricingDTO;
 import org.chainoptim.desktop.features.goods.pricing.dto.UpdatePricingDTO;
 import org.chainoptim.desktop.features.goods.pricing.model.Pricing;

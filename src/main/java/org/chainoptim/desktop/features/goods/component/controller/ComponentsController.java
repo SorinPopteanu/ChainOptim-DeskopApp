@@ -1,10 +1,10 @@
 package org.chainoptim.desktop.features.goods.component.controller;
 
-import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.context.TenantContext;
 import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.goods.component.model.Component;
 import org.chainoptim.desktop.features.goods.component.service.ComponentService;
 import org.chainoptim.desktop.shared.enums.Feature;

@@ -1,12 +1,12 @@
 package org.chainoptim.desktop.features.production.performance.controller;
 
-import org.chainoptim.desktop.core.context.TenantSettingsContext;
+import org.chainoptim.desktop.core.main.context.TenantSettingsContext;
 import org.chainoptim.desktop.features.production.factory.model.Factory;
 import org.chainoptim.desktop.features.production.analysis.productionperformance.model.FactoryPerformance;
 import org.chainoptim.desktop.features.production.analysis.productionperformance.model.FactoryStagePerformanceReport;
 import org.chainoptim.desktop.features.production.analysis.productionperformance.service.FactoryPerformanceService;
-import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
-import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay;
+import org.chainoptim.desktop.shared.common.ui.info.InfoLabel;
+import org.chainoptim.desktop.shared.common.ui.performance.ScoreDisplay;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;

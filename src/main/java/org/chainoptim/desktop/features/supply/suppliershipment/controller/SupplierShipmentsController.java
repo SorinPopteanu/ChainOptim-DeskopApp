@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.features.supply.suppliershipment.controller;
 
-import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.main.context.TenantContext;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.goods.component.model.Component;
 import org.chainoptim.desktop.features.supply.suppliershipment.dto.CreateSupplierShipmentDTO;
 import org.chainoptim.desktop.features.supply.suppliershipment.dto.UpdateSupplierShipmentDTO;
@@ -9,9 +9,9 @@ import org.chainoptim.desktop.features.supply.supplier.model.Supplier;
 import org.chainoptim.desktop.features.supply.suppliershipment.model.SupplierShipment;
 import org.chainoptim.desktop.features.supply.suppliershipment.service.SupplierShipmentsService;
 import org.chainoptim.desktop.features.supply.suppliershipment.service.SupplierShipmentsWriteService;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.SearchMode;
@@ -27,8 +27,8 @@ import org.chainoptim.desktop.shared.table.edit.cell.EditableCell;
 import org.chainoptim.desktop.shared.table.model.TableData;
 import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
-import org.chainoptim.desktop.shared.toast.controller.ToastManager;
-import org.chainoptim.desktop.shared.toast.model.ToastInfo;
+import org.chainoptim.desktop.shared.common.ui.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.common.ui.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 

@@ -1,7 +1,7 @@
 package org.chainoptim.desktop.shared.table.util;
 
-import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.main.context.TenantContext;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.goods.component.dto.ComponentsSearchDTO;
 import org.chainoptim.desktop.features.goods.component.service.ComponentService;
 import org.chainoptim.desktop.shared.httphandling.Result;

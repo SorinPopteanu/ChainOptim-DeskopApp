@@ -1,12 +1,12 @@
 package org.chainoptim.desktop.shared.util.resourceloader;
 
 import org.chainoptim.desktop.MainApplication;
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
-import org.chainoptim.desktop.core.map.MapController;
-import org.chainoptim.desktop.core.overview.controller.TimelineController;
+import org.chainoptim.desktop.core.main.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.overview.map.controller.MapController;
+import org.chainoptim.desktop.core.overview.upcomingevent.controller.TimelineController;
 import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
-import org.chainoptim.desktop.shared.common.uielements.select.*;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.ui.select.*;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 import org.chainoptim.desktop.shared.util.DataReceiver;
@@ -96,7 +96,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
     public <T> GenericConfirmDialogController<T> loadConfirmDialog(StackPane confirmDialogContainer) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/confirmdialog/GenericConfirmDialogView.fxml",
+                "/org/chainoptim/desktop/shared/common/ui/confirmdialog/GenericConfirmDialogView.fxml",
                 controllerFactory::createController);
 
         try {
@@ -111,7 +111,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
     public SelectOrCreateLocationController loadSelectOrCreateLocation(StackPane selectOrCreateLocationContainer) {
         FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/select/SelectOrCreateLocationView.fxml",
+                "/org/chainoptim/desktop/shared/common/ui/select/SelectOrCreateLocationView.fxml",
                 controllerFactory::createController
         );
         try {
@@ -126,7 +126,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
 
     public SelectDurationController loadSelectDurationView(StackPane durationInputContainer) {
         FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/select/SelectDurationView.fxml",
+                "/org/chainoptim/desktop/shared/common/ui/select/SelectDurationView.fxml",
                 controllerFactory::createController
         );
         try {
@@ -142,7 +142,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
     public SelectStageController loadSelectStageView(StackPane selectStageContainer) {
         // Initialize time selection input view
         FXMLLoader selectStageLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/select/SelectStageView.fxml",
+                "/org/chainoptim/desktop/shared/common/ui/select/SelectStageView.fxml",
                 controllerFactory::createController
         );
         try {
@@ -158,7 +158,7 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
     public SelectFactoryController loadSelectFactoryView(StackPane selectFactoryContainer) {
         // Initialize time selection input view
         FXMLLoader selectFactoryLoader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/select/SelectFactoryView.fxml",
+                "/org/chainoptim/desktop/shared/common/ui/select/SelectFactoryView.fxml",
                 MainApplication.injector::getInstance
         );
         try {

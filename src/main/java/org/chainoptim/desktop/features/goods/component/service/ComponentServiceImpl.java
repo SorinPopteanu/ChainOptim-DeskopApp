@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.goods.component.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.goods.component.dto.ComponentsSearchDTO;
 import org.chainoptim.desktop.features.goods.component.dto.CreateComponentDTO;
 import org.chainoptim.desktop.features.goods.component.dto.UpdateComponentDTO;

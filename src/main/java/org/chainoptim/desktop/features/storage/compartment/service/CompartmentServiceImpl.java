@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.storage.compartment.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.storage.compartment.dto.CreateCompartmentDTO;
 import org.chainoptim.desktop.features.storage.compartment.dto.UpdateCompartmentDTO;
 import org.chainoptim.desktop.features.storage.compartment.model.Compartment;

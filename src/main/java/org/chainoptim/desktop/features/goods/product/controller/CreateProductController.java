@@ -1,21 +1,21 @@
 package org.chainoptim.desktop.features.goods.product.controller;
 
-import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.goods.product.dto.CreateProductDTO;
 import org.chainoptim.desktop.features.goods.unit.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.goods.product.model.Product;
 import org.chainoptim.desktop.features.goods.product.service.ProductWriteService;
-import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
-import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectUnitOfMeasurement;
+import org.chainoptim.desktop.shared.common.ui.forms.FormField;
+import org.chainoptim.desktop.shared.common.ui.forms.ValidationException;
+import org.chainoptim.desktop.shared.common.ui.select.SelectUnitOfMeasurement;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
-import org.chainoptim.desktop.shared.toast.controller.ToastManager;
-import org.chainoptim.desktop.shared.toast.model.ToastInfo;
+import org.chainoptim.desktop.shared.common.ui.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.common.ui.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import com.google.inject.Inject;

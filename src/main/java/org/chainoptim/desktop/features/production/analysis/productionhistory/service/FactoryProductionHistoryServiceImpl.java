@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.production.analysis.productionhistory.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.production.analysis.productionhistory.model.FactoryProductionHistory;
 import org.chainoptim.desktop.features.production.analysis.productionhistory.dto.AddDayToFactoryProductionHistoryDTO;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
@@ -22,16 +22,19 @@ public class FactoryProductionHistoryServiceImpl implements FactoryProductionHis
     private final CachingService<FactoryProductionHistory> cachingService;
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
+    private final TokenManager tokenManager;
 
     private static final int STALE_TIME = 300;
 
     @Inject
     public FactoryProductionHistoryServiceImpl(CachingService<FactoryProductionHistory> cachingService,
                                                RequestHandler requestHandler,
-                                               RequestBuilder requestBuilder) {
+                                               RequestBuilder requestBuilder,
+                                               TokenManager tokenManager) {
         this.cachingService = cachingService;
         this.requestHandler = requestHandler;
         this.requestBuilder = requestBuilder;
+        this.tokenManager = tokenManager;
     }
 
     public CompletableFuture<Result<FactoryProductionHistory>> getFactoryProductionHistoryByFactoryId(Integer factoryId) {
@@ -39,7 +42,7 @@ public class FactoryProductionHistoryServiceImpl implements FactoryProductionHis
         String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("factory-production-histories", "factory", factoryId);
         String routeAddress = rootAddress + cacheKey;
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
             return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
@@ -57,7 +60,7 @@ public class FactoryProductionHistoryServiceImpl implements FactoryProductionHis
         String routeAddress = rootAddress + "factory-production-histories/add-day";
 
         HttpRequest request = requestBuilder.buildWriteRequest(
-                HttpMethod.PUT, routeAddress, TokenManager.getToken(), addDayDTO);
+                HttpMethod.PUT, routeAddress, tokenManager.getToken(), addDayDTO);
 
         return requestHandler.sendRequest(request, new TypeReference<FactoryProductionHistory>() {}, productionHistory -> {
             cachingService.remove(cacheKey);

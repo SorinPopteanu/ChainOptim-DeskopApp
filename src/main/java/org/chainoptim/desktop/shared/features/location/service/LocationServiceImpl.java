@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.shared.features.location.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.shared.features.location.dto.CreateLocationDTO;
 import org.chainoptim.desktop.shared.features.location.dto.UpdateLocationDTO;
 import org.chainoptim.desktop.shared.features.location.model.Location;

@@ -6,9 +6,9 @@ import org.chainoptim.desktop.core.main.service.NavigationServiceImpl;
 import org.chainoptim.desktop.features.goods.product.model.Product;
 import org.chainoptim.desktop.features.goods.product.service.ProductService;
 import org.chainoptim.desktop.features.goods.product.service.ProductWriteService;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 
@@ -21,8 +21,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import org.chainoptim.desktop.shared.httphandling.Result;
-import org.chainoptim.desktop.shared.toast.controller.ToastManager;
-import org.chainoptim.desktop.shared.toast.model.ToastInfo;
+import org.chainoptim.desktop.shared.common.ui.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.common.ui.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import java.net.URL;

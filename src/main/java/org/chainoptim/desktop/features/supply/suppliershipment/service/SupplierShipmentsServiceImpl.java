@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.supply.suppliershipment.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.supply.suppliershipment.model.SupplierShipment;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;

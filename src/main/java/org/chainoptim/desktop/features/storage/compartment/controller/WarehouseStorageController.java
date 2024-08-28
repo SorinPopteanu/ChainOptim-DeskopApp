@@ -1,10 +1,11 @@
 package org.chainoptim.desktop.features.storage.compartment.controller;
 
-import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.context.TenantContext;
 import org.chainoptim.desktop.features.storage.compartment.dto.CreateCompartmentDTO;
 import org.chainoptim.desktop.features.storage.compartment.model.Compartment;
 import org.chainoptim.desktop.features.storage.compartment.model.CompartmentData;
 import org.chainoptim.desktop.features.storage.crate.model.Crate;
+import org.chainoptim.desktop.features.storage.crate.model.CrateData;
 import org.chainoptim.desktop.features.storage.crate.model.CrateSpec;
 import org.chainoptim.desktop.features.storage.compartment.service.CompartmentService;
 import org.chainoptim.desktop.features.storage.crate.service.CrateService;

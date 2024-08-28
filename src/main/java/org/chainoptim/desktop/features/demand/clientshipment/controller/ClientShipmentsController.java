@@ -1,16 +1,16 @@
 package org.chainoptim.desktop.features.demand.clientshipment.controller;
 
-import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.main.context.TenantContext;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.demand.clientshipment.dto.CreateClientShipmentDTO;
 import org.chainoptim.desktop.features.demand.clientshipment.dto.UpdateClientShipmentDTO;
 import org.chainoptim.desktop.features.demand.client.model.Client;
 import org.chainoptim.desktop.features.demand.clientshipment.model.ClientShipment;
 import org.chainoptim.desktop.features.demand.clientshipment.service.ClientShipmentsService;
 import org.chainoptim.desktop.features.demand.clientshipment.service.ClientShipmentsWriteService;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.enums.ShipmentStatus;
@@ -27,8 +27,8 @@ import org.chainoptim.desktop.shared.table.edit.cell.EditableCell;
 import org.chainoptim.desktop.shared.table.model.TableData;
 import org.chainoptim.desktop.shared.table.util.TableConfigurer;
 import org.chainoptim.desktop.shared.table.util.SelectComponentLoader;
-import org.chainoptim.desktop.shared.toast.controller.ToastManager;
-import org.chainoptim.desktop.shared.toast.model.ToastInfo;
+import org.chainoptim.desktop.shared.common.ui.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.common.ui.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.DataReceiver;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 

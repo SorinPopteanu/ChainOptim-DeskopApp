@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.storage.crate.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.storage.crate.model.Crate;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;

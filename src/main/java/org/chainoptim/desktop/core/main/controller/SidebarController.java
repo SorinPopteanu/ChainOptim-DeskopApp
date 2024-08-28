@@ -4,7 +4,7 @@ import org.chainoptim.desktop.core.main.model.SidebarNavigationConfiguration;
 import org.chainoptim.desktop.core.main.model.SidebarSection;
 import org.chainoptim.desktop.core.main.model.SidebarSubsection;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.user.service.AuthenticationService;
+import org.chainoptim.desktop.core.tenant.user.service.AuthenticationService;
 
 import com.google.inject.Inject;
 import javafx.fxml.FXML;

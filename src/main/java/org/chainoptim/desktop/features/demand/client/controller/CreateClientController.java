@@ -1,20 +1,20 @@
 package org.chainoptim.desktop.features.demand.client.controller;
 
-import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.demand.client.dto.CreateClientDTO;
 import org.chainoptim.desktop.features.demand.client.model.Client;
 import org.chainoptim.desktop.features.demand.client.service.ClientWriteService;
-import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
-import org.chainoptim.desktop.shared.common.uielements.forms.ValidationException;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectOrCreateLocationController;
+import org.chainoptim.desktop.shared.common.ui.forms.FormField;
+import org.chainoptim.desktop.shared.common.ui.forms.ValidationException;
+import org.chainoptim.desktop.shared.common.ui.select.SelectOrCreateLocationController;
 import org.chainoptim.desktop.shared.enums.OperationOutcome;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
-import org.chainoptim.desktop.shared.toast.controller.ToastManager;
-import org.chainoptim.desktop.shared.toast.model.ToastInfo;
+import org.chainoptim.desktop.shared.common.ui.toast.controller.ToastManager;
+import org.chainoptim.desktop.shared.common.ui.toast.model.ToastInfo;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;
 
 import javafx.scene.layout.StackPane;

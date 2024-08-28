@@ -1,12 +1,12 @@
 package org.chainoptim.desktop.features.production.performance.controller;
 
-import org.chainoptim.desktop.core.context.TenantContext;
+import org.chainoptim.desktop.core.main.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.production.factory.model.Factory;
 import org.chainoptim.desktop.features.production.factory.service.FactoryService;
-import org.chainoptim.desktop.shared.common.uielements.performance.ScoreDisplay;
+import org.chainoptim.desktop.shared.common.ui.performance.ScoreDisplay;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;

@@ -2,7 +2,7 @@ package org.chainoptim.desktop.features.demand.client.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.demand.client.dto.CreateClientDTO;
 import org.chainoptim.desktop.features.demand.client.dto.UpdateClientDTO;
 import org.chainoptim.desktop.features.demand.client.model.Client;

@@ -6,7 +6,7 @@
 <?import javafx.scene.control.Label?>
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
-           fx:controller="org.chainoptim.desktop.core.organization.controller.OrganizationCustomRolesController"
+           fx:controller="org.chainoptim.desktop.core.tenant.customrole.controller.OrganizationCustomRolesController"
             prefHeight="800">
 
     <VBox spacing="10">

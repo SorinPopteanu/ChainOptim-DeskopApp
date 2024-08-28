@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.goods.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.goods.product.dto.CreateProductDTO;
 import org.chainoptim.desktop.features.goods.dto.UpdateProductDTO;
 import org.chainoptim.desktop.features.goods.product.model.Product;

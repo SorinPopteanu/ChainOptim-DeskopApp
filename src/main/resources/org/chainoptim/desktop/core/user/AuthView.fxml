@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:controller="org.chainoptim.desktop.core.user.controller.AuthController"
+<VBox fx:controller="org.chainoptim.desktop.core.tenant.user.controller.AuthController"
       xmlns:fx="http://javafx.com/fxml" styleClass="form-container" spacing="8">
 
     <!-- Title Text -->

@@ -1,11 +1,11 @@
 package org.chainoptim.desktop.features.production.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.core.context.TenantSettingsContext;
+import org.chainoptim.desktop.core.main.context.TenantSettingsContext;
 import org.chainoptim.desktop.features.production.factory.model.Factory;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.service.ResourceAllocationService;
-import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController;
+import org.chainoptim.desktop.shared.common.ui.info.InfoLabel;
+import org.chainoptim.desktop.shared.common.ui.select.SelectDurationController;
 import org.chainoptim.desktop.shared.enums.Feature;
 import org.chainoptim.desktop.shared.enums.InfoLevel;
 import org.chainoptim.desktop.shared.httphandling.Result;

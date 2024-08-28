@@ -1,5 +1,7 @@
 package org.chainoptim.desktop.core.user.service;
 
+import org.chainoptim.desktop.core.tenant.user.service.AuthenticationServiceImpl;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

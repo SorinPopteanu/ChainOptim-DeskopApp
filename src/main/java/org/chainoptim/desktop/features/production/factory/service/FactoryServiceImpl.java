@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.production.factory.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.production.factory.dto.FactoriesSearchDTO;
 import org.chainoptim.desktop.features.production.factory.dto.FactoryOverviewDTO;
 import org.chainoptim.desktop.features.production.factory.model.Factory;

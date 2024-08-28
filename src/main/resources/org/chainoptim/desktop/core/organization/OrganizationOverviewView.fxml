@@ -6,7 +6,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <StackPane xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.organization.controller.OrganizationOverviewController"
+      fx:controller="org.chainoptim.desktop.core.tenant.organization.controller.OrganizationOverviewController"
         prefHeight="800">
 
     <VBox spacing="10">

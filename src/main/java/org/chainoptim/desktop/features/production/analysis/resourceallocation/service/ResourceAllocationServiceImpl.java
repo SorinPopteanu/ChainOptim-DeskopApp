@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.production.analysis.resourceallocation.service;
 
-import org.chainoptim.desktop.core.user.service.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;

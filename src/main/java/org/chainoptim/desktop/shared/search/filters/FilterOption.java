@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.shared.search.filters;
 
-import org.chainoptim.desktop.shared.common.uielements.UIItem;
+import org.chainoptim.desktop.shared.common.ui.UIItem;
 import org.chainoptim.desktop.shared.enums.FilterType;
 import lombok.AllArgsConstructor;
 import lombok.Data;

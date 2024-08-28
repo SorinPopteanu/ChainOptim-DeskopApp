@@ -1,14 +1,14 @@
 package org.chainoptim.desktop.features.production.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.core.context.TenantContext;
-import org.chainoptim.desktop.core.user.model.User;
+import org.chainoptim.desktop.core.main.context.TenantContext;
+import org.chainoptim.desktop.core.tenant.user.model.User;
 import org.chainoptim.desktop.features.production.stage.dto.CreateFactoryStageDTO;
 import org.chainoptim.desktop.features.production.stage.model.FactoryStage;
 import org.chainoptim.desktop.features.production.stage.service.FactoryStageWriteService;
 import org.chainoptim.desktop.features.production.analysis.factorygraph.service.FactoryProductionGraphService;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectDurationController;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectFactoryController;
-import org.chainoptim.desktop.shared.common.uielements.select.SelectStageController;
+import org.chainoptim.desktop.shared.common.ui.select.SelectDurationController;
+import org.chainoptim.desktop.shared.common.ui.select.SelectFactoryController;
+import org.chainoptim.desktop.shared.common.ui.select.SelectStageController;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.resourceloader.CommonViewsLoader;

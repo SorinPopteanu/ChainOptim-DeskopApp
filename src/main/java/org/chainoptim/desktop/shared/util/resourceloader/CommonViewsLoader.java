@@ -1,10 +1,10 @@
 package org.chainoptim.desktop.shared.util.resourceloader;
 
-import org.chainoptim.desktop.core.map.MapController;
-import org.chainoptim.desktop.core.overview.controller.TimelineController;
+import org.chainoptim.desktop.core.overview.map.controller.MapController;
+import org.chainoptim.desktop.core.overview.upcomingevent.controller.TimelineController;
 import org.chainoptim.desktop.shared.search.controller.ListHeaderController;
-import org.chainoptim.desktop.shared.common.uielements.select.*;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.ui.select.*;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.GenericConfirmDialogController;
 import org.chainoptim.desktop.shared.search.controller.PageSelectorController;
 import org.chainoptim.desktop.shared.table.TableToolbarController;
 

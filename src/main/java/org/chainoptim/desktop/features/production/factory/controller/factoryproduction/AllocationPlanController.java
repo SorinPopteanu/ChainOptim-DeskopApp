@@ -1,14 +1,14 @@
 package org.chainoptim.desktop.features.production.factory.controller.factoryproduction;
 
-import org.chainoptim.desktop.core.abstraction.ControllerFactory;
+import org.chainoptim.desktop.core.main.abstraction.ControllerFactory;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.dto.UpdateAllocationPlanDTO;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.model.AllocationPlan;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.model.ResourceAllocation;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.model.ResourceAllocationPlan;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.service.ResourceAllocationPersistenceService;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.GenericConfirmDialogController;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.controller.RunnableConfirmDialogActionListener;
-import org.chainoptim.desktop.shared.common.uielements.confirmdialog.model.ConfirmDialogInput;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.GenericConfirmDialogController;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.controller.RunnableConfirmDialogActionListener;
+import org.chainoptim.desktop.shared.common.ui.confirmdialog.model.ConfirmDialogInput;
 import org.chainoptim.desktop.shared.fallback.FallbackManager;
 import org.chainoptim.desktop.shared.httphandling.Result;
 import org.chainoptim.desktop.shared.util.TimeUtil;
@@ -146,7 +146,7 @@ public class AllocationPlanController {
                                    StackPane confirmDialogPane,
                                    RunnableConfirmDialogActionListener<AllocationPlan> listener,
                                    AllocationPlan allocationPlan) {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/common/uielements/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
+        FXMLLoader loader = fxmlLoaderService.setUpLoader("/org/chainoptim/desktop/shared/common/ui/confirmdialog/GenericConfirmDialogView.fxml", controllerFactory::createController);
 
         try {
             Node view = loader.load();

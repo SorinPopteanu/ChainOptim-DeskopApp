@@ -1,9 +1,9 @@
 package org.chainoptim.desktop.features.goods.product.controller.productproduction;
 
-import org.chainoptim.desktop.core.context.TenantSettingsContext;
+import org.chainoptim.desktop.core.main.context.TenantSettingsContext;
 import org.chainoptim.desktop.features.goods.product.model.ProductionToolbarActionListener;
 import org.chainoptim.desktop.features.goods.product.model.Product;
-import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel;
+import org.chainoptim.desktop.shared.common.ui.info.InfoLabel;
 import org.chainoptim.desktop.shared.enums.Feature;
 
 import javafx.event.ActionEvent;

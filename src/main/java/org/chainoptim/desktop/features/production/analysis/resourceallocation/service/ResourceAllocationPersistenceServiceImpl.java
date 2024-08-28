@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.features.production.analysis.resourceallocation.service;
 
-import org.chainoptim.desktop.core.user.util.TokenManager;
+import org.chainoptim.desktop.core.tenant.user.service.TokenManager;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.dto.UpdateAllocationPlanDTO;
 import org.chainoptim.desktop.features.production.analysis.resourceallocation.model.ResourceAllocationPlan;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
@@ -22,16 +22,19 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
     private final CachingService<ResourceAllocationPlan> cachingService;
     private final RequestHandler requestHandler;
     private final RequestBuilder requestBuilder;
+    private final TokenManager tokenManager;
 
     private static final int STALE_TIME = 300;
 
     @Inject
     public ResourceAllocationPersistenceServiceImpl(CachingService<ResourceAllocationPlan> cachingService,
                                                     RequestHandler requestHandler,
-                                                    RequestBuilder requestBuilder) {
+                                                    RequestBuilder requestBuilder,
+                                                    TokenManager tokenManager) {
         this.cachingService = cachingService;
         this.requestHandler = requestHandler;
         this.requestBuilder = requestBuilder;
+        this.tokenManager = tokenManager;
     }
 
     public CompletableFuture<Result<ResourceAllocationPlan>> getResourceAllocationPlanByFactoryId(Integer factoryId) {
@@ -39,7 +42,7 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
         String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("active-resource-allocation-plans", "factory", factoryId);
         String routeAddress = rootAddress + cacheKey;
 
-        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, TokenManager.getToken());
+        HttpRequest request = requestBuilder.buildReadRequest(routeAddress, tokenManager.getToken());
 
         if (cachingService.isCached(cacheKey) && !cachingService.isStale(cacheKey)) {
             return CompletableFuture.completedFuture(new Result<>(cachingService.get(cacheKey), null, HttpURLConnection.HTTP_OK));
@@ -56,7 +59,7 @@ public class ResourceAllocationPersistenceServiceImpl implements ResourceAllocat
         String cacheKey = CacheKeyBuilder.buildSecondaryFeatureKey("active-resource-allocation-plans", "factory", allocationPlanDTO.getFactoryId());
         String routeAddress = rootAddress + "active-resource-allocation-plans/update";
 
-        HttpRequest request = requestBuilder.buildWriteRequest(HttpMethod.PUT, routeAddress, TokenManager.getToken(), allocationPlanDTO);
+        HttpRequest request = requestBuilder.buildWriteRequest(HttpMethod.PUT, routeAddress, tokenManager.getToken(), allocationPlanDTO);
         if (request == null) return requestHandler.getParsingErrorResult();
 
         return requestHandler.sendRequest(request, new TypeReference<ResourceAllocationPlan>() {}, allocationPlan -> {

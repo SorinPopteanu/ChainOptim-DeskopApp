@@ -6,7 +6,7 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Button?>
-<?import org.chainoptim.desktop.shared.common.uielements.info.InfoLabel?>
+<?import org.chainoptim.desktop.shared.common.ui.info.InfoLabel?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"

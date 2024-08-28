@@ -4,7 +4,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.core.settings.controller.NotificationSettingsController">
+      fx:controller="org.chainoptim.desktop.core.tenant.settings.controller.NotificationSettingsController">
 
     <ScrollPane fitToHeight="true" fitToWidth="true">
         <VBox fx:id="contentVBox" styleClass="settings-tab-container">
