@@ -4,7 +4,7 @@ import org.chainoptim.desktop.core.context.TenantContext;
 import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
-import org.chainoptim.desktop.features.goods.unit.model.NewUnitOfMeasurement;
+import org.chainoptim.desktop.features.goods.unit.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.goods.component.dto.CreateComponentDTO;
 import org.chainoptim.desktop.features.goods.component.service.ComponentService;
 import org.chainoptim.desktop.features.goods.component.model.Component;
@@ -96,7 +96,7 @@ public class CreateComponentController {
         try {
             componentDTO.setName(nameFormField.handleSubmit());
             componentDTO.setDescription(descriptionFormField.handleSubmit());
-            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
+            UnitOfMeasurement newUnit = new UnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
             componentDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;

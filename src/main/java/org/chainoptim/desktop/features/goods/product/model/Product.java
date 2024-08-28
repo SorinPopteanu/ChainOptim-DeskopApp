@@ -3,8 +3,7 @@ package org.chainoptim.desktop.features.goods.product.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.chainoptim.desktop.features.goods.dto.UnitOfMeasurement;
-import org.chainoptim.desktop.features.goods.unit.model.NewUnitOfMeasurement;
+import org.chainoptim.desktop.features.goods.unit.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.goods.stage.model.Stage;
 
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ public class Product {
         this.updatedAt = newProduct.getUpdatedAt();
         this.organizationId = newProduct.getOrganizationId();
         this.unit = newProduct.getUnit();
-        this.newUnit = newProduct.getNewUnit();
         this.stages = newProduct.getStages();
     }
 
@@ -34,6 +32,5 @@ public class Product {
     private LocalDateTime updatedAt;
     private Integer organizationId;
     private UnitOfMeasurement unit;
-    private NewUnitOfMeasurement newUnit;
     private List<Stage> stages;
 }

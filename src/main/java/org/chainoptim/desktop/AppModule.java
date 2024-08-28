@@ -31,8 +31,6 @@ import org.chainoptim.desktop.features.demand.model.ClientShipment;
 import org.chainoptim.desktop.features.demand.service.*;
 import org.chainoptim.desktop.features.goods.component.service.ComponentService;
 import org.chainoptim.desktop.features.goods.component.service.ComponentServiceImpl;
-import org.chainoptim.desktop.features.goods.dto.UnitOfMeasurementService;
-import org.chainoptim.desktop.features.goods.dto.UnitOfMeasurementServiceImpl;
 import org.chainoptim.desktop.features.goods.pricing.service.PricingService;
 import org.chainoptim.desktop.features.goods.pricing.service.PricingServiceImpl;
 import org.chainoptim.desktop.features.goods.product.service.ProductService;
@@ -155,7 +153,6 @@ public class AppModule extends AbstractModule {
         bind(ProductWriteService.class).to(ProductWriteServiceImpl.class);
         bind(StageService.class).to(StageServiceImpl.class);
         bind(StageWriteService.class).to(StageWriteServiceImpl.class);
-        bind(UnitOfMeasurementService.class).to(UnitOfMeasurementServiceImpl.class);
         bind(PricingService.class).to(PricingServiceImpl.class);
 
         // - Factory

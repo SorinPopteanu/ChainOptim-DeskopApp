@@ -5,7 +5,7 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.goods.product.dto.UpdateProductDTO;
-import org.chainoptim.desktop.features.goods.unit.model.NewUnitOfMeasurement;
+import org.chainoptim.desktop.features.goods.unit.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.goods.product.model.Product;
 import org.chainoptim.desktop.features.goods.product.service.ProductService;
 import org.chainoptim.desktop.features.goods.product.service.ProductWriteService;
@@ -101,8 +101,8 @@ public class UpdateProductController {
     private void initializeFormFields(Product product) {
         nameFormField.initialize(String::new, "Name", true, product.getName(), "Your input is not valid.");
         descriptionFormField.initialize(String::new,"Description", false, product.getDescription(), "Your input is not valid.");
-        if (product.getNewUnit() != null) {
-            unitOfMeasurementSelect.initialize(product.getNewUnit().getStandardUnit(), product.getNewUnit().getUnitMagnitude());
+        if (product.getUnit() != null) {
+            unitOfMeasurementSelect.initialize(product.getUnit().getStandardUnit(), product.getUnit().getUnitMagnitude());
         }
     }
 
@@ -132,7 +132,7 @@ public class UpdateProductController {
         try {
             productDTO.setName(nameFormField.handleSubmit());
             productDTO.setDescription(descriptionFormField.handleSubmit());
-            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
+            UnitOfMeasurement newUnit = new UnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
             productDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;

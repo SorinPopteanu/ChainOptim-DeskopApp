@@ -5,7 +5,7 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.goods.component.dto.UpdateComponentDTO;
-import org.chainoptim.desktop.features.goods.unit.model.NewUnitOfMeasurement;
+import org.chainoptim.desktop.features.goods.unit.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.goods.component.model.Component;
 import org.chainoptim.desktop.features.goods.component.service.ComponentService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
@@ -96,8 +96,8 @@ public class UpdateComponentController {
     private void initializeFormFields(Component component) {
         nameFormField.initialize(String::new, "Name", true, component.getName(), "Your input is not valid.");
         descriptionFormField.initialize(String::new,"Description", false, component.getDescription(), "Your input is not valid.");
-        if (component.getNewUnit() != null) {
-            unitOfMeasurementSelect.initialize(component.getNewUnit().getStandardUnit(), component.getNewUnit().getUnitMagnitude());
+        if (component.getUnit() != null) {
+            unitOfMeasurementSelect.initialize(component.getUnit().getStandardUnit(), component.getUnit().getUnitMagnitude());
         }
     }
 
@@ -127,7 +127,7 @@ public class UpdateComponentController {
         try {
             componentDTO.setName(nameFormField.handleSubmit());
             componentDTO.setDescription(descriptionFormField.handleSubmit());
-            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
+            UnitOfMeasurement newUnit = new UnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
             componentDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;

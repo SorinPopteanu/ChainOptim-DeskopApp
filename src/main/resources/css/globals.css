@@ -22,5 +22,6 @@
 @import url("timeline.css");
 
 .root {
-    -fx-font-family: 'Roboto';
+    -fx-font-family: "Arial";
 }
+

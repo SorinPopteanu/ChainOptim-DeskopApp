@@ -124,21 +124,6 @@ public class CommonViewsLoaderImpl implements CommonViewsLoader {
         }
     }
 
-    public SelectOrCreateUnitOfMeasurementController loadSelectOrCreateUnitOfMeasurement(StackPane unitOfMeasurementContainer) {
-        FXMLLoader loader = fxmlLoaderService.setUpLoader(
-                "/org/chainoptim/desktop/shared/common/uielements/select/SelectOrCreateUnitOfMeasurementView.fxml",
-                controllerFactory::createController
-        );
-        try {
-            Node selectOrCreateUnitOfMeasurementView = loader.load();
-            unitOfMeasurementContainer.getChildren().add(selectOrCreateUnitOfMeasurementView);
-            return loader.getController();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
     public SelectDurationController loadSelectDurationView(StackPane durationInputContainer) {
         FXMLLoader timeInputLoader = fxmlLoaderService.setUpLoader(
                 "/org/chainoptim/desktop/shared/common/uielements/select/SelectDurationView.fxml",

@@ -23,7 +23,6 @@ public interface CommonViewsLoader {
     <T> GenericConfirmDialogController<T> loadConfirmDialog(StackPane confirmDialogContainer);
 
     SelectOrCreateLocationController loadSelectOrCreateLocation(StackPane selectOrCreateLocationContainer);
-    SelectOrCreateUnitOfMeasurementController loadSelectOrCreateUnitOfMeasurement(StackPane unitOfMeasurementContainer);
     SelectDurationController loadSelectDurationView(StackPane durationInputContainer);
     SelectStageController loadSelectStageView(StackPane selectStageContainer);
     SelectFactoryController loadSelectFactoryView(StackPane selectFactoryContainer);

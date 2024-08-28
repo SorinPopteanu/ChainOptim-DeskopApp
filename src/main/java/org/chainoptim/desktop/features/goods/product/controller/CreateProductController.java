@@ -5,7 +5,7 @@ import org.chainoptim.desktop.core.main.service.CurrentSelectionService;
 import org.chainoptim.desktop.core.main.service.NavigationService;
 import org.chainoptim.desktop.core.user.model.User;
 import org.chainoptim.desktop.features.goods.product.dto.CreateProductDTO;
-import org.chainoptim.desktop.features.goods.unit.model.NewUnitOfMeasurement;
+import org.chainoptim.desktop.features.goods.unit.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.goods.product.model.Product;
 import org.chainoptim.desktop.features.goods.product.service.ProductWriteService;
 import org.chainoptim.desktop.shared.common.uielements.forms.FormField;
@@ -96,7 +96,7 @@ public class CreateProductController {
         try {
             productDTO.setName(nameFormField.handleSubmit());
             productDTO.setDescription(descriptionFormField.handleSubmit());
-            NewUnitOfMeasurement newUnit = new NewUnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
+            UnitOfMeasurement newUnit = new UnitOfMeasurement(unitOfMeasurementSelect.getSelectedUnit(), unitOfMeasurementSelect.getSelectedMagnitude());
             productDTO.setNewUnit(newUnit);
         } catch (ValidationException e) {
             return null;

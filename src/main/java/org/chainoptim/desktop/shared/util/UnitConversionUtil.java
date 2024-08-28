@@ -1,6 +1,6 @@
 package org.chainoptim.desktop.shared.util;
 
-import org.chainoptim.desktop.features.goods.unit.model.NewUnitOfMeasurement;
+import org.chainoptim.desktop.features.goods.unit.model.UnitOfMeasurement;
 import org.chainoptim.desktop.features.goods.unit.model.StandardUnit;
 
 import javafx.util.Pair;
@@ -23,7 +23,7 @@ public class UnitConversionUtil {
         return conversionMap.getOrDefault(new Pair<>(from, to), Double.NaN);
     }
 
-    public static double convert(double value, NewUnitOfMeasurement from, NewUnitOfMeasurement to) {
+    public static double convert(double value, UnitOfMeasurement from, UnitOfMeasurement to) {
         if (!from.getStandardUnit().getCategory().equals(to.getStandardUnit().getCategory())) {
             throw new IllegalArgumentException("Cannot convert between different categories of units");
         }

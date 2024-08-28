@@ -92,8 +92,8 @@ public class ProductOverviewController implements DataReceiver<Product> {
         descriptionTextFlow.setStyle("-fx-padding: 2px 0px 0px 0px;"); // Fix horizontal alignment issue
 
         String unitName = "";
-        if (product.getNewUnit() != null) {
-            unitName = product.getNewUnit().getFullName() + " (" + product.getNewUnit().getAbbreviation() + ")";
+        if (product.getUnit() != null) {
+            unitName = product.getUnit().getFullName() + " (" + product.getUnit().getAbbreviation() + ")";
         } else {
             unitName = "None";
         }
