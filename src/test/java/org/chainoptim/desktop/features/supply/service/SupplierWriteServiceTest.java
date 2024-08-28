@@ -2,8 +2,9 @@ package org.chainoptim.desktop.features.supply.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
 import org.chainoptim.desktop.features.supply.dto.CreateSupplierDTO;
-import org.chainoptim.desktop.features.supply.dto.UpdateSupplierDTO;
-import org.chainoptim.desktop.features.supply.model.Supplier;
+import org.chainoptim.desktop.features.supply.supplier.dto.UpdateSupplierDTO;
+import org.chainoptim.desktop.features.supply.supplier.model.Supplier;
+import org.chainoptim.desktop.features.supply.supplier.service.SupplierWriteServiceImpl;
 import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;

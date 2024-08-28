@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.storage.controller.WarehouseStorageController"
+      fx:controller="org.chainoptim.desktop.features.storage.compartment.controller.WarehouseStorageController"
       style="-fx-padding: 20px;" spacing="10">
 
     <HBox alignment="CENTER_LEFT">

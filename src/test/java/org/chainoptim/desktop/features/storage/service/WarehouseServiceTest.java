@@ -1,7 +1,8 @@
 package org.chainoptim.desktop.features.storage.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.storage.model.Warehouse;
+import org.chainoptim.desktop.features.storage.warehouse.model.Warehouse;
+import org.chainoptim.desktop.features.storage.warehouse.service.WarehouseServiceImpl;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;

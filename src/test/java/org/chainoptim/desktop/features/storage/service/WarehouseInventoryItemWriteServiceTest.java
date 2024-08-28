@@ -1,9 +1,10 @@
 package org.chainoptim.desktop.features.storage.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.storage.dto.CreateWarehouseInventoryItemDTO;
-import org.chainoptim.desktop.features.storage.dto.UpdateWarehouseInventoryItemDTO;
-import org.chainoptim.desktop.features.storage.model.WarehouseInventoryItem;
+import org.chainoptim.desktop.features.storage.inventory.dto.CreateWarehouseInventoryItemDTO;
+import org.chainoptim.desktop.features.storage.inventory.dto.UpdateWarehouseInventoryItemDTO;
+import org.chainoptim.desktop.features.storage.inventory.model.WarehouseInventoryItem;
+import org.chainoptim.desktop.features.storage.inventory.service.WarehouseInventoryItemWriteServiceImpl;
 import org.chainoptim.desktop.shared.httphandling.HttpMethod;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;
 import org.chainoptim.desktop.shared.httphandling.RequestHandler;

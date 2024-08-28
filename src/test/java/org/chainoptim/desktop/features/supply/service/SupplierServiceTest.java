@@ -1,7 +1,8 @@
 package org.chainoptim.desktop.features.supply.service;
 
 import org.chainoptim.desktop.core.user.service.TokenManager;
-import org.chainoptim.desktop.features.supply.model.Supplier;
+import org.chainoptim.desktop.features.supply.supplier.model.Supplier;
+import org.chainoptim.desktop.features.supply.supplier.service.SupplierServiceImpl;
 import org.chainoptim.desktop.shared.caching.CacheKeyBuilder;
 import org.chainoptim.desktop.shared.caching.CachingService;
 import org.chainoptim.desktop.shared.httphandling.RequestBuilder;

@@ -3,7 +3,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.chainoptim.desktop.features.storage.controller.WarehouseOverviewController"
+            fx:controller="org.chainoptim.desktop.features.storage.warehouse.controller.WarehouseOverviewController"
             style="-fx-padding: 30px;" minHeight="600" spacing="20">
 
     <!-- Details -->

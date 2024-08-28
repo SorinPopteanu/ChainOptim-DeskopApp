@@ -6,7 +6,7 @@
 <?import org.chainoptim.desktop.shared.common.uielements.forms.FormField?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.chainoptim.desktop.features.storage.controller.UpdateWarehouseController">
+      fx:controller="org.chainoptim.desktop.features.storage.warehouse.controller.UpdateWarehouseController">
 
     <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
         <VBox VBox.vgrow="ALWAYS" styleClass="form-container">
