@@ -1,4 +1,4 @@
-package org.chainoptim.desktop.features.goods.product.controller;
+package org.chainoptim.desktop.features.goods.pricing.controller;
 
 import org.chainoptim.desktop.features.goods.pricing.model.Pricing;
 import org.chainoptim.desktop.features.goods.product.model.Product;
